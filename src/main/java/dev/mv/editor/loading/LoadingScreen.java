@@ -7,6 +7,7 @@ import imgui.ImVec2;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import imgui.lwjgl3.glfw.ImGuiImplGlfwNative;
 import lombok.SneakyThrows;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -50,14 +51,11 @@ public class LoadingScreen {
 
         glImpl.dispose();
         glfwImpl.dispose();
-        ImGui.destroyContext();
 
         glfwDestroyWindow(window);
     }
 
     private void init() {
-        GLFWErrorCallback.createPrint(System.err).set();
-
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -86,13 +84,10 @@ public class LoadingScreen {
         glfwSwapInterval(1);
         GL.createCapabilities();
 
-        ImGui.createContext();
-        ImGuiIO io = ImGui.getIO();
         glfwImpl = new ImGuiImplGlfw();
         glfwImpl.init(window, true);
         glImpl = new ImGuiImplGl3();
         glImpl.init("#version 400");
-        ImGui.styleColorsDark();
 
         glfwShowWindow(window);
 
@@ -105,7 +100,7 @@ public class LoadingScreen {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         long initialTime = System.currentTimeMillis();
-        double timeF = 1000 / 144;
+        double timeF = 1000 / 60;
         double deltaF = 0;
         while (!glfwWindowShouldClose(window)) {
             long currentTime = System.currentTimeMillis();
