@@ -1,15 +1,12 @@
 package dev.mv.editor.loading;
 
-import dev.mv.engine.texture.Texture;
+import dev.mv.engine.oldRender.texture.Texture;
 import imgui.ImGui;
-import imgui.ImGuiIO;
 import imgui.ImVec2;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
-import imgui.lwjgl3.glfw.ImGuiImplGlfwNative;
 import lombok.SneakyThrows;
-import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;

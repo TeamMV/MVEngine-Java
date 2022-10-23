@@ -19,7 +19,6 @@ public class LauncherScreen {
     private ImGuiImplGlfw glfwImpl;
     private ImGuiImplGl3 glImpl;
     private LaunchConfig config;
-
     public LauncherScreen() {
         config = new LaunchConfig();
     }

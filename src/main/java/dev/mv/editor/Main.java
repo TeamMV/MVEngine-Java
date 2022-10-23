@@ -24,7 +24,7 @@ public class Main {
 
         LoadingManager.start("", "/LoadingLogo.png");
         LoadingManager.loadingDots();
-        await(sleep(4800));
+        await(sleep(2400));
         LoadingManager.stop();
         await(sleep(500)); //We need to wait a little to prevent any problems with multiple windows being open
 
