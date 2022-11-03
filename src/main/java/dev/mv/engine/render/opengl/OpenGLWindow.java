@@ -8,12 +8,15 @@ import dev.mv.engine.render.opengl._2d.batch.OpenGLBatchController2D;
 import dev.mv.engine.render.opengl._3d.OpenGLDrawContext3D;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -136,7 +139,7 @@ public class OpenGLWindow implements Window {
         // bindings available for use.
         GL.createCapabilities();
 
-        //glEnable(GL_CULL_FACE_MODE);
+        glEnable(GL_CULL_FACE_MODE);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -181,6 +184,13 @@ public class OpenGLWindow implements Window {
                 if(onUpdate != null) {
                     onUpdate.run();
                 }
+                String fpsTitle = title + " - " + getFPS() + " fps";
+                byte[] bytes = fpsTitle.getBytes(StandardCharsets.UTF_8);
+                ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length + 1);
+                buffer.put(bytes);
+                buffer.put((byte) 0x0); //the stupid terminator which is required lel
+                buffer.flip();
+                glfwSetWindowTitle(window, buffer);
                 ticks++;
                 deltaU--;
             }

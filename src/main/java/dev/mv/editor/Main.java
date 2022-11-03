@@ -12,11 +12,13 @@ import dev.mv.engine.render.drawables.text.BitmapFont;
 import dev.mv.engine.render.models.Entity;
 import dev.mv.engine.render.models.Model;
 import dev.mv.engine.render.models.ObjectLoader;
+import dev.mv.engine.render.opengl._3d.camera.OpenGLCamera3D;
 import dev.mv.engine.render.opengl._3d.render.OpenGLRender3D;
 import dev.mv.utils.Utils;
 import imgui.ImGui;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.stb.STBImage;
 
 import java.io.IOException;
 
@@ -42,8 +44,8 @@ public class Main {
             renderer = new OpenGLRender3D(window);
             try {
                 ObjectLoader loader = MVEngine.getObjectLoader();
-                Model mCruiser = loader.loadExternalModel("src/main/resources/models/cruiser/cruiser.obj");
-                Texture cruiserTexture = MVEngine.createTexture("src/main/resources/models/cruiser/cruiser.png");
+                Model mCruiser = loader.loadExternalModel("src/main/resources/models/f16/f16.obj");
+                Texture cruiserTexture = MVEngine.createTexture("src/main/resources/models/f16/F-16.bmp");
                 mCruiser.setTexture(cruiserTexture);
                 cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
             } catch (IOException e) {
@@ -54,7 +56,35 @@ public class Main {
             renderer.processEntity(cruiser);
             renderer.render();
 
-            cruiser.incrementRotation(0.0f, 0.0f, 0.0f);
+            //cruiser.incrementRotation(0.1f, 0.1f, 0.1f);
+
+            OpenGLCamera3D camera = window.getDrawContext3D().getCamera();
+
+            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_W) == GLFW_PRESS) {
+                camera.move(0.0f, 0.0f, -0.01f);
+            }
+            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_A) == GLFW_PRESS) {
+                camera.move(-0.01f, 0.0f, 0.0f);
+            }
+            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_S) == GLFW_PRESS) {
+                camera.move(0.0f, 0.0f, 0.01f);
+            }
+            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_D) == GLFW_PRESS) {
+                camera.move(0.01f, 0.0f, 0.0f);
+            }
+
+            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
+                camera.rotate(0.0f, 1.0f, 0.0f);
+            }
+            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_LEFT) == GLFW_PRESS) {
+                camera.rotate(0.0f, -1.0f, 0.0f);
+            }
+            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_UP) == GLFW_PRESS) {
+                camera.rotate(-1.0f, 0.0f, 0.0f);
+            }
+            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_DOWN) == GLFW_PRESS) {
+                camera.rotate(1.0f, 0.0f, 0.0f);
+            }
         });
 
         GLFWErrorCallback.createPrint(System.err).set();

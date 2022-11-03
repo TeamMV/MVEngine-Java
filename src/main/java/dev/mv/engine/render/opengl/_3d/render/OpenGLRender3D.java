@@ -49,6 +49,7 @@ public class OpenGLRender3D {
         GL30.glBindVertexArray(0);
         GL20.glDisableVertexAttribArray(0);
         GL20.glDisableVertexAttribArray(1);
+        GL11.glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     private void prepare(Entity entity) {
