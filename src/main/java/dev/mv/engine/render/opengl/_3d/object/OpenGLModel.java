@@ -6,6 +6,7 @@ import dev.mv.engine.render.models.Model;
 public class OpenGLModel implements Model {
     private int voaID;
     private int vertexCount;
+    private Texture texture;
 
     public OpenGLModel(int voaID, int vertexCount) {
         this.voaID = voaID;
@@ -24,11 +25,11 @@ public class OpenGLModel implements Model {
 
     @Override
     public Texture getTexture() {
-        return null;
+        return texture;
     }
 
     @Override
     public void setTexture(Texture texture) {
-
+        this.texture = texture;
     }
 }

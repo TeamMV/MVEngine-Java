@@ -42,7 +42,7 @@ public class OpenGLWindow implements Window {
 
     private final float FOV = (float) Math.toRadians(60);
     private final float Z_NEAR = 0.1f;
-    private final float Z_FAR = -100f;
+    private final float Z_FAR = 100f;
 
     public OpenGLWindow(int width, int heigth, String title, boolean resizeable) {
         this.width = width;
@@ -136,8 +136,8 @@ public class OpenGLWindow implements Window {
         // bindings available for use.
         GL.createCapabilities();
 
-        glEnable(GL_CULL_FACE_MODE);
-        //glEnable(GL_DEPTH_TEST);
+        //glEnable(GL_CULL_FACE_MODE);
+        glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -158,7 +158,7 @@ public class OpenGLWindow implements Window {
     private void loop() {
 
         // Set the clear color
-        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
@@ -225,7 +225,7 @@ public class OpenGLWindow implements Window {
     @Override
     public Matrix4f getProjectionMatrix3D() {
         float aspect = (float) width / (float) height;
-        return projectionMatrix;//.setPerspective(FOV, aspect, Z_NEAR, Z_FAR);
+        return projectionMatrix.setPerspective(FOV, aspect, Z_NEAR, Z_FAR);
     }
 
     @Override

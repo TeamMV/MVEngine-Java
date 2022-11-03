@@ -20,17 +20,14 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 
 import java.io.IOException;
 
-import static dev.mv.utils.Utils.await;
-import static dev.mv.utils.Utils.sleep;
-import static org.lwjgl.glfw.GLFW.glfwInit;
-import static org.lwjgl.glfw.GLFW.glfwTerminate;
+import static dev.mv.utils.Utils.*;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Main {
 
     private static BitmapFont font;
     private static Entity cruiser;
-    private static OpenGLRender3D renderer;
-    private static Model mCruiser;
+    public static OpenGLRender3D renderer;
 
     public static void main(String[] args) {
         if (!glfwInit()) {
@@ -39,30 +36,25 @@ public class Main {
             return;
         }
 
-        Window window = MVEngine.createWindow(800, 600, "MVEngine", true);
+        Window window = MVEngine.createWindow(1000, 700, "MVEngine", true);
 
         window.run(() -> {
-            font = MVEngine.createFont(Utils.getInnerPath("fonts", "minecraft", "minecraft.png"), Utils.getInnerPath("fonts", "minecraft", "minecraft.fnt"));
-            renderer = new OpenGLRender3D();
+            renderer = new OpenGLRender3D(window);
             try {
                 ObjectLoader loader = MVEngine.getObjectLoader();
-                //Model mCruiser = loader.loadExternalModel("src/main/resources/models/cruiser/cruiser.obj");
-                mCruiser = loader.loadModel(new float[] {-0.5f, 0.5f, 0f,
-                    -0.5f, -0.5f, 0f,
-                    0.5f, -0.5f, 0f,
-                    0.5f, -0.5f, 0f,
-                    0.5f, 0.5f, 0f,
-                    -0.5f, 0.5f, 0f});
-                Texture cruiserTexture = MVEngine.createTexture("src/main/resources/models/cruiser/cruiser.bmp");
+                Model mCruiser = loader.loadExternalModel("src/main/resources/models/cruiser/cruiser.obj");
+                Texture cruiserTexture = MVEngine.createTexture("src/main/resources/models/cruiser/cruiser.png");
                 mCruiser.setTexture(cruiserTexture);
-                cruiser = new Entity(mCruiser, new Vector3f(0, 0, -1), new Vector3f(0, 0, 0), 1);
+                cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
         }, null, () -> {
-            //renderer.processEntity(cruiser);
-            renderer.render(mCruiser);
+            renderer.processEntity(cruiser);
+            renderer.render();
+
+            cruiser.incrementRotation(0.0f, 0.0f, 0.0f);
         });
 
         GLFWErrorCallback.createPrint(System.err).set();
