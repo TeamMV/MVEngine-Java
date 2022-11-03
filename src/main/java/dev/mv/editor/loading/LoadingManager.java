@@ -17,21 +17,21 @@ public class LoadingManager {
         if (started) return;
         started = true;
         screen = new LoadingScreen();
-        loading = new PromiseNull(screen::run);
+        loading = new PromiseNull(resolver -> {screen.run(); resolver.resolve();});
     }
 
     public static void start(String message) {
         if (started) return;
         started = true;
         screen = new LoadingScreen(message);
-        loading = new PromiseNull(screen::run);
+        loading = new PromiseNull(resolver -> {screen.run(); resolver.resolve();});
     }
 
     public static void start(String message, String filename) {
         if (started) return;
         started = true;
         screen = new LoadingScreen(message, filename);
-        loading = new PromiseNull(screen::run);
+        loading = new PromiseNull(resolver -> {screen.run(); resolver.resolve();});
     }
 
     public static void stop() {
@@ -56,7 +56,7 @@ public class LoadingManager {
 
     public static void loadingDots(int timeout) {
         if (!started) return;
-        dots = new PromiseNull(() -> {
+        dots = new PromiseNull(resolver -> {
             int dots = 1;
             while (started) {
                 String message = "Loading";
@@ -68,6 +68,7 @@ public class LoadingManager {
                 if (dots < 3) dots++;
                 else dots = 1;
             }
+            resolver.resolve();
         });
     }
 

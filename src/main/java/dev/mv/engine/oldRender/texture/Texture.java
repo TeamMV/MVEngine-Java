@@ -1,5 +1,6 @@
 package dev.mv.engine.oldRender.texture;
 
+import dev.mv.engine.MVEngine;
 import org.lwjgl.BufferUtils;
 
 import javax.imageio.ImageIO;
@@ -49,7 +50,7 @@ public class Texture {
 
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuffer);
             } catch (IOException e) {
-                e.printStackTrace();
+                MVEngine.Exceptions.Throw(e);
             }
         }
     }

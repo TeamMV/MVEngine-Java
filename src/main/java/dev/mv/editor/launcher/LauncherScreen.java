@@ -87,7 +87,7 @@ public class LauncherScreen {
             glfwPollEvents();
             if (deltaF >= 1) {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                 render();
                 glfwSwapBuffers(window);
                 deltaF--;
