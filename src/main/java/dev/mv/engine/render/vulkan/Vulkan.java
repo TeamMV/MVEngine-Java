@@ -189,6 +189,10 @@ public class Vulkan {
             if (!deviceFeatures.geometryShader()) {
                 score = 0;
             }
+
+            if (deviceProperties.deviceType() == VK_PHYSICAL_DEVICE_TYPE_CPU || deviceProperties.deviceType() == VK_PHYSICAL_DEVICE_TYPE_OTHER) {
+                score /= 4;
+            }
         }
         return score;
     }
