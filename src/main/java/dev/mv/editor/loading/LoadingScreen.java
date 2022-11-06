@@ -13,7 +13,7 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
 
-import static dev.mv.utils.Utils.*;
+import static dev.mv.utils.Utils.ifNotNull;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -28,7 +28,8 @@ public class LoadingScreen {
 
     private volatile String file = null;
 
-    public LoadingScreen() {}
+    public LoadingScreen() {
+    }
 
     public LoadingScreen(String message) {
         this.message = message;
@@ -132,8 +133,7 @@ public class LoadingScreen {
         try {
             texture = new Texture(LoadingScreen.class.getResourceAsStream(file));
             texture.bind();
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             texture = null;
         }
     }

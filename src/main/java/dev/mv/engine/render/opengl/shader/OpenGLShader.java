@@ -7,12 +7,10 @@ import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 
 public class OpenGLShader {
     private String vertexCode;

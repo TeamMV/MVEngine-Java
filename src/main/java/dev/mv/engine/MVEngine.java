@@ -8,23 +8,58 @@ import dev.mv.engine.render.opengl.OpenGLWindow;
 import dev.mv.engine.render.opengl._3d.object.OpenGLObjectLoader;
 import dev.mv.engine.render.opengl.text.OpenGLBitmapFont;
 import dev.mv.engine.render.opengl.texture.OpenGLTexture;
+import dev.mv.engine.render.vulkan.Vulkan;
+import imgui.ImGui;
+import org.lwjgl.glfw.GLFWErrorCallback;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
+
 public class MVEngine {
     private static boolean usesVulkan = false;
+
     public static boolean usesVulkan() {
         return usesVulkan;
     }
 
-    public static void init(boolean vulkan) {
-        usesVulkan = vulkan;
+    public static void init() {
+        init(new ApplicationConfig());
+    }
+
+    public static void init(ApplicationConfig config) {
+        if (config == null) {
+            config = new ApplicationConfig();
+        }
+        GLFWErrorCallback.createPrint(System.err).set();
+
+        if (!glfwInit()) {
+            throw new RuntimeException("Could not initialise GLFW!");
+        }
+
+        ImGui.createContext();
+        ImGui.styleColorsDark();
+
+        if (config.isVulkan()) {
+            usesVulkan = Vulkan.init(config.getName(), config.getVersion());
+        } else {
+            usesVulkan = false;
+        }
+    }
+
+    public static void terminate() {
+        ImGui.destroyContext();
+        if (usesVulkan) {
+            Vulkan.terminate();
+        }
+        glfwTerminate();
     }
 
     public static Window createWindow(int width, int height, String title, boolean resizeable) {
-        if(usesVulkan()) {
+        if (usesVulkan()) {
             return null;
         } else {
             return new OpenGLWindow(width, height, title, resizeable);
@@ -32,7 +67,7 @@ public class MVEngine {
     }
 
     public static Texture createTexture(String path) throws IOException {
-        if(usesVulkan()) {
+        if (usesVulkan()) {
             return null;
         } else {
             return new OpenGLTexture(path);
@@ -40,7 +75,7 @@ public class MVEngine {
     }
 
     public static Texture createTexture(InputStream inputStream) throws IOException {
-        if(usesVulkan()) {
+        if (usesVulkan()) {
             return null;
         } else {
             return new OpenGLTexture(inputStream);
@@ -48,7 +83,7 @@ public class MVEngine {
     }
 
     public static Texture createTexture(BufferedImage image) {
-        if(usesVulkan()) {
+        if (usesVulkan()) {
             return null;
         } else {
             return new OpenGLTexture(image);
@@ -56,7 +91,7 @@ public class MVEngine {
     }
 
     public static BitmapFont createFont(String pngPath, String fntPath) {
-        if(usesVulkan()) {
+        if (usesVulkan()) {
             return null;
         } else {
             return new OpenGLBitmapFont(pngPath, fntPath);
@@ -64,7 +99,7 @@ public class MVEngine {
     }
 
     public static ObjectLoader getObjectLoader() {
-        if(usesVulkan()) {
+        if (usesVulkan()) {
             return null;
         } else {
             return OpenGLObjectLoader.instance();

@@ -2,13 +2,13 @@
 
 precision mediump float;
 
-layout(location=0) in vec3 aVertPos;
-layout(location=1) in float aRotation;
-layout(location=2) in vec4 aColor;
-layout(location=3) in vec2 aTexCoords;
-layout(location=4) in float aTexID;
-layout(location=5) in float aCameraMode;
-layout(location=6) in vec2 aRotationOrigin;
+layout (location = 0) in vec3 aVertPos;
+layout (location = 1) in float aRotation;
+layout (location = 2) in vec4 aColor;
+layout (location = 3) in vec2 aTexCoords;
+layout (location = 4) in float aTexID;
+layout (location = 5) in float aCameraMode;
+layout (location = 6) in vec2 aRotationOrigin;
 
 out vec4 fColor;
 out vec2 fTexCoords;

@@ -1,10 +1,8 @@
 package dev.mv.engine.render.opengl._3d.render;
 
 import dev.mv.engine.render.Window;
-import dev.mv.engine.render.drawables.Texture;
 import dev.mv.engine.render.models.Entity;
 import dev.mv.engine.render.models.Model;
-import dev.mv.engine.render.opengl.OpenGLWindow;
 import dev.mv.engine.render.opengl._3d.camera.OpenGLTransformation3D;
 import dev.mv.engine.render.opengl.shader.OpenGLShader;
 import lombok.Getter;
@@ -29,8 +27,8 @@ public class OpenGLRender3D {
 
     public OpenGLRender3D(Window win) {
         this.win = win;
-        this.shader = new OpenGLShader("src/main/java/dev/mv/engine/render/opengl/_3d/shaderfiles/vertex/default.vert",
-            "src/main/java/dev/mv/engine/render/opengl/_3d/shaderfiles/fragment/default.frag");
+        this.shader = new OpenGLShader("src/main/resources/shaders/3d/default.vert",
+            "src/main/resources/shaders/3d/default.frag");
 //
         shader.make();
         shader.use();
@@ -61,10 +59,10 @@ public class OpenGLRender3D {
 
     public void render() {
 
-        for(Model model : modelUsages.keySet()) {
+        for (Model model : modelUsages.keySet()) {
             bind(model);
             List<Entity> entities = modelUsages.get(model);
-            for(Entity entity : entities) {
+            for (Entity entity : entities) {
                 prepare(entity);
                 glDrawElements(GL_TRIANGLES, model.vertexCount(), GL_UNSIGNED_INT, 0);
             }

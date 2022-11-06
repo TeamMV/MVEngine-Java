@@ -42,10 +42,6 @@ public class Entity {
         scale += factor;
     }
 
-    public void setScale(float value) {
-        scale = value;
-    }
-
     public Model getModel() {
         return model;
     }
@@ -60,5 +56,9 @@ public class Entity {
 
     public float getScale() {
         return scale;
+    }
+
+    public void setScale(float value) {
+        scale = value;
     }
 }

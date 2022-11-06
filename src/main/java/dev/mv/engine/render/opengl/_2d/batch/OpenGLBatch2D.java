@@ -1,6 +1,5 @@
 package dev.mv.engine.render.opengl._2d.batch;
 
-import dev.mv.engine.render.Window;
 import dev.mv.engine.render.drawables.Texture;
 import dev.mv.engine.render.opengl.OpenGLWindow;
 import dev.mv.engine.render.opengl._2d.vertex.OpenGLVertex2D;
@@ -10,15 +9,11 @@ import dev.mv.utils.Utils;
 import lombok.Getter;
 import org.lwjgl.BufferUtils;
 
-import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;

@@ -237,6 +237,10 @@
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-spvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-stb</artifactId>
         </dependency>
         <dependency>
@@ -313,6 +317,11 @@
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-spvc</artifactId>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-stb</artifactId>
             <classifier>${lwjgl.natives}</classifier>
         </dependency>
@@ -320,6 +329,16 @@
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-vma</artifactId>
             <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-vulkan</artifactId>
+            <classifier>natives-macos</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-vulkan</artifactId>
+            <classifier>natives-macos-arm64</classifier>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>

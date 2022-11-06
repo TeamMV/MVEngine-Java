@@ -18,16 +18,6 @@ public class VulkanWindow implements Window {
     }
 
     @Override
-    public void setFPSCap(int cap) {
-
-    }
-
-    @Override
-    public void setUPSCap(int cap) {
-
-    }
-
-    @Override
     public int getWidth() {
         return 0;
     }
@@ -53,8 +43,18 @@ public class VulkanWindow implements Window {
     }
 
     @Override
+    public void setFPSCap(int cap) {
+
+    }
+
+    @Override
     public int getUPSCap() {
         return 0;
+    }
+
+    @Override
+    public void setUPSCap(int cap) {
+
     }
 
     @Override

@@ -1,6 +1,5 @@
 package dev.mv.engine.render.opengl.texture;
 
-import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.drawables.Texture;
 import dev.mv.engine.render.drawables.TextureRegion;
 import org.lwjgl.BufferUtils;
@@ -9,14 +8,12 @@ import org.lwjgl.system.MemoryStack;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
@@ -28,7 +25,30 @@ public class OpenGLTexture implements Texture {
     private int height;
 
     public OpenGLTexture(String filename) throws IOException {
-        this(ImageIO.read(new File(filename)));
+        ByteBuffer buffer;
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            IntBuffer w = stack.mallocInt(1);
+            IntBuffer h = stack.mallocInt(1);
+            IntBuffer c = stack.mallocInt(1);
+
+            buffer = STBImage.stbi_load(filename, w, h, c, 4);
+            if (buffer == null) {
+                throw new IOException("Could not load image " + filename);
+            }
+            width = w.get();
+            height = h.get();
+
+        }
+
+        this.id = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, this.id);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+        glGenerateMipmap(GL_TEXTURE_2D);
     }
 
     public OpenGLTexture(InputStream stream) throws IOException {
@@ -55,7 +75,7 @@ public class OpenGLTexture implements Texture {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuffer);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 

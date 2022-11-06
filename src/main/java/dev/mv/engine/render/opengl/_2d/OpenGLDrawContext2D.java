@@ -16,12 +16,11 @@ import java.awt.*;
 
 public class OpenGLDrawContext2D implements DrawContext2D {
 
+    private static OpenGLDrawContext2D instance = null;
     private float r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
-
     private BitmapFont font;
     private OpenGLVertexGroup2D verts = new OpenGLVertexGroup2D();
     private OpenGLVertex2D v1 = new OpenGLVertex2D(), v2 = new OpenGLVertex2D(), v3 = new OpenGLVertex2D(), v4 = new OpenGLVertex2D();
-    private static OpenGLDrawContext2D instance = null;
 
     public OpenGLDrawContext2D(OpenGLWindow window) {
         //OpenGLBatchController2D.init(window, 1000);
@@ -214,7 +213,7 @@ public class OpenGLDrawContext2D implements DrawContext2D {
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
 
-            if(c <= 31) continue;
+            if (c <= 31) continue;
 
             Glyph glyph = font.getGlyph(c);
 

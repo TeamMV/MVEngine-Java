@@ -4,8 +4,8 @@ import dev.mv.editor.launcher.EditorLauncher;
 import dev.mv.editor.launcher.LaunchConfig;
 import dev.mv.editor.launcher.LauncherScreen;
 import dev.mv.editor.loading.LoadingManager;
+import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
-import dev.mv.engine.render.DrawContext2D;
 import dev.mv.engine.render.Window;
 import dev.mv.engine.render.drawables.Texture;
 import dev.mv.engine.render.drawables.text.BitmapFont;
@@ -14,11 +14,8 @@ import dev.mv.engine.render.models.Model;
 import dev.mv.engine.render.models.ObjectLoader;
 import dev.mv.engine.render.opengl._3d.camera.OpenGLCamera3D;
 import dev.mv.engine.render.opengl._3d.render.OpenGLRender3D;
-import dev.mv.utils.Utils;
-import imgui.ImGui;
+import dev.mv.utils.misc.Version;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.stb.STBImage;
 
 import java.io.IOException;
 
@@ -27,69 +24,76 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Main {
 
+    public static OpenGLRender3D renderer;
     private static BitmapFont font;
     private static Entity cruiser;
-    public static OpenGLRender3D renderer;
+    private static Entity plane;
 
     public static void main(String[] args) {
-        if (!glfwInit()) {
-            System.err.println("Could not initialise GLFW!");
-            System.exit(1);
-            return;
-        }
+        MVEngine.init(new ApplicationConfig().setName("MVEngine").setVersion(Version.parse("v0.1.0")).setVulkan(true));
+        System.out.println(MVEngine.usesVulkan());
 
+        /*
         Window window = MVEngine.createWindow(1000, 700, "MVEngine", true);
 
         window.run(() -> {
             renderer = new OpenGLRender3D(window);
             try {
                 ObjectLoader loader = MVEngine.getObjectLoader();
-                Model mCruiser = loader.loadExternalModel("src/main/resources/models/f16/f16.obj");
-                Texture cruiserTexture = MVEngine.createTexture("src/main/resources/models/f16/F-16.bmp");
-                mCruiser.setTexture(cruiserTexture);
+                Model mCruiser = loader.loadExternalModel("src/main/resources/models/cruiser/cruiser.obj");
+                Model mPlane = loader.loadExternalModel("src/main/resources/models/f16/f16.obj");
+                Texture tCruiser = MVEngine.createTexture("src/main/resources/models/cruiser/cruiser.bmp");
+                Texture tPLane = MVEngine.createTexture("src/main/resources/models/f16/F-16.bmp");
+                mCruiser.setTexture(tCruiser);
+                mPlane.setTexture(tPLane);
                 cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
+                plane = new Entity(mPlane, new Vector3f(2, 0, -2.5f), new Vector3f(0, 0, 0), 1);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
         }, null, () -> {
             renderer.processEntity(cruiser);
+            renderer.processEntity(plane);
             renderer.render();
 
             //cruiser.incrementRotation(0.1f, 0.1f, 0.1f);
 
             OpenGLCamera3D camera = window.getDrawContext3D().getCamera();
 
-            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_W) == GLFW_PRESS) {
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_W) == GLFW_PRESS) {
                 camera.move(0.0f, 0.0f, -0.01f);
             }
-            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_A) == GLFW_PRESS) {
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_A) == GLFW_PRESS) {
                 camera.move(-0.01f, 0.0f, 0.0f);
             }
-            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_S) == GLFW_PRESS) {
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_S) == GLFW_PRESS) {
                 camera.move(0.0f, 0.0f, 0.01f);
             }
-            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_D) == GLFW_PRESS) {
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_D) == GLFW_PRESS) {
                 camera.move(0.01f, 0.0f, 0.0f);
             }
 
-            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
                 camera.rotate(0.0f, 1.0f, 0.0f);
             }
-            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_LEFT) == GLFW_PRESS) {
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_LEFT) == GLFW_PRESS) {
                 camera.rotate(0.0f, -1.0f, 0.0f);
             }
-            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_UP) == GLFW_PRESS) {
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_UP) == GLFW_PRESS) {
                 camera.rotate(-1.0f, 0.0f, 0.0f);
             }
-            if(glfwGetKey(window.getGlfwId(), GLFW_KEY_DOWN) == GLFW_PRESS) {
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_DOWN) == GLFW_PRESS) {
                 camera.rotate(1.0f, 0.0f, 0.0f);
             }
-        });
 
-        GLFWErrorCallback.createPrint(System.err).set();
-        ImGui.createContext();
-        ImGui.styleColorsDark();
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_SPACE) == GLFW_PRESS) {
+                camera.move(0.0f, 0.01f, 0.0f);
+            }
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+                camera.move(0.0f, -0.01f, 0.0f);
+            }
+        });
 
         LoadingManager.start("", "/LoadingLogo.png");
         LoadingManager.loadingDots();
@@ -101,7 +105,8 @@ public class Main {
         EditorLauncher editor = new EditorLauncher(config);
         editor.launch();
 
-        ImGui.destroyContext();
-        glfwTerminate();
+        */
+
+        MVEngine.terminate();
     }
 }

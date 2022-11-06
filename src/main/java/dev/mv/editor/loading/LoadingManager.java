@@ -17,21 +17,30 @@ public class LoadingManager {
         if (started) return;
         started = true;
         screen = new LoadingScreen();
-        loading = new PromiseNull(resolver -> {screen.run(); resolver.resolve();});
+        loading = new PromiseNull(resolver -> {
+            screen.run();
+            resolver.resolve();
+        });
     }
 
     public static void start(String message) {
         if (started) return;
         started = true;
         screen = new LoadingScreen(message);
-        loading = new PromiseNull(resolver -> {screen.run(); resolver.resolve();});
+        loading = new PromiseNull(resolver -> {
+            screen.run();
+            resolver.resolve();
+        });
     }
 
     public static void start(String message, String filename) {
         if (started) return;
         started = true;
         screen = new LoadingScreen(message, filename);
-        loading = new PromiseNull(resolver -> {screen.run(); resolver.resolve();});
+        loading = new PromiseNull(resolver -> {
+            screen.run();
+            resolver.resolve();
+        });
     }
 
     public static void stop() {

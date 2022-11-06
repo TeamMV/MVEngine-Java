@@ -4,12 +4,12 @@ import dev.mv.engine.render.DrawContext2D;
 import dev.mv.engine.render.DrawContext3D;
 import dev.mv.engine.render.Window;
 import dev.mv.engine.render.opengl._2d.OpenGLDrawContext2D;
-import dev.mv.engine.render.opengl._2d.batch.OpenGLBatchController2D;
 import dev.mv.engine.render.opengl._3d.OpenGLDrawContext3D;
+import imgui.ImGui;
+import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
@@ -25,27 +25,23 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class OpenGLWindow implements Window {
+    private final float FOV = (float) Math.toRadians(60);
+    private final float Z_NEAR = 0.1f;
+    private final float Z_FAR = 100f;
     private int UPS = 30, FPS = 60;
-
     private int currentFPS, currentUPS;
-
     private int width, height;
     private String title;
     private boolean resize;
     private double deltaF;
     private long window;
     private long currentFrame = 0, currentTime = 0;
-
     private Runnable onStart = null, onUpdate = null, onDraw = null;
-
     private OpenGLDrawContext2D context2D = null;
     private OpenGLDrawContext3D context3D = null;
-
     private Matrix4f projectionMatrix = null;
-
-    private final float FOV = (float) Math.toRadians(60);
-    private final float Z_NEAR = 0.1f;
-    private final float Z_FAR = 100f;
+    private ImGuiImplGlfw glfwImpl;
+    private ImGuiImplGl3 glImpl;
 
     public OpenGLWindow(int width, int heigth, String title, boolean resizeable) {
         this.width = width;
@@ -58,7 +54,7 @@ public class OpenGLWindow implements Window {
     public void run() {
         init();
 
-        if(onStart != null) {
+        if (onStart != null) {
             onStart.run();
         }
 
@@ -70,12 +66,6 @@ public class OpenGLWindow implements Window {
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
-
-        // Terminate GLFW and free the error callback
-        glfwTerminate();
-        glfwSetErrorCallback(null).free();
-
-        System.exit(0);
     }
 
     @Override
@@ -87,20 +77,10 @@ public class OpenGLWindow implements Window {
     }
 
     private void init() {
-        // Setup an error callback. The default implementation
-        // will print the error message in System.err.
-        GLFWErrorCallback.createPrint(System.err).set();
+        glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, resize ? GLFW_TRUE : GLFW_FALSE);
 
-        // Initialize GLFW. Most GLFW functions will not work before doing this.
-        if (!glfwInit())
-            throw new IllegalStateException("Unable to initialize GLFW");
-
-        // Configure GLFW
-        glfwDefaultWindowHints(); // optional, the current window hints are already the default
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_RESIZABLE, resize ? GLFW_TRUE : GLFW_FALSE); // the window will be resizable
-
-        // Create the window
         window = glfwCreateWindow(width, height, title, NULL, NULL);
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
@@ -129,15 +109,20 @@ public class OpenGLWindow implements Window {
         // Enable v-sync
         glfwSwapInterval(1);
 
-        // Make the window visible
-        glfwShowWindow(window);
-
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
         // LWJGL detects the context that is current in the current thread,
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+
+        glfwImpl = new ImGuiImplGlfw();
+        glfwImpl.init(window, true);
+        glImpl = new ImGuiImplGl3();
+        glImpl.init("#version 400");
+
+        // Make the window visible
+        glfwShowWindow(window);
 
         glEnable(GL_CULL_FACE_MODE);
         glEnable(GL_DEPTH_TEST);
@@ -181,7 +166,7 @@ public class OpenGLWindow implements Window {
             this.deltaF = deltaF;
             if (deltaU >= 1) {
                 currentTime++;
-                if(onUpdate != null) {
+                if (onUpdate != null) {
                     onUpdate.run();
                 }
                 String fpsTitle = title + " - " + getFPS() + " fps";
@@ -196,11 +181,19 @@ public class OpenGLWindow implements Window {
             }
             if (deltaF >= 1) {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+                glfwImpl.newFrame();
+                ImGui.newFrame();
+
                 //glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-                if(onDraw != null) {
+                if (onDraw != null) {
                     onDraw.run();
                 }
                 //OpenGLBatchController2D.finishAndRender();
+
+                ImGui.render();
+                glImpl.renderDrawData(ImGui.getDrawData());
+
                 glfwSwapBuffers(window);
                 currentFrame++;
                 frames++;
@@ -219,7 +212,7 @@ public class OpenGLWindow implements Window {
     }
 
     public void declareProjection() {
-        if(projectionMatrix == null) {
+        if (projectionMatrix == null) {
             projectionMatrix = new Matrix4f();
         }
         float[] mat = new float[16];
@@ -249,16 +242,6 @@ public class OpenGLWindow implements Window {
     }
 
     @Override
-    public void setFPSCap(int cap) {
-        FPS = cap;
-    }
-
-    @Override
-    public void setUPSCap(int cap) {
-        UPS = cap;
-    }
-
-    @Override
     public int getFPS() {
         return currentFPS;
     }
@@ -274,8 +257,18 @@ public class OpenGLWindow implements Window {
     }
 
     @Override
+    public void setFPSCap(int cap) {
+        FPS = cap;
+    }
+
+    @Override
     public int getUPSCap() {
         return UPS;
+    }
+
+    @Override
+    public void setUPSCap(int cap) {
+        UPS = cap;
     }
 
     @Override

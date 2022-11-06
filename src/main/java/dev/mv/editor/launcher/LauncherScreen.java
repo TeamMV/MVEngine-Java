@@ -10,7 +10,6 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -19,6 +18,7 @@ public class LauncherScreen {
     private ImGuiImplGlfw glfwImpl;
     private ImGuiImplGl3 glImpl;
     private LaunchConfig config;
+
     public LauncherScreen() {
         config = new LaunchConfig();
     }
@@ -52,9 +52,9 @@ public class LauncherScreen {
             glfwGetWindowSize(window, pWidth, pHeight);
             GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
             glfwSetWindowPos(
-                    window,
-                    (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
+                window,
+                (vidmode.width() - pWidth.get(0)) / 2,
+                (vidmode.height() - pHeight.get(0)) / 2
             );
         }
 

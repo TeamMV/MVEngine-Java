@@ -2,7 +2,6 @@ package dev.mv.engine.render.opengl._3d.camera;
 
 import org.joml.Math;
 import org.joml.Vector3f;
-import org.joml.Vector3i;
 
 public class OpenGLCamera3D {
     private Vector3f location;
@@ -19,11 +18,11 @@ public class OpenGLCamera3D {
     }
 
     public void move(float x, float y, float z) {
-        if(z != 0) {
+        if (z != 0) {
             location.x += (float) Math.sin(Math.toRadians(rotation.y)) * -1.0f * z;
             location.z += (float) Math.cos(Math.toRadians(rotation.y)) * z;
         }
-        if(x != 0) {
+        if (x != 0) {
             location.x += (float) Math.sin(Math.toRadians(rotation.y - 90)) * -1.0f * x;
             location.z += (float) Math.cos(Math.toRadians(rotation.y - 90)) * x;
         }

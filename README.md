@@ -1,11 +1,17 @@
 # MVEngine
+
 Game engine made in Java.
 
-This is a graphical game engine (aka with editor) that can be used to create 2D and 3D games in java. We will make it, so you don't need to know java to code in it. Kotlin support will be added as well. But you will also be able to create node-like scripts (like unreal blueprints) instead of coding it in java. 
+This is a graphical game engine (aka with editor) that can be used to create 2D and 3D games in java. We will make it,
+so you don't need to know java to code in it. Kotlin support will be added as well. But you will also be able to create
+node-like scripts (like unreal blueprints) instead of coding it in java.
 
-Modern JRE (Java runtime environment) is almost if not just as fast as native code, since it uses JIT compilation. Therefore, speed is not really an issue with using Java over C++. We might make it in C++ later, after we are done with this. For now, I think this is adequate to be a good game engine.
+Modern JRE (Java runtime environment) is almost if not just as fast as native code, since it uses JIT compilation.
+Therefore, speed is not really an issue with using Java over C++. We might make it in C++ later, after we are done with
+this. For now, I think this is adequate to be a good game engine.
 
 Example code of how we plan this to work:
+
 ```java
 public class PlayerScript implements GameObjectScript {
     
@@ -73,4 +79,6 @@ public class GameLauncher {
 }
 ```
 
-Using the nodes, you can also do the same thing, editing the script through the node editor, this will have two started nodes: start and update. You can do whatever with those nodes, and then make the script generate java code from the nodes.
+Using the nodes, you can also do the same thing, editing the script through the node editor, this will have two started
+nodes: start and update. You can do whatever with those nodes, and then make the script generate java code from the
+nodes.

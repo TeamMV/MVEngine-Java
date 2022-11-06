@@ -1,7 +1,6 @@
 package dev.mv.engine.render.opengl._2d.batch;
 
 import dev.mv.engine.MVEngine;
-import dev.mv.engine.render.Window;
 import dev.mv.engine.render.drawables.Texture;
 import dev.mv.engine.render.opengl.OpenGLWindow;
 import dev.mv.engine.render.opengl._2d.vertex.OpenGLVertexGroup2D;

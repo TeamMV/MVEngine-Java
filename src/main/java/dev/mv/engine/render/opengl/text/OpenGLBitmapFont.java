@@ -92,7 +92,7 @@ public class OpenGLBitmapFont implements BitmapFont {
             map.put(Integer.parseInt(getCharAttrib(line, "id")), glyph);
         }
 
-        for(OpenGLGlyph glyph : map.values()) {
+        for (OpenGLGlyph glyph : map.values()) {
             glyph.makeCoordinates(atlasWidth, atlasHeight, maxHeight);
         }
 
@@ -153,7 +153,7 @@ public class OpenGLBitmapFont implements BitmapFont {
     public int getWidth(String s) {
         int result = 0;
 
-        for(char c : s.toCharArray()) {
+        for (char c : s.toCharArray()) {
             result += getWidth(c) + getGlyph(c).getXAdvance();
         }
         result -= getGlyph('a').getXAdvance();
@@ -196,7 +196,7 @@ public class OpenGLBitmapFont implements BitmapFont {
     public Glyph[] getGlyphs(String s) {
         Glyph[] glyphs = new OpenGLGlyph[s.length()];
 
-        for(int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
             glyphs[i] = getGlyph(s.charAt(i));
         }
 
