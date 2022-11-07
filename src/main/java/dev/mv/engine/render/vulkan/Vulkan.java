@@ -8,14 +8,16 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
 import java.nio.IntBuffer;
+import java.nio.LongBuffer;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static dev.mv.engine.render.vulkan.VulkanSwapChain.*;
 import static java.util.stream.Collectors.toSet;
 import static org.lwjgl.glfw.GLFWVulkan.glfwGetRequiredInstanceExtensions;
 import static org.lwjgl.system.MemoryStack.stackPush;
-import static org.lwjgl.vulkan.KHRSurface.vkGetPhysicalDeviceSurfaceSupportKHR;
-import static org.lwjgl.vulkan.KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME;
+import static org.lwjgl.vulkan.KHRSurface.*;
+import static org.lwjgl.vulkan.KHRSwapchain.*;
 import static org.lwjgl.vulkan.VK10.*;
 
 
@@ -250,9 +252,9 @@ public class Vulkan {
         }
     }
 
-    static boolean setupSurfaceSupport(long surface) {
-        int presentFamily = -1;
+    private static Integer getPresentFamily(long surface) {
         try (MemoryStack stack = stackPush()) {
+            Integer presentFamily = null;
             IntBuffer queueFamilyCount = stack.ints(0);
             vkGetPhysicalDeviceQueueFamilyProperties(GPU, queueFamilyCount, null);
 
@@ -268,7 +270,14 @@ public class Vulkan {
                     presentFamily = i;
                 }
             }
-            if (presentFamily == -1) {
+            return presentFamily;
+        }
+    }
+
+    static boolean setupSurfaceSupport(long surface) {
+        try (MemoryStack stack = stackPush()) {
+            Integer presentFamily = getPresentFamily(surface);
+            if (presentFamily == null) {
                 return false;
             }
 
@@ -292,6 +301,143 @@ public class Vulkan {
         } else {
             return glfwGetRequiredInstanceExtensions();
         }
+    }
+
+    private VulkanSwapChain createSwapChain(long surface, int width, int height) {
+        try (MemoryStack stack = stackPush()) {
+            SwapChainSupportDetails swapChainSupport = querySwapChainSupport(GPU, stack, surface);
+
+            VulkanSwapChain swapChain = new VulkanSwapChain();
+
+            VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+            int presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+            VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities, width, height);
+
+            IntBuffer imageCount = stack.ints(swapChainSupport.capabilities.minImageCount() + 1);
+
+            if(swapChainSupport.capabilities.maxImageCount() > 0 && imageCount.get(0) > swapChainSupport.capabilities.maxImageCount()) {
+                imageCount.put(0, swapChainSupport.capabilities.maxImageCount());
+            }
+
+            VkSwapchainCreateInfoKHR createInfo = VkSwapchainCreateInfoKHR.calloc(stack);
+
+            createInfo.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR);
+            createInfo.surface(surface);
+
+            createInfo.minImageCount(imageCount.get(0));
+            createInfo.imageFormat(surfaceFormat.format());
+            createInfo.imageColorSpace(surfaceFormat.colorSpace());
+            createInfo.imageExtent(extent);
+            createInfo.imageArrayLayers(1);
+            createInfo.imageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT);
+
+            Integer graphicsFamily = findQueueFamilies(GPU, VK_QUEUE_GRAPHICS_BIT);
+            Integer presentFamily = getPresentFamily(surface);
+
+            if(!graphicsFamily.equals(presentFamily)) {
+                createInfo.imageSharingMode(VK_SHARING_MODE_CONCURRENT);
+                createInfo.pQueueFamilyIndices(stack.ints(graphicsFamily, presentFamily));
+            } else {
+                createInfo.imageSharingMode(VK_SHARING_MODE_EXCLUSIVE);
+            }
+
+            createInfo.preTransform(swapChainSupport.capabilities.currentTransform());
+            createInfo.compositeAlpha(VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR);
+            createInfo.presentMode(presentMode);
+            createInfo.clipped(true);
+
+            createInfo.oldSwapchain(VK_NULL_HANDLE);
+
+            LongBuffer pSwapChain = stack.longs(VK_NULL_HANDLE);
+
+            if(vkCreateSwapchainKHR(logicalDevice, createInfo, null, pSwapChain) != VK_SUCCESS) {
+                throw new RuntimeException("Failed to create swap chain");
+            }
+
+            swapChain.swapChain = pSwapChain.get(0);
+
+            vkGetSwapchainImagesKHR(logicalDevice, swapChain.swapChain, imageCount, null);
+
+            LongBuffer pSwapchainImages = stack.mallocLong(imageCount.get(0));
+
+            vkGetSwapchainImagesKHR(logicalDevice, swapChain.swapChain, imageCount, pSwapchainImages);
+
+            swapChain.swapChainImages = new ArrayList<>(imageCount.get(0));
+
+            for(int i = 0;i < pSwapchainImages.capacity();i++) {
+                swapChain.swapChainImages.add(pSwapchainImages.get(i));
+            }
+
+            swapChain.swapChainImageFormat = surfaceFormat.format();
+            swapChain.swapChainExtent = VkExtent2D.create().set(extent);
+            return swapChain;
+        }
+    }
+
+    private VkSurfaceFormatKHR chooseSwapSurfaceFormat(VkSurfaceFormatKHR.Buffer availableFormats) {
+        return availableFormats.stream()
+                .filter(availableFormat -> availableFormat.format() == VK_FORMAT_B8G8R8_UNORM)
+                .filter(availableFormat -> availableFormat.colorSpace() == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+                .findAny()
+                .orElse(availableFormats.get(0));
+    }
+
+    private int chooseSwapPresentMode(IntBuffer availablePresentModes) {
+
+        for(int i = 0;i < availablePresentModes.capacity();i++) {
+            if(availablePresentModes.get(i) == VK_PRESENT_MODE_MAILBOX_KHR) {
+                return availablePresentModes.get(i);
+            }
+        }
+
+        return VK_PRESENT_MODE_FIFO_KHR;
+    }
+
+    private VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR capabilities, int width, int height) {
+
+        if(capabilities.currentExtent().width() != 0xFFFFFFFF) {
+            return capabilities.currentExtent();
+        }
+
+        VkExtent2D actualExtent = VkExtent2D.malloc().set(width, height);
+
+        VkExtent2D minExtent = capabilities.minImageExtent();
+        VkExtent2D maxExtent = capabilities.maxImageExtent();
+
+        actualExtent.width(clamp(minExtent.width(), maxExtent.width(), actualExtent.width()));
+        actualExtent.height(clamp(minExtent.height(), maxExtent.height(), actualExtent.height()));
+
+        return actualExtent;
+    }
+
+    private SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, MemoryStack stack, long surface) {
+
+        SwapChainSupportDetails details = new SwapChainSupportDetails();
+
+        details.capabilities = VkSurfaceCapabilitiesKHR.mallocStack(stack);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, details.capabilities);
+
+        IntBuffer count = stack.ints(0);
+
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, count, null);
+
+        if(count.get(0) != 0) {
+            details.formats = VkSurfaceFormatKHR.malloc(count.get(0), stack);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, count, details.formats);
+        }
+
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device,surface, count, null);
+
+        if(count.get(0) != 0) {
+            details.presentModes = stack.mallocInt(count.get(0));
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, count, details.presentModes);
+        }
+
+        return details;
+    }
+
+    private int clamp(int min, int max, int value) {
+        return Math.max(min, Math.min(max, value));
     }
 
     public static void terminate() {

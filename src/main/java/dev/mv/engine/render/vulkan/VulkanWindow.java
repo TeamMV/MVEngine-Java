@@ -16,6 +16,7 @@ import java.nio.LongBuffer;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
+import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.vulkan.KHRSurface.*;
@@ -41,7 +42,10 @@ public class VulkanWindow implements Window {
 
     @Override
     public void run() {
-        if (!init()) return;
+        if (!init()) {
+            MVEngine.disableVulkan();
+            return;
+        }
 
         if (onStart != null) {
             onStart.run();
@@ -98,10 +102,7 @@ public class VulkanWindow implements Window {
             surface = pSurface.get(0);
         }
 
-        if (!Vulkan.setupSurfaceSupport(surface)) {
-            MVEngine.disableVulkan();
-            return false;
-        }
+        if (!Vulkan.setupSurfaceSupport(surface)) return false;
 
         glfwImpl = new ImGuiImplGlfw();
         glfwImpl.init(window, true);
@@ -109,6 +110,15 @@ public class VulkanWindow implements Window {
         vkImpl.init("#version 450");
 
         glfwShowWindow(window);
+
+        glfwSetWindowSizeCallback(window, (window, w, h) -> {
+            width = w;
+            height = h;
+
+            //resize swap chain
+
+            glViewport(0, 0, w, h);
+        });
         return true;
     }
 
