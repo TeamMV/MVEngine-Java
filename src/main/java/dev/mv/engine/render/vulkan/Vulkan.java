@@ -11,21 +11,27 @@ import java.nio.IntBuffer;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.toSet;
 import static org.lwjgl.glfw.GLFWVulkan.glfwGetRequiredInstanceExtensions;
 import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.vulkan.KHRSurface.vkGetPhysicalDeviceSurfaceSupportKHR;
+import static org.lwjgl.vulkan.KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME;
 import static org.lwjgl.vulkan.VK10.*;
 
 
 public class Vulkan {
 
-    @Getter
     private static VkInstance instance;
-    @Getter
     private static VkPhysicalDevice GPU;
-    @Getter
     private static VkDevice logicalDevice;
-    @Getter
-    private static VkQueue graphicsQueue;
+    private static VkQueue graphicsQueue, presentQueue;
+    private static boolean initialized = false;
+    private static Set<String> DEVICE_EXTENSIONS;
+
+    static {
+        DEVICE_EXTENSIONS = new HashSet<String>();
+        DEVICE_EXTENSIONS.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+    }
 
     public static boolean init() {
         return init("", new Version(1));
@@ -40,6 +46,18 @@ public class Vulkan {
     }
 
     public static boolean init(String name, Version version) {
+        if (!_init(name, version)) {
+            instance = null;
+            GPU = null;
+            logicalDevice = null;
+            graphicsQueue = null;
+            return false;
+        }
+        initialized = true;
+        return true;
+    }
+
+    private static boolean _init(String name, Version version) {
         if (!createInstance(name, version)) return false;
         VulkanDebugger.setupDebugger(instance);
         if (!pickPhysicalDevices()) return false;
@@ -165,7 +183,23 @@ public class Vulkan {
 
     private static boolean isDeviceSuitable(VkPhysicalDevice device) {
         if (!hasQueueSupport(device, VK_QUEUE_GRAPHICS_BIT)) return false;
+        if (!checkExtensionSupport(device)) return false;
         return true;
+    }
+
+    private static boolean checkExtensionSupport(VkPhysicalDevice device) {
+        try (MemoryStack stack = stackPush()) {
+            IntBuffer extensionCount = stack.ints(0);
+            vkEnumerateDeviceExtensionProperties(device, (String)null, extensionCount, null);
+
+            VkExtensionProperties.Buffer availableExtensions = VkExtensionProperties.malloc(extensionCount.get(0), stack);
+            vkEnumerateDeviceExtensionProperties(device, (String)null, extensionCount, availableExtensions);
+
+            return availableExtensions.stream()
+                    .map(VkExtensionProperties::extensionNameString)
+                    .collect(toSet())
+                    .containsAll(DEVICE_EXTENSIONS);
+        }
     }
 
     private static int rateDevice(VkPhysicalDevice device) {
@@ -209,9 +243,41 @@ public class Vulkan {
             VkQueueFamilyProperties.Buffer queueFamilies = VkQueueFamilyProperties.malloc(queueFamilyCount.get(0), stack);
             vkGetPhysicalDeviceQueueFamilyProperties(device, queueFamilyCount, queueFamilies);
 
+            IntBuffer presentSupport = stack.ints(VK_FALSE);
+
             OptionalInt optionalIndex = IntStream.range(0, queueFamilies.capacity()).filter(index -> (queueFamilies.get(index).queueFlags() & queueBit) != 0).findFirst();
             return optionalIndex.isPresent()? optionalIndex.getAsInt() : null;
         }
+    }
+
+    static boolean setupSurfaceSupport(long surface) {
+        int presentFamily = -1;
+        try (MemoryStack stack = stackPush()) {
+            IntBuffer queueFamilyCount = stack.ints(0);
+            vkGetPhysicalDeviceQueueFamilyProperties(GPU, queueFamilyCount, null);
+
+            VkQueueFamilyProperties.Buffer queueFamilies = VkQueueFamilyProperties.malloc(queueFamilyCount.get(0), stack);
+            vkGetPhysicalDeviceQueueFamilyProperties(GPU, queueFamilyCount, queueFamilies);
+
+            IntBuffer presentSupport = stack.ints(VK_FALSE);
+
+            for (int i = 0;i < queueFamilies.capacity() || presentFamily >= 0; i++) {
+                vkGetPhysicalDeviceSurfaceSupportKHR(GPU, i, surface, presentSupport);
+
+                if(presentSupport.get(0) == VK_TRUE) {
+                    presentFamily = i;
+                }
+            }
+            if (presentFamily == -1) {
+                return false;
+            }
+
+            PointerBuffer pQueue = stack.pointers(VK_NULL_HANDLE);
+
+            vkGetDeviceQueue(logicalDevice, presentFamily, 0, pQueue);
+            presentQueue = new VkQueue(pQueue.get(0), logicalDevice);
+        }
+        return true;
     }
 
     static PointerBuffer getRequiredExtensions() {
@@ -233,5 +299,36 @@ public class Vulkan {
         VulkanDebugger.destroyDebugUtilsMessengerEXT(instance, null);
         vkDestroyInstance(instance, null);
 
+    }
+
+    private static void check() {
+        if (!initialized) {
+            throw new IllegalStateException("Vulkan is not initialized");
+        }
+    }
+
+    public static VkInstance getInstance() {
+        check();
+        return instance;
+    }
+
+    public static VkPhysicalDevice getGPU() {
+        check();
+        return GPU;
+    }
+
+    public static VkDevice getLogicalDevice() {
+        check();
+        return logicalDevice;
+    }
+
+    public static VkQueue getGraphicsQueue() {
+        check();
+        return graphicsQueue;
+    }
+
+    public static VkQueue getPresentQueue() {
+        check();
+        return presentQueue;
     }
 }

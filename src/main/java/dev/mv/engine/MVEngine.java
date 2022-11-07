@@ -58,6 +58,12 @@ public class MVEngine {
         glfwTerminate();
     }
 
+    public static void disableVulkan() {
+        if (usesVulkan) {
+            usesVulkan = false;
+        }
+    }
+
     public static Window createWindow(int width, int height, String title, boolean resizeable) {
         if (usesVulkan()) {
             return null;
