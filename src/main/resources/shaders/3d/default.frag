@@ -111,18 +111,17 @@ void main() {
     setupColor(uMaterial, oTextureCoord);
 
     vec4 lightResult = calcDirectionalLight(uDirectionalLight, oPosition, oNormal);
-    //for(int i = 0; i < MAX_LIGHTS; i++) {
-    //    if(uPointLights[i].intensity > 0) {
-    //        lightResult += calcPointLight(uPointLights[i], oPosition, oNormal);
-    //    }
-    //}
-    //for(int i = 0; i < MAX_LIGHTS; i++) {
-    //    if(uSpotLights[i].pointLight.intensity > 0) {
-    //        lightResult += calcSpotLight(uSpotLights[i], oPosition, oNormal);
-    //    }
-    //}
+    for(int i = 0; i < MAX_LIGHTS; i++) {
+        if(uPointLights[i].intensity > 0) {
+            lightResult += calcPointLight(uPointLights[i], oPosition, oNormal);
+        }
+    }
+    for(int i = 0; i < MAX_LIGHTS; i++) {
+        if(uSpotLights[i].pointLight.intensity > 0) {
+            lightResult += calcSpotLight(uSpotLights[i], oPosition, oNormal);
+        }
+    }
 
 
     fragColor = ambientC * vec4(uAmbient, 1.0) + lightResult;
-    //fragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }

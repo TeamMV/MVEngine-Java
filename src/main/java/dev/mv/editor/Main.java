@@ -33,7 +33,6 @@ public class Main {
     private static BitmapFont font;
     private static Entity cruiser;
     private static Entity plane;
-    private static Entity cube;
 
     static float r = 0;
     private static PointLight pointlight = new PointLight(new Vector3f(0, 2, -2), new Vector3f(1, 1, 0.5f), 1f, 0, 0, 1f);
@@ -41,64 +40,10 @@ public class Main {
     private static DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1, 1, 1), new Vector3f(2, 0, 0), 1.0f);
 
     public static void main(String[] args) {
-        float[] vertices = new float[] {
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            -0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-            -0.5f, 0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            -0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-        };
-        float[] textCoords = new float[]{
-            0.0f, 0.0f,
-            0.0f, 0.5f,
-            0.5f, 0.5f,
-            0.5f, 0.0f,
-            0.0f, 0.0f,
-            0.5f, 0.0f,
-            0.0f, 0.5f,
-            0.5f, 0.5f,
-            0.0f, 0.5f,
-            0.5f, 0.5f,
-            0.0f, 1.0f,
-            0.5f, 1.0f,
-            0.0f, 0.0f,
-            0.0f, 0.5f,
-            0.5f, 0.0f,
-            0.5f, 0.5f,
-            0.5f, 0.0f,
-            1.0f, 0.0f,
-            0.5f, 0.5f,
-            1.0f, 0.5f,
-        };
-        int[] indices = new int[]{
-            0, 1, 3, 3, 1, 2,
-            8, 10, 11, 9, 8, 11,
-            12, 13, 7, 5, 12, 7,
-            14, 15, 6, 4, 14, 6,
-            16, 18, 19, 17, 16, 19,
-            4, 6, 7, 5, 4, 7,
-        };
-
-
-
         MVEngine.init(new ApplicationConfig().setName("MVEngine").setVersion(Version.parse("v0.1.0")).setVulkan(true));
         System.out.println(MVEngine.usesVulkan());
 
+        /*
         Window window = MVEngine.createWindow(1000, 700, "MVEngine", true);
 
         window.run(() -> {
@@ -107,7 +52,6 @@ public class Main {
                 ObjectLoader loader = MVEngine.getObjectLoader();
                 Model mCruiser = loader.loadExternalModel("src/main/resources/models/cruiser/cruiser.obj");
                 Model mPlane = loader.loadExternalModel("src/main/resources/models/f16/f16.obj");
-                Model mCube = loader.loadModel(vertices, textCoords, new float[] {}, indices);
                 Texture tCruiser = MVEngine.createTexture("src/main/resources/models/cruiser/cruiser.bmp");
                 Texture tPLane = MVEngine.createTexture("src/main/resources/models/f16/F-16.bmp");
                 Material material = new Material();
@@ -116,10 +60,8 @@ public class Main {
                 material.setTexture(tPLane);
                 mCruiser.setTexture(tCruiser, 1.0f);
                 mPlane.setMaterial(material);
-                mCube.setMaterial(material);
                 cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
                 plane = new Entity(mPlane, new Vector3f(2, 0, -2.5f), new Vector3f(0, 0, 0), 1);
-                cube = new Entity(mCube, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 0.25f);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -127,12 +69,8 @@ public class Main {
         }, null, () -> {
             renderer.processEntity(cruiser);
             renderer.processEntity(plane);
-            //spotlight.setConeDirection(new Vector3f(r, 0, 0));
-            //cube.setPosition(spotlight.getPointLight().getPosition().x, spotlight.getPointLight().getPosition().y, spotlight.getPointLight().getPosition().z);
-            //cube.setRotation(spotlight.getConeDirection().x, spotlight.getConeDirection().y, spotlight.getConeDirection().z);
-            //renderer.processEntity(cube);
-            //renderer.processPointLight(pointlight);
-            //renderer.processSpotLight(spotlight);
+            renderer.processPointLight(pointlight);
+            renderer.processSpotLight(spotlight);
             renderer.processDirectionalLight(directionalLight);
             renderer.render();
 
@@ -177,7 +115,7 @@ public class Main {
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
                 camera.move(0.0f, -0.01f, 0.0f);
             }
-        });
+        });*/
 
         System.exit(0);
 
