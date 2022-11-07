@@ -26,6 +26,7 @@ import static org.lwjgl.vulkan.VK10.VK_SUCCESS;
 public class VulkanWindow implements Window {
 
     private long window, surface;
+    private VulkanSwapChain swapChain;
     private String title;
     private int width, height;
     private boolean resizeable;
@@ -103,6 +104,8 @@ public class VulkanWindow implements Window {
         }
 
         if (!Vulkan.setupSurfaceSupport(surface)) return false;
+        swapChain = Vulkan.createSwapChain(surface, width, height);
+        if (swapChain == null) return false;
 
         glfwImpl = new ImGuiImplGlfw();
         glfwImpl.init(window, true);
@@ -115,7 +118,7 @@ public class VulkanWindow implements Window {
             width = w;
             height = h;
 
-            //resize swap chain
+            swapChain.resize(width, height);
 
             glViewport(0, 0, w, h);
         });

@@ -303,7 +303,7 @@ public class Vulkan {
         }
     }
 
-    private VulkanSwapChain createSwapChain(long surface, int width, int height) {
+    static VulkanSwapChain createSwapChain(long surface, int width, int height) {
         try (MemoryStack stack = stackPush()) {
             SwapChainSupportDetails swapChainSupport = querySwapChainSupport(GPU, stack, surface);
 
@@ -351,7 +351,7 @@ public class Vulkan {
             LongBuffer pSwapChain = stack.longs(VK_NULL_HANDLE);
 
             if(vkCreateSwapchainKHR(logicalDevice, createInfo, null, pSwapChain) != VK_SUCCESS) {
-                throw new RuntimeException("Failed to create swap chain");
+                return null;
             }
 
             swapChain.swapChain = pSwapChain.get(0);
@@ -374,7 +374,7 @@ public class Vulkan {
         }
     }
 
-    private VkSurfaceFormatKHR chooseSwapSurfaceFormat(VkSurfaceFormatKHR.Buffer availableFormats) {
+    private static VkSurfaceFormatKHR chooseSwapSurfaceFormat(VkSurfaceFormatKHR.Buffer availableFormats) {
         return availableFormats.stream()
                 .filter(availableFormat -> availableFormat.format() == VK_FORMAT_B8G8R8_UNORM)
                 .filter(availableFormat -> availableFormat.colorSpace() == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
@@ -382,8 +382,7 @@ public class Vulkan {
                 .orElse(availableFormats.get(0));
     }
 
-    private int chooseSwapPresentMode(IntBuffer availablePresentModes) {
-
+    private static int chooseSwapPresentMode(IntBuffer availablePresentModes) {
         for(int i = 0;i < availablePresentModes.capacity();i++) {
             if(availablePresentModes.get(i) == VK_PRESENT_MODE_MAILBOX_KHR) {
                 return availablePresentModes.get(i);
@@ -393,7 +392,7 @@ public class Vulkan {
         return VK_PRESENT_MODE_FIFO_KHR;
     }
 
-    private VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR capabilities, int width, int height) {
+    private static VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR capabilities, int width, int height) {
 
         if(capabilities.currentExtent().width() != 0xFFFFFFFF) {
             return capabilities.currentExtent();
@@ -410,15 +409,13 @@ public class Vulkan {
         return actualExtent;
     }
 
-    private SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, MemoryStack stack, long surface) {
-
+    private static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, MemoryStack stack, long surface) {
         SwapChainSupportDetails details = new SwapChainSupportDetails();
 
         details.capabilities = VkSurfaceCapabilitiesKHR.mallocStack(stack);
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, details.capabilities);
 
         IntBuffer count = stack.ints(0);
-
         vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, count, null);
 
         if(count.get(0) != 0) {
@@ -436,7 +433,7 @@ public class Vulkan {
         return details;
     }
 
-    private int clamp(int min, int max, int value) {
+    private static int clamp(int min, int max, int value) {
         return Math.max(min, Math.min(max, value));
     }
 
