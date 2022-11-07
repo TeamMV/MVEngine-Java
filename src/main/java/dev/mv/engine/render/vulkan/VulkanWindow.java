@@ -4,7 +4,6 @@ import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.DrawContext2D;
 import dev.mv.engine.render.DrawContext3D;
 import dev.mv.engine.render.Window;
-import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -12,6 +11,7 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
+import java.util.List;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -20,8 +20,8 @@ import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.vulkan.KHRSurface.*;
-import static org.lwjgl.vulkan.VK10.VK_NULL_HANDLE;
-import static org.lwjgl.vulkan.VK10.VK_SUCCESS;
+import static org.lwjgl.vulkan.KHRSwapchain.vkDestroySwapchainKHR;
+import static org.lwjgl.vulkan.VK10.*;
 
 public class VulkanWindow implements Window {
 
@@ -54,6 +54,8 @@ public class VulkanWindow implements Window {
 
         loop();
 
+        swapChainImageViews.forEach(imageView -> vkDestroyImageView(Vulkan.getLogicalDevice(), imageView, null));
+        vkDestroySwapchainKHR(Vulkan.getLogicalDevice(), swapChain.id, null);
         vkDestroySurfaceKHR(Vulkan.getInstance(), surface, null);
 
         glfwFreeCallbacks(window);
@@ -106,6 +108,7 @@ public class VulkanWindow implements Window {
         if (!Vulkan.setupSurfaceSupport(surface)) return false;
         swapChain = Vulkan.createSwapChain(surface, width, height);
         if (swapChain == null) return false;
+        if (!Vulkan.createImageViews(swapChain)) return false;
 
         glfwImpl = new ImGuiImplGlfw();
         glfwImpl.init(window, true);
@@ -131,12 +134,12 @@ public class VulkanWindow implements Window {
 
     @Override
     public int getWidth() {
-        return 0;
+        return width;
     }
 
     @Override
     public int getHeight() {
-        return 0;
+        return height;
     }
 
     @Override

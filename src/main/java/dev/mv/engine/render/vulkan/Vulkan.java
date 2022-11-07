@@ -2,7 +2,6 @@ package dev.mv.engine.render.vulkan;
 
 import dev.mv.engine.render.utils.RenderUtils;
 import dev.mv.utils.misc.Version;
-import lombok.Getter;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
@@ -354,22 +353,22 @@ public class Vulkan {
                 return null;
             }
 
-            swapChain.swapChain = pSwapChain.get(0);
+            swapChain.id = pSwapChain.get(0);
 
-            vkGetSwapchainImagesKHR(logicalDevice, swapChain.swapChain, imageCount, null);
+            vkGetSwapchainImagesKHR(logicalDevice, swapChain.id, imageCount, null);
 
             LongBuffer pSwapchainImages = stack.mallocLong(imageCount.get(0));
 
-            vkGetSwapchainImagesKHR(logicalDevice, swapChain.swapChain, imageCount, pSwapchainImages);
+            vkGetSwapchainImagesKHR(logicalDevice, swapChain.id, imageCount, pSwapchainImages);
 
-            swapChain.swapChainImages = new ArrayList<>(imageCount.get(0));
+            swapChain.images = new ArrayList<>(imageCount.get(0));
 
             for(int i = 0;i < pSwapchainImages.capacity();i++) {
-                swapChain.swapChainImages.add(pSwapchainImages.get(i));
+                swapChain.images.add(pSwapchainImages.get(i));
             }
 
-            swapChain.swapChainImageFormat = surfaceFormat.format();
-            swapChain.swapChainExtent = VkExtent2D.create().set(extent);
+            swapChain.imageFormat = surfaceFormat.format();
+            swapChain.extent = VkExtent2D.create().set(extent);
             return swapChain;
         }
     }
@@ -431,6 +430,39 @@ public class Vulkan {
         }
 
         return details;
+    }
+
+    static boolean createImageViews(VulkanSwapChain swapChain) {
+        try (MemoryStack stack = stackPush()) {
+            LongBuffer pImageView = stack.mallocLong(1);
+
+            for (long swapChainImage : swapChain.images) {
+                VkImageViewCreateInfo createInfo = VkImageViewCreateInfo.calloc(stack);
+
+                createInfo.sType(VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO);
+                createInfo.image(swapChainImage);
+                createInfo.viewType(VK_IMAGE_VIEW_TYPE_2D);
+                createInfo.format(swapChain.imageFormat);
+
+                createInfo.components().r(VK_COMPONENT_SWIZZLE_IDENTITY);
+                createInfo.components().g(VK_COMPONENT_SWIZZLE_IDENTITY);
+                createInfo.components().b(VK_COMPONENT_SWIZZLE_IDENTITY);
+                createInfo.components().a(VK_COMPONENT_SWIZZLE_IDENTITY);
+
+                createInfo.subresourceRange().aspectMask(VK_IMAGE_ASPECT_COLOR_BIT);
+                createInfo.subresourceRange().baseMipLevel(0);
+                createInfo.subresourceRange().levelCount(1);
+                createInfo.subresourceRange().baseArrayLayer(0);
+                createInfo.subresourceRange().layerCount(1);
+
+                if (vkCreateImageView(logicalDevice, createInfo, null, pImageView) != VK_SUCCESS) {
+                    return false;
+                }
+
+                swapChain.imageViews.add(pImageView.get(0));
+            }
+        }
+        return true;
     }
 
     private static int clamp(int min, int max, int value) {
