@@ -232,5 +232,6 @@ public class Vulkan {
         vkDestroyDevice(logicalDevice, null);
         VulkanDebugger.destroyDebugUtilsMessengerEXT(instance, null);
         vkDestroyInstance(instance, null);
+
     }
 }

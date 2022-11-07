@@ -29,7 +29,7 @@ public interface Window {
 
     Matrix4f getProjectionMatrix3D();
 
-    String getName();
+    String getTitle();
 
     DrawContext2D getDrawContext2D();
 

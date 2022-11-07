@@ -32,7 +32,7 @@ public class OpenGLWindow implements Window {
     private int currentFPS, currentUPS;
     private int width, height;
     private String title;
-    private boolean resize;
+    private boolean resizeable;
     private double deltaF;
     private long window;
     private long currentFrame = 0, currentTime = 0;
@@ -47,7 +47,7 @@ public class OpenGLWindow implements Window {
         this.width = width;
         this.height = heigth;
         this.title = title;
-        this.resize = resizeable;
+        this.resizeable = resizeable;
     }
 
     @Override
@@ -79,34 +79,29 @@ public class OpenGLWindow implements Window {
     private void init() {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_RESIZABLE, resize ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, resizeable ? GLFW_TRUE : GLFW_FALSE);
 
         window = glfwCreateWindow(width, height, title, NULL, NULL);
-        if (window == NULL)
+        if (window == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
+        }
 
-        // Get the thread stack and push a new frame
         try (MemoryStack stack = stackPush()) {
-            IntBuffer pWidth = stack.mallocInt(1); // int*
-            IntBuffer pHeight = stack.mallocInt(1); // int*
+            IntBuffer pWidth = stack.mallocInt(1);
+            IntBuffer pHeight = stack.mallocInt(1);
 
-            // Get the window size passed to glfwCreateWindow
             glfwGetWindowSize(window, pWidth, pHeight);
 
-            // Get the resolution of the primary monitor
             GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-            // Center the window
             glfwSetWindowPos(
                 window,
                 (vidmode.width() - pWidth.get(0)) / 2,
                 (vidmode.height() - pHeight.get(0)) / 2
             );
-        } // the stack frame is popped automatically
+        }
 
-        // Make the OpenGL context current
         glfwMakeContextCurrent(window);
-        // Enable v-sync
         glfwSwapInterval(1);
 
         // This line is critical for LWJGL's interoperation with GLFW's
@@ -277,8 +272,8 @@ public class OpenGLWindow implements Window {
     }
 
     @Override
-    public String getName() {
-        return null;
+    public String getTitle() {
+        return title;
     }
 
     @Override
