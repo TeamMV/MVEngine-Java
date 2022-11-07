@@ -1,16 +1,20 @@
 package dev.mv.engine.render.vulkan;
 
+import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.utils.RenderUtils;
+import dev.mv.engine.render.vulkan.shader.SPIRV;
 import dev.mv.utils.misc.Version;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static dev.mv.engine.render.vulkan.shader.SPIRV.ShaderKind.*;
 import static dev.mv.engine.render.vulkan.VulkanSwapChain.*;
 import static java.util.stream.Collectors.toSet;
 import static org.lwjgl.glfw.GLFWVulkan.glfwGetRequiredInstanceExtensions;
@@ -469,6 +473,333 @@ public class Vulkan {
         return Math.max(min, Math.min(max, value));
     }
 
+    private static long createRenderPass(VulkanSwapChain swapChain) {
+        try(MemoryStack stack = stackPush()) {
+            VkAttachmentDescription.Buffer colorAttachment = VkAttachmentDescription.calloc(1, stack);
+            colorAttachment.format(swapChain.imageFormat);
+            colorAttachment.samples(VK_SAMPLE_COUNT_1_BIT);
+            colorAttachment.loadOp(VK_ATTACHMENT_LOAD_OP_CLEAR);
+            colorAttachment.storeOp(VK_ATTACHMENT_STORE_OP_STORE);
+            colorAttachment.stencilLoadOp(VK_ATTACHMENT_LOAD_OP_DONT_CARE);
+            colorAttachment.stencilStoreOp(VK_ATTACHMENT_STORE_OP_DONT_CARE);
+            colorAttachment.initialLayout(VK_IMAGE_LAYOUT_UNDEFINED);
+            colorAttachment.finalLayout(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+
+            VkAttachmentReference.Buffer colorAttachmentRef = VkAttachmentReference.calloc(1, stack);
+            colorAttachmentRef.attachment(0);
+            colorAttachmentRef.layout(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+            VkSubpassDescription.Buffer subpass = VkSubpassDescription.calloc(1, stack);
+            subpass.pipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS);
+            subpass.colorAttachmentCount(1);
+            subpass.pColorAttachments(colorAttachmentRef);
+
+            VkSubpassDependency.Buffer dependency = VkSubpassDependency.callocStack(1, stack);
+            dependency.srcSubpass(VK_SUBPASS_EXTERNAL);
+            dependency.dstSubpass(0);
+            dependency.srcStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+            dependency.srcAccessMask(0);
+            dependency.dstStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+            dependency.dstAccessMask(VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+
+            VkRenderPassCreateInfo renderPassInfo = VkRenderPassCreateInfo.calloc(stack);
+            renderPassInfo.sType(VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO);
+            renderPassInfo.pAttachments(colorAttachment);
+            renderPassInfo.pSubpasses(subpass);
+            renderPassInfo.pDependencies(dependency);
+
+            LongBuffer pRenderPass = stack.mallocLong(1);
+
+            if(vkCreateRenderPass(logicalDevice, renderPassInfo, null, pRenderPass) != VK_SUCCESS) {
+                return -1;
+            }
+
+            return pRenderPass.get(0);
+        }
+    }
+
+    static VulkanGraphicsPipeline createGraphicsPipeline(VulkanSwapChain swapChain, String defaultVertShaderPath, String defaultFragShaderPath) {
+        try (MemoryStack stack = stackPush()) {
+            long renderPass = createRenderPass(swapChain);
+
+            if (renderPass == -1) {
+                return null;
+            }
+
+            SPIRV vertShaderSPIRV = SPIRV.compileShaderFile(defaultVertShaderPath, VERTEX_SHADER);
+            SPIRV fragShaderSPIRV = SPIRV.compileShaderFile(defaultFragShaderPath, FRAGMENT_SHADER);
+
+            long vertShaderModule = createShaderModule(vertShaderSPIRV.bytecode());
+            long fragShaderModule = createShaderModule(fragShaderSPIRV.bytecode());
+
+            if (vertShaderModule == -1 || fragShaderModule == -1) {
+                return null;
+            }
+
+            ByteBuffer entryPoint = stack.UTF8("main");
+
+            VkPipelineShaderStageCreateInfo.Buffer shaderStages = VkPipelineShaderStageCreateInfo.calloc(2, stack);
+
+            VkPipelineShaderStageCreateInfo vertShaderStageInfo = shaderStages.get(0);
+
+            vertShaderStageInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO);
+            vertShaderStageInfo.stage(VK_SHADER_STAGE_VERTEX_BIT);
+            vertShaderStageInfo.module(vertShaderModule);
+            vertShaderStageInfo.pName(entryPoint);
+
+            VkPipelineShaderStageCreateInfo fragShaderStageInfo = shaderStages.get(1);
+
+            fragShaderStageInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO);
+            fragShaderStageInfo.stage(VK_SHADER_STAGE_FRAGMENT_BIT);
+            fragShaderStageInfo.module(fragShaderModule);
+            fragShaderStageInfo.pName(entryPoint);
+
+            VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo.calloc(stack);
+            vertexInputInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO);
+
+            VkPipelineInputAssemblyStateCreateInfo inputAssembly = VkPipelineInputAssemblyStateCreateInfo.calloc(stack);
+            inputAssembly.sType(VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO);
+            inputAssembly.topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+            inputAssembly.primitiveRestartEnable(false);
+
+            VkViewport.Buffer viewport = VkViewport.calloc(1, stack);
+            viewport.x(0.0f);
+            viewport.y(0.0f);
+            viewport.width(swapChain.extent.width());
+            viewport.height(swapChain.extent.height());
+            viewport.minDepth(0.0f);
+            viewport.maxDepth(1.0f);
+
+            VkRect2D.Buffer scissor = VkRect2D.calloc(1, stack);
+            scissor.offset(VkOffset2D.calloc(stack).set(0, 0));
+            scissor.extent(swapChain.extent);
+
+            VkPipelineViewportStateCreateInfo viewportState = VkPipelineViewportStateCreateInfo.calloc(stack);
+            viewportState.sType(VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO);
+            viewportState.pViewports(viewport);
+            viewportState.pScissors(scissor);
+
+            VkPipelineRasterizationStateCreateInfo rasterizer = VkPipelineRasterizationStateCreateInfo.calloc(stack);
+            rasterizer.sType(VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO);
+            rasterizer.depthClampEnable(false);
+            rasterizer.rasterizerDiscardEnable(false);
+            rasterizer.polygonMode(VK_POLYGON_MODE_FILL);
+            rasterizer.lineWidth(1.0f);
+            rasterizer.cullMode(VK_CULL_MODE_BACK_BIT);
+            rasterizer.frontFace(VK_FRONT_FACE_CLOCKWISE);
+            rasterizer.depthBiasEnable(false);
+
+            VkPipelineMultisampleStateCreateInfo multisampling = VkPipelineMultisampleStateCreateInfo.calloc(stack);
+            multisampling.sType(VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO);
+            multisampling.sampleShadingEnable(false);
+            multisampling.rasterizationSamples(VK_SAMPLE_COUNT_1_BIT);
+
+            VkPipelineColorBlendAttachmentState.Buffer colorBlendAttachment = VkPipelineColorBlendAttachmentState.calloc(1, stack);
+            colorBlendAttachment.colorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            colorBlendAttachment.blendEnable(false);
+
+            VkPipelineColorBlendStateCreateInfo colorBlending = VkPipelineColorBlendStateCreateInfo.calloc(stack);
+            colorBlending.sType(VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO);
+            colorBlending.logicOpEnable(false);
+            colorBlending.logicOp(VK_LOGIC_OP_COPY);
+            colorBlending.pAttachments(colorBlendAttachment);
+            colorBlending.blendConstants(stack.floats(0.0f, 0.0f, 0.0f, 0.0f));
+
+            VkPipelineLayoutCreateInfo pipelineLayoutInfo = VkPipelineLayoutCreateInfo.calloc(stack);
+            pipelineLayoutInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO);
+
+            LongBuffer pPipelineLayout = stack.longs(VK_NULL_HANDLE);
+
+            if(vkCreatePipelineLayout(logicalDevice, pipelineLayoutInfo, null, pPipelineLayout) != VK_SUCCESS) {
+                return null;
+            }
+
+            long pipelineLayout = pPipelineLayout.get(0);
+
+            VkGraphicsPipelineCreateInfo.Buffer pipelineInfo = VkGraphicsPipelineCreateInfo.callocStack(1, stack);
+            pipelineInfo.sType(VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO);
+            pipelineInfo.pStages(shaderStages);
+            pipelineInfo.pVertexInputState(vertexInputInfo);
+            pipelineInfo.pInputAssemblyState(inputAssembly);
+            pipelineInfo.pViewportState(viewportState);
+            pipelineInfo.pRasterizationState(rasterizer);
+            pipelineInfo.pMultisampleState(multisampling);
+            pipelineInfo.pColorBlendState(colorBlending);
+            pipelineInfo.layout(pipelineLayout);
+            pipelineInfo.renderPass(renderPass);
+            pipelineInfo.subpass(0);
+            pipelineInfo.basePipelineHandle(VK_NULL_HANDLE);
+            pipelineInfo.basePipelineIndex(-1);
+
+            LongBuffer pGraphicsPipeline = stack.mallocLong(1);
+
+            if(vkCreateGraphicsPipelines(logicalDevice, VK_NULL_HANDLE, pipelineInfo, null, pGraphicsPipeline) != VK_SUCCESS) {
+                throw new RuntimeException("Failed to create graphics pipeline");
+            }
+
+            long pipelineId = pGraphicsPipeline.get(0);
+
+            vkDestroyShaderModule(logicalDevice, vertShaderModule, null);
+            vkDestroyShaderModule(logicalDevice, fragShaderModule, null);
+
+            vertShaderSPIRV.free();
+            fragShaderSPIRV.free();
+
+            VulkanGraphicsPipeline pipeline = new VulkanGraphicsPipeline();
+            pipeline.id = pipelineId;
+            pipeline.layout = pipelineLayout;
+            pipeline.renderPass = renderPass;
+            return pipeline;
+        }
+    }
+
+    private static long createShaderModule(ByteBuffer bytecode) {
+        try (MemoryStack stack = stackPush()) {
+            VkShaderModuleCreateInfo createInfo = VkShaderModuleCreateInfo.calloc(stack);
+
+            createInfo.sType(VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO);
+            createInfo.pCode(bytecode);
+
+            LongBuffer pShaderModule = stack.mallocLong(1);
+
+            if(vkCreateShaderModule(logicalDevice, createInfo, null, pShaderModule) != VK_SUCCESS) {
+                return -1;
+            }
+            return pShaderModule.get(0);
+        }
+    }
+
+    static boolean createFramebuffers(VulkanSwapChain swapChain, VulkanGraphicsPipeline graphicsPipeline) {
+        try (MemoryStack stack = stackPush()) {
+            LongBuffer attachments = stack.mallocLong(1);
+            LongBuffer pFramebuffer = stack.mallocLong(1);
+
+            VkFramebufferCreateInfo framebufferInfo = VkFramebufferCreateInfo.calloc(stack);
+            framebufferInfo.sType(VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO);
+            framebufferInfo.renderPass(graphicsPipeline.renderPass);
+            framebufferInfo.width(swapChain.extent.width());
+            framebufferInfo.height(swapChain.extent.height());
+            framebufferInfo.layers(1);
+
+            for (long imageView : swapChain.imageViews) {
+                attachments.put(0, imageView);
+                framebufferInfo.pAttachments(attachments);
+
+                if(vkCreateFramebuffer(logicalDevice, framebufferInfo, null, pFramebuffer) != VK_SUCCESS) {
+                    return false;
+                }
+
+                swapChain.framebuffers.add(pFramebuffer.get(0));
+            }
+        }
+        return true;
+    }
+
+    static VulkanCommandPool createCommandPool() {
+        try (MemoryStack stack = stackPush()) {
+            VkCommandPoolCreateInfo poolInfo = VkCommandPoolCreateInfo.calloc(stack);
+            poolInfo.sType(VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO);
+            poolInfo.queueFamilyIndex(findQueueFamilies(GPU, VK_QUEUE_GRAPHICS_BIT));
+
+            LongBuffer pCommandPool = stack.mallocLong(1);
+
+            if (vkCreateCommandPool(logicalDevice, poolInfo, null, pCommandPool) != VK_SUCCESS) {
+                return null;
+            }
+
+            VulkanCommandPool commandPool = new VulkanCommandPool();
+            commandPool.id = pCommandPool.get(0);
+            return commandPool;
+        }
+    }
+
+    static boolean createCommandBuffers(VulkanCommandPool commandPool, VulkanSwapChain swapChain, VulkanGraphicsPipeline graphicsPipeline) {
+        final int commandBuffersCount = swapChain.framebuffers.size();
+        commandPool.buffers = new ArrayList<>();
+        try (MemoryStack stack = stackPush()) {
+            VkCommandBufferAllocateInfo allocInfo = VkCommandBufferAllocateInfo.calloc(stack);
+            allocInfo.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO);
+            allocInfo.commandPool(commandPool.id);
+            allocInfo.level(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+            allocInfo.commandBufferCount(commandBuffersCount);
+
+            PointerBuffer pCommandBuffers = stack.mallocPointer(commandBuffersCount);
+
+            if(vkAllocateCommandBuffers(logicalDevice, allocInfo, pCommandBuffers) != VK_SUCCESS) {
+                return false;
+            }
+
+            for(int i = 0;i < commandBuffersCount;i++) {
+                commandPool.buffers.add(new VkCommandBuffer(pCommandBuffers.get(i), logicalDevice));
+            }
+
+            VkCommandBufferBeginInfo beginInfo = VkCommandBufferBeginInfo.calloc(stack);
+            beginInfo.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO);
+
+            VkRenderPassBeginInfo renderPassInfo = VkRenderPassBeginInfo.calloc(stack);
+            renderPassInfo.sType(VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO);
+            renderPassInfo.renderPass(graphicsPipeline.renderPass);
+            VkRect2D renderArea = VkRect2D.calloc(stack);
+            renderArea.offset(VkOffset2D.calloc(stack).set(0, 0));
+            renderArea.extent(swapChain.extent);
+            renderPassInfo.renderArea(renderArea);
+            VkClearValue.Buffer clearValues = VkClearValue.calloc(1, stack);
+            clearValues.color().float32(stack.floats(0.0f, 0.0f, 0.0f, 1.0f));
+            renderPassInfo.pClearValues(clearValues);
+
+            for(int i = 0;i < commandBuffersCount;i++) {
+                VkCommandBuffer commandBuffer = commandPool.buffers.get(i);
+                if(vkBeginCommandBuffer(commandBuffer, beginInfo) != VK_SUCCESS) {
+                    return false;
+                }
+
+                renderPassInfo.framebuffer(swapChain.framebuffers.get(i));
+
+                vkCmdBeginRenderPass(commandBuffer, renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+                {
+                    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.id);
+                    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+                }
+                vkCmdEndRenderPass(commandBuffer);
+
+                if(vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    static VulkanRender createRender() {
+        VulkanRender render = new VulkanRender();
+        try(MemoryStack stack = stackPush()) {
+
+            VkSemaphoreCreateInfo semaphoreInfo = VkSemaphoreCreateInfo.calloc(stack);
+            semaphoreInfo.sType(VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
+
+            VkFenceCreateInfo fenceInfo = VkFenceCreateInfo.callocStack(stack);
+            fenceInfo.sType(VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
+            fenceInfo.flags(VK_FENCE_CREATE_SIGNALED_BIT);
+
+            LongBuffer pImageAvailableSemaphore = stack.mallocLong(1);
+            LongBuffer pRenderFinishedSemaphore = stack.mallocLong(1);
+            LongBuffer pFence = stack.mallocLong(1);
+
+            for(int i = 0;i < render.MAX_FRAMES_IN_FLIGHT;i++) {
+
+                if(vkCreateSemaphore(logicalDevice, semaphoreInfo, null, pImageAvailableSemaphore) != VK_SUCCESS
+                    || vkCreateSemaphore(logicalDevice, semaphoreInfo, null, pRenderFinishedSemaphore) != VK_SUCCESS
+                    || vkCreateFence(logicalDevice, fenceInfo, null, pFence) != VK_SUCCESS) {
+
+                    return null;
+                }
+
+                render.inFlightFrames.add(new Frame(pImageAvailableSemaphore.get(0), pRenderFinishedSemaphore.get(0), pFence.get(0)));
+            }
+        }
+        return render;
+    }
+
     public static void terminate() {
         vkDestroyDevice(logicalDevice, null);
         VulkanDebugger.destroyDebugUtilsMessengerEXT(instance, null);
@@ -477,6 +808,9 @@ public class Vulkan {
     }
 
     private static void check() {
+        if (!MVEngine.usesVulkan()) {
+            throw new IllegalStateException("Vulkan support is not enabled!");
+        }
         if (!initialized) {
             throw new IllegalStateException("Vulkan is not initialized");
         }

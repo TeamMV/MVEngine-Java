@@ -19,5 +19,55 @@ public class PointLight {
         this.exponent = exponent;
     }
 
+    public PointLight(Vector3f position, Vector3f color, float intensity) {
+        this(position, color, intensity, 1, 0, 0);
+    }
 
+    public Vector3f getPosition() {
+        return position;
+    }
+
+    public void setPosition(Vector3f position) {
+        this.position = position;
+    }
+
+    public Vector3f getColor() {
+        return color;
+    }
+
+    public void setColor(Vector3f color) {
+        this.color = color;
+    }
+
+    public float getIntensity() {
+        return intensity;
+    }
+
+    public void setIntensity(float intensity) {
+        this.intensity = intensity;
+    }
+
+    public float getConstant() {
+        return constant;
+    }
+
+    public void setConstant(float constant) {
+        this.constant = constant;
+    }
+
+    public float getLinear() {
+        return linear;
+    }
+
+    public void setLinear(float linear) {
+        this.linear = linear;
+    }
+
+    public float getExponent() {
+        return exponent;
+    }
+
+    public void setExponent(float exponent) {
+        this.exponent = exponent;
+    }
 }

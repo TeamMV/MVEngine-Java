@@ -10,6 +10,7 @@ import dev.mv.engine.render.opengl.text.OpenGLBitmapFont;
 import dev.mv.engine.render.opengl.texture.OpenGLTexture;
 import dev.mv.engine.render.vulkan.Vulkan;
 import imgui.ImGui;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
 import java.awt.image.BufferedImage;

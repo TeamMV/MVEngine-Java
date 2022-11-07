@@ -18,6 +18,8 @@ public class VulkanSwapChain {
     @Getter
     List<Long> imageViews = new ArrayList<>();
     @Getter
+    List<Long> framebuffers = new ArrayList<>();
+    @Getter
     int imageFormat;
     @Getter
     VkExtent2D extent;

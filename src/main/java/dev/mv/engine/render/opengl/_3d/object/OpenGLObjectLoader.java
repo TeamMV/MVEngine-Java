@@ -1,6 +1,7 @@
 package dev.mv.engine.render.opengl._3d.object;
 
 import dev.mv.engine.render.drawables.Texture;
+import dev.mv.engine.render.models.Model;
 import dev.mv.engine.render.models.ObjectLoader;
 import dev.mv.engine.render.utils.RenderUtils;
 import org.joml.Vector2f;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -74,11 +76,12 @@ public class OpenGLObjectLoader implements ObjectLoader {
     }
 
     @Override
-    public OpenGLModel loadModel(float[] vertices, float[] texCoords, int[] indices) {
+    public Model loadModel(float[] vertices, float[] texCoords, float[] normals, int[] indices) {
         int id = createVAO();
         storeIndicesBuffer(indices);
         storeDataInAttribList(0, 3, vertices);
         storeDataInAttribList(1, 2, texCoords);
+        storeDataInAttribList(2, 3, normals);
         unbind();
         return new OpenGLModel(id, indices.length);
     }
@@ -93,7 +96,7 @@ public class OpenGLObjectLoader implements ObjectLoader {
     }
 
     @Override
-    public OpenGLModel loadExternalModel(String path) throws IOException {
+    public Model loadExternalModel(String path) throws IOException {
         List<String> lines = readAllLines(path);
         List<Vector3f> vertices = new ArrayList<>();
         List<Vector3f> normals = new ArrayList<>();
@@ -155,7 +158,7 @@ public class OpenGLObjectLoader implements ObjectLoader {
 
         int[] indicesArr = indices.stream().mapToInt(v -> v).toArray();
 
-        return loadModel(verticesArr, texCoordArr, indicesArr);
+        return loadModel(verticesArr, texCoordArr, normalArr, indicesArr);
     }
 
     private List<String> readAllLines(String file) throws IOException {

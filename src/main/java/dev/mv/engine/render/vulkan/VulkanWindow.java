@@ -11,7 +11,6 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
-import java.util.List;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -27,6 +26,9 @@ public class VulkanWindow implements Window {
 
     private long window, surface;
     private VulkanSwapChain swapChain;
+    private VulkanGraphicsPipeline graphicsPipeline;
+    private VulkanCommandPool commandPool;
+    private VulkanRender render;
     private String title;
     private int width, height;
     private boolean resizeable;
@@ -44,7 +46,10 @@ public class VulkanWindow implements Window {
     @Override
     public void run() {
         if (!init()) {
+            Vulkan.terminate();
             MVEngine.disableVulkan();
+            Window replacement = MVEngine.createWindow(width, height, title, resizeable);
+            replacement.run(onStart, onUpdate, onDraw);
             return;
         }
 
@@ -54,12 +59,7 @@ public class VulkanWindow implements Window {
 
         loop();
 
-        swapChainImageViews.forEach(imageView -> vkDestroyImageView(Vulkan.getLogicalDevice(), imageView, null));
-        vkDestroySwapchainKHR(Vulkan.getLogicalDevice(), swapChain.id, null);
-        vkDestroySurfaceKHR(Vulkan.getInstance(), surface, null);
-
-        glfwFreeCallbacks(window);
-        glfwDestroyWindow(window);
+        terminate();
     }
 
     @Override
@@ -109,6 +109,13 @@ public class VulkanWindow implements Window {
         swapChain = Vulkan.createSwapChain(surface, width, height);
         if (swapChain == null) return false;
         if (!Vulkan.createImageViews(swapChain)) return false;
+        graphicsPipeline = Vulkan.createGraphicsPipeline(swapChain, "shaders/3d/default.vert", "shaders/3d/default.frag");
+        if (graphicsPipeline == null) return false;
+        if (!Vulkan.createFramebuffers(swapChain, graphicsPipeline)) return false;
+        commandPool = Vulkan.createCommandPool();
+        if (commandPool == null) return false;
+        if (!Vulkan.createCommandBuffers(commandPool, swapChain, graphicsPipeline)) return false;
+        render = Vulkan.createRender();
 
         glfwImpl = new ImGuiImplGlfw();
         glfwImpl.init(window, true);
@@ -129,7 +136,28 @@ public class VulkanWindow implements Window {
     }
 
     private void loop() {
+        //end of loop
+        vkDeviceWaitIdle(Vulkan.getLogicalDevice());
+    }
 
+    private void terminate() {
+        render.inFlightFrames.forEach(frame -> {
+            vkDestroySemaphore(Vulkan.getLogicalDevice(), frame.renderFinishedSemaphore(), null);
+            vkDestroySemaphore(Vulkan.getLogicalDevice(), frame.imageAvailableSemaphore(), null);
+            vkDestroyFence(Vulkan.getLogicalDevice(), frame.fence(), null);
+        });
+        render.imagesInFlight.clear();
+        vkDestroyCommandPool(Vulkan.getLogicalDevice(), commandPool.id, null);
+        swapChain.framebuffers.forEach(framebuffer -> vkDestroyFramebuffer(Vulkan.getLogicalDevice(), framebuffer, null));
+        vkDestroyPipeline(Vulkan.getLogicalDevice(), graphicsPipeline.id, null);
+        vkDestroyPipelineLayout(Vulkan.getLogicalDevice(), graphicsPipeline.layout, null);
+        vkDestroyRenderPass(Vulkan.getLogicalDevice(), graphicsPipeline.renderPass, null);
+        swapChain.imageViews.forEach(imageView -> vkDestroyImageView(Vulkan.getLogicalDevice(), imageView, null));
+        vkDestroySwapchainKHR(Vulkan.getLogicalDevice(), swapChain.id, null);
+        vkDestroySurfaceKHR(Vulkan.getInstance(), surface, null);
+
+        glfwFreeCallbacks(window);
+        glfwDestroyWindow(window);
     }
 
     @Override
