@@ -28,6 +28,8 @@ import static dev.mv.engine.MVEngine.usesVulkan;
 import static dev.mv.utils.Utils.*;
 import static org.lwjgl.glfw.GLFW.*;
 
+import static dev.mv.engine.render.vulkan.mvvk.MVVKBufferAllocator.*;
+
 public class Main {
 
     public static OpenGLRender3D renderer;

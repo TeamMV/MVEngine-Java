@@ -6,6 +6,7 @@ import dev.mv.engine.render.DrawContext3D;
 import dev.mv.engine.render.Window;
 import dev.mv.engine.render.utils.RenderUtils;
 import imgui.glfw.ImGuiImplGlfw;
+import lombok.Getter;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -33,8 +34,11 @@ public class VulkanWindow implements Window {
     private double deltaF;
     private long currentFrame = 0, currentTime = 0;
     private long window, surface;
+    @Getter
     VulkanSwapChain swapChain;
+    @Getter
     private VulkanGraphicsPipeline graphicsPipeline;
+    @Getter
     VulkanCommandPool commandPool;
     private VulkanRender render;
     private String title;
