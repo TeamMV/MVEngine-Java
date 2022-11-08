@@ -3,12 +3,17 @@ package dev.mv.engine.render.utils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+
+import static org.lwjgl.system.MemoryStack.stackGet;
 
 public class RenderUtils {
     public static FloatBuffer store(float[] data) {
@@ -47,5 +52,17 @@ public class RenderUtils {
 
     public static float[] array(Vector4f data) {
         return new float[] {data.x, data.y, data.z, data.w};
+    }
+
+    public static PointerBuffer asPointerBuffer(Collection<String> collection) {
+        MemoryStack stack = stackGet();
+
+        PointerBuffer buffer = stack.mallocPointer(collection.size());
+
+        collection.stream()
+            .map(stack::UTF8)
+            .forEach(buffer::put);
+
+        return buffer.rewind();
     }
 }

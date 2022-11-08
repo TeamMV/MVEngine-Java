@@ -1,5 +1,6 @@
 package dev.mv.engine.render.vulkan;
 
+import dev.mv.utils.misc.Version;
 import imgui.*;
 import imgui.callback.ImPlatformFuncViewport;
 import imgui.flag.ImGuiBackendFlags;
@@ -91,8 +92,6 @@ import static org.lwjgl.opengl.GL32.glDrawElementsBaseVertex;
 @SuppressWarnings("MagicNumber")
 public class ImGuiImplVulkan {
 
-    private int glVersion = 0;
-    private String glslVersion = "";
     private int gFontTexture = 0;
     private int gShaderHandle = 0;
     private int gVertHandle = 0;
@@ -112,8 +111,6 @@ public class ImGuiImplVulkan {
     private final ImVec2 displayPos = new ImVec2();
     private final ImVec4 clipRect = new ImVec4();
     private final float[] orthoProjMatrix = new float[4 * 4];
-
-    // Variables used to backup GL state before and after the rendering of Dear ImGui
     private final int[] lastActiveTexture = new int[1];
     private final int[] lastProgram = new int[1];
     private final int[] lastTexture = new int[1];
@@ -136,51 +133,9 @@ public class ImGuiImplVulkan {
     /**
      * Method to do an initialization of the {@link ImGuiImplVulkan} state.
      * It SHOULD be called before calling of the {@link ImGuiImplVulkan#renderDrawData(ImDrawData)} method.
-     * <p>
-     * Unlike in the {@link #init(String)} method, here the glslVersion argument is omitted.
-     * Thus a "#version 130" string will be used instead.
      */
     public void init() {
-        init(null);
-    }
-
-    /**
-     * Method to do an initialization of the {@link ImGuiImplVulkan} state.
-     * It SHOULD be called before calling of the {@link ImGuiImplVulkan#renderDrawData(ImDrawData)} method.
-     * <p>
-     * Method takes an argument, which should be a valid GLSL string with the version to use.
-     * <pre>
-     * ----------------------------------------
-     * Vulkan    GLSL      GLSL
-     * version   version   string
-     * ---------------------------------------
-     *  2.0       110       "#version 110"
-     *  2.1       120       "#version 120"
-     *  3.0       130       "#version 130"
-     *  3.1       140       "#version 140"
-     *  3.2       150       "#version 150"
-     *  3.3       330       "#version 330 core"
-     *  4.0       400       "#version 400 core"
-     *  4.1       410       "#version 410 core"
-     *  4.2       420       "#version 410 core"
-     *  4.3       430       "#version 430 core"
-     *  ES 3.0    300       "#version 300 es"   = WebGL 2.0
-     * ---------------------------------------
-     * </pre>
-     * <p>
-     * If the argument is null, then a "#version 130" string will be used by default.
-     *
-     * @param glslVersion string with the version of the GLSL
-     */
-    public void init(final String glslVersion) {
-        readGlVersion();
         setupBackendCapabilitiesFlags();
-
-        if (glslVersion == null) {
-            this.glslVersion = "#version 130";
-        } else {
-            this.glslVersion = glslVersion;
-        }
 
         createDeviceObjects();
 
@@ -250,7 +205,7 @@ public class ImGuiImplVulkan {
 
                 glBindTexture(GL_TEXTURE_2D, textureId);
 
-                if (glVersion >= 320) {
+                if (450 >= 320) {
                     glDrawElementsBaseVertex(GL_TRIANGLES, elemCount, GL_UNSIGNED_SHORT, indices, vtxBufferOffset);
                 } else {
                     glDrawElements(GL_TRIANGLES, elemCount, GL_UNSIGNED_SHORT, indices);
@@ -297,29 +252,14 @@ public class ImGuiImplVulkan {
         fontAtlas.setTexID(gFontTexture);
     }
 
-    private void readGlVersion() {
-        final int[] major = new int[1];
-        final int[] minor = new int[1];
-        glGetIntegerv(GL_MAJOR_VERSION, major);
-        glGetIntegerv(GL_MINOR_VERSION, minor);
-        glVersion = major[0] * 100 + minor[0] * 10;
-    }
-
     private void setupBackendCapabilitiesFlags() {
         final ImGuiIO io = ImGui.getIO();
         io.setBackendRendererName("imgui_java_impl_vulkan");
-
-        // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
-        if (glVersion >= 320) {
-            io.addBackendFlags(ImGuiBackendFlags.RendererHasVtxOffset);
-        }
-
-        // We can create multi-viewports on the Renderer side (optional)
+        io.addBackendFlags(ImGuiBackendFlags.RendererHasVtxOffset);
         io.addBackendFlags(ImGuiBackendFlags.RendererHasViewports);
     }
 
     private void createDeviceObjects() {
-        // Backup GL state
         final int[] lastTexture = new int[1];
         final int[] lastArrayBuffer = new int[1];
         final int[] lastVertexArray = new int[1];
@@ -348,28 +288,8 @@ public class ImGuiImplVulkan {
     }
 
     private void createShaders() {
-        final int glslVersionValue = parseGlslVersionString();
-
-        // Select shaders matching our GLSL versions
-        final CharSequence vertShaderSource;
-        final CharSequence fragShaderSource;
-
-        if (glslVersionValue < 130) {
-            vertShaderSource = getVertexShaderGlsl120();
-            fragShaderSource = getFragmentShaderGlsl120();
-        } else if (glslVersionValue == 300) {
-            vertShaderSource = getVertexShaderGlsl300es();
-            fragShaderSource = getFragmentShaderGlsl300es();
-        } else if (glslVersionValue >= 410) {
-            vertShaderSource = getVertexShaderGlsl410Core();
-            fragShaderSource = getFragmentShaderGlsl410Core();
-        } else {
-            vertShaderSource = getVertexShaderGlsl130();
-            fragShaderSource = getFragmentShaderGlsl130();
-        }
-
-        gVertHandle = createAndCompileShader(GL_VERTEX_SHADER, vertShaderSource);
-        gFragHandle = createAndCompileShader(GL_FRAGMENT_SHADER, fragShaderSource);
+        gVertHandle = createAndCompileShader(GL_VERTEX_SHADER, getVertexShader());
+        gFragHandle = createAndCompileShader(GL_FRAGMENT_SHADER, getFragmentShader());
 
         gShaderHandle = glCreateProgram();
         glAttachShader(gShaderHandle, gVertHandle);
@@ -378,17 +298,6 @@ public class ImGuiImplVulkan {
 
         if (glGetProgrami(gShaderHandle, GL_LINK_STATUS) == GL_FALSE) {
             throw new IllegalStateException("Failed to link shader program:\n" + glGetProgramInfoLog(gShaderHandle));
-        }
-    }
-
-    private int parseGlslVersionString() {
-        final Pattern p = Pattern.compile("\\d+");
-        final Matcher m = p.matcher(glslVersion);
-
-        if (m.find()) {
-            return Integer.parseInt(m.group());
-        } else {
-            throw new IllegalArgumentException("Invalid GLSL version string: " + glslVersion);
         }
     }
 
@@ -484,23 +393,15 @@ public class ImGuiImplVulkan {
     }
 
     private void unbind() {
-        // Destroy the temporary VAO
         glDeleteVertexArrays(gVertexArrayObjectHandle);
     }
-
-    //--------------------------------------------------------------------------------------------------------
-    // MULTI-VIEWPORT / PLATFORM INTERFACE SUPPORT
-    // This is an _advanced_ and _optional_ feature, allowing the back-end to create and handle multiple viewports simultaneously.
-    // If you are new to dear imgui or creating a new binding for dear imgui, it is recommended that you completely ignore this section first..
-    //--------------------------------------------------------------------------------------------------------
 
     private void initPlatformInterface() {
         ImGui.getPlatformIO().setRendererRenderWindow(new ImPlatformFuncViewport() {
             @Override
             public void accept(final ImGuiViewport vp) {
                 if (!vp.hasFlags(ImGuiViewportFlags.NoRendererClear)) {
-                    glClearColor(0, 0, 0, 0);
-                    glClear(GL_COLOR_BUFFER_BIT);
+                    //TODO: set clear colour and clear colour buffer bit
                 }
                 renderDrawData(vp.getDrawData());
             }
@@ -524,118 +425,31 @@ public class ImGuiImplVulkan {
         return id;
     }
 
-    private String getVertexShaderGlsl120() {
-        return glslVersion + "\n"
-            + "uniform mat4 ProjMtx;\n"
-            + "attribute vec2 Position;\n"
-            + "attribute vec2 UV;\n"
-            + "attribute vec4 Color;\n"
-            + "varying vec2 Frag_UV;\n"
-            + "varying vec4 Frag_Color;\n"
-            + "void main()\n"
-            + "{\n"
+    private String getVertexShader() {
+        return "#version 450\n"
+            + "layout(location = 0) in vec2 Position;\n"
+            + "layout(location = 1) in vec2 UV;\n"
+            + "layout(location = 2) in vec4 Color;\n"
+            + "layout(binding = 0) mats {\n"
+            + "    uniform mat4 ProjMtx;\n"
+            + "} mtx;\n"
+            + "mat4 ProjMtx = mtx.ProjMtx\n"
+            + "layout(location = 0) out vec2 Frag_UV;\n"
+            + "layout(location = 1) out vec4 Frag_Color;\n"
+            + "void main() {\n"
             + "    Frag_UV = UV;\n"
             + "    Frag_Color = Color;\n"
             + "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
             + "}\n";
     }
 
-    private String getVertexShaderGlsl130() {
-        return glslVersion + "\n"
-            + "uniform mat4 ProjMtx;\n"
-            + "in vec2 Position;\n"
-            + "in vec2 UV;\n"
-            + "in vec4 Color;\n"
-            + "out vec2 Frag_UV;\n"
-            + "out vec4 Frag_Color;\n"
-            + "void main()\n"
-            + "{\n"
-            + "    Frag_UV = UV;\n"
-            + "    Frag_Color = Color;\n"
-            + "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-            + "}\n";
-    }
-
-    private String getVertexShaderGlsl300es() {
-        return glslVersion + "\n"
-            + "precision highp float;\n"
-            + "layout (location = 0) in vec2 Position;\n"
-            + "layout (location = 1) in vec2 UV;\n"
-            + "layout (location = 2) in vec4 Color;\n"
-            + "uniform mat4 ProjMtx;\n"
-            + "out vec2 Frag_UV;\n"
-            + "out vec4 Frag_Color;\n"
-            + "void main()\n"
-            + "{\n"
-            + "    Frag_UV = UV;\n"
-            + "    Frag_Color = Color;\n"
-            + "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-            + "}\n";
-    }
-
-    private String getVertexShaderGlsl410Core() {
-        return glslVersion + "\n"
-            + "layout (location = 0) in vec2 Position;\n"
-            + "layout (location = 1) in vec2 UV;\n"
-            + "layout (location = 2) in vec4 Color;\n"
-            + "uniform mat4 ProjMtx;\n"
-            + "out vec2 Frag_UV;\n"
-            + "out vec4 Frag_Color;\n"
-            + "void main()\n"
-            + "{\n"
-            + "    Frag_UV = UV;\n"
-            + "    Frag_Color = Color;\n"
-            + "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-            + "}\n";
-    }
-
-    private String getFragmentShaderGlsl120() {
-        return glslVersion + "\n"
-            + "#ifdef GL_ES\n"
-            + "    precision mediump float;\n"
-            + "#endif\n"
-            + "uniform sampler2D Texture;\n"
-            + "varying vec2 Frag_UV;\n"
-            + "varying vec4 Frag_Color;\n"
-            + "void main()\n"
-            + "{\n"
-            + "    gl_FragColor = Frag_Color * texture2D(Texture, Frag_UV.st);\n"
-            + "}\n";
-    }
-
-    private String getFragmentShaderGlsl130() {
-        return glslVersion + "\n"
-            + "uniform sampler2D Texture;\n"
-            + "in vec2 Frag_UV;\n"
-            + "in vec4 Frag_Color;\n"
-            + "out vec4 Out_Color;\n"
-            + "void main()\n"
-            + "{\n"
-            + "    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);\n"
-            + "}\n";
-    }
-
-    private String getFragmentShaderGlsl300es() {
-        return glslVersion + "\n"
-            + "precision mediump float;\n"
-            + "uniform sampler2D Texture;\n"
-            + "in vec2 Frag_UV;\n"
-            + "in vec4 Frag_Color;\n"
-            + "layout (location = 0) out vec4 Out_Color;\n"
-            + "void main()\n"
-            + "{\n"
-            + "    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);\n"
-            + "}\n";
-    }
-
-    private String getFragmentShaderGlsl410Core() {
-        return glslVersion + "\n"
-            + "in vec2 Frag_UV;\n"
-            + "in vec4 Frag_Color;\n"
-            + "uniform sampler2D Texture;\n"
-            + "layout (location = 0) out vec4 Out_Color;\n"
-            + "void main()\n"
-            + "{\n"
+    private String getFragmentShader() {
+        return "#version 450\n"
+            + "layout(location = 0) in vec2 Frag_UV;\n"
+            + "layout(location = 1) in vec4 Frag_Color;\n"
+            + "layout(binding = 0) uniform sampler2D Texture;\n"
+            + "layout(location = 0) out vec4 Out_Color;\n"
+            + "void main() {\n"
             + "    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);\n"
             + "}\n";
     }

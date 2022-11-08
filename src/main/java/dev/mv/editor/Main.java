@@ -24,6 +24,7 @@ import org.joml.Vector3f;
 
 import java.io.IOException;
 
+import static dev.mv.engine.MVEngine.usesVulkan;
 import static dev.mv.utils.Utils.*;
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -41,7 +42,18 @@ public class Main {
 
     public static void main(String[] args) {
         MVEngine.init(new ApplicationConfig().setName("MVEngine").setVersion(Version.parse("v0.1.0")).setVulkan(true));
-        System.out.println(MVEngine.usesVulkan());
+        System.out.println(usesVulkan());
+
+        Window window = MVEngine.createWindow(800, 600, "MVEngine", true);
+        window.run(() -> {
+
+        }, () -> {
+
+        }, () -> {
+
+        });
+
+        System.out.println(usesVulkan());
 
         /*
         Window window = MVEngine.createWindow(1000, 700, "MVEngine", true);
@@ -115,7 +127,8 @@ public class Main {
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
                 camera.move(0.0f, -0.01f, 0.0f);
             }
-        });*/
+        });
+        */
 
         System.exit(0);
 

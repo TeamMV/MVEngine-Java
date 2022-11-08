@@ -9,6 +9,7 @@ import dev.mv.engine.render.opengl._3d.object.OpenGLObjectLoader;
 import dev.mv.engine.render.opengl.text.OpenGLBitmapFont;
 import dev.mv.engine.render.opengl.texture.OpenGLTexture;
 import dev.mv.engine.render.vulkan.Vulkan;
+import dev.mv.engine.render.vulkan.VulkanWindow;
 import imgui.ImGui;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -67,7 +68,7 @@ public class MVEngine {
 
     public static Window createWindow(int width, int height, String title, boolean resizeable) {
         if (usesVulkan()) {
-            return null;
+            return new VulkanWindow(title, width, height, resizeable);
         } else {
             return new OpenGLWindow(width, height, title, resizeable);
         }

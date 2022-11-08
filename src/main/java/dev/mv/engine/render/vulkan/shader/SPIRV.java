@@ -12,8 +12,9 @@ import java.nio.file.Paths;
 import static java.lang.ClassLoader.getSystemClassLoader;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.util.shaderc.Shaderc.*;
+import static org.lwjgl.util.spvc.Spvc.*;
 
-public final class SPIRV implements NativeResource {
+public class SPIRV implements NativeResource {
 
     private final long handle;
     private ByteBuffer bytecode;

@@ -25,11 +25,6 @@ public class VulkanSwapChain {
     VkExtent2D extent;
     VulkanSwapChain() {}
 
-
-    public void resize(int width, int height) {
-        extent = VkExtent2D.create().set(width, height);
-    }
-
     static class SwapChainSupportDetails {
         VkSurfaceCapabilitiesKHR capabilities;
         VkSurfaceFormatKHR.Buffer formats;

@@ -14,6 +14,7 @@ import java.nio.LongBuffer;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static dev.mv.engine.render.utils.RenderUtils.asPointerBuffer;
 import static dev.mv.engine.render.vulkan.shader.SPIRV.ShaderKind.*;
 import static dev.mv.engine.render.vulkan.VulkanSwapChain.*;
 import static java.util.stream.Collectors.toSet;
@@ -163,9 +164,10 @@ public class Vulkan {
 
             createInfo.sType(VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO);
             createInfo.pQueueCreateInfos(queueCreateInfos);
-            // queueCreateInfoCount is automatically set
 
             createInfo.pEnabledFeatures(deviceFeatures);
+
+            createInfo.ppEnabledExtensionNames(asPointerBuffer(DEVICE_EXTENSIONS));
 
             VulkanDebugger.init(createInfo);
 
@@ -266,7 +268,7 @@ public class Vulkan {
 
             IntBuffer presentSupport = stack.ints(VK_FALSE);
 
-            for (int i = 0;i < queueFamilies.capacity() || presentFamily >= 0; i++) {
+            for (int i = 0; i < queueFamilies.capacity() && presentFamily == null; i++) {
                 vkGetPhysicalDeviceSurfaceSupportKHR(GPU, i, surface, presentSupport);
 
                 if(presentSupport.get(0) == VK_TRUE) {
@@ -494,7 +496,7 @@ public class Vulkan {
             subpass.colorAttachmentCount(1);
             subpass.pColorAttachments(colorAttachmentRef);
 
-            VkSubpassDependency.Buffer dependency = VkSubpassDependency.callocStack(1, stack);
+            VkSubpassDependency.Buffer dependency = VkSubpassDependency.calloc(1, stack);
             dependency.srcSubpass(VK_SUBPASS_EXTERNAL);
             dependency.dstSubpass(0);
             dependency.srcStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
@@ -777,7 +779,7 @@ public class Vulkan {
             VkSemaphoreCreateInfo semaphoreInfo = VkSemaphoreCreateInfo.calloc(stack);
             semaphoreInfo.sType(VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
 
-            VkFenceCreateInfo fenceInfo = VkFenceCreateInfo.callocStack(stack);
+            VkFenceCreateInfo fenceInfo = VkFenceCreateInfo.calloc(stack);
             fenceInfo.sType(VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
             fenceInfo.flags(VK_FENCE_CREATE_SIGNALED_BIT);
 
@@ -807,7 +809,7 @@ public class Vulkan {
 
     }
 
-    private static void check() {
+    static void check() {
         if (!MVEngine.usesVulkan()) {
             throw new IllegalStateException("Vulkan support is not enabled!");
         }
