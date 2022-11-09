@@ -13,6 +13,7 @@ import dev.mv.engine.render.light.PointLight;
 import dev.mv.engine.render.light.SpotLight;
 import dev.mv.engine.render.models.Entity;
 import dev.mv.engine.render.opengl._3d.render.OpenGLRender3D;
+import dev.mv.mvln.lexer.Lexer;
 import dev.mv.utils.misc.Version;
 import org.joml.Vector3f;
 
@@ -35,16 +36,19 @@ public class Main {
         MVEngine.init(new ApplicationConfig().setName("MVEngine").setVersion(Version.parse("v0.1.0")).setVulkan(true));
         System.out.println(usesVulkan());
 
-        Window window = MVEngine.createWindow(800, 600, "MVEngine", true);
-        window.run(() -> {
-
-        }, () -> {
-
-        }, () -> {
-
-        });
+        //Window window = MVEngine.createWindow(800, 600, "MVEngine", true);
+        //window.run(() -> {
+//
+        //}, () -> {
+//
+        //}, () -> {
+//
+        //});
 
         System.out.println(usesVulkan());
+
+        System.out.println("--------------------------------");
+        Lexer.tokenize("/home/v22/Schreibtisch/coding/java/MVEngine/src/main/resources/mvln-files/test.mvln").stream().forEach(t -> System.out.println(t.getType() + ":" + t.getValue()));
 
         /*
         Window window = MVEngine.createWindow(1000, 700, "MVEngine", true);

@@ -364,14 +364,14 @@ public class Vulkan {
 
             vkGetSwapchainImagesKHR(logicalDevice, swapChain.id, imageCount, null);
 
-            LongBuffer pSwapchainImages = stack.mallocLong(imageCount.get(0));
+            LongBuffer pSwapChainImages = stack.mallocLong(imageCount.get(0));
 
-            vkGetSwapchainImagesKHR(logicalDevice, swapChain.id, imageCount, pSwapchainImages);
+            vkGetSwapchainImagesKHR(logicalDevice, swapChain.id, imageCount, pSwapChainImages);
 
             swapChain.images = new ArrayList<>(imageCount.get(0));
 
-            for (int i = 0; i < pSwapchainImages.capacity(); i++) {
-                swapChain.images.add(pSwapchainImages.get(i));
+            for (int i = 0; i < pSwapChainImages.capacity(); i++) {
+                swapChain.images.add(pSwapChainImages.get(i));
             }
 
             swapChain.imageFormat = surfaceFormat.format();
@@ -389,12 +389,19 @@ public class Vulkan {
     }
 
     private static int chooseSwapPresentMode(IntBuffer availablePresentModes) {
-        for (int i = 0; i < availablePresentModes.capacity(); i++) {
-            if (availablePresentModes.get(i) == VK_PRESENT_MODE_MAILBOX_KHR) {
-                return availablePresentModes.get(i);
+        if (true) { //!vsync
+            for (int i = 0; i < availablePresentModes.capacity(); i++) {
+                if (availablePresentModes.get(i) == VK_PRESENT_MODE_MAILBOX_KHR) {
+                    return availablePresentModes.get(i);
+                }
+            }
+
+            for (int i = 0; i < availablePresentModes.capacity(); i++) {
+                if (availablePresentModes.get(i) == VK_PRESENT_MODE_IMMEDIATE_KHR) {
+                    return availablePresentModes.get(i);
+                }
             }
         }
-
         return VK_PRESENT_MODE_FIFO_KHR;
     }
 

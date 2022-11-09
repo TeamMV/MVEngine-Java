@@ -1,0 +1,45 @@
+type native Script {
+    head:
+        GameObject object;
+        vec3 position;
+        vec3 rotation;
+        vec3 velocity;
+        void task(vec3 position) setPosition;
+        void task(vec3 rotation) setRotation;
+        void task(vec3 velocity) setVelocity;
+}
+
+type native GameObject {
+    head:
+        //All properties from java GameObject class
+}
+
+type vec3 {
+    head:
+        float x, y, z;
+        float task() magnitude;
+        void task(float percent) reduce;
+
+    body:
+        magnitude = task() {
+            return sqrt(x*x + sqrt(y*y + z*z));
+        }
+
+        reduce = task(float percent) {
+            float multiplier = (100 - percent) / 100
+            x = x * multiplier;
+            y = y * multiplier;
+            z = z * multiplier;
+        }
+}
+
+type native Math {
+    head:
+        float task(float angle) sin;
+        float task(float angle) cos;
+        float task(float angle) tan;
+        float task(float angle) arcSin;
+        float task(float angle) arcCos;
+        float task(float angle) arcTan;
+        float task(float value) sqrt;
+}
