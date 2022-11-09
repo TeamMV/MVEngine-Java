@@ -9,11 +9,11 @@ uniform sampler2D uTexSampler;
 
 #else
 
-layout(location = 0) in vec2 oTextureCoord;
+layout (location = 0) in vec2 oTextureCoord;
 
-layout(location = 0) out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
 
-layout(binding = 0) uniform sampler2D uTexSampler;
+layout (binding = 0) uniform sampler2D uTexSampler;
 
 #endif
 void main() {

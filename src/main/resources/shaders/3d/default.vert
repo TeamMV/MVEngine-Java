@@ -13,13 +13,13 @@ uniform mat4 uTransform;
 
 #else
 
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec2 texCoord;
-layout(location = 2) in vec3 normal;
+layout (location = 0) in vec3 position;
+layout (location = 1) in vec2 texCoord;
+layout (location = 2) in vec3 normal;
 
-layout(location = 0) out vec2 oTextureCoord;
+layout (location = 0) out vec2 oTextureCoord;
 
-layout(binding = 0) uniform mats {
+layout (binding = 0) uniform mats {
     uniform mat4 uProjection;
     uniform mat4 uView;
     uniform mat4 uTransform;

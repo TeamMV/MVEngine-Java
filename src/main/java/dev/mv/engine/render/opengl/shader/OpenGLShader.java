@@ -177,7 +177,7 @@ public class OpenGLShader {
     public void setPointLights(String name, List<PointLight> value) {
         int length = value != null ? value.size() : 0;
 
-        for(int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             setPointLight(name + "[" + i + "]", value.get(i));
         }
     }
@@ -185,7 +185,7 @@ public class OpenGLShader {
     public void setSpotLights(String name, List<SpotLight> value) {
         int length = value != null ? value.size() : 0;
 
-        for(int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             setSpotLight(name + "[" + i + "]", value.get(i));
         }
     }

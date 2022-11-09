@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import static java.lang.ClassLoader.getSystemClassLoader;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.util.shaderc.Shaderc.*;
-import static org.lwjgl.util.spvc.Spvc.*;
 
 public class SPIRV implements NativeResource {
 
@@ -22,16 +21,6 @@ public class SPIRV implements NativeResource {
     public SPIRV(long handle, ByteBuffer bytecode) {
         this.handle = handle;
         this.bytecode = bytecode;
-    }
-
-    public ByteBuffer bytecode() {
-        return bytecode;
-    }
-
-    @Override
-    public void free() {
-        shaderc_result_release(handle);
-        bytecode = null;
     }
 
     public static SPIRV compileShaderFile(String shaderFile, ShaderKind shaderKind) {
@@ -51,22 +40,32 @@ public class SPIRV implements NativeResource {
     public static SPIRV compileShader(String filename, String source, ShaderKind shaderKind) {
         long compiler = shaderc_compiler_initialize();
 
-        if(compiler == NULL) {
+        if (compiler == NULL) {
             throw new RuntimeException("Failed to create shader compiler");
         }
 
         long result = shaderc_compile_into_spv(compiler, source, shaderKind.kind, filename, "main", NULL);
 
-        if(result == NULL) {
+        if (result == NULL) {
             throw new RuntimeException("Failed to compile shader " + filename + " into SPIR-V");
         }
 
-        if(shaderc_result_get_compilation_status(result) != shaderc_compilation_status_success) {
+        if (shaderc_result_get_compilation_status(result) != shaderc_compilation_status_success) {
             throw new RuntimeException("Failed to compile shader " + filename + "into SPIR-V:\n " + shaderc_result_get_error_message(result));
         }
 
         shaderc_compiler_release(compiler);
         return new SPIRV(result, shaderc_result_get_bytes(result));
+    }
+
+    public ByteBuffer bytecode() {
+        return bytecode;
+    }
+
+    @Override
+    public void free() {
+        shaderc_result_release(handle);
+        bytecode = null;
     }
 
     public static enum ShaderKind {

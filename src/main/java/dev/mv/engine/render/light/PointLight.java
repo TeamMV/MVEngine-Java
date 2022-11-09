@@ -5,9 +5,11 @@ import lombok.Setter;
 import org.joml.Vector3f;
 
 public class PointLight {
-    @Getter @Setter
+    @Getter
+    @Setter
     private Vector3f position, color;
-    @Getter @Setter
+    @Getter
+    @Setter
     private float intensity, constant, linear, exponent;
 
     public PointLight(Vector3f position, Vector3f color, float intensity, float constant, float linear, float exponent) {

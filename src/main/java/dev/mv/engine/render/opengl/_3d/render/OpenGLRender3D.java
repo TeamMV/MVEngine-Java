@@ -50,7 +50,7 @@ public class OpenGLRender3D {
         GL20.glEnableVertexAttribArray(1);
         GL20.glEnableVertexAttribArray(2);
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
-        if(model.getTexture() != null) {
+        if (model.getTexture() != null) {
             GL11.glBindTexture(GL_TEXTURE_2D, model.getTexture().getId());
         }
         shader.setMaterial("uMaterial", model.getMaterial());

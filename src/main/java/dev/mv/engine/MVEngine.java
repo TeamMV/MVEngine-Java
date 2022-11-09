@@ -11,7 +11,6 @@ import dev.mv.engine.render.opengl.texture.OpenGLTexture;
 import dev.mv.engine.render.vulkan.Vulkan;
 import dev.mv.engine.render.vulkan.VulkanWindow;
 import imgui.ImGui;
-import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
 import java.awt.image.BufferedImage;

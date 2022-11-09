@@ -23,7 +23,9 @@ public class VulkanSwapChain {
     int imageFormat;
     @Getter
     VkExtent2D extent;
-    VulkanSwapChain() {}
+
+    VulkanSwapChain() {
+    }
 
     static class SwapChainSupportDetails {
         VkSurfaceCapabilitiesKHR capabilities;

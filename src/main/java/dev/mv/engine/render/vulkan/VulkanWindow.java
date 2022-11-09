@@ -4,7 +4,6 @@ import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.DrawContext2D;
 import dev.mv.engine.render.DrawContext3D;
 import dev.mv.engine.render.Window;
-import dev.mv.engine.render.utils.RenderUtils;
 import imgui.glfw.ImGuiImplGlfw;
 import lombok.Getter;
 import org.joml.Matrix4f;
@@ -20,26 +19,26 @@ import java.nio.charset.StandardCharsets;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.vulkan.KHRSurface.*;
+import static org.lwjgl.vulkan.KHRSurface.vkDestroySurfaceKHR;
 import static org.lwjgl.vulkan.KHRSwapchain.vkDestroySwapchainKHR;
 import static org.lwjgl.vulkan.VK10.*;
 
 public class VulkanWindow implements Window {
 
+    @Getter
+    VulkanSwapChain swapChain;
+    @Getter
+    VulkanCommandPool commandPool;
     private int UPS = 30, FPS = 60;
     private int currentFPS, currentUPS;
     private double deltaF;
     private long currentFrame = 0, currentTime = 0;
     private long window, surface;
     @Getter
-    VulkanSwapChain swapChain;
-    @Getter
     private VulkanGraphicsPipeline graphicsPipeline;
-    @Getter
-    VulkanCommandPool commandPool;
     private VulkanRender render;
     private String title;
     private int width, height;
@@ -103,14 +102,14 @@ public class VulkanWindow implements Window {
             GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
             glfwSetWindowPos(window,
-                    (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
+                (vidmode.width() - pWidth.get(0)) / 2,
+                (vidmode.height() - pHeight.get(0)) / 2
             );
         }
 
         try (MemoryStack stack = stackPush()) {
             LongBuffer pSurface = stack.longs(VK_NULL_HANDLE);
-            if(glfwCreateWindowSurface(Vulkan.getInstance(), window, null, pSurface) != VK_SUCCESS) {
+            if (glfwCreateWindowSurface(Vulkan.getInstance(), window, null, pSurface) != VK_SUCCESS) {
                 return false;
             }
             surface = pSurface.get(0);
@@ -197,9 +196,9 @@ public class VulkanWindow implements Window {
                 //ImGui.render();
                 //vkImpl.renderDrawData(ImGui.getDrawData());
 
-                render.drawFrame(this);
+                //render.drawFrame(this);
 
-                glfwSwapBuffers(window);
+                //vulkan swap buffers
                 currentFrame++;
                 frames++;
                 deltaF--;

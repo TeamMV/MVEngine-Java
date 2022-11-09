@@ -15,8 +15,9 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static dev.mv.engine.render.utils.RenderUtils.asPointerBuffer;
-import static dev.mv.engine.render.vulkan.shader.SPIRV.ShaderKind.*;
-import static dev.mv.engine.render.vulkan.VulkanSwapChain.*;
+import static dev.mv.engine.render.vulkan.VulkanSwapChain.SwapChainSupportDetails;
+import static dev.mv.engine.render.vulkan.shader.SPIRV.ShaderKind.FRAGMENT_SHADER;
+import static dev.mv.engine.render.vulkan.shader.SPIRV.ShaderKind.VERTEX_SHADER;
 import static java.util.stream.Collectors.toSet;
 import static org.lwjgl.glfw.GLFWVulkan.glfwGetRequiredInstanceExtensions;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -197,15 +198,15 @@ public class Vulkan {
     private static boolean checkExtensionSupport(VkPhysicalDevice device) {
         try (MemoryStack stack = stackPush()) {
             IntBuffer extensionCount = stack.ints(0);
-            vkEnumerateDeviceExtensionProperties(device, (String)null, extensionCount, null);
+            vkEnumerateDeviceExtensionProperties(device, (String) null, extensionCount, null);
 
             VkExtensionProperties.Buffer availableExtensions = VkExtensionProperties.malloc(extensionCount.get(0), stack);
-            vkEnumerateDeviceExtensionProperties(device, (String)null, extensionCount, availableExtensions);
+            vkEnumerateDeviceExtensionProperties(device, (String) null, extensionCount, availableExtensions);
 
             return availableExtensions.stream()
-                    .map(VkExtensionProperties::extensionNameString)
-                    .collect(toSet())
-                    .containsAll(DEVICE_EXTENSIONS);
+                .map(VkExtensionProperties::extensionNameString)
+                .collect(toSet())
+                .containsAll(DEVICE_EXTENSIONS);
         }
     }
 
@@ -243,7 +244,7 @@ public class Vulkan {
     }
 
     private static Integer findQueueFamilies(VkPhysicalDevice device, int queueBit) {
-        try(MemoryStack stack = stackPush()) {
+        try (MemoryStack stack = stackPush()) {
             IntBuffer queueFamilyCount = stack.ints(0);
             vkGetPhysicalDeviceQueueFamilyProperties(device, queueFamilyCount, null);
 
@@ -253,7 +254,7 @@ public class Vulkan {
             IntBuffer presentSupport = stack.ints(VK_FALSE);
 
             OptionalInt optionalIndex = IntStream.range(0, queueFamilies.capacity()).filter(index -> (queueFamilies.get(index).queueFlags() & queueBit) != 0).findFirst();
-            return optionalIndex.isPresent()? optionalIndex.getAsInt() : null;
+            return optionalIndex.isPresent() ? optionalIndex.getAsInt() : null;
         }
     }
 
@@ -271,7 +272,7 @@ public class Vulkan {
             for (int i = 0; i < queueFamilies.capacity() && presentFamily == null; i++) {
                 vkGetPhysicalDeviceSurfaceSupportKHR(GPU, i, surface, presentSupport);
 
-                if(presentSupport.get(0) == VK_TRUE) {
+                if (presentSupport.get(0) == VK_TRUE) {
                     presentFamily = i;
                 }
             }
@@ -320,7 +321,7 @@ public class Vulkan {
 
             IntBuffer imageCount = stack.ints(swapChainSupport.capabilities.minImageCount() + 1);
 
-            if(swapChainSupport.capabilities.maxImageCount() > 0 && imageCount.get(0) > swapChainSupport.capabilities.maxImageCount()) {
+            if (swapChainSupport.capabilities.maxImageCount() > 0 && imageCount.get(0) > swapChainSupport.capabilities.maxImageCount()) {
                 imageCount.put(0, swapChainSupport.capabilities.maxImageCount());
             }
 
@@ -339,7 +340,7 @@ public class Vulkan {
             Integer graphicsFamily = findQueueFamilies(GPU, VK_QUEUE_GRAPHICS_BIT);
             Integer presentFamily = getPresentFamily(surface);
 
-            if(!graphicsFamily.equals(presentFamily)) {
+            if (!graphicsFamily.equals(presentFamily)) {
                 createInfo.imageSharingMode(VK_SHARING_MODE_CONCURRENT);
                 createInfo.pQueueFamilyIndices(stack.ints(graphicsFamily, presentFamily));
             } else {
@@ -355,7 +356,7 @@ public class Vulkan {
 
             LongBuffer pSwapChain = stack.longs(VK_NULL_HANDLE);
 
-            if(vkCreateSwapchainKHR(logicalDevice, createInfo, null, pSwapChain) != VK_SUCCESS) {
+            if (vkCreateSwapchainKHR(logicalDevice, createInfo, null, pSwapChain) != VK_SUCCESS) {
                 return null;
             }
 
@@ -369,7 +370,7 @@ public class Vulkan {
 
             swapChain.images = new ArrayList<>(imageCount.get(0));
 
-            for(int i = 0;i < pSwapchainImages.capacity();i++) {
+            for (int i = 0; i < pSwapchainImages.capacity(); i++) {
                 swapChain.images.add(pSwapchainImages.get(i));
             }
 
@@ -381,15 +382,15 @@ public class Vulkan {
 
     private static VkSurfaceFormatKHR chooseSwapSurfaceFormat(VkSurfaceFormatKHR.Buffer availableFormats) {
         return availableFormats.stream()
-                .filter(availableFormat -> availableFormat.format() == VK_FORMAT_B8G8R8_UNORM)
-                .filter(availableFormat -> availableFormat.colorSpace() == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
-                .findAny()
-                .orElse(availableFormats.get(0));
+            .filter(availableFormat -> availableFormat.format() == VK_FORMAT_B8G8R8_UNORM)
+            .filter(availableFormat -> availableFormat.colorSpace() == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+            .findAny()
+            .orElse(availableFormats.get(0));
     }
 
     private static int chooseSwapPresentMode(IntBuffer availablePresentModes) {
-        for(int i = 0;i < availablePresentModes.capacity();i++) {
-            if(availablePresentModes.get(i) == VK_PRESENT_MODE_MAILBOX_KHR) {
+        for (int i = 0; i < availablePresentModes.capacity(); i++) {
+            if (availablePresentModes.get(i) == VK_PRESENT_MODE_MAILBOX_KHR) {
                 return availablePresentModes.get(i);
             }
         }
@@ -399,7 +400,7 @@ public class Vulkan {
 
     private static VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR capabilities, int width, int height) {
 
-        if(capabilities.currentExtent().width() != 0xFFFFFFFF) {
+        if (capabilities.currentExtent().width() != 0xFFFFFFFF) {
             return capabilities.currentExtent();
         }
 
@@ -423,14 +424,14 @@ public class Vulkan {
         IntBuffer count = stack.ints(0);
         vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, count, null);
 
-        if(count.get(0) != 0) {
+        if (count.get(0) != 0) {
             details.formats = VkSurfaceFormatKHR.malloc(count.get(0), stack);
             vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, count, details.formats);
         }
 
-        vkGetPhysicalDeviceSurfacePresentModesKHR(device,surface, count, null);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, count, null);
 
-        if(count.get(0) != 0) {
+        if (count.get(0) != 0) {
             details.presentModes = stack.mallocInt(count.get(0));
             vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, count, details.presentModes);
         }
@@ -476,7 +477,7 @@ public class Vulkan {
     }
 
     private static long createRenderPass(VulkanSwapChain swapChain) {
-        try(MemoryStack stack = stackPush()) {
+        try (MemoryStack stack = stackPush()) {
             VkAttachmentDescription.Buffer colorAttachment = VkAttachmentDescription.calloc(1, stack);
             colorAttachment.format(swapChain.imageFormat);
             colorAttachment.samples(VK_SAMPLE_COUNT_1_BIT);
@@ -512,7 +513,7 @@ public class Vulkan {
 
             LongBuffer pRenderPass = stack.mallocLong(1);
 
-            if(vkCreateRenderPass(logicalDevice, renderPassInfo, null, pRenderPass) != VK_SUCCESS) {
+            if (vkCreateRenderPass(logicalDevice, renderPassInfo, null, pRenderPass) != VK_SUCCESS) {
                 return -1;
             }
 
@@ -612,7 +613,7 @@ public class Vulkan {
 
             LongBuffer pPipelineLayout = stack.longs(VK_NULL_HANDLE);
 
-            if(vkCreatePipelineLayout(logicalDevice, pipelineLayoutInfo, null, pPipelineLayout) != VK_SUCCESS) {
+            if (vkCreatePipelineLayout(logicalDevice, pipelineLayoutInfo, null, pPipelineLayout) != VK_SUCCESS) {
                 return null;
             }
 
@@ -635,7 +636,7 @@ public class Vulkan {
 
             LongBuffer pGraphicsPipeline = stack.mallocLong(1);
 
-            if(vkCreateGraphicsPipelines(logicalDevice, VK_NULL_HANDLE, pipelineInfo, null, pGraphicsPipeline) != VK_SUCCESS) {
+            if (vkCreateGraphicsPipelines(logicalDevice, VK_NULL_HANDLE, pipelineInfo, null, pGraphicsPipeline) != VK_SUCCESS) {
                 throw new RuntimeException("Failed to create graphics pipeline");
             }
 
@@ -664,7 +665,7 @@ public class Vulkan {
 
             LongBuffer pShaderModule = stack.mallocLong(1);
 
-            if(vkCreateShaderModule(logicalDevice, createInfo, null, pShaderModule) != VK_SUCCESS) {
+            if (vkCreateShaderModule(logicalDevice, createInfo, null, pShaderModule) != VK_SUCCESS) {
                 return -1;
             }
             return pShaderModule.get(0);
@@ -687,7 +688,7 @@ public class Vulkan {
                 attachments.put(0, imageView);
                 framebufferInfo.pAttachments(attachments);
 
-                if(vkCreateFramebuffer(logicalDevice, framebufferInfo, null, pFramebuffer) != VK_SUCCESS) {
+                if (vkCreateFramebuffer(logicalDevice, framebufferInfo, null, pFramebuffer) != VK_SUCCESS) {
                     return false;
                 }
 
@@ -727,11 +728,11 @@ public class Vulkan {
 
             PointerBuffer pCommandBuffers = stack.mallocPointer(commandBuffersCount);
 
-            if(vkAllocateCommandBuffers(logicalDevice, allocInfo, pCommandBuffers) != VK_SUCCESS) {
+            if (vkAllocateCommandBuffers(logicalDevice, allocInfo, pCommandBuffers) != VK_SUCCESS) {
                 return false;
             }
 
-            for(int i = 0;i < commandBuffersCount;i++) {
+            for (int i = 0; i < commandBuffersCount; i++) {
                 commandPool.buffers.add(new VkCommandBuffer(pCommandBuffers.get(i), logicalDevice));
             }
 
@@ -749,9 +750,9 @@ public class Vulkan {
             clearValues.color().float32(stack.floats(0.0f, 0.0f, 0.0f, 1.0f));
             renderPassInfo.pClearValues(clearValues);
 
-            for(int i = 0;i < commandBuffersCount;i++) {
+            for (int i = 0; i < commandBuffersCount; i++) {
                 VkCommandBuffer commandBuffer = commandPool.buffers.get(i);
-                if(vkBeginCommandBuffer(commandBuffer, beginInfo) != VK_SUCCESS) {
+                if (vkBeginCommandBuffer(commandBuffer, beginInfo) != VK_SUCCESS) {
                     return false;
                 }
 
@@ -764,7 +765,7 @@ public class Vulkan {
                 }
                 vkCmdEndRenderPass(commandBuffer);
 
-                if(vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+                if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
                     return false;
                 }
             }
@@ -774,7 +775,7 @@ public class Vulkan {
 
     static VulkanRender createRender() {
         VulkanRender render = new VulkanRender();
-        try(MemoryStack stack = stackPush()) {
+        try (MemoryStack stack = stackPush()) {
 
             VkSemaphoreCreateInfo semaphoreInfo = VkSemaphoreCreateInfo.calloc(stack);
             semaphoreInfo.sType(VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
@@ -787,9 +788,9 @@ public class Vulkan {
             LongBuffer pRenderFinishedSemaphore = stack.mallocLong(1);
             LongBuffer pFence = stack.mallocLong(1);
 
-            for(int i = 0;i < render.MAX_FRAMES_IN_FLIGHT;i++) {
+            for (int i = 0; i < render.MAX_FRAMES_IN_FLIGHT; i++) {
 
-                if(vkCreateSemaphore(logicalDevice, semaphoreInfo, null, pImageAvailableSemaphore) != VK_SUCCESS
+                if (vkCreateSemaphore(logicalDevice, semaphoreInfo, null, pImageAvailableSemaphore) != VK_SUCCESS
                     || vkCreateSemaphore(logicalDevice, semaphoreInfo, null, pRenderFinishedSemaphore) != VK_SUCCESS
                     || vkCreateFence(logicalDevice, fenceInfo, null, pFence) != VK_SUCCESS) {
 

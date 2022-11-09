@@ -43,15 +43,15 @@ public class RenderUtils {
     }
 
     public static float[] array(Vector2f data) {
-        return new float[] {data.x, data.y};
+        return new float[]{data.x, data.y};
     }
 
     public static float[] array(Vector3f data) {
-        return new float[] {data.x, data.y, data.z};
+        return new float[]{data.x, data.y, data.z};
     }
 
     public static float[] array(Vector4f data) {
-        return new float[] {data.x, data.y, data.z, data.w};
+        return new float[]{data.x, data.y, data.z, data.w};
     }
 
     public static PointerBuffer asPointerBuffer(Collection<String> collection) {

@@ -2,7 +2,6 @@ package dev.mv.engine.render.vulkan;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VkPresentInfoKHR;
-import org.lwjgl.vulkan.VkSemaphoreCreateInfo;
 import org.lwjgl.vulkan.VkSubmitInfo;
 
 import java.nio.IntBuffer;
@@ -18,15 +17,17 @@ import static org.lwjgl.vulkan.VK10.*;
 public class VulkanRender {
     public static final int MAX_FRAMES_IN_FLIGHT = 2;
 
-    List<Frame> inFlightFrames = new ArrayList<>(MAX_FRAMES_IN_FLIGHT);;
+    List<Frame> inFlightFrames = new ArrayList<>(MAX_FRAMES_IN_FLIGHT);
+    ;
     Map<Integer, Frame> imagesInFlight = new HashMap<>();
     int currentFrame;
     boolean framebufferResized = false;
 
-    VulkanRender() {}
+    VulkanRender() {
+    }
 
     void drawFrame(VulkanWindow window) {
-        try(MemoryStack stack = stackPush()) {
+        try (MemoryStack stack = stackPush()) {
             Frame thisFrame = inFlightFrames.get(currentFrame);
 
             vkWaitForFences(Vulkan.getLogicalDevice(), thisFrame.pFence(), true, 0xFFFFFFFFFFFFFFFFL);

@@ -1,7 +1,5 @@
 package dev.mv.engine.render.models;
 
-import dev.mv.engine.render.opengl._3d.object.OpenGLModel;
-
 import java.io.IOException;
 
 public interface ObjectLoader {

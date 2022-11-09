@@ -7,37 +7,26 @@ import dev.mv.editor.loading.LoadingManager;
 import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.Window;
-import dev.mv.engine.render.drawables.Texture;
 import dev.mv.engine.render.drawables.text.BitmapFont;
 import dev.mv.engine.render.light.DirectionalLight;
 import dev.mv.engine.render.light.PointLight;
 import dev.mv.engine.render.light.SpotLight;
 import dev.mv.engine.render.models.Entity;
-import dev.mv.engine.render.models.Material;
-import dev.mv.engine.render.models.Model;
-import dev.mv.engine.render.models.ObjectLoader;
-import dev.mv.engine.render.opengl._3d.camera.OpenGLCamera3D;
 import dev.mv.engine.render.opengl._3d.render.OpenGLRender3D;
-import dev.mv.engine.render.utils.RenderConstansts;
 import dev.mv.utils.misc.Version;
 import org.joml.Vector3f;
 
-import java.io.IOException;
-
 import static dev.mv.engine.MVEngine.usesVulkan;
-import static dev.mv.utils.Utils.*;
-import static org.lwjgl.glfw.GLFW.*;
-
-import static dev.mv.engine.render.vulkan.mvvk.MVVKBufferAllocator.*;
+import static dev.mv.utils.Utils.await;
+import static dev.mv.utils.Utils.sleep;
 
 public class Main {
 
     public static OpenGLRender3D renderer;
+    static float r = 0;
     private static BitmapFont font;
     private static Entity cruiser;
     private static Entity plane;
-
-    static float r = 0;
     private static PointLight pointlight = new PointLight(new Vector3f(0, 2, -2), new Vector3f(1, 1, 0.5f), 1f, 0, 0, 1f);
     private static SpotLight spotlight = new SpotLight(pointlight, new Vector3f(r, 0, 0), (float) Math.toRadians(180));
     private static DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1, 1, 1), new Vector3f(2, 0, 0), 1.0f);
