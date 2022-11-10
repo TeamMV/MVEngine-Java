@@ -1,6 +1,7 @@
 package dev.mv.engine;
 
 import dev.mv.engine.render.Window;
+import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.drawables.Texture;
 import dev.mv.engine.render.drawables.text.BitmapFont;
 import dev.mv.engine.render.models.ObjectLoader;
@@ -65,11 +66,15 @@ public class MVEngine {
         }
     }
 
-    public static Window createWindow(int width, int height, String title, boolean resizeable) {
+    public static Window createWindow(WindowCreateInfo info) {
+        if (info == null) {
+            info = new WindowCreateInfo();
+        }
+
         if (usesVulkan()) {
-            return new VulkanWindow(title, width, height, resizeable);
+            return new VulkanWindow(info);
         } else {
-            return new OpenGLWindow(width, height, title, resizeable);
+            return new OpenGLWindow(info);
         }
     }
 

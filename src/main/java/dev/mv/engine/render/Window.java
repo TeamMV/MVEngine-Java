@@ -30,8 +30,4 @@ public interface Window {
     Matrix4f getProjectionMatrix3D();
 
     String getTitle();
-
-    DrawContext2D getDrawContext2D();
-
-    DrawContext3D getDrawContext3D();
 }

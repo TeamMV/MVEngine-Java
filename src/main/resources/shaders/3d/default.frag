@@ -9,13 +9,14 @@ uniform sampler2D uTexSampler;
 
 #else
 
-layout (location = 0) in vec2 oTextureCoord;
+//layout (location = 0) in vec2 oTextureCoord;
 
 layout (location = 0) out vec4 fragColor;
 
-layout (binding = 0) uniform sampler2D uTexSampler;
+//layout (binding = 0) uniform sampler2D uTexSampler;
 
 #endif
 void main() {
-    fragColor = texture(uTexSampler, oTextureCoord);
+    //fragColor = texture(uTexSampler, oTextureCoord);
+    fragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

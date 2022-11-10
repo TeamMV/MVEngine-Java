@@ -68,7 +68,7 @@ public class OpenGLRender3D {
         shader.setUniform1i("uTexSampler", 0);
         shader.setMatrix4f("uTransform", OpenGLTransformation3D.getTransformationMatrix(entity));
         shader.setMatrix4f("uProjection", win.getProjectionMatrix3D());
-        shader.setMatrix4f("uView", OpenGLTransformation3D.getViewMatrix(win.getDrawContext3D().getCamera()));
+        //shader.setMatrix4f("uView", OpenGLTransformation3D.getViewMatrix(win.getDrawContext3D().getCamera()));
     }
 
     public void renderLights(List<PointLight> pointLights, List<SpotLight> spotLights) {

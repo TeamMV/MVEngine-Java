@@ -1,9 +1,9 @@
 package dev.mv.engine.render.vulkan;
 
 import dev.mv.engine.MVEngine;
-import dev.mv.engine.render.DrawContext2D;
-import dev.mv.engine.render.DrawContext3D;
 import dev.mv.engine.render.Window;
+import dev.mv.engine.render.WindowCreateInfo;
+import dev.mv.engine.render.utils.RenderUtils;
 import imgui.glfw.ImGuiImplGlfw;
 import lombok.Getter;
 import org.joml.Matrix4f;
@@ -11,15 +11,12 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
-import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
-import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.vulkan.KHRSurface.vkDestroySurfaceKHR;
@@ -32,7 +29,6 @@ public class VulkanWindow implements Window {
     VulkanSwapChain swapChain;
     @Getter
     VulkanCommandPool commandPool;
-    private int UPS = 30, FPS = 60;
     private int currentFPS, currentUPS;
     private double deltaF;
     private long currentFrame = 0, currentTime = 0;
@@ -40,29 +36,35 @@ public class VulkanWindow implements Window {
     @Getter
     private VulkanGraphicsPipeline graphicsPipeline;
     private VulkanRender render;
-    private String title;
     private int width, height;
-    private boolean resizeable;
     private Runnable onStart = null, onUpdate = null, onDraw = null;
     private ImGuiImplGlfw glfwImpl;
     private ImGuiImplVulkan vkImpl;
+    @Getter
+    private WindowCreateInfo info;
+    private int oW, oH, oX, oY;
 
-    public VulkanWindow(String title, int width, int height, boolean resizeable) {
+    public VulkanWindow(WindowCreateInfo info) {
         Vulkan.check();
-        this.title = title;
-        this.width = width;
-        this.height = height;
-        this.resizeable = resizeable;
+        this.info = info;
+        width = info.width;
+        height = info.height;
     }
 
     @Override
     public void run() {
         if (!init()) {
+            glfwFreeCallbacks(window);
+            glfwDestroyWindow(window);
             Vulkan.terminate();
             MVEngine.disableVulkan();
-            Window replacement = MVEngine.createWindow(width, height, title, resizeable);
+            Window replacement = MVEngine.createWindow(info);
             replacement.run(onStart, onUpdate, onDraw);
             return;
+        }
+
+        if (info.fullscreen) {
+            setFullscreen(true);
         }
 
         if (onStart != null) {
@@ -86,9 +88,10 @@ public class VulkanWindow implements Window {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, resizeable ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, info.resizeable ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_DECORATED, info.decorated ? GLFW_TRUE : GLFW_FALSE);
 
-        window = glfwCreateWindow(width, height, title, NULL, NULL);
+        window = glfwCreateWindow(width, height, info.title, NULL, NULL);
         if (window == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
         }
@@ -117,7 +120,7 @@ public class VulkanWindow implements Window {
 
         if (!Vulkan.setupSurfaceSupport(surface))
             return false;
-        swapChain = Vulkan.createSwapChain(surface, width, height);
+        swapChain = Vulkan.createSwapChain(surface, width, height, info.vsync);
         if (swapChain == null)
             return false;
         if (!Vulkan.createImageViews(swapChain))
@@ -146,8 +149,6 @@ public class VulkanWindow implements Window {
             height = h;
 
             render.framebufferResized = true;
-
-            glViewport(0, 0, w, h);
         });
         return true;
     }
@@ -156,8 +157,8 @@ public class VulkanWindow implements Window {
         //clear colour vulkan?
 
         long initialTime = System.nanoTime();
-        final double timeU = 1000000000f / UPS;
-        final double timeF = 1000000000f / FPS;
+        final double timeU = 1000000000f / info.maxUPS;
+        final double timeF = 1000000000f / info.maxFPS;
         double deltaU = 0, deltaF = 0;
         int frames = 0, ticks = 0;
         long timer = System.currentTimeMillis();
@@ -173,13 +174,10 @@ public class VulkanWindow implements Window {
                 if (onUpdate != null) {
                     onUpdate.run();
                 }
-                String fpsTitle = title + " - " + getFPS() + " fps";
-                byte[] bytes = fpsTitle.getBytes(StandardCharsets.UTF_8);
-                ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length + 1);
-                buffer.put(bytes);
-                buffer.put((byte) 0x0);
-                buffer.flip();
-                glfwSetWindowTitle(window, buffer);
+                if (info.appendFpsToTitle) {
+                    String fpsTitle = info.title + info.fpsAppendConfiguration.betweenTitleAndValue + getFPS() + info.fpsAppendConfiguration.afterValue;
+                    glfwSetWindowTitle(window, RenderUtils.store(fpsTitle));
+                }
                 ticks++;
                 deltaU--;
             }
@@ -196,9 +194,8 @@ public class VulkanWindow implements Window {
                 //ImGui.render();
                 //vkImpl.renderDrawData(ImGui.getDrawData());
 
-                //render.drawFrame(this);
+                render.drawFrame(this);
 
-                //vulkan swap buffers
                 currentFrame++;
                 frames++;
                 deltaF--;
@@ -217,25 +214,17 @@ public class VulkanWindow implements Window {
     }
 
     void recreateSwapChain() {
-        try (MemoryStack stack = stackPush()) {
-            IntBuffer width = stack.ints(0);
-            IntBuffer height = stack.ints(0);
-            glfwGetFramebufferSize(window, width, height);
-            while (width.get(0) == 0 || height.get(0) == 0) {
-                glfwGetFramebufferSize(window, width, height);
-                glfwWaitEvents();
-            }
-        }
         vkDeviceWaitIdle(Vulkan.getLogicalDevice());
 
         terminateSwapChain();
 
-        swapChain = Vulkan.createSwapChain(surface, width, height);
+        swapChain = Vulkan.createSwapChain(surface, width, height, info.vsync);
         Vulkan.createImageViews(swapChain);
         graphicsPipeline = Vulkan.createGraphicsPipeline(swapChain, "shaders/3d/default.vert", "shaders/3d/default.frag");
         Vulkan.createFramebuffers(swapChain, graphicsPipeline);
         commandPool = Vulkan.createCommandPool();
         Vulkan.createCommandBuffers(commandPool, swapChain, graphicsPipeline);
+        render = Vulkan.createRender();
     }
 
     private void terminate() {
@@ -262,6 +251,27 @@ public class VulkanWindow implements Window {
         vkDestroySwapchainKHR(Vulkan.getLogicalDevice(), swapChain.id, null);
     }
 
+    public void setFullscreen(boolean fullscreen) {
+        info.fullscreen = fullscreen;
+        if (fullscreen) {
+            IntBuffer oXb = BufferUtils.createIntBuffer(1), oYb = BufferUtils.createIntBuffer(1);
+            glfwGetWindowPos(window, oXb, oYb);
+            oW = width;
+            oH = height;
+            oX = oXb.get(0);
+            oY = oYb.get(0);
+            long monitor = glfwGetPrimaryMonitor();
+            GLFWVidMode mode = glfwGetVideoMode(monitor);
+            glfwSetWindowMonitor(window, monitor, 0, 0, mode.width(), mode.height(), mode.refreshRate());
+            width = mode.width();
+            height = mode.height();
+        } else {
+            long monitor = glfwGetPrimaryMonitor();
+            GLFWVidMode mode = glfwGetVideoMode(monitor);
+            glfwSetWindowMonitor(window, 0, oX, oY, oW, oH, mode.refreshRate());
+        }
+    }
+
     @Override
     public int getWidth() {
         return width;
@@ -284,22 +294,22 @@ public class VulkanWindow implements Window {
 
     @Override
     public int getFPSCap() {
-        return FPS;
+        return info.maxFPS;
     }
 
     @Override
     public void setFPSCap(int cap) {
-        FPS = cap;
+        info.maxFPS = cap;
     }
 
     @Override
     public int getUPSCap() {
-        return UPS;
+        return info.maxUPS;
     }
 
     @Override
     public void setUPSCap(int cap) {
-        UPS = cap;
+        info.maxUPS = cap;
     }
 
     @Override
@@ -323,16 +333,6 @@ public class VulkanWindow implements Window {
 
     @Override
     public String getTitle() {
-        return title;
-    }
-
-    @Override
-    public DrawContext2D getDrawContext2D() {
-        return null;
-    }
-
-    @Override
-    public DrawContext3D getDrawContext3D() {
-        return null;
+        return info.title;
     }
 }

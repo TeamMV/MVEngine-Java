@@ -1,6 +1,5 @@
 package dev.mv.engine.render.opengl._2d;
 
-import dev.mv.engine.render.DrawContext2D;
 import dev.mv.engine.render.drawables.Animation;
 import dev.mv.engine.render.drawables.Texture;
 import dev.mv.engine.render.drawables.TextureRegion;
@@ -14,7 +13,7 @@ import org.joml.Vector2f;
 
 import java.awt.*;
 
-public class OpenGLDrawContext2D implements DrawContext2D {
+public class OpenGLDrawContext2D {
 
     private static OpenGLDrawContext2D instance = null;
     private float r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
@@ -26,7 +25,7 @@ public class OpenGLDrawContext2D implements DrawContext2D {
         //OpenGLBatchController2D.init(window, 1000);
     }
 
-    @Override
+
     public void color(int r, int g, int b, int a) {
         this.r = r / 255.0f;
         this.g = g / 255.0f;
@@ -34,17 +33,15 @@ public class OpenGLDrawContext2D implements DrawContext2D {
         this.a = a / 255.0f;
     }
 
-    @Override
     public void color(Color color) {
         color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
     }
 
-    @Override
     public void font(BitmapFont font) {
         this.font = font;
     }
 
-    @Override
+    
     public void triangle(int x1, int y1, int x2, int y2, int x3, int y3) {
         OpenGLBatchController2D.addVertices(verts.set(
             v1.put(x1, y1, 0.0f, 0.0f, r, g, b, a, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f),
@@ -53,7 +50,6 @@ public class OpenGLDrawContext2D implements DrawContext2D {
         ));
     }
 
-    @Override
     public void rectangle(int x, int y, int width, int height) {
         float ax = x;
         float ay = y;
@@ -68,12 +64,10 @@ public class OpenGLDrawContext2D implements DrawContext2D {
         ));
     }
 
-    @Override
     public void rectangle(int x, int y, int width, int height, float rotation) {
         rectangle(x, y, width, height, rotation, x + width / 2, y + height / 2);
     }
 
-    @Override
     public void rectangle(int x, int y, int width, int height, float rotation, int originX, int originY) {
         float ax = x;
         float ay = y;
@@ -90,7 +84,6 @@ public class OpenGLDrawContext2D implements DrawContext2D {
         ));
     }
 
-    @Override
     public void line(int x1, int y1, int x2, int y2, int depth) {
         int w = (x2 - x1);
         int h = (y2 - y1);
@@ -101,27 +94,22 @@ public class OpenGLDrawContext2D implements DrawContext2D {
         rectangle(x1, y1, width, depth, alpha, x1, y1 + depth / 2);
     }
 
-    @Override
     public void image(int x, int y, int width, int height, Texture texture) {
         image(x, y, width, height, texture, 0f, 0, 0);
     }
-
-    @Override
+    
     public void image(int x, int y, int width, int height, TextureRegion texture) {
         image(x, y, width, height, texture, 0f, 0, 0);
     }
 
-    @Override
     public void image(int x, int y, int width, int height, Texture texture, float rotation) {
         image(x, y, width, height, texture, rotation, x + width / 2, y + height / 2);
     }
 
-    @Override
     public void image(int x, int y, int width, int height, TextureRegion texture, float rotation) {
         image(x, y, width, height, texture, rotation, x + width / 2, y + height / 2);
     }
 
-    @Override
     public void image(int x, int y, int width, int height, Texture texture, float rotation, int originX, int originY) {
         float ax = x;
         float ay = y;
@@ -140,7 +128,6 @@ public class OpenGLDrawContext2D implements DrawContext2D {
         ));
     }
 
-    @Override
     public void image(int x, int y, int width, int height, TextureRegion texture, float rotation, int originX, int originY) {
         float ax = x;
         float ay = y;
@@ -164,7 +151,6 @@ public class OpenGLDrawContext2D implements DrawContext2D {
         ));
     }
 
-    @Override
     public void imageFromTo(int x1, int y1, int x2, int y2, int depth, Texture texture) {
         int w = (x2 - x1);
         int h = (y2 - y1);
@@ -175,7 +161,6 @@ public class OpenGLDrawContext2D implements DrawContext2D {
         image(x1, y1, width, depth, texture, alpha, x1, y1 + depth / 2);
     }
 
-    @Override
     public void imageFromTo(int x1, int y1, int x2, int y2, int depth, TextureRegion texture) {
         int w = (x2 - x1);
         int h = (y2 - y1);
@@ -186,27 +171,22 @@ public class OpenGLDrawContext2D implements DrawContext2D {
         image(x1, y1, width, depth, texture, alpha, x1, y1 + depth / 2);
     }
 
-    @Override
     public void animation(int x, int y, int width, int height, Animation animation) {
 
     }
 
-    @Override
     public void animation(int x, int y, int width, int height, Animation animation, float rotation) {
 
     }
 
-    @Override
     public void animation(int x, int y, int width, int height, Animation animation, float rotation, int originX, int originY) {
 
     }
 
-    @Override
     public void text(int x, int y, int height, String text) {
         text(x, y, height, text, font);
     }
 
-    @Override
     public void text(int x, int y, int height, String text, BitmapFont font) {
         int charX = 0;
 

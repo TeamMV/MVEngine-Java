@@ -215,8 +215,10 @@ public class Vulkan {
         try (MemoryStack stack = stackPush()) {
             VkPhysicalDeviceProperties deviceProperties = VkPhysicalDeviceProperties.calloc(stack);
             VkPhysicalDeviceFeatures deviceFeatures = VkPhysicalDeviceFeatures.calloc(stack);
+            VkPhysicalDeviceMemoryProperties deviceMemoryProperties = VkPhysicalDeviceMemoryProperties.calloc(stack);
             vkGetPhysicalDeviceProperties(device, deviceProperties);
             vkGetPhysicalDeviceFeatures(device, deviceFeatures);
+            vkGetPhysicalDeviceMemoryProperties(device, deviceMemoryProperties);
 
             if (deviceProperties.deviceType() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
                 score += 10000;
@@ -227,6 +229,14 @@ public class Vulkan {
             }
 
             score += deviceProperties.limits().maxImageDimension2D();
+
+            long memory = 0;
+
+            for (int i = 0; i < deviceMemoryProperties.memoryHeapCount(); i++) {
+                memory += deviceMemoryProperties.memoryHeaps(i).size();
+            }
+
+            memory /= 1048576;
 
             if (!deviceFeatures.geometryShader()) {
                 score = 0;
@@ -309,14 +319,14 @@ public class Vulkan {
         }
     }
 
-    static VulkanSwapChain createSwapChain(long surface, int width, int height) {
+    static VulkanSwapChain createSwapChain(long surface, int width, int height, boolean vsync) {
         try (MemoryStack stack = stackPush()) {
             SwapChainSupportDetails swapChainSupport = querySwapChainSupport(GPU, stack, surface);
 
             VulkanSwapChain swapChain = new VulkanSwapChain();
 
             VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-            int presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+            int presentMode = chooseSwapPresentMode(swapChainSupport.presentModes, vsync);
             VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities, width, height);
 
             IntBuffer imageCount = stack.ints(swapChainSupport.capabilities.minImageCount() + 1);
@@ -388,8 +398,8 @@ public class Vulkan {
             .orElse(availableFormats.get(0));
     }
 
-    private static int chooseSwapPresentMode(IntBuffer availablePresentModes) {
-        if (true) { //!vsync
+    private static int chooseSwapPresentMode(IntBuffer availablePresentModes, boolean vsync) {
+        if (!vsync) {
             for (int i = 0; i < availablePresentModes.capacity(); i++) {
                 if (availablePresentModes.get(i) == VK_PRESENT_MODE_MAILBOX_KHR) {
                     return availablePresentModes.get(i);
@@ -425,7 +435,7 @@ public class Vulkan {
     private static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, MemoryStack stack, long surface) {
         SwapChainSupportDetails details = new SwapChainSupportDetails();
 
-        details.capabilities = VkSurfaceCapabilitiesKHR.mallocStack(stack);
+        details.capabilities = VkSurfaceCapabilitiesKHR.malloc(stack);
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, details.capabilities);
 
         IntBuffer count = stack.ints(0);
@@ -566,6 +576,8 @@ public class Vulkan {
 
             VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo.calloc(stack);
             vertexInputInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO);
+            //vertexInputInfo.pVertexBindingDescriptions(Vertex.getBindingDescription());
+            //vertexInputInfo.pVertexAttributeDescriptions(Vertex.getAttributeDescriptions());
 
             VkPipelineInputAssemblyStateCreateInfo inputAssembly = VkPipelineInputAssemblyStateCreateInfo.calloc(stack);
             inputAssembly.sType(VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO);
@@ -626,7 +638,7 @@ public class Vulkan {
 
             long pipelineLayout = pPipelineLayout.get(0);
 
-            VkGraphicsPipelineCreateInfo.Buffer pipelineInfo = VkGraphicsPipelineCreateInfo.callocStack(1, stack);
+            VkGraphicsPipelineCreateInfo.Buffer pipelineInfo = VkGraphicsPipelineCreateInfo.calloc(1, stack);
             pipelineInfo.sType(VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO);
             pipelineInfo.pStages(shaderStages);
             pipelineInfo.pVertexInputState(vertexInputInfo);
@@ -768,7 +780,6 @@ public class Vulkan {
                 vkCmdBeginRenderPass(commandBuffer, renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
                 {
                     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.id);
-                    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
                 }
                 vkCmdEndRenderPass(commandBuffer);
 

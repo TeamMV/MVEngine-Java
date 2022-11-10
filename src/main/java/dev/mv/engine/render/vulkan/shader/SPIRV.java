@@ -37,7 +37,7 @@ public class SPIRV implements NativeResource {
         return null;
     }
 
-    public static SPIRV compileShader(String filename, String source, ShaderKind shaderKind) {
+    private static SPIRV compileShader(String filename, String source, ShaderKind shaderKind) {
         long compiler = shaderc_compiler_initialize();
 
         if (compiler == NULL) {

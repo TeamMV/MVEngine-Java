@@ -31,37 +31,31 @@ public class Lexer {
                             i += 2;
                         }
                     }
-                }
-                else if (inStr) {
+                } else if (inStr) {
                     boolean shouldExit = false;
                     while (!shouldExit) {
                         buffer += chars[i];
                         if (i + 1 == chars.length) {
                             shouldExit = true;
-                        }
-                        else if (chars[i + 1] == '`') {
+                        } else if (chars[i + 1] == '`') {
                             i++;
                             shouldExit = true;
-                        }
-                        else {
+                        } else {
                             i++;
                         }
                     }
                     if (chars[i] == '`') {
                         inStr = false;
                         tokens.add(new Token(TokenType.ML_STRING, buffer, fileName, lineBuffer, posBuffer));
-                    }
-                    else {
+                    } else {
                         buffer += "\n";
                     }
-                }
-                else if (chars[i] == '`') {
+                } else if (chars[i] == '`') {
                     inStr = true;
                     buffer = "";
                     posBuffer = i - 1;
                     lineBuffer = lineNumber;
-                }
-                else if (chars[i] == '"') {
+                } else if (chars[i] == '"') {
                     i++;
                     buffer = "";
                     posBuffer = i - 2;
@@ -70,33 +64,29 @@ public class Lexer {
                         i++;
                     }
                     tokens.add(new Token(TokenType.STRING, buffer, fileName, lineNumber, posBuffer));
-                }
-                else if (chars[i] == '\'') {
+                } else if (chars[i] == '\'') {
                     i++;
                     tokens.add(new Token(TokenType.CHAR, chars[i] + "", fileName, lineNumber, i - 2));
                     i++;
                     if (chars[i] != '\'') {
                         throw new IndexOutOfBoundsException("Bound for char is 1!");
                     }
-                }
-                else if (Character.isWhitespace(chars[i])) {}
-                else if (Character.isAlphabetic(chars[i])) {
+                } else if (Character.isWhitespace(chars[i])) {
+                } else if (Character.isAlphabetic(chars[i])) {
                     String id = "";
                     int pos = i + 1;
                     while (Character.isAlphabetic(chars[i]) || Character.isDigit(chars[i]) || chars[i] == '_') {
                         id += chars[i];
                         if (i + 2 < chars.length) {
                             i++;
-                        }
-                        else {
+                        } else {
                             i++;
                             break;
                         }
                     }
                     i--;
                     tokens.add(new Token(TokenType.fromSymbol(id), id, fileName, lineNumber, pos));
-                }
-                else if (Character.isDigit(chars[i])) {
+                } else if (Character.isDigit(chars[i])) {
                     String num = "";
                     int pos = i + 1;
                     if (chars[i] == '0' && (chars[i + 1] == 'x' || chars[i + 1] == 'b')) {
@@ -108,32 +98,27 @@ public class Lexer {
                     while (Character.isDigit(chars[i]) || chars[i] == '_' || chars[i] == '.') {
                         if (chars[i] != '_') {
                             num += chars[i];
-                        }
-                        else if (chars[i] == '.') {
+                        } else if (chars[i] == '.') {
                             if (!fl) {
                                 fl = true;
                                 num += ".";
-                            }
-                            else {
+                            } else {
                                 break;
                             }
                         }
                         if (i + 2 < chars.length) {
                             i++;
-                        }
-                        else {
+                        } else {
                             break;
                         }
                     }
                     tokens.add(new Token(fl ? TokenType.FLOAT : TokenType.INTEGER, num, fileName, lineNumber, pos));
-                }
-                else {
+                } else {
                     if (chars.length >= i + 2) {
                         String token = "" + chars[i] + chars[i + 1];
                         if (token.equals("//")) {
                             break;
-                        }
-                        else if (token.equals("/*")) {
+                        } else if (token.equals("/*")) {
                             inComment = true;
                             i++;
                             continue;
@@ -143,16 +128,14 @@ public class Lexer {
                         if (type != TokenType.IDENTIFIER) {
                             tokens.add(new Token(type, token, fileName, lineNumber, i + 1));
                             i++;
-                        }
-                        else {
+                        } else {
                             type = TokenType.fromSymbol(chars[i] + "");
                             if (type == TokenType.IDENTIFIER) {
                                 throw new SyntaxError("Unknown symbol '" + chars[i] + "' at line " + lineNumber + ":" + (i - 1) + " in " + fileName);
                             }
                             tokens.add(new Token(type, chars[i] + "", fileName, lineNumber, i + 1));
                         }
-                    }
-                    else {
+                    } else {
                         TokenType type = TokenType.fromSymbol(chars[i] + "");
                         if (type == TokenType.IDENTIFIER) {
                             throw new SyntaxError("Unknown symbol '" + chars[i] + "' at line " + lineNumber + ":" + (i - 1) + " in " + fileName);

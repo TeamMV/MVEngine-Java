@@ -7,6 +7,7 @@ import dev.mv.editor.loading.LoadingManager;
 import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.Window;
+import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.drawables.text.BitmapFont;
 import dev.mv.engine.render.light.DirectionalLight;
 import dev.mv.engine.render.light.PointLight;
@@ -36,19 +37,27 @@ public class Main {
         MVEngine.init(new ApplicationConfig().setName("MVEngine").setVersion(Version.parse("v0.1.0")).setVulkan(true));
         System.out.println(usesVulkan());
 
-        //Window window = MVEngine.createWindow(800, 600, "MVEngine", true);
-        //window.run(() -> {
-//
-        //}, () -> {
-//
-        //}, () -> {
-//
-        //});
+        WindowCreateInfo createInfo = new WindowCreateInfo();
+        createInfo.title = "MV Engine";
+        createInfo.resizeable = true;
+        createInfo.appendFpsToTitle = true;
+        createInfo.fpsAppendConfiguration.betweenTitleAndValue = " - ";
+        createInfo.fpsAppendConfiguration.afterValue = " frames";
+        createInfo.maxFPS = 60;
+        createInfo.maxUPS = 30;
+        createInfo.fullscreen = false;
+        createInfo.decorated = true;
+
+        Window window = MVEngine.createWindow(createInfo);
+        window.run(() -> {
+
+        }, () -> {
+
+        }, () -> {
+
+        });
 
         System.out.println(usesVulkan());
-
-        System.out.println("--------------------------------");
-        Lexer.tokenize("/home/v22/Schreibtisch/coding/java/MVEngine/src/main/resources/mvln-files/test.mvln").stream().forEach(t -> System.out.println(t.getType() + ":" + t.getValue()));
 
         /*
         Window window = MVEngine.createWindow(1000, 700, "MVEngine", true);

@@ -5,20 +5,16 @@ import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSubmitInfo;
 
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
 import static org.lwjgl.vulkan.VK10.*;
 
 public class VulkanRender {
-    public static final int MAX_FRAMES_IN_FLIGHT = 2;
+    public static final int MAX_FRAMES_IN_FLIGHT = 3;
 
     List<Frame> inFlightFrames = new ArrayList<>(MAX_FRAMES_IN_FLIGHT);
-    ;
     Map<Integer, Frame> imagesInFlight = new HashMap<>();
     int currentFrame;
     boolean framebufferResized = false;
@@ -27,6 +23,11 @@ public class VulkanRender {
     }
 
     void drawFrame(VulkanWindow window) {
+        if (framebufferResized) {
+            framebufferResized = false;
+            window.recreateSwapChain();
+            return;
+        }
         try (MemoryStack stack = stackPush()) {
             Frame thisFrame = inFlightFrames.get(currentFrame);
 
@@ -37,12 +38,11 @@ public class VulkanRender {
             int result = vkAcquireNextImageKHR(Vulkan.getLogicalDevice(), window.swapChain.id, 0xFFFFFFFFFFFFFFFFL, thisFrame.imageAvailableSemaphore(), VK_NULL_HANDLE, pImageIndex);
             final int imageIndex = pImageIndex.get(0);
 
-            if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
-                framebufferResized = false;
+            if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
                 window.recreateSwapChain();
                 return;
             } else if (result != VK_SUCCESS) {
-                throw new RuntimeException("failed to acquire swap chain image!");
+                throw new RuntimeException("Failed to acquire swap chain image!");
             }
 
             if (imagesInFlight.containsKey(imageIndex)) {
@@ -65,6 +65,7 @@ public class VulkanRender {
             vkResetFences(Vulkan.getLogicalDevice(), thisFrame.pFence());
 
             if (vkQueueSubmit(Vulkan.getGraphicsQueue(), submitInfo, thisFrame.fence()) != VK_SUCCESS) {
+                vkResetFences(Vulkan.getLogicalDevice(), thisFrame.pFence());
                 throw new RuntimeException("Failed to submit draw command buffer");
             }
 

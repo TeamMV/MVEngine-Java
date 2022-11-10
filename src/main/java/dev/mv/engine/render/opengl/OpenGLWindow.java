@@ -1,22 +1,21 @@
 package dev.mv.engine.render.opengl;
 
-import dev.mv.engine.render.DrawContext2D;
-import dev.mv.engine.render.DrawContext3D;
 import dev.mv.engine.render.Window;
+import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.opengl._2d.OpenGLDrawContext2D;
 import dev.mv.engine.render.opengl._3d.OpenGLDrawContext3D;
+import dev.mv.engine.render.utils.RenderUtils;
 import imgui.ImGui;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import lombok.Getter;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -28,11 +27,8 @@ public class OpenGLWindow implements Window {
     private final float FOV = (float) Math.toRadians(60);
     private final float Z_NEAR = 0.1f;
     private final float Z_FAR = 100f;
-    private int UPS = 30, FPS = 60;
     private int currentFPS, currentUPS;
     private int width, height;
-    private String title;
-    private boolean resizeable;
     private double deltaF;
     private long window;
     private long currentFrame = 0, currentTime = 0;
@@ -42,17 +38,23 @@ public class OpenGLWindow implements Window {
     private Matrix4f projectionMatrix = null;
     private ImGuiImplGlfw glfwImpl;
     private ImGuiImplGl3 glImpl;
+    @Getter
+    private WindowCreateInfo info;
+    private int oW, oH, oX, oY;
 
-    public OpenGLWindow(int width, int heigth, String title, boolean resizeable) {
-        this.width = width;
-        this.height = heigth;
-        this.title = title;
-        this.resizeable = resizeable;
+    public OpenGLWindow(WindowCreateInfo info) {
+        this.info = info;
+        width = info.width;
+        height = info.height;
     }
 
     @Override
     public void run() {
         init();
+
+        if (info.fullscreen) {
+            setFullscreen(true);
+        }
 
         if (onStart != null) {
             onStart.run();
@@ -79,9 +81,10 @@ public class OpenGLWindow implements Window {
     private void init() {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_RESIZABLE, resizeable ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, info.resizeable ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_DECORATED, info.decorated ? GLFW_TRUE : GLFW_FALSE);
 
-        window = glfwCreateWindow(width, height, title, NULL, NULL);
+        window = glfwCreateWindow(width, height, info.title, NULL, NULL);
         if (window == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
         }
@@ -146,8 +149,8 @@ public class OpenGLWindow implements Window {
         // the window or has pressed the ESCAPE key.
 
         long initialTime = System.nanoTime();
-        final double timeU = 1000000000f / UPS;
-        final double timeF = 1000000000f / FPS;
+        final double timeU = 1000000000f / info.maxUPS;
+        final double timeF = 1000000000f / info.maxFPS;
         double deltaU = 0, deltaF = 0;
         int frames = 0, ticks = 0;
         long timer = System.currentTimeMillis();
@@ -163,13 +166,10 @@ public class OpenGLWindow implements Window {
                 if (onUpdate != null) {
                     onUpdate.run();
                 }
-                String fpsTitle = title + " - " + getFPS() + " fps";
-                byte[] bytes = fpsTitle.getBytes(StandardCharsets.UTF_8);
-                ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length + 1);
-                buffer.put(bytes);
-                buffer.put((byte) 0x0); //the stupid terminator which is required lel
-                buffer.flip();
-                glfwSetWindowTitle(window, buffer);
+                if (info.appendFpsToTitle) {
+                    String fpsTitle = info.title + info.fpsAppendConfiguration.betweenTitleAndValue + getFPS() + info.fpsAppendConfiguration.afterValue;
+                    glfwSetWindowTitle(window, RenderUtils.store(fpsTitle));
+                }
                 ticks++;
                 deltaU--;
             }
@@ -214,6 +214,27 @@ public class OpenGLWindow implements Window {
         projectionMatrix.ortho(0.0f, (float) this.getWidth(), 0.0f, (float) this.getHeight(), Z_NEAR, Z_FAR);
     }
 
+    public void setFullscreen(boolean fullscreen) {
+        info.fullscreen = fullscreen;
+        if (fullscreen) {
+            IntBuffer oXb = BufferUtils.createIntBuffer(1).put(0), oYb = BufferUtils.createIntBuffer(1).put(0);
+            glfwGetWindowPos(window, oXb, oYb);
+            oW = width;
+            oH = height;
+            oX = oXb.get(0);
+            oY = oYb.get(0);
+            long monitor = glfwGetPrimaryMonitor();
+            GLFWVidMode mode = glfwGetVideoMode(monitor);
+            glfwSetWindowMonitor(window, monitor, 0, 0, mode.width(), mode.height(), mode.refreshRate());
+            width = mode.width();
+            height = mode.height();
+        } else {
+            long monitor = glfwGetPrimaryMonitor();
+            GLFWVidMode mode = glfwGetVideoMode(monitor);
+            glfwSetWindowMonitor(window, 0, oX, oY, oW, oH, mode.refreshRate());
+        }
+    }
+
     @Override
     public Matrix4f getProjectionMatrix2D() {
         return projectionMatrix;
@@ -247,22 +268,22 @@ public class OpenGLWindow implements Window {
 
     @Override
     public int getFPSCap() {
-        return FPS;
+        return info.maxFPS;
     }
 
     @Override
     public void setFPSCap(int cap) {
-        FPS = cap;
+        info.maxFPS = cap;
     }
 
     @Override
     public int getUPSCap() {
-        return UPS;
+        return info.maxUPS;
     }
 
     @Override
     public void setUPSCap(int cap) {
-        UPS = cap;
+        info.maxUPS = cap;
     }
 
     @Override
@@ -272,16 +293,6 @@ public class OpenGLWindow implements Window {
 
     @Override
     public String getTitle() {
-        return title;
-    }
-
-    @Override
-    public DrawContext2D getDrawContext2D() {
-        return context2D;
-    }
-
-    @Override
-    public DrawContext3D getDrawContext3D() {
-        return context3D;
+        return info.title;
     }
 }
