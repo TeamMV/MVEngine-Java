@@ -3,7 +3,7 @@ package dev.mv.engine.render;
 import org.joml.*;
 
 public interface Shader {
-    void make();
+    void make(Window window);
     void use();
     void uploadUniform1f(String name, float value);
     void uploadUniform1i(String name, int value);

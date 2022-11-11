@@ -4,6 +4,7 @@ import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.Window;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.utils.RenderUtils;
+import dev.mv.engine.render.vulkan.shader.VulkanShader;
 import imgui.glfw.ImGuiImplGlfw;
 import lombok.Getter;
 import org.joml.Matrix4f;
@@ -13,6 +14,8 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -34,7 +37,9 @@ public class VulkanWindow implements Window {
     private long currentFrame = 0, currentTime = 0;
     private long window, surface;
     @Getter
-    private VulkanGraphicsPipeline graphicsPipeline;
+    VulkanGraphicsPipeline graphicsPipeline;
+    @Getter
+    Map<Integer, VulkanGraphicsPipeline> pipelines = new HashMap<>();
     private VulkanRender render;
     private int width, height;
     private Runnable onStart = null, onUpdate = null, onDraw = null;
@@ -128,6 +133,7 @@ public class VulkanWindow implements Window {
         graphicsPipeline = Vulkan.createGraphicsPipeline(swapChain, "shaders/3d/default.vert", "shaders/3d/default.frag");
         if (graphicsPipeline == null)
             return false;
+        pipelines.put(0, graphicsPipeline);
         if (!Vulkan.createFramebuffers(swapChain, graphicsPipeline))
             return false;
         commandPool = Vulkan.createCommandPool();
@@ -218,9 +224,14 @@ public class VulkanWindow implements Window {
 
         terminateSwapChain();
 
+        Map<Integer, VulkanGraphicsPipeline> createdPipelines = new HashMap<>();
+        pipelines.forEach((i, p) -> createdPipelines.put(i, p));
+        pipelines.clear();
+
         swapChain = Vulkan.createSwapChain(surface, width, height, info.vsync);
         Vulkan.createImageViews(swapChain);
-        graphicsPipeline = Vulkan.createGraphicsPipeline(swapChain, "shaders/3d/default.vert", "shaders/3d/default.frag");
+        createdPipelines.forEach((i, p) -> pipelines.put(i, Vulkan.createGraphicsPipeline(swapChain, p.shader)));
+        createdPipelines.clear();
         Vulkan.createFramebuffers(swapChain, graphicsPipeline);
         commandPool = Vulkan.createCommandPool();
         Vulkan.createCommandBuffers(commandPool, swapChain, graphicsPipeline);
@@ -229,6 +240,7 @@ public class VulkanWindow implements Window {
 
     private void terminate() {
         terminateSwapChain();
+        pipelines.clear();
         vkDestroySurfaceKHR(Vulkan.getInstance(), surface, null);
 
         glfwFreeCallbacks(window);
@@ -244,9 +256,11 @@ public class VulkanWindow implements Window {
         render.imagesInFlight.clear();
         vkDestroyCommandPool(Vulkan.getLogicalDevice(), commandPool.id, null);
         swapChain.framebuffers.forEach(framebuffer -> vkDestroyFramebuffer(Vulkan.getLogicalDevice(), framebuffer, null));
-        vkDestroyPipeline(Vulkan.getLogicalDevice(), graphicsPipeline.id, null);
-        vkDestroyPipelineLayout(Vulkan.getLogicalDevice(), graphicsPipeline.layout, null);
-        vkDestroyRenderPass(Vulkan.getLogicalDevice(), graphicsPipeline.renderPass, null);
+        pipelines.forEach((i, p) -> {
+            vkDestroyPipeline(Vulkan.getLogicalDevice(), p.id, null);
+            vkDestroyPipelineLayout(Vulkan.getLogicalDevice(), p.layout, null);
+            vkDestroyRenderPass(Vulkan.getLogicalDevice(), p.renderPass, null);
+        });
         swapChain.imageViews.forEach(imageView -> vkDestroyImageView(Vulkan.getLogicalDevice(), imageView, null));
         vkDestroySwapchainKHR(Vulkan.getLogicalDevice(), swapChain.id, null);
     }
@@ -270,6 +284,32 @@ public class VulkanWindow implements Window {
             GLFWVidMode mode = glfwGetVideoMode(monitor);
             glfwSetWindowMonitor(window, 0, oX, oY, oW, oH, mode.refreshRate());
         }
+    }
+
+    public boolean hasShader(int pipelineId) {
+        return pipelines.containsKey(pipelineId);
+    }
+
+    public int addShader(VulkanShader shader) {
+        if (shader.getId() == -1 || !pipelines.containsKey(shader.getId())) {
+            int newId = 1;
+            while (pipelines.containsKey(newId)) {
+                newId++;
+            }
+            pipelines.put(newId, Vulkan.createGraphicsPipeline(swapChain, shader));
+            return newId;
+        }
+        return shader.getId();
+    }
+
+    public void setShader(VulkanShader shader) {
+        if (shader.getId() != -1 && pipelines.containsKey(shader.getId())) {
+            graphicsPipeline = pipelines.get(shader.getId());
+        }
+    }
+
+    public void resetShader() {
+        graphicsPipeline = pipelines.get(0);
     }
 
     @Override

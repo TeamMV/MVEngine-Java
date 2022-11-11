@@ -1,6 +1,8 @@
 package dev.mv.engine.render.opengl.shader;
 
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.render.Shader;
+import dev.mv.engine.render.Window;
 import dev.mv.engine.render.light.DirectionalLight;
 import dev.mv.engine.render.light.PointLight;
 import dev.mv.engine.render.light.SpotLight;
@@ -21,7 +23,7 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL20.*;
 
-public class OpenGLShader {
+public class OpenGLShader implements Shader {
     private String vertexCode;
     private String fragmentCode;
     @Getter
@@ -49,7 +51,8 @@ public class OpenGLShader {
         return null;
     }
 
-    public void make() {
+    @Override
+    public void make(Window __) {
         this.programID = glCreateProgram();
 
         vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -69,6 +72,7 @@ public class OpenGLShader {
         }
     }
 
+    @Override
     public void use() {
         glAttachShader(this.programID, vertexShader);
         glAttachShader(this.programID, fragmentShader);
@@ -92,6 +96,7 @@ public class OpenGLShader {
         return this.programID;
     }
 
+    @Override
     public void setUniform1f(String name, float value) {
         int location = glGetUniformLocation(this.programID, name);
         if (location != -1) {
@@ -99,6 +104,7 @@ public class OpenGLShader {
         }
     }
 
+    @Override
     public void setUniform1i(String name, int value) {
         int location = glGetUniformLocation(this.programID, name);
         if (location != -1) {
@@ -106,6 +112,7 @@ public class OpenGLShader {
         }
     }
 
+    @Override
     public void setUniform1iv(String name, int[] value) {
         int location = glGetUniformLocation(this.programID, name);
         if (location != -1) {
@@ -113,6 +120,7 @@ public class OpenGLShader {
         }
     }
 
+    @Override
     public void setUniform2fv(String name, Vector2f value) {
         int location = glGetUniformLocation(this.programID, name);
         if (location != -1) {
@@ -120,6 +128,7 @@ public class OpenGLShader {
         }
     }
 
+    @Override
     public void setUniform3fv(String name, Vector3f value) {
         int location = glGetUniformLocation(this.programID, name);
         if (location != -1) {
@@ -127,6 +136,7 @@ public class OpenGLShader {
         }
     }
 
+    @Override
     public void setUniform4fv(String name, Vector4f value) {
         int location = glGetUniformLocation(this.programID, name);
         if (location != -1) {
@@ -134,6 +144,7 @@ public class OpenGLShader {
         }
     }
 
+    @Override
     public void setMatrix4f(String name, Matrix4f value) {
         int location = glGetUniformLocation(this.programID, name);
         FloatBuffer matBuffer = BufferUtils.createFloatBuffer(16);
@@ -141,6 +152,7 @@ public class OpenGLShader {
         glUniformMatrix4fv(location, false, matBuffer);
     }
 
+    @Override
     public void setUniform1b(String name, boolean value) {
         setUniform1i(name, value ? 1 : 0);
     }

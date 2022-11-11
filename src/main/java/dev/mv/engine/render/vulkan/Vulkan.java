@@ -3,11 +3,14 @@ package dev.mv.engine.render.vulkan;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.utils.RenderUtils;
 import dev.mv.engine.render.vulkan.shader.SPIRV;
+import dev.mv.engine.render.vulkan.shader.VulkanShader;
 import dev.mv.utils.misc.Version;
+import lombok.SneakyThrows;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
@@ -58,6 +61,7 @@ public class Vulkan {
             GPU = null;
             logicalDevice = null;
             graphicsQueue = null;
+            VulkanMemoryAllocator.allocator = VK_NULL_HANDLE;
             return false;
         }
         initialized = true;
@@ -69,6 +73,7 @@ public class Vulkan {
         VulkanDebugger.setupDebugger(instance);
         if (!pickPhysicalDevices()) return false;
         if (!createLogicalDevice()) return false;
+        if (!VulkanMemoryAllocator.init()) return false;
         return true;
     }
 
@@ -82,7 +87,7 @@ public class Vulkan {
             appInfo.applicationVersion(VK_MAKE_VERSION(version.getMajor(), version.getMinor(), version.getPatch()));
             appInfo.pEngineName(RenderUtils.store("MVEngine"));
             appInfo.engineVersion(VK_MAKE_VERSION(0, 1, 0));
-            appInfo.apiVersion(VK_API_VERSION_1_0);
+            appInfo.apiVersion(getVulkanVersion());
 
             VkInstanceCreateInfo createInfo = VkInstanceCreateInfo.calloc(stack);
 
@@ -539,6 +544,15 @@ public class Vulkan {
     }
 
     static VulkanGraphicsPipeline createGraphicsPipeline(VulkanSwapChain swapChain, String defaultVertShaderPath, String defaultFragShaderPath) {
+        try {
+            VulkanShader shader = new VulkanShader(defaultVertShaderPath, defaultFragShaderPath);
+            return createGraphicsPipeline(swapChain, shader);
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static VulkanGraphicsPipeline createGraphicsPipeline(VulkanSwapChain swapChain, VulkanShader shader) {
         try (MemoryStack stack = stackPush()) {
             long renderPass = createRenderPass(swapChain);
 
@@ -546,11 +560,10 @@ public class Vulkan {
                 return null;
             }
 
-            SPIRV vertShaderSPIRV = SPIRV.compileShaderFile(defaultVertShaderPath, VERTEX_SHADER);
-            SPIRV fragShaderSPIRV = SPIRV.compileShaderFile(defaultFragShaderPath, FRAGMENT_SHADER);
+            shader.compile();
 
-            long vertShaderModule = createShaderModule(vertShaderSPIRV.bytecode());
-            long fragShaderModule = createShaderModule(fragShaderSPIRV.bytecode());
+            long vertShaderModule = createShaderModule(shader.getVertexBytecode());
+            long fragShaderModule = createShaderModule(shader.getFragmentBytecode());
 
             if (vertShaderModule == -1 || fragShaderModule == -1) {
                 return null;
@@ -576,8 +589,8 @@ public class Vulkan {
 
             VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo.calloc(stack);
             vertexInputInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO);
-            //vertexInputInfo.pVertexBindingDescriptions(Vertex.getBindingDescription());
-            //vertexInputInfo.pVertexAttributeDescriptions(Vertex.getAttributeDescriptions());
+            vertexInputInfo.pVertexBindingDescriptions(shader.getBindingDescription());
+            vertexInputInfo.pVertexAttributeDescriptions(shader.getAttributeDescription());
 
             VkPipelineInputAssemblyStateCreateInfo inputAssembly = VkPipelineInputAssemblyStateCreateInfo.calloc(stack);
             inputAssembly.sType(VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO);
@@ -664,13 +677,13 @@ public class Vulkan {
             vkDestroyShaderModule(logicalDevice, vertShaderModule, null);
             vkDestroyShaderModule(logicalDevice, fragShaderModule, null);
 
-            vertShaderSPIRV.free();
-            fragShaderSPIRV.free();
+            shader.free();
 
             VulkanGraphicsPipeline pipeline = new VulkanGraphicsPipeline();
             pipeline.id = pipelineId;
             pipeline.layout = pipelineLayout;
             pipeline.renderPass = renderPass;
+            pipeline.shader = shader;
             return pipeline;
         }
     }
@@ -860,5 +873,9 @@ public class Vulkan {
     public static VkQueue getPresentQueue() {
         check();
         return presentQueue;
+    }
+
+    public static int getVulkanVersion() {
+        return VK_MAKE_API_VERSION(0, 1, 2, 198);
     }
 }

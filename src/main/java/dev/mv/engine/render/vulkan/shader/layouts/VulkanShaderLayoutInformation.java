@@ -1,6 +1,8 @@
 package dev.mv.engine.render.vulkan.shader.layouts;
 
 import lombok.Getter;
+import org.lwjgl.vulkan.VkVertexInputAttributeDescription;
+import org.lwjgl.vulkan.VkVertexInputBindingDescription;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -9,9 +11,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.ClassLoader.getSystemClassLoader;
+import static org.lwjgl.vulkan.VK10.VK_VERTEX_INPUT_RATE_VERTEX;
+
 public class VulkanShaderLayoutInformation {
-    @Getter
-    private int layoutAmount = 0;
     @Getter
     private int size = 0;
     @Getter
@@ -21,11 +24,29 @@ public class VulkanShaderLayoutInformation {
         layouts = new ArrayList<>();
     }
 
-    public static VulkanShaderLayoutInformation retrieveInformation(String shaderfile) throws IOException {
+    public VkVertexInputAttributeDescription.Buffer getAttributeDescription() {
+        VkVertexInputAttributeDescription.Buffer descriptions = VkVertexInputAttributeDescription.calloc(layouts.size());
 
-        BufferedReader reader = new BufferedReader(new FileReader(shaderfile));
+        for (int i = 0; i < layouts.size(); i++) {
+            descriptions.put(i, layouts.get(i).getDescription());
+        }
+
+        return descriptions.rewind();
+    }
+
+    public VkVertexInputBindingDescription.Buffer getBindingDescription() {
+        VkVertexInputBindingDescription.Buffer descriptions = VkVertexInputBindingDescription.calloc(1);
+
+        descriptions.get(0).binding(0);
+        descriptions.get(0).stride(size);
+        descriptions.get(0).inputRate(VK_VERTEX_INPUT_RATE_VERTEX);
+
+        return descriptions;
+    }
+
+    public static VulkanShaderLayoutInformation retrieveInformation(String shaderFile) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(getSystemClassLoader().getResource(shaderFile).toExternalForm()));
         String line;
-        int count = 0;
         int offset = 0;
 
         VulkanShaderLayoutInformation info = new VulkanShaderLayoutInformation();
@@ -65,11 +86,9 @@ public class VulkanShaderLayoutInformation {
                     VulkanShaderLayout layout = new VulkanShaderLayout(Integer.parseInt(location), Integer.parseInt(binding), offset, VulkanShaderLayout.ShaderDataType.get(type));
                     info.layouts.add(layout);
                     offset += layout.getSize();
-                    count++;
                 }
             }
         }
-        info.layoutAmount = count;
         info.size = offset;
         return info;
     }
