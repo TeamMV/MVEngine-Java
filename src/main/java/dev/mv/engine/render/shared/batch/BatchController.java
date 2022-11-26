@@ -25,6 +25,7 @@ public class BatchController {
 
         defaultShader = RenderBuilder.newShader(VERTEX_PATH, FRAGMENT_PATH);
         defaultShader.make(win);
+        defaultShader.bind();
         prebuildDefaultShader = defaultShader;
         defaultShader.use();
 

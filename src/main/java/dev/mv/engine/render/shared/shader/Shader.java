@@ -5,6 +5,7 @@ import org.joml.*;
 
 public interface Shader {
     void make(Window window);
+    void bind();
     void use();
     void uniform(String name, float value);
     void uniform(String name, int value);

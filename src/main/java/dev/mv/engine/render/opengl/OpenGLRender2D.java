@@ -27,14 +27,14 @@ public class OpenGLRender2D implements Render2D {
 
     @Override
     public void retrieveVertexData(Texture[] textures, int[] texIds, int[] indices, float[] vertices, int vboId, int iboId, Shader shader) {
-        System.out.println(Arrays.toString(vertices) + "\n------------------------------------------------------");
         if(window == null){
             throw new IllegalStateException("Window is not set!");
         }
 
+        int i = 0;
         for (Texture texture : textures) {
             if (texture == null) continue;
-            texture.bind();
+            texture.bind(i++);
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, vboId);

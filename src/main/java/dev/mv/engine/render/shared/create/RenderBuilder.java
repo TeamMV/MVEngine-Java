@@ -38,7 +38,7 @@ public class RenderBuilder {
     }
 
     public static Texture newTexture(String path) throws IOException {
-        return newTexture(ImageIO.read(new File(path)));
+        return newTexture(ImageIO.read(RenderBuilder.class.getResourceAsStream(path)));
     }
 
     public static Texture newTexture(BufferedImage image) throws IOException {

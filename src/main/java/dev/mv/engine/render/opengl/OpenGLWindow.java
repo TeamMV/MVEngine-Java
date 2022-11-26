@@ -181,8 +181,8 @@ public class OpenGLWindow implements Window {
             if (deltaF >= 1) {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                glfwImpl.newFrame();
-                ImGui.newFrame();
+                //glfwImpl.newFrame();
+                //ImGui.newFrame();
 
                 //glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
                 if (onDraw != null) {
@@ -191,8 +191,8 @@ public class OpenGLWindow implements Window {
                 //BatchController.finishAndRender();
                 render3D.render();
 
-                ImGui.render();
-                glImpl.renderDrawData(ImGui.getDrawData());
+                //ImGui.render();
+                //glImpl.renderDrawData(ImGui.getDrawData());
 
                 glfwSwapBuffers(window);
                 currentFrame++;

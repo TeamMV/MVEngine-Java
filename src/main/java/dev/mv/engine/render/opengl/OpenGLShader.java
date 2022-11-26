@@ -65,11 +65,10 @@ public class OpenGLShader implements Shader {
     }
 
     @Override
-    public void use() {
+    public void bind() {
         glAttachShader(this.programID, vertexShader);
         glAttachShader(this.programID, fragmentShader);
 
-        glBindAttribLocation(this.programID, 0, "vertices");
         glLinkProgram(this.programID);
         if ((glGetProgrami(this.programID, GL_LINK_STATUS)) != 1) {
             System.out.println("link program error: " + glGetProgramInfoLog(this.programID));
@@ -80,7 +79,10 @@ public class OpenGLShader implements Shader {
             System.out.println("link program error: " + glGetProgramInfoLog(this.programID));
             return;
         }
+    }
 
+    @Override
+    public void use() {
         glUseProgram(this.programID);
     }
 

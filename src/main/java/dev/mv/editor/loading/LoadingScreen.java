@@ -133,7 +133,6 @@ public class LoadingScreen {
         }
         try {
             texture = RenderBuilder.newTexture(LoadingScreen.class.getResourceAsStream(file));
-            texture.bind();
         } catch (Throwable t) {
             texture = null;
         }

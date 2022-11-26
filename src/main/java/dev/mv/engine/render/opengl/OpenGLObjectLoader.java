@@ -16,6 +16,7 @@ import org.lwjgl.opengl.GL30;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -161,7 +162,7 @@ public class OpenGLObjectLoader implements ObjectLoader {
     }
 
     private List<String> readAllLines(String file) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(file)));
         List<String> outputList = new ArrayList<>();
         String line;
         while ((line = reader.readLine()) != null) {

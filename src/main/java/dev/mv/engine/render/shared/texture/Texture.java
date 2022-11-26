@@ -1,7 +1,7 @@
 package dev.mv.engine.render.shared.texture;
 
 public interface Texture {
-    void bind();
+    void bind(int index);
 
     void unbind();
 

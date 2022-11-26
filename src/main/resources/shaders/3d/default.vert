@@ -1,11 +1,12 @@
-#version 450
+#version 400
 
 in vec3 position;
 in vec2 texCoord;
 in vec3 normal;
 
 out vec2 oTextureCoord;
-out vec4 outPosition;
+out vec3 oNormal;
+out vec3 oPos;
 
 uniform mat4 uProjection;
 uniform mat4 uView;
@@ -13,6 +14,8 @@ uniform mat4 uTransform;
 
 void main() {
     vec4 worldPos = uTransform * vec4(position, 1.0);
-    outPosition = uProjection * uView * worldPos;
+    gl_Position = uProjection * uView * worldPos;
     oTextureCoord = texCoord;
+    oNormal = normal;
+    oPos = worldPos.xyz;
 }

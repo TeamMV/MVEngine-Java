@@ -12,16 +12,14 @@ import dev.mv.engine.render.shared.shader.light.DirectionalLight;
 import dev.mv.engine.render.shared.shader.light.PointLight;
 import dev.mv.engine.render.shared.shader.light.SpotLight;
 import dev.mv.engine.render.utils.RenderConstansts;
+import dev.mv.utils.Utils;
 import lombok.Getter;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -42,7 +40,7 @@ public class OpenGLRender3D implements Render3D {
         this.shader = RenderBuilder.newShader("/shaders/3d/default.vert", "/shaders/3d/default.frag");
 
         shader.make(window);
-        shader.use();
+        shader.bind();
     }
 
 
@@ -51,10 +49,7 @@ public class OpenGLRender3D implements Render3D {
         GL20.glEnableVertexAttribArray(0);
         GL20.glEnableVertexAttribArray(1);
         GL20.glEnableVertexAttribArray(2);
-        GL13.glActiveTexture(GL13.GL_TEXTURE0);
-        if (model.getTexture() != null) {
-            GL11.glBindTexture(GL_TEXTURE_2D, model.getTexture().getId());
-        }
+        Utils.ifNotNull(model.getTexture()).then(t -> t.bind(0));
         Uniforms3D.material(shader, model.getMaterial(), "uMaterial");
     }
 
@@ -83,6 +78,7 @@ public class OpenGLRender3D implements Render3D {
 
     @Override
     public void render() {
+        shader.use();
 
         //renderLights(pointLights, spotLights);
 

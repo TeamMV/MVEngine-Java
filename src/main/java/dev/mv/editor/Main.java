@@ -7,6 +7,7 @@ import dev.mv.editor.loading.LoadingManager;
 import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.WindowCreateInfo;
+import dev.mv.engine.render.opengl.OpenGLRender2D;
 import dev.mv.engine.render.shared.Camera;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.DrawContext3D;
@@ -53,7 +54,7 @@ public class Main {
             .setRenderingApi(ApplicationConfig.RenderingAPI.OPENGL));
 
         WindowCreateInfo createInfo = new WindowCreateInfo();
-        createInfo.title = "MV Engine";
+        createInfo.title = "MVEngine";
         createInfo.resizeable = true;
         createInfo.appendFpsToTitle = true;
         createInfo.fpsAppendConfiguration.betweenTitleAndValue = " - ";
@@ -69,10 +70,10 @@ public class Main {
             renderer3D = new DrawContext3D(window);
             try {
                 ObjectLoader loader = MVEngine.getObjectLoader();
-                Model mCruiser = loader.loadExternalModel("src/main/resources/models/cruiser/cruiser.obj");
-                Model mPlane = loader.loadExternalModel("src/main/resources/models/f16/f16.obj");
-                Texture tCruiser = RenderBuilder.newTexture("src/main/resources/models/cruiser/cruiser.bmp");
-                Texture tPLane = RenderBuilder.newTexture("src/main/resources/models/f16/F-16.bmp");
+                Model mCruiser = loader.loadExternalModel("/models/cruiser/cruiser.obj");
+                Model mPlane = loader.loadExternalModel("/models/f16/f16.obj");
+                Texture tCruiser = RenderBuilder.newTexture("/models/cruiser/cruiser.bmp");
+                Texture tPLane = RenderBuilder.newTexture("/models/f16/F-16.bmp");
                 mCruiser.setTexture(tCruiser, 1.0f);
                 mPlane.setTexture(tPLane, 1.0f);
                 cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
