@@ -1,10 +1,8 @@
 package dev.mv.engine.render.shared.batch;
 
-import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.texture.Texture;
-import dev.mv.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.lwjgl.BufferUtils;
@@ -13,9 +11,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 
 public class Batch {
@@ -197,7 +193,7 @@ public class Batch {
     }
 
     public void render() {
-        win.getRenderingContext().retrieveVertexData(textures, tex_ids, indices, data, vbo_id, ibo_id, shader);
+        win.getRender2D().retrieveVertexData(textures, tex_ids, indices, data, vbo_id, ibo_id, shader);
 
         forceClearBatch();
     }

@@ -75,7 +75,7 @@ public class OpenGLObjectLoader implements ObjectLoader {
     }
 
     @Override
-    public dev.mv.engine.render.shared.models.Model loadModel(float[] vertices, float[] texCoords, float[] normals, int[] indices) {
+    public Model loadModel(float[] vertices, float[] texCoords, float[] normals, int[] indices) {
         int id = createVAO();
         storeIndicesBuffer(indices);
         storeDataInAttribList(0, 3, vertices);
@@ -95,7 +95,7 @@ public class OpenGLObjectLoader implements ObjectLoader {
     }
 
     @Override
-    public dev.mv.engine.render.shared.models.Model loadExternalModel(String path) throws IOException {
+    public Model loadExternalModel(String path) throws IOException {
         List<String> lines = readAllLines(path);
         List<Vector3f> vertices = new ArrayList<>();
         List<Vector3f> normals = new ArrayList<>();

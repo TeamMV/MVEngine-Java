@@ -2,8 +2,6 @@ package dev.mv.engine.render.shared;
 
 import org.joml.Matrix4f;
 
-import java.awt.image.BufferedImage;
-
 public interface Window {
     void run();
 
@@ -33,5 +31,9 @@ public interface Window {
 
     String getTitle();
 
-    RenderingContext getRenderingContext();
+    Render2D getRender2D();
+
+    Render3D getRender3D();
+
+    Camera getCamera();
 }

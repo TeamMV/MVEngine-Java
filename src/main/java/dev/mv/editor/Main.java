@@ -30,12 +30,13 @@ import java.io.IOException;
 
 import static dev.mv.utils.Utils.await;
 import static dev.mv.utils.Utils.sleep;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Main {
     public static final Vector4f DEFAULT_COLOR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-    public static DrawContext2D ctx;
-    public static DrawContext3D renderer;
+    public static DrawContext2D renderer2D;
+    public static DrawContext3D renderer3D;
     static float r = 0;
     private static BitmapFont font;
     private static Entity cruiser;
@@ -65,19 +66,15 @@ public class Main {
         Window window = MVEngine.createWindow(createInfo);
 
         window.run(() -> {
-            renderer = new DrawContext3D(window);
+            renderer3D = new DrawContext3D(window);
             try {
                 ObjectLoader loader = MVEngine.getObjectLoader();
                 Model mCruiser = loader.loadExternalModel("src/main/resources/models/cruiser/cruiser.obj");
                 Model mPlane = loader.loadExternalModel("src/main/resources/models/f16/f16.obj");
                 Texture tCruiser = RenderBuilder.newTexture("src/main/resources/models/cruiser/cruiser.bmp");
                 Texture tPLane = RenderBuilder.newTexture("src/main/resources/models/f16/F-16.bmp");
-                Material material = new Material();
-                material.setReflectance(1f);
-                material.setAmbientColor(DEFAULT_COLOR);
-                material.setTexture(tPLane);
                 mCruiser.setTexture(tCruiser, 1.0f);
-                mPlane.setMaterial(material);
+                mPlane.setTexture(tPLane, 1.0f);
                 cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
                 plane = new Entity(mPlane, new Vector3f(2, 0, -2.5f), new Vector3f(0, 0, 0), 1);
             } catch (IOException e) {
@@ -85,12 +82,12 @@ public class Main {
             }
 
         }, null, () -> {
-            renderer.object(cruiser);
-            renderer.object(plane);
-            //renderer.processPointLight(pointlight);
-            //renderer.processSpotLight(spotlight);
-            //renderer.processDirectionalLight(directionalLight);
-            //renderer.render();
+            renderer3D.object(cruiser);
+            renderer3D.object(plane);
+            //renderer3D.processPointLight(pointlight);
+            //renderer3D.processSpotLight(spotlight);
+            //renderer3D.processDirectionalLight(directionalLight);
+            //renderer3D.render();
 
             r -= 0.1f;
             if(r <= 0) {
@@ -99,48 +96,48 @@ public class Main {
 
             //cruiser.incrementRotation(0.1f, 0.1f, 0.1f);
 
-            //Camera camera = window.getDrawContext3D().getCamera();
-//
-            //if (glfwGetKey(window.getGlfwId(), GLFW_KEY_W) == GLFW_PRESS) {
-            //    camera.move(0.0f, 0.0f, -0.01f);
-            //}
-            //if (glfwGetKey(window.getGlfwId(), GLFW_KEY_A) == GLFW_PRESS) {
-            //    camera.move(-0.01f, 0.0f, 0.0f);
-            //}
-            //if (glfwGetKey(window.getGlfwId(), GLFW_KEY_S) == GLFW_PRESS) {
-            //    camera.move(0.0f, 0.0f, 0.01f);
-            //}
-            //if (glfwGetKey(window.getGlfwId(), GLFW_KEY_D) == GLFW_PRESS) {
-            //    camera.move(0.01f, 0.0f, 0.0f);
-            //}
-//
-            //if (glfwGetKey(window.getGlfwId(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            //    camera.rotate(0.0f, 1.0f, 0.0f);
-            //}
-            //if (glfwGetKey(window.getGlfwId(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-            //    camera.rotate(0.0f, -1.0f, 0.0f);
-            //}
-            //if (glfwGetKey(window.getGlfwId(), GLFW_KEY_UP) == GLFW_PRESS) {
-            //    camera.rotate(-1.0f, 0.0f, 0.0f);
-            //}
-            //if (glfwGetKey(window.getGlfwId(), GLFW_KEY_DOWN) == GLFW_PRESS) {
-            //    camera.rotate(1.0f, 0.0f, 0.0f);
-            //}
-//
-            //if (glfwGetKey(window.getGlfwId(), GLFW_KEY_SPACE) == GLFW_PRESS) {
-            //    camera.move(0.0f, 0.01f, 0.0f);
-            //}
-            //if (glfwGetKey(window.getGlfwId(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-            //    camera.move(0.0f, -0.01f, 0.0f);
-            //}
+            Camera camera = window.getCamera();
+
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_W) == GLFW_PRESS) {
+                camera.move(0.0f, 0.0f, -0.01f);
+            }
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_A) == GLFW_PRESS) {
+                camera.move(-0.01f, 0.0f, 0.0f);
+            }
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_S) == GLFW_PRESS) {
+                camera.move(0.0f, 0.0f, 0.01f);
+            }
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_D) == GLFW_PRESS) {
+                camera.move(0.01f, 0.0f, 0.0f);
+            }
+
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
+                camera.rotate(0.0f, 1.0f, 0.0f);
+            }
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_LEFT) == GLFW_PRESS) {
+                camera.rotate(0.0f, -1.0f, 0.0f);
+            }
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_UP) == GLFW_PRESS) {
+                camera.rotate(-1.0f, 0.0f, 0.0f);
+            }
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_DOWN) == GLFW_PRESS) {
+                camera.rotate(1.0f, 0.0f, 0.0f);
+            }
+
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_SPACE) == GLFW_PRESS) {
+                camera.move(0.0f, 0.01f, 0.0f);
+            }
+            if (glfwGetKey(window.getGlfwId(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+                camera.move(0.0f, -0.01f, 0.0f);
+            }
         });
 
 
         /*window.run(() -> {
-            ctx = new DrawContext2D(window);
+            renderer2D = new DrawContext2D(window);
         }, null, () -> {
-            ctx.color(255, 0, 0, 255);
-            ctx.rectangle(100, 100, 100, 100);
+            renderer2D.color(255, 0, 0, 255);
+            renderer2D.rectangle(100, 100, 100, 100);
         });*/
 
         System.exit(0);

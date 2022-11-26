@@ -1,10 +1,10 @@
 package dev.mv.engine.render.opengl;
 
-import dev.mv.engine.render.shared.DrawContext2D;
-import dev.mv.engine.render.shared.RenderingContext;
+import dev.mv.engine.render.shared.Camera;
+import dev.mv.engine.render.shared.Render2D;
+import dev.mv.engine.render.shared.Render3D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.WindowCreateInfo;
-import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.utils.RenderUtils;
 import imgui.ImGui;
 import imgui.gl3.ImGuiImplGl3;
@@ -34,14 +34,16 @@ public class OpenGLWindow implements Window {
     private long window;
     private long currentFrame = 0, currentTime = 0;
     private Runnable onStart = null, onUpdate = null, onDraw = null;
-    private OpenGLRenderingContext renderingContext = null;
-    private OpenGL3DRenderingContext renderingContext3d = null;
+    private OpenGLRender2D render2D = null;
+    private OpenGLRender3D render3D = null;
     private Matrix4f projectionMatrix = null;
     private ImGuiImplGlfw glfwImpl;
     private ImGuiImplGl3 glImpl;
     @Getter
     private WindowCreateInfo info;
     private int oW, oH, oX, oY;
+
+    private Camera camera;
 
     public OpenGLWindow(WindowCreateInfo info) {
         this.info = info;
@@ -57,13 +59,15 @@ public class OpenGLWindow implements Window {
             setFullscreen(true);
         }
 
+        declareProjection();
+        //render2D = new OpenGLRender2D(this);
+        render3D = new OpenGLRender3D(this);
+        camera = new Camera();
+
         if (onStart != null) {
             onStart.run();
         }
 
-        declareProjection();
-        renderingContext = new OpenGLRenderingContext(this);
-        renderingContext3d = new OpenGL3DRenderingContext(this);
         loop();
 
         // Free the window callbacks and destroy the window
@@ -185,7 +189,7 @@ public class OpenGLWindow implements Window {
                     onDraw.run();
                 }
                 //BatchController.finishAndRender();
-                renderingContext3d.render();
+                render3D.render();
 
                 ImGui.render();
                 glImpl.renderDrawData(ImGui.getDrawData());
@@ -299,7 +303,17 @@ public class OpenGLWindow implements Window {
     }
 
     @Override
-    public RenderingContext getRenderingContext() {
-        return renderingContext;
+    public Render2D getRender2D() {
+        return render2D;
+    }
+
+    @Override
+    public Render3D getRender3D() {
+        return render3D;
+    }
+
+    @Override
+    public Camera getCamera() {
+        return camera;
     }
 }

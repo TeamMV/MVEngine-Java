@@ -1,6 +1,7 @@
 package dev.mv.engine.render.opengl;
 
-import dev.mv.engine.render.shared.RenderingContext;
+import dev.mv.engine.render.shared.Render2D;
+import dev.mv.engine.render.shared.Transformations3D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.batch.Batch;
 import dev.mv.engine.render.shared.shader.Shader;
@@ -17,10 +18,10 @@ import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 
-public class OpenGLRenderingContext implements RenderingContext {
+public class OpenGLRender2D implements Render2D {
     private Window window;
 
-    public OpenGLRenderingContext(Window window) {
+    public OpenGLRender2D(Window window) {
         this.window = window;
     }
 
@@ -47,7 +48,7 @@ public class OpenGLRenderingContext implements RenderingContext {
         shader.uniform("uResY", (float) window.getHeight());
 
         shader.uniform("uProjection", window.getProjectionMatrix2D());
-        //shader.setMatrix4f("uView", win.camera.getViewMatrix());
+        shader.uniform("uView", Transformations3D.getViewMatrix(window.getCamera()));
 
         glVertexAttribPointer(0, Batch.POSITION_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.POSITION_OFFSET_BYTES);
         glEnableVertexAttribArray(0);

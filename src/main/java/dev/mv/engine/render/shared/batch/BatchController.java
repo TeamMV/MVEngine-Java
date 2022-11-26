@@ -1,7 +1,6 @@
 package dev.mv.engine.render.shared.batch;
 
 import dev.mv.engine.MVEngine;
-import dev.mv.engine.render.shared.RenderingContext;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.shader.Shader;

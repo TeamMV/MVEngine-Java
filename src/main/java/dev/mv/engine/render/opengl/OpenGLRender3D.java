@@ -1,5 +1,6 @@
 package dev.mv.engine.render.opengl;
 
+import dev.mv.engine.render.shared.Render3D;
 import dev.mv.engine.render.shared.Transformations3D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.create.RenderBuilder;
@@ -24,7 +25,7 @@ import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class OpenGL3DRenderingContext {
+public class OpenGLRender3D implements Render3D {
     private Window win;
 
     private Map<Model, List<Entity>> modelUsages = new HashMap<>();
@@ -36,11 +37,11 @@ public class OpenGL3DRenderingContext {
     @Getter
     private Shader shader;
 
-    public OpenGL3DRenderingContext(Window win) {
-        this.win = win;
+    public OpenGLRender3D(Window window) {
+        this.win = window;
         this.shader = RenderBuilder.newShader("/shaders/3d/default.vert", "/shaders/3d/default.frag");
 
-        shader.make(win);
+        shader.make(window);
         shader.use();
     }
 
@@ -69,7 +70,7 @@ public class OpenGL3DRenderingContext {
         shader.uniform("uTexSampler", 0);
         shader.uniform("uTransform", Transformations3D.getTransformationMatrix(entity));
         shader.uniform("uProjection", win.getProjectionMatrix3D());
-        //shader.setMatrix4f("uView", OpenGLTransformation3D.getViewMatrix(win.getDrawContext3D().getCamera()));
+        shader.uniform("uView", Transformations3D.getViewMatrix(win.getCamera()));
     }
 
     public void renderLights(List<PointLight> pointLights, List<SpotLight> spotLights) {
@@ -80,6 +81,7 @@ public class OpenGL3DRenderingContext {
         //shader.setDirectionalLight("uDirectionalLight", directionalLight);
     }
 
+    @Override
     public void render() {
 
         //renderLights(pointLights, spotLights);
@@ -93,20 +95,22 @@ public class OpenGL3DRenderingContext {
             }
             unbind();
         }
+
         modelUsages.clear();
         pointLights.clear();
         spotLights.clear();
     }
 
-    public void processEntity(Entity entity) {
-        try {
+    @Override
+    public void entity(Entity entity) {
             List<Entity> entityList = modelUsages.get(entity.getModel());
-            entityList.add(entity);
-        } catch (NullPointerException e) {
-            List<Entity> entityList = new ArrayList<>();
-            entityList.add(entity);
-            modelUsages.put(entity.getModel(), entityList);
-        }
+            if(entityList != null) {
+                entityList.add(entity);
+            } else {
+                entityList = new ArrayList<>();
+                entityList.add(entity);
+                modelUsages.put(entity.getModel(), entityList);
+            }
     }
 
     public void processPointLight(PointLight light) {
