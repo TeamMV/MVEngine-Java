@@ -1,31 +1,23 @@
 package dev.mv.engine;
 
-import dev.mv.engine.render.Window;
 import dev.mv.engine.render.WindowCreateInfo;
-import dev.mv.engine.render.drawables.Texture;
-import dev.mv.engine.render.drawables.text.BitmapFont;
-import dev.mv.engine.render.models.ObjectLoader;
+import dev.mv.engine.render.opengl.OpenGLObjectLoader;
+import dev.mv.engine.render.opengl.OpenGLShader;
 import dev.mv.engine.render.opengl.OpenGLWindow;
-import dev.mv.engine.render.opengl._3d.object.OpenGLObjectLoader;
-import dev.mv.engine.render.opengl.text.OpenGLBitmapFont;
-import dev.mv.engine.render.opengl.texture.OpenGLTexture;
-import dev.mv.engine.render.vulkan.Vulkan;
-import dev.mv.engine.render.vulkan.VulkanWindow;
+import dev.mv.engine.render.shared.Window;
+import dev.mv.engine.render.shared.font.BitmapFont;
+import dev.mv.engine.render.shared.models.ObjectLoader;
 import imgui.ImGui;
 import org.lwjgl.glfw.GLFWErrorCallback;
-
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
 public class MVEngine {
-    private static boolean usesVulkan = false;
+    private static ApplicationConfig.RenderingAPI renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
 
-    public static boolean usesVulkan() {
-        return usesVulkan;
+    public static ApplicationConfig.RenderingAPI getRenderingApi() {
+        return renderingApi;
     }
 
     public static void init() {
@@ -45,24 +37,26 @@ public class MVEngine {
         ImGui.createContext();
         ImGui.styleColorsDark();
 
-        if (config.isVulkan()) {
-            usesVulkan = Vulkan.init(config.getName(), config.getVersion());
+        if (config.getRenderingApi() == ApplicationConfig.RenderingAPI.VULKAN) {
+            /*if (Vulkan.init(config.getName(), config.getVersion())) {
+                renderingApi = ApplicationConfig.RenderingAPI.VULKAN;
+            }*/
         } else {
-            usesVulkan = false;
+            renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
         }
     }
 
     public static void terminate() {
         ImGui.destroyContext();
-        if (usesVulkan) {
-            Vulkan.terminate();
+        if (renderingApi == ApplicationConfig.RenderingAPI.OPENGL) {
+            //Vulkan.terminate();
         }
         glfwTerminate();
     }
 
-    public static void disableVulkan() {
-        if (usesVulkan) {
-            usesVulkan = false;
+    public static void rollbackRenderingApi() {
+        if (renderingApi != ApplicationConfig.RenderingAPI.OPENGL) {
+            renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
         }
     }
 
@@ -71,47 +65,16 @@ public class MVEngine {
             info = new WindowCreateInfo();
         }
 
-        if (usesVulkan()) {
-            return new VulkanWindow(info);
+        if (renderingApi == ApplicationConfig.RenderingAPI.VULKAN) {
+            return null;
         } else {
             return new OpenGLWindow(info);
         }
     }
 
-    public static Texture createTexture(String path) throws IOException {
-        if (usesVulkan()) {
-            return null;
-        } else {
-            return new OpenGLTexture(path);
-        }
-    }
-
-    public static Texture createTexture(InputStream inputStream) throws IOException {
-        if (usesVulkan()) {
-            return null;
-        } else {
-            return new OpenGLTexture(inputStream);
-        }
-    }
-
-    public static Texture createTexture(BufferedImage image) {
-        if (usesVulkan()) {
-            return null;
-        } else {
-            return new OpenGLTexture(image);
-        }
-    }
-
-    public static BitmapFont createFont(String pngPath, String fntPath) {
-        if (usesVulkan()) {
-            return null;
-        } else {
-            return new OpenGLBitmapFont(pngPath, fntPath);
-        }
-    }
 
     public static ObjectLoader getObjectLoader() {
-        if (usesVulkan()) {
+        if (renderingApi == ApplicationConfig.RenderingAPI.VULKAN) {
             return null;
         } else {
             return OpenGLObjectLoader.instance();

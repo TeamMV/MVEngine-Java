@@ -1,6 +1,7 @@
 package dev.mv.editor.loading;
 
-import dev.mv.engine.oldRender.texture.Texture;
+import dev.mv.engine.render.shared.create.RenderBuilder;
+import dev.mv.engine.render.shared.texture.Texture;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiWindowFlags;
@@ -131,7 +132,7 @@ public class LoadingScreen {
             return;
         }
         try {
-            texture = new Texture(LoadingScreen.class.getResourceAsStream(file));
+            texture = RenderBuilder.newTexture(LoadingScreen.class.getResourceAsStream(file));
             texture.bind();
         } catch (Throwable t) {
             texture = null;
@@ -152,7 +153,7 @@ public class LoadingScreen {
         ImGui.setNextWindowBgAlpha(0);
         ImGui.begin("Loading Screen", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoScrollbar);
         if (texture != null) {
-            ImGui.image(texture.getID(), width, height);
+            ImGui.image(texture.getId(), width, height);
         }
         ImGui.setCursorPos((width - messageSize.x) * 0.5f, (height - messageSize.y) - 10);
         ImGui.textUnformatted(message);

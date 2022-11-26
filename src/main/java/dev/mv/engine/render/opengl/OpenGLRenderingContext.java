@@ -1,0 +1,75 @@
+package dev.mv.engine.render.opengl;
+
+import dev.mv.engine.render.shared.RenderingContext;
+import dev.mv.engine.render.shared.Window;
+import dev.mv.engine.render.shared.batch.Batch;
+import dev.mv.engine.render.shared.shader.Shader;
+import dev.mv.engine.render.shared.texture.Texture;
+
+import java.util.Arrays;
+
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+
+public class OpenGLRenderingContext implements RenderingContext {
+    private Window window;
+
+    public OpenGLRenderingContext(Window window) {
+        this.window = window;
+    }
+
+    @Override
+    public void retrieveVertexData(Texture[] textures, int[] texIds, int[] indices, float[] vertices, int vboId, int iboId, Shader shader) {
+        System.out.println(Arrays.toString(vertices) + "\n------------------------------------------------------");
+        if(window == null){
+            throw new IllegalStateException("Window is not set!");
+        }
+
+        for (Texture texture : textures) {
+            if (texture == null) continue;
+            texture.bind();
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboId);
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_DYNAMIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_DYNAMIC_DRAW);
+
+        shader.uniform("TEX_SAMPLER", texIds);
+        shader.uniform("uResX", (float) window.getWidth());
+        shader.uniform("uResY", (float) window.getHeight());
+
+        shader.uniform("uProjection", window.getProjectionMatrix2D());
+        //shader.setMatrix4f("uView", win.camera.getViewMatrix());
+
+        glVertexAttribPointer(0, Batch.POSITION_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.POSITION_OFFSET_BYTES);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, Batch.ROTATION_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.ROTATION_OFFSET_BYTES);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(2, Batch.ROTATION_ORIGIN_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.ROTATION_ORIGIN_OFFSET_BYTES);
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(3, Batch.COLOR_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.COLOR_OFFSET_BYTES);
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(4, Batch.UV_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.UV_OFFSET_BYTES);
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(5, Batch.TEX_ID_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.TEX_ID_OFFSET_BYTES);
+        glEnableVertexAttribArray(5);
+
+        glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        for (Texture texture : textures) {
+            if (texture == null) continue;
+            texture.unbind();
+        }
+    }
+}

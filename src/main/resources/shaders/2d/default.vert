@@ -1,14 +1,13 @@
 #version 450
 
-precision mediump float;
+precision highp float;
 
 layout (location = 0) in vec3 aVertPos;
 layout (location = 1) in float aRotation;
-layout (location = 2) in vec4 aColor;
-layout (location = 3) in vec2 aTexCoords;
-layout (location = 4) in float aTexID;
-layout (location = 5) in float aCameraMode;
-layout (location = 6) in vec2 aRotationOrigin;
+layout (location = 2) in vec2 aRotationOrigin;
+layout (location = 3) in vec4 aColor;
+layout (location = 4) in vec2 aTexCoords;
+layout (location = 5) in float aTexID;
 
 out vec4 fColor;
 out vec2 fTexCoords;
@@ -36,10 +35,6 @@ void main() {
         pos.xy += aRotationOrigin.xy;
     }
 
-    //camMode: 0 = dynamic; 1 = static;
-    if (aCameraMode == 0) {
-        gl_Position = uProjection * uView * vec4(pos, aVertPos.z, 1.0);
-    } else {
-        gl_Position = uProjection * vec4(pos, aVertPos.z, 1.0);
-    }
+    //TODO: view matrix from camera
+    gl_Position = uProjection * vec4(pos, aVertPos.z, 1.0);
 }

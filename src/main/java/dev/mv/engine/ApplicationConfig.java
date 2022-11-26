@@ -10,7 +10,7 @@ public class ApplicationConfig {
     @Getter
     private Version version = new Version(1);
     @Getter
-    private boolean vulkan = true;
+    private RenderingAPI renderingApi = RenderingAPI.OPENGL;
 
     public ApplicationConfig setName(String name) {
         this.name = name;
@@ -22,8 +22,13 @@ public class ApplicationConfig {
         return this;
     }
 
-    public ApplicationConfig setVulkan(boolean vulkan) {
-        this.vulkan = vulkan;
+    public ApplicationConfig setRenderingApi(RenderingAPI renderingApi) {
+        this.renderingApi = renderingApi;
         return this;
+    }
+
+    public static enum RenderingAPI {
+        OPENGL,
+        VULKAN
     }
 }
