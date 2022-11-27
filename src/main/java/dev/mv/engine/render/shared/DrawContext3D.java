@@ -10,8 +10,8 @@ public class DrawContext3D {
         ctx3D = window.getRender3D();
     }
 
-    public void object(Entity entity)  {
-        if(ctx3D == null) {
+    public void object(Entity entity) {
+        if (ctx3D == null) {
             return;
         } else {
             ctx3D.entity(entity);

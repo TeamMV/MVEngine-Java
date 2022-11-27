@@ -7,7 +7,8 @@ public class WindowCreateInfo {
     public FPSAppendInfo fpsAppendConfiguration = new FPSAppendInfo();
     public String title = "";
 
-    public WindowCreateInfo() {}
+    public WindowCreateInfo() {
+    }
 
     public class FPSAppendInfo {
         public String betweenTitleAndValue = " - ";

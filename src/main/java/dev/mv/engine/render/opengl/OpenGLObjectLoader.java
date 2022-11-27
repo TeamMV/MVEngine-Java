@@ -119,7 +119,7 @@ public class OpenGLObjectLoader implements ObjectLoader {
 
                 AIVector3D.Buffer coords = mesh.mTextureCoords(0);
 
-                if(coords != null) {
+                if (coords != null) {
                     for (int i = 0; i < coords.limit(); i++) {
                         AIVector3D coord = coords.get(i);
 
@@ -168,7 +168,7 @@ public class OpenGLObjectLoader implements ObjectLoader {
 
                 Material material = new Material();
 
-                if(colors.size() > 0) {
+                if (colors.size() > 0) {
                     material.setAmbientColor(RenderUtils.vectorize(colors));
                 }
             }

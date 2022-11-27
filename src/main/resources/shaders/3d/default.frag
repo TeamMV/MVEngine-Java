@@ -101,7 +101,7 @@ vec4 calcSpotLight(SpotLight light, vec3 position, vec3 normal) {
     float spotAlpha = dot(fromLightDirection, normalize(light.coneDirection));
     vec4 lightColor = vec4(0, 0, 0, 0);
 
-    if(spotAlpha > light.cutoff) {
+    if (spotAlpha > light.cutoff) {
         lightColor = calcPointLight(light.pointLight, position, normal);
         lightColor *= (1.0 - (1.0 - spotAlpha) / (1.0 - light.cutoff));
     }

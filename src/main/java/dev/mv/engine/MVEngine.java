@@ -8,8 +8,10 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
 import dev.mv.engine.render.shared.models.ObjectLoader;
 import dev.mv.engine.render.vulkan.Vulkan;
+import dev.mv.engine.render.vulkan.VulkanWindow;
 import dev.mv.utils.misc.Version;
 import imgui.ImGui;
+import lombok.Getter;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
@@ -21,6 +23,9 @@ public class MVEngine {
 
     private static ApplicationConfig.RenderingAPI renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
 
+    @Getter
+    private static ApplicationConfig applicationConfig;
+
     public static ApplicationConfig.RenderingAPI getRenderingApi() {
         return renderingApi;
     }
@@ -30,6 +35,7 @@ public class MVEngine {
     }
 
     public static void init(ApplicationConfig config) {
+        applicationConfig = config;
         if (config == null) {
             config = new ApplicationConfig();
         }
@@ -43,9 +49,7 @@ public class MVEngine {
         ImGui.styleColorsDark();
 
         if (config.getRenderingApi() == ApplicationConfig.RenderingAPI.VULKAN) {
-            if (Vulkan.init(config)) {
-                renderingApi = ApplicationConfig.RenderingAPI.VULKAN;
-            }
+            renderingApi = ApplicationConfig.RenderingAPI.VULKAN;
         } else {
             renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
         }
@@ -71,7 +75,7 @@ public class MVEngine {
         }
 
         if (renderingApi == ApplicationConfig.RenderingAPI.VULKAN) {
-            return null;
+            return new VulkanWindow(info);
         } else {
             return new OpenGLWindow(info);
         }

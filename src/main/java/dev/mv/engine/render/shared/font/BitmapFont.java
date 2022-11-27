@@ -42,7 +42,7 @@ public class BitmapFont {
     private Map<Integer, Glyph> createCharacters(String fntFileStream) throws IOException {
         BufferedReader reader = null;
         Map<Integer, Glyph> map = new HashMap<>();
-        try{
+        try {
             reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(fntFileStream)));
         } catch (NullPointerException e) {
             throw new IOException("FNT-File not found!");

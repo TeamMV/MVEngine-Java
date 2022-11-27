@@ -43,7 +43,7 @@ public class DrawContext2D {
         this.font = font;
     }
 
-    
+
     public void triangle(int x1, int y1, int x2, int y2, int x3, int y3) {
         BatchController.addVertices(verts.set(
             v1.put(x1, y1, 0.0f, 0.0f, 0.0f, 0.0f, r, g, b, a, 0.0f, 0.0f, 0.0f),
@@ -99,7 +99,7 @@ public class DrawContext2D {
     public void image(int x, int y, int width, int height, Texture texture) {
         image(x, y, width, height, texture, 0f, 0, 0);
     }
-    
+
     public void image(int x, int y, int width, int height, TextureRegion texture) {
         image(x, y, width, height, texture, 0f, 0, 0);
     }

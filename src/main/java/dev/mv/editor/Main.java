@@ -20,6 +20,7 @@ import dev.mv.engine.render.shared.shader.light.DirectionalLight;
 import dev.mv.engine.render.shared.shader.light.PointLight;
 import dev.mv.engine.render.shared.shader.light.SpotLight;
 import dev.mv.engine.render.shared.texture.Texture;
+import dev.mv.utils.async.Promise;
 import dev.mv.utils.misc.Version;
 import lombok.SneakyThrows;
 import org.joml.Vector3f;
@@ -87,7 +88,7 @@ public class Main {
             //renderer3D.render();
 
             r -= 0.1f;
-            if(r <= 0) {
+            if (r <= 0) {
                 r = 360f;
             }
 

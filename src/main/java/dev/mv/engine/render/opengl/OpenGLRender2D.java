@@ -27,7 +27,7 @@ public class OpenGLRender2D implements Render2D {
 
     @Override
     public void retrieveVertexData(Texture[] textures, int[] texIds, int[] indices, float[] vertices, int vboId, int iboId, Shader shader) {
-        if(window == null){
+        if (window == null) {
             throw new IllegalStateException("Window is not set!");
         }
 

@@ -22,6 +22,7 @@ public class Batch {
     public static final int UV_SIZE = 2;
     public static final int TEX_ID_SIZE = 1;
     public static final int VERTEX_SIZE_FLOATS = POSITION_SIZE + ROTATION_SIZE + ROTATION_ORIGIN_SIZE + COLOR_SIZE + UV_SIZE + TEX_ID_SIZE;
+    public static final int VERTEX_SIZE_BYTES = VERTEX_SIZE_FLOATS * Float.BYTES;
     public static final int POSITION_OFFSET = 0;
     public static final int POSITION_OFFSET_BYTES = POSITION_OFFSET * Float.BYTES;
     public static final int ROTATION_OFFSET = POSITION_SIZE;
@@ -34,13 +35,13 @@ public class Batch {
     public static final int UV_OFFSET_BYTES = UV_OFFSET * Float.BYTES;
     public static final int TEX_ID_OFFSET = UV_OFFSET + UV_SIZE;
     public static final int TEX_ID_OFFSET_BYTES = TEX_ID_OFFSET * Float.BYTES;
-    public static final int VERTEX_SIZE_BYTES = VERTEX_SIZE_FLOATS * Float.BYTES;
     private int maxSize;
     private float[] data;
     private int[] indices;
     private Texture[] textures;
     private Window win;
-    @Getter @Setter
+    @Getter
+    @Setter
     private Shader shader;
     private FloatBuffer vbo;
     private int vbo_id;

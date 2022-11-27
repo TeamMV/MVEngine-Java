@@ -1,9 +1,16 @@
 package dev.mv.engine.render.vulkan;
 
+import java.util.stream.IntStream;
+
 public class QueueFamilyIndices {
     Integer graphicsFamily;
+    Integer presentFamily;
 
     boolean isComplete() {
-        return graphicsFamily != null;
+        return graphicsFamily != null && presentFamily != null;
+    }
+
+    public int[] unique() {
+        return IntStream.of(graphicsFamily, presentFamily).distinct().toArray();
     }
 }

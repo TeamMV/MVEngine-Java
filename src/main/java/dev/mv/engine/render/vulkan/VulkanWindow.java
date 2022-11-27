@@ -1,76 +1,61 @@
-package dev.mv.engine.render.opengl;
+package dev.mv.engine.render.vulkan;
 
+import dev.mv.engine.MVEngine;
+import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.Camera;
 import dev.mv.engine.render.shared.Render2D;
 import dev.mv.engine.render.shared.Render3D;
 import dev.mv.engine.render.shared.Window;
-import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.utils.RenderUtils;
 import imgui.ImGui;
-import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
-import lombok.Getter;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.vulkan.VkDevice;
+import org.lwjgl.vulkan.VkInstance;
+import org.lwjgl.vulkan.VkPhysicalDevice;
+import org.lwjgl.vulkan.VkQueue;
 
 import java.nio.IntBuffer;
+import java.nio.LongBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.vulkan.KHRSurface.vkDestroySurfaceKHR;
+import static org.lwjgl.vulkan.VK10.VK_NULL_HANDLE;
+import static org.lwjgl.vulkan.VK10.VK_SUCCESS;
 
-public class OpenGLWindow implements Window {
-    private final float FOV = (float) Math.toRadians(60);
-    private final float Z_NEAR = 0.001f;
-    private final float Z_FAR = 100f;
-    private int currentFPS, currentUPS;
-    private int width, height;
-    private double deltaF;
-    private long window;
-    private long currentFrame = 0, currentTime = 0;
-    private Runnable onStart = null, onUpdate = null, onDraw = null;
-    private OpenGLRender2D render2D = null;
-    private OpenGLRender3D render3D = null;
-    private Matrix4f projectionMatrix = null;
-    private ImGuiImplGlfw glfwImpl;
-    private ImGuiImplGl3 glImpl;
-    @Getter
-    private WindowCreateInfo info;
+public class VulkanWindow implements Window {
+    Vulkan vulkan;
+    VulkanMemoryManager memoryManager = new VulkanMemoryManager(this);
+    VkInstance instance;
+    VkPhysicalDevice GPU;
+    VkDevice GPUWrapper;
+    VkQueue graphicsQueue;
+    VkQueue presentQueue;
+    VulkanSwapChain swapChain;
+    WindowCreateInfo info;
+    ImGuiImplGlfw glfwImpl;
+    int width, height;
+    int currentFPS, currentUPS;
+    long currentFrame = 0, currentTime = 0;
+    double deltaF;
+    long window, surface, renderPass;
+    Runnable onStart, onUpdate, onDraw;
+    Window fallbackWindow = null;
     private int oW, oH, oX, oY;
     private double timeU, timeF;
 
-    private Camera camera;
 
-    public OpenGLWindow(WindowCreateInfo info) {
+    public VulkanWindow(WindowCreateInfo info) {
         this.info = info;
         width = info.width;
         height = info.height;
-    }
-
-    @Override
-    public void run() {
-        init();
-
-        if (info.fullscreen) {
-            setFullscreen(true);
-        }
-
-        declareProjection();
-        //render2D = new OpenGLRender2D(this);
-        render3D = new OpenGLRender3D(this);
-        camera = new Camera();
-
-        if (onStart != null) {
-            onStart.run();
-        }
-
-        loop();
-        terminate();
     }
 
     @Override
@@ -81,12 +66,39 @@ public class OpenGLWindow implements Window {
         run();
     }
 
+
     @Override
+    public void run() {
+        if (!init()) {
+            return;
+        }
+
+        if (info.fullscreen) {
+            //setFullscreen(true);
+        }
+
+        //declareProjection();
+        //render2D = new OpenGLRender2D(this);
+        //render3D = new OpenGLRender3D(this);
+        //camera = new Camera();
+
+        if (onStart != null) {
+            onStart.run();
+        }
+
+        loop();
+        terminate();
+    }
+
     public void stop() {
+        if (fallbackWindow != null) {
+            fallbackWindow.stop();
+            return;
+        }
         glfwSetWindowShouldClose(window, true);
     }
 
-    private void init() {
+    private boolean init() {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, info.resizeable ? GLFW_TRUE : GLFW_FALSE);
@@ -95,6 +107,16 @@ public class OpenGLWindow implements Window {
         window = glfwCreateWindow(width, height, info.title, NULL, NULL);
         if (window == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
+        }
+
+        vulkan = new Vulkan(this);
+        if (!vulkan.init()) {
+            glfwFreeCallbacks(window);
+            glfwDestroyWindow(window);
+            MVEngine.rollbackRenderingApi();
+            fallbackWindow = MVEngine.createWindow(info);
+            fallbackWindow.run();
+            return false;
         }
 
         try (MemoryStack stack = stackPush()) {
@@ -112,44 +134,16 @@ public class OpenGLWindow implements Window {
             );
         }
 
-        glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
-
-        GL.createCapabilities();
 
         glfwImpl = new ImGuiImplGlfw();
         glfwImpl.init(window, true);
-        glImpl = new ImGuiImplGl3();
-        glImpl.init("#version 450");
 
         glfwShowWindow(window);
-
-        glEnable(GL_CULL_FACE_MODE);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        glfwSetWindowSizeCallback(window, (window, w, h) -> {
-            width = w;
-            height = h;
-
-            glViewport(0, 0, w, h);
-        });
-    }
-
-    public void drawAndSwapBuffers() {
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glfwSwapBuffers(window);
+        return true;
     }
 
     private void loop() {
-        // Set the clear color
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-        // Run the rendering loop until the user has attempted to close
-        // the window or has pressed the ESCAPE key.
-
         long initialTime = System.nanoTime();
         long currentTime = initialTime;
         timeU = 1000000000f / info.maxUPS;
@@ -176,7 +170,6 @@ public class OpenGLWindow implements Window {
                 deltaU--;
             }
             if (deltaF >= 1) {
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 glfwImpl.newFrame();
                 ImGui.newFrame();
@@ -184,11 +177,9 @@ public class OpenGLWindow implements Window {
                 if (onDraw != null) {
                     onDraw.run();
                 }
-                //BatchController.finishAndRender();
-                render3D.render();
 
                 ImGui.render();
-                glImpl.renderDrawData(ImGui.getDrawData());
+                //vulkanImpl.renderDrawData(ImGui.getDrawData());
 
                 glfwSwapBuffers(window);
                 currentFrame++;
@@ -208,57 +199,12 @@ public class OpenGLWindow implements Window {
     }
 
     private void terminate() {
-        glImpl.dispose();
         glfwImpl.dispose();
+
+        vulkan.terminate();
 
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
-    }
-
-    public void declareProjection() {
-        if (projectionMatrix == null) {
-            projectionMatrix = new Matrix4f();
-        }
-        float[] mat = new float[16];
-        projectionMatrix.identity();
-        projectionMatrix.ortho(0.0f, (float) this.getWidth(), 0.0f, (float) this.getHeight(), Z_NEAR, Z_FAR);
-    }
-
-    @Override
-    public boolean isFullscreen() {
-        return info.fullscreen;
-    }
-
-    public void setFullscreen(boolean fullscreen) {
-        info.fullscreen = fullscreen;
-        if (fullscreen) {
-            IntBuffer oXb = BufferUtils.createIntBuffer(1).put(0), oYb = BufferUtils.createIntBuffer(1).put(0);
-            glfwGetWindowPos(window, oXb, oYb);
-            oW = width;
-            oH = height;
-            oX = oXb.get(0);
-            oY = oYb.get(0);
-            long monitor = glfwGetPrimaryMonitor();
-            GLFWVidMode mode = glfwGetVideoMode(monitor);
-            glfwSetWindowMonitor(window, monitor, 0, 0, mode.width(), mode.height(), mode.refreshRate());
-            width = mode.width();
-            height = mode.height();
-        } else {
-            long monitor = glfwGetPrimaryMonitor();
-            GLFWVidMode mode = glfwGetVideoMode(monitor);
-            glfwSetWindowMonitor(window, 0, oX, oY, oW, oH, mode.refreshRate());
-        }
-    }
-
-    @Override
-    public Matrix4f getProjectionMatrix2D() {
-        return projectionMatrix;
-    }
-
-    @Override
-    public Matrix4f getProjectionMatrix3D() {
-        float aspect = (float) width / (float) height;
-        return projectionMatrix.setPerspective(FOV, aspect, Z_NEAR, Z_FAR);
     }
 
     @Override
@@ -309,6 +255,43 @@ public class OpenGLWindow implements Window {
     }
 
     @Override
+    public boolean isFullscreen() {
+        return info.fullscreen;
+    }
+
+    @Override
+    public void setFullscreen(boolean fullscreen) {
+        info.fullscreen = fullscreen;
+        if (fullscreen) {
+            IntBuffer oXb = BufferUtils.createIntBuffer(1).put(0), oYb = BufferUtils.createIntBuffer(1).put(0);
+            glfwGetWindowPos(window, oXb, oYb);
+            oW = width;
+            oH = height;
+            oX = oXb.get(0);
+            oY = oYb.get(0);
+            long monitor = glfwGetPrimaryMonitor();
+            GLFWVidMode mode = glfwGetVideoMode(monitor);
+            glfwSetWindowMonitor(window, monitor, 0, 0, mode.width(), mode.height(), mode.refreshRate());
+            width = mode.width();
+            height = mode.height();
+        } else {
+            long monitor = glfwGetPrimaryMonitor();
+            GLFWVidMode mode = glfwGetVideoMode(monitor);
+            glfwSetWindowMonitor(window, 0, oX, oY, oW, oH, mode.refreshRate());
+        }
+    }
+
+    @Override
+    public Matrix4f getProjectionMatrix2D() {
+        return null;
+    }
+
+    @Override
+    public Matrix4f getProjectionMatrix3D() {
+        return null;
+    }
+
+    @Override
     public String getTitle() {
         return info.title;
     }
@@ -316,21 +299,20 @@ public class OpenGLWindow implements Window {
     @Override
     public void setTitle(String title) {
         info.title = title;
-        glfwSetWindowTitle(window, RenderUtils.store(info.title));
     }
 
     @Override
     public Render2D getRender2D() {
-        return render2D;
+        return null;
     }
 
     @Override
     public Render3D getRender3D() {
-        return render3D;
+        return null;
     }
 
     @Override
     public Camera getCamera() {
-        return camera;
+        return null;
     }
 }

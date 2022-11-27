@@ -99,14 +99,14 @@ public class OpenGLRender3D implements Render3D {
 
     @Override
     public void entity(Entity entity) {
-            List<Entity> entityList = modelUsages.get(entity.getModel());
-            if(entityList != null) {
-                entityList.add(entity);
-            } else {
-                entityList = new ArrayList<>();
-                entityList.add(entity);
-                modelUsages.put(entity.getModel(), entityList);
-            }
+        List<Entity> entityList = modelUsages.get(entity.getModel());
+        if (entityList != null) {
+            entityList.add(entity);
+        } else {
+            entityList = new ArrayList<>();
+            entityList.add(entity);
+            modelUsages.put(entity.getModel(), entityList);
+        }
     }
 
     public void processPointLight(PointLight light) {
