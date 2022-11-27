@@ -1,30 +1,36 @@
 package dev.mv.engine.render.opengl;
 
+import dev.mv.engine.render.shared.models.Material;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.shared.models.Model;
 import dev.mv.engine.render.shared.models.ObjectLoader;
 import dev.mv.engine.render.utils.RenderUtils;
+import dev.mv.utils.Utils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
+import org.joml.Vector4f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.assimp.AIMesh;
-import org.lwjgl.assimp.AIScene;
-import org.lwjgl.assimp.Assimp;
+import org.lwjgl.assimp.*;
 import org.lwjgl.opengl.GL30;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.security.cert.X509CRLSelector;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
+import static dev.mv.utils.Utils.*;
 
 public class OpenGLObjectLoader implements ObjectLoader {
     private static OpenGLObjectLoader instance = new OpenGLObjectLoader();
@@ -86,13 +92,89 @@ public class OpenGLObjectLoader implements ObjectLoader {
         return new Model(id, indices.length);
     }
 
-    public void loadModelAssimp(String path) {
-        AIScene scene = Assimp.aiImportFile(path, Assimp.aiProcess_Triangulate);
-        PointerBuffer buffer = scene.mMeshes();
+    @Override
+    public Model loadExternalModelAssimp(String path) throws IOException {
+        byte[] bytes = getClass().getResourceAsStream(path).readAllBytes();
+        ByteBuffer buffer = RenderUtils.storeTerminated(bytes);
 
-        for (int i = 0; i < buffer.limit(); i++) {
-            AIMesh mesh = AIMesh.create(buffer.get(i));
-        }
+        AIScene pScene = Assimp.aiImportFileFromMemory(buffer, Assimp.aiProcess_Triangulate, (ByteBuffer) null);
+        return Utils.ifNotNull(pScene).thenReturn(scene -> {
+            PointerBuffer pMeshes = scene.mMeshes();
+            List<Float> vertices = new ArrayList<>();
+            List<Float> colors = new ArrayList<>();
+            List<Float> textures = new ArrayList<>();
+            List<Float> normals = new ArrayList<>();
+            List<Integer> indices = new ArrayList<>();
+            for (int j = 0; j < pMeshes.limit(); j++) {
+                AIMesh mesh = AIMesh.create(pMeshes.get(j));
+                AIVector3D.Buffer vectors = mesh.mVertices();
+
+                for (int i = 0; i < vectors.limit(); i++) {
+                    AIVector3D vector = vectors.get(i);
+
+                    vertices.add(vector.x());
+                    vertices.add(vector.y());
+                    vertices.add(vector.z());
+                }
+
+                AIVector3D.Buffer coords = mesh.mTextureCoords(0);
+
+                if(coords != null) {
+                    for (int i = 0; i < coords.limit(); i++) {
+                        AIVector3D coord = coords.get(i);
+
+                        textures.add(coord.x());
+                        textures.add(coord.y());
+                    }
+                }
+
+                System.out.println(textures.size());
+
+                AIVector3D.Buffer norms = mesh.mNormals();
+
+                if (norms != null) {
+                    for (int i = 0; i < norms.limit(); i++) {
+                        AIVector3D norm = norms.get(i);
+
+                        normals.add(norm.x());
+                        normals.add(norm.y());
+                        normals.add(norm.z());
+                    }
+                }
+
+                AIColor4D.Buffer vertexColors = mesh.mColors(0);
+
+                if (vertexColors != null) {
+                    for (int i = 0; i < vertexColors.limit(); i++) {
+                        AIColor4D vertexColor = vertexColors.get(i);
+
+                        colors.add(vertexColor.r());
+                        colors.add(vertexColor.g());
+                        colors.add(vertexColor.b());
+                        colors.add(vertexColor.a());
+                    }
+                }
+
+                AIFace.Buffer faces = mesh.mFaces();
+
+                if (faces != null) {
+                    for (int i = 0; i < faces.limit(); i++) {
+                        AIFace face = faces.get(i);
+                        for (int k = 0; k < face.mIndices().limit(); k++) {
+                            indices.add(face.mIndices().get(k));
+                        }
+                    }
+                }
+
+                Material material = new Material();
+
+                if(colors.size() > 0) {
+                    material.setAmbientColor(RenderUtils.vectorize(colors));
+                }
+            }
+
+            return loadModel(toPrimitive(vertices.toArray(new Float[0])), toPrimitive(textures.toArray(new Float[0])), toPrimitive(normals.toArray(new Float[0])), toPrimitive(indices.toArray(new Integer[0])));
+        }).getGenericReturnValue().value();
     }
 
     @Override

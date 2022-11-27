@@ -26,7 +26,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class OpenGLWindow implements Window {
     private final float FOV = (float) Math.toRadians(60);
-    private final float Z_NEAR = 0.0f;
+    private final float Z_NEAR = 0.001f;
     private final float Z_FAR = 100f;
     private int currentFPS, currentUPS;
     private int width, height;
@@ -154,20 +154,20 @@ public class OpenGLWindow implements Window {
         // the window or has pressed the ESCAPE key.
 
         long initialTime = System.nanoTime();
+        long currentTime = initialTime;
         final double timeU = 1000000000f / info.maxUPS;
         final double timeF = 1000000000f / info.maxFPS;
         double deltaU = 0, deltaF = 0;
         int frames = 0, ticks = 0;
         long timer = System.currentTimeMillis();
         while (!glfwWindowShouldClose(window)) {
-            long currentTime = System.nanoTime();
+            currentTime = System.nanoTime();
             deltaU += (currentTime - initialTime) / timeU;
             deltaF += (currentTime - initialTime) / timeF;
             initialTime = currentTime;
             glfwPollEvents();
             this.deltaF = deltaF;
             if (deltaU >= 1) {
-                currentTime++;
                 if (onUpdate != null) {
                     onUpdate.run();
                 }

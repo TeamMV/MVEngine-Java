@@ -7,7 +7,6 @@ import dev.mv.editor.loading.LoadingManager;
 import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.WindowCreateInfo;
-import dev.mv.engine.render.opengl.OpenGLRender2D;
 import dev.mv.engine.render.shared.Camera;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.DrawContext3D;
@@ -15,7 +14,6 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.font.BitmapFont;
 import dev.mv.engine.render.shared.models.Entity;
-import dev.mv.engine.render.shared.models.Material;
 import dev.mv.engine.render.shared.models.Model;
 import dev.mv.engine.render.shared.models.ObjectLoader;
 import dev.mv.engine.render.shared.shader.light.DirectionalLight;
@@ -41,7 +39,6 @@ public class Main {
     static float r = 0;
     private static BitmapFont font;
     private static Entity cruiser;
-    private static Entity plane;
     private static PointLight pointlight = new PointLight(new Vector3f(0, 2, -2), new Vector3f(1, 1, 0.5f), 1f, 0, 0, 1f);
     private static SpotLight spotlight = new SpotLight(pointlight, new Vector3f(r, 0, 0), (float) Math.toRadians(180));
     private static DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1, 1, 1), new Vector3f(2, 0, 0), 1.0f);
@@ -51,7 +48,11 @@ public class Main {
         MVEngine.init(new ApplicationConfig()
             .setName("MVEngine")
             .setVersion(Version.parse("v0.1.0"))
-            .setRenderingApi(ApplicationConfig.RenderingAPI.OPENGL));
+            .setRenderingApi(ApplicationConfig.RenderingAPI.VULKAN));
+
+        System.out.println(MVEngine.getRenderingApi());
+
+        System.exit(0);
 
         WindowCreateInfo createInfo = new WindowCreateInfo();
         createInfo.title = "MVEngine";
@@ -71,20 +72,15 @@ public class Main {
             try {
                 ObjectLoader loader = MVEngine.getObjectLoader();
                 Model mCruiser = loader.loadExternalModel("/models/cruiser/cruiser.obj");
-                Model mPlane = loader.loadExternalModel("/models/f16/f16.obj");
                 Texture tCruiser = RenderBuilder.newTexture("/models/cruiser/cruiser.bmp");
-                Texture tPLane = RenderBuilder.newTexture("/models/f16/F-16.bmp");
                 mCruiser.setTexture(tCruiser, 1.0f);
-                mPlane.setTexture(tPLane, 1.0f);
                 cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
-                plane = new Entity(mPlane, new Vector3f(2, 0, -2.5f), new Vector3f(0, 0, 0), 1);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
         }, null, () -> {
             renderer3D.object(cruiser);
-            renderer3D.object(plane);
             //renderer3D.processPointLight(pointlight);
             //renderer3D.processSpotLight(spotlight);
             //renderer3D.processDirectionalLight(directionalLight);
@@ -132,14 +128,6 @@ public class Main {
                 camera.move(0.0f, -0.01f, 0.0f);
             }
         });
-
-
-        /*window.run(() -> {
-            renderer2D = new DrawContext2D(window);
-        }, null, () -> {
-            renderer2D.color(255, 0, 0, 255);
-            renderer2D.rectangle(100, 100, 100, 100);
-        });*/
 
         System.exit(0);
 

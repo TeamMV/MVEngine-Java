@@ -7,6 +7,8 @@ import dev.mv.engine.render.opengl.OpenGLWindow;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
 import dev.mv.engine.render.shared.models.ObjectLoader;
+import dev.mv.engine.render.vulkan.Vulkan;
+import dev.mv.utils.misc.Version;
 import imgui.ImGui;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
@@ -14,6 +16,9 @@ import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
 public class MVEngine {
+    public static String VERSION_STR = "v0.1.0";
+    public static Version VERSION = Version.parse(VERSION_STR);
+
     private static ApplicationConfig.RenderingAPI renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
 
     public static ApplicationConfig.RenderingAPI getRenderingApi() {
@@ -38,9 +43,9 @@ public class MVEngine {
         ImGui.styleColorsDark();
 
         if (config.getRenderingApi() == ApplicationConfig.RenderingAPI.VULKAN) {
-            /*if (Vulkan.init(config.getName(), config.getVersion())) {
+            if (Vulkan.init(config)) {
                 renderingApi = ApplicationConfig.RenderingAPI.VULKAN;
-            }*/
+            }
         } else {
             renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
         }
@@ -49,7 +54,7 @@ public class MVEngine {
     public static void terminate() {
         ImGui.destroyContext();
         if (renderingApi == ApplicationConfig.RenderingAPI.OPENGL) {
-            //Vulkan.terminate();
+            Vulkan.terminate();
         }
         glfwTerminate();
     }
