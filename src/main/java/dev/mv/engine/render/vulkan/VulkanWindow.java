@@ -16,29 +16,16 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VkDevice;
 import org.lwjgl.vulkan.VkInstance;
 import org.lwjgl.vulkan.VkPhysicalDevice;
-import org.lwjgl.vulkan.VkQueue;
 
 import java.nio.IntBuffer;
-import java.nio.LongBuffer;
 
-import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
+import static java.sql.Types.NULL;
+import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
 import static org.lwjgl.system.MemoryStack.stackPush;
-import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.vulkan.KHRSurface.vkDestroySurfaceKHR;
-import static org.lwjgl.vulkan.VK10.VK_NULL_HANDLE;
-import static org.lwjgl.vulkan.VK10.VK_SUCCESS;
 
 public class VulkanWindow implements Window {
-    Vulkan vulkan;
-    VulkanMemoryManager memoryManager = new VulkanMemoryManager(this);
-    VkInstance instance;
-    VkPhysicalDevice GPU;
-    VkDevice GPUWrapper;
-    VkQueue graphicsQueue;
-    VkQueue presentQueue;
-    VulkanSwapChain swapChain;
+
     WindowCreateInfo info;
     ImGuiImplGlfw glfwImpl;
     int width, height;
@@ -54,8 +41,6 @@ public class VulkanWindow implements Window {
 
     public VulkanWindow(WindowCreateInfo info) {
         this.info = info;
-        width = info.width;
-        height = info.height;
     }
 
     @Override
@@ -65,7 +50,6 @@ public class VulkanWindow implements Window {
         this.onDraw = onDraw;
         run();
     }
-
 
     @Override
     public void run() {
@@ -109,8 +93,7 @@ public class VulkanWindow implements Window {
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
-        vulkan = new Vulkan(this);
-        if (!vulkan.init()) {
+        if (false) {
             glfwFreeCallbacks(window);
             glfwDestroyWindow(window);
             MVEngine.rollbackRenderingApi();
@@ -200,8 +183,6 @@ public class VulkanWindow implements Window {
 
     private void terminate() {
         glfwImpl.dispose();
-
-        vulkan.terminate();
 
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
@@ -293,12 +274,12 @@ public class VulkanWindow implements Window {
 
     @Override
     public String getTitle() {
-        return info.title;
+        return null;
     }
 
     @Override
     public void setTitle(String title) {
-        info.title = title;
+
     }
 
     @Override

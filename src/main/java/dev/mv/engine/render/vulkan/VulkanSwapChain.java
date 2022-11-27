@@ -8,7 +8,6 @@ import java.nio.IntBuffer;
 import java.util.List;
 
 public class VulkanSwapChain {
-
     long id;
     List<Long> images;
     int imageFormat;
@@ -16,11 +15,6 @@ public class VulkanSwapChain {
     List<Long> imageViews;
     List<Long> framebuffers;
     SwapChainSupportDetails supportDetails;
-    int frameQueueSize;
-
-    VulkanSwapChain(VulkanWindow window) {
-        frameQueueSize = window.info.vsync ? 2 : 3;
-    }
 
     public static class SwapChainSupportDetails {
         VkSurfaceCapabilitiesKHR capabilities;

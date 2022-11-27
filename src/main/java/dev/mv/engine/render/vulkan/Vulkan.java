@@ -1,7 +1,6 @@
 package dev.mv.engine.render.vulkan;
 
 import dev.mv.engine.MVEngine;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -15,31 +14,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.joml.Math.clamp;
-import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
-import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
-import static org.lwjgl.glfw.GLFWVulkan.glfwGetRequiredInstanceExtensions;
-import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.joml.Math.*;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFWVulkan.*;
+import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.util.vma.Vma.*;
 import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
 import static org.lwjgl.vulkan.VK10.*;
 
 public class Vulkan {
-    VulkanWindow window;
+    VulkanContext context;
     long allocator;
     long commandPool;
 
-    long depthImage;
-    long depthImageMemory;
-    long depthImageView;
-
-    long renderPass;
-    VkCommandBuffer immediateCmdBuffer;
-    long immediateFence;
-
-    Vulkan(VulkanWindow window) {
-        this.window = window;
+    public Vulkan(VulkanContext context) {
+        this.context = context;
     }
 
     private static boolean hasStencilComponent(int format) {
@@ -52,9 +42,15 @@ public class Vulkan {
         if (!pickPhysicalDevice()) return false;
         if (!createLogicalDevice()) return false;
         if (!createAllocator()) return false;
+        //window.memoryTypes.createMemoryTypes();
         if (!createCommandPool()) return false;
+        allocateImmediateCmdBuffer();
         if (!createSwapChain()) return false;
         if (!createImageViews()) return false;
+        if (!createRenderPass()) return false;
+        if (!createDepthResources()) return false;
+        createFramebuffers();
+        createStagingBuffers();
         return true;
     }
 
@@ -76,21 +72,19 @@ public class Vulkan {
     }
 
     private boolean createInstance() {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-
+        try (MemoryStack stack = stackPush()) {
             VkApplicationInfo appInfo = VkApplicationInfo.calloc(stack);
-
             appInfo.sType(VK_STRUCTURE_TYPE_APPLICATION_INFO);
-            appInfo.pApplicationName(stack.UTF8Safe(MVEngine.getApplicationConfig().getName()));
+            appInfo.pApplicationName(stack.UTF8Safe(window.info.title));
             appInfo.applicationVersion(MVEngine.getApplicationConfig().getVersion().toVulkanVersion());
             appInfo.pEngineName(stack.UTF8Safe("MVEngine"));
             appInfo.engineVersion(MVEngine.VERSION.toVulkanVersion());
             appInfo.apiVersion(VK_MAKE_API_VERSION(0, 1, 3, 0));
 
             VkInstanceCreateInfo createInfo = VkInstanceCreateInfo.calloc(stack);
-
             createInfo.sType(VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO);
             createInfo.pApplicationInfo(appInfo);
+
             createInfo.ppEnabledExtensionNames(glfwGetRequiredInstanceExtensions());
 
             PointerBuffer instancePtr = stack.mallocPointer(1);
@@ -107,7 +101,7 @@ public class Vulkan {
 
     private boolean pickPhysicalDevice() {
         int bestScore = 0;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
+        try (MemoryStack stack = stackPush()) {
             IntBuffer deviceCount = stack.ints(0);
             vkEnumeratePhysicalDevices(window.instance, deviceCount, null);
 
@@ -136,7 +130,7 @@ public class Vulkan {
     }
 
     private int rateDevice(VkPhysicalDevice device) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
+        try (MemoryStack stack = stackPush()) {
             int score = 0;
             VkPhysicalDeviceFeatures deviceFeatures = VkPhysicalDeviceFeatures.calloc(stack);
             vkGetPhysicalDeviceFeatures(device, deviceFeatures);
@@ -164,13 +158,13 @@ public class Vulkan {
     }
 
     private boolean isDeviceSuitable(VkPhysicalDevice device) {
-        QueueFamilyIndices indices = findQueueFamilies(device);
+        VulkanQueueFamilyIndices indices = findQueueFamilies(device);
         return indices.isComplete();
     }
 
-    private QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
-        QueueFamilyIndices indices = new QueueFamilyIndices();
-        try (MemoryStack stack = MemoryStack.stackPush()) {
+    VulkanQueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
+        VulkanQueueFamilyIndices indices = new VulkanQueueFamilyIndices();
+        try (MemoryStack stack = stackPush()) {
             IntBuffer queueFamilyCount = stack.ints(0);
             vkGetPhysicalDeviceQueueFamilyProperties(device, queueFamilyCount, null);
             VkQueueFamilyProperties.Buffer queueFamilies = VkQueueFamilyProperties.malloc(queueFamilyCount.get(0), stack);
@@ -184,8 +178,8 @@ public class Vulkan {
     }
 
     private boolean createLogicalDevice() {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            QueueFamilyIndices indices = findQueueFamilies(window.GPU);
+        try (MemoryStack stack = stackPush()) {
+            VulkanQueueFamilyIndices indices = findQueueFamilies(window.GPU);
             VkDeviceQueueCreateInfo.Buffer queueCreateInfos = VkDeviceQueueCreateInfo.calloc(1, stack);
 
             queueCreateInfos.sType(VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO);
@@ -242,7 +236,7 @@ public class Vulkan {
 
         try (MemoryStack stack = stackPush()) {
 
-            QueueFamilyIndices queueFamilyIndices = findQueueFamilies(window.GPU);
+            VulkanQueueFamilyIndices queueFamilyIndices = findQueueFamilies(window.GPU);
 
             VkCommandPoolCreateInfo poolInfo = VkCommandPoolCreateInfo.calloc(stack);
             poolInfo.sType(VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO);
@@ -291,7 +285,7 @@ public class Vulkan {
             createInfo.imageArrayLayers(1);
             createInfo.imageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT);
 
-            QueueFamilyIndices indices = findQueueFamilies(window.GPU);
+            VulkanQueueFamilyIndices indices = findQueueFamilies(window.GPU);
 
             if (!indices.graphicsFamily.equals(indices.presentFamily)) {
                 createInfo.imageSharingMode(VK_SHARING_MODE_CONCURRENT);
@@ -330,7 +324,7 @@ public class Vulkan {
         }
     }
 
-    public VulkanSwapChain.SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, @Nullable MemoryStack stack) {
+    public VulkanSwapChain.SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, MemoryStack stack) {
         VulkanSwapChain.SwapChainSupportDetails details = new VulkanSwapChain.SwapChainSupportDetails();
         if (stack != null) {
             details.capabilities = VkSurfaceCapabilitiesKHR.malloc();
@@ -576,7 +570,7 @@ public class Vulkan {
             }
             LongBuffer pDepthImage = stack.mallocLong(1);
             PointerBuffer pDepthImageMemory = stack.mallocPointer(1);
-            MemoryManager.createImage(window.swapChain.extent.width(), window.swapChain.extent.height(), 1, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, pDepthImage, pDepthImageMemory);
+            window.memoryManager.createImage(window.swapChain.extent.width(), window.swapChain.extent.height(), 1, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, pDepthImage, pDepthImageMemory);
             depthImage = pDepthImage.get(0);
             depthImageMemory = pDepthImageMemory.get(0);
             try {
@@ -597,24 +591,24 @@ public class Vulkan {
             VkCommandBufferBeginInfo beginInfo = VkCommandBufferBeginInfo.calloc(stack);
             beginInfo.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO);
 
-            vkBeginCommandBuffer(immediateCmdBuffer, beginInfo);
+            vkBeginCommandBuffer(window.immediateCmdBuffer, beginInfo);
         }
-        return immediateCmdBuffer;
+        return window.immediateCmdBuffer;
     }
 
     public void endImmediateCmd() {
         try (MemoryStack stack = stackPush()) {
-            vkEndCommandBuffer(immediateCmdBuffer);
+            vkEndCommandBuffer(window.immediateCmdBuffer);
 
             VkSubmitInfo.Buffer submitInfo = VkSubmitInfo.calloc(1, stack);
             submitInfo.sType(VK_STRUCTURE_TYPE_SUBMIT_INFO);
-            submitInfo.pCommandBuffers(stack.pointers(immediateCmdBuffer));
+            submitInfo.pCommandBuffers(stack.pointers(window.immediateCmdBuffer));
 
             vkQueueSubmit(window.graphicsQueue, submitInfo, immediateFence);
 
             vkWaitForFences(window.GPUWrapper, immediateFence, true, 0xFFFFFFFFFFFFFFFFL);
             vkResetFences(window.GPUWrapper, immediateFence);
-            vkResetCommandBuffer(immediateCmdBuffer, 0);
+            vkResetCommandBuffer(window.immediateCmdBuffer, 0);
         }
 
     }
@@ -671,5 +665,62 @@ public class Vulkan {
             vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, null, null, barrier);
         }
         return true;
+    }
+
+    private void allocateImmediateCmdBuffer() {
+        try(MemoryStack stack = stackPush()) {
+            VkCommandBufferAllocateInfo allocInfo = VkCommandBufferAllocateInfo.callocStack(stack);
+            allocInfo.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO);
+            allocInfo.level(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+            allocInfo.commandPool(commandPool);
+            allocInfo.commandBufferCount(1);
+
+            PointerBuffer pCommandBuffer = stack.mallocPointer(1);
+            vkAllocateCommandBuffers(window.GPUWrapper, allocInfo, pCommandBuffer);
+            window.immediateCmdBuffer = new VkCommandBuffer(pCommandBuffer.get(0), window.GPUWrapper);
+
+            VkFenceCreateInfo fenceInfo = VkFenceCreateInfo.callocStack(stack);
+            fenceInfo.sType(VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
+            fenceInfo.flags(VK_FENCE_CREATE_SIGNALED_BIT);
+
+            LongBuffer pFence = stack.mallocLong(1);
+            vkCreateFence(window.GPUWrapper, fenceInfo, null, pFence);
+            vkResetFences(window.GPUWrapper,  pFence.get(0));
+
+            immediateFence = pFence.get(0);
+        }
+    }
+
+    private boolean createFramebuffers() {
+        window.swapChain.framebuffers = new ArrayList<>(window.swapChain.imageViews.size());
+        try(MemoryStack stack = stackPush()) {
+            LongBuffer attachments = stack.longs(VK_NULL_HANDLE, depthImageView);
+            LongBuffer pFramebuffer = stack.mallocLong(1);
+
+            VkFramebufferCreateInfo framebufferInfo = VkFramebufferCreateInfo.callocStack(stack);
+            framebufferInfo.sType(VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO);
+            framebufferInfo.renderPass(window.renderPass);
+            framebufferInfo.width(window.swapChain.extent.width());
+            framebufferInfo.height(window.swapChain.extent.height());
+            framebufferInfo.layers(1);
+
+            for(long imageView : window.swapChain.imageViews) {
+                attachments.put(0, imageView);
+                framebufferInfo.pAttachments(attachments);
+                if(vkCreateFramebuffer(window.GPUWrapper, framebufferInfo, null, pFramebuffer) != VK_SUCCESS) {
+                    return false;
+                }
+                window.swapChain.framebuffers.add(pFramebuffer.get(0));
+            }
+        }
+        return true;
+    }
+
+    private void createStagingBuffers() {
+        window.stagingBuffers = new VulkanStagingBuffer[window.swapChain.images.size()];
+
+        for(int i = 0; i < window.stagingBuffers.length; ++i) {
+            window.stagingBuffers[i] = new VulkanStagingBuffer(30 * 1024 * 1024, window);
+        }
     }
 }

@@ -2,7 +2,7 @@ package dev.mv.engine.render.vulkan;
 
 import java.util.stream.IntStream;
 
-public class QueueFamilyIndices {
+public class VulkanQueueFamilyIndices {
     Integer graphicsFamily;
     Integer presentFamily;
 
