@@ -17,7 +17,7 @@ import static org.lwjgl.vulkan.EXTDebugUtils.*;
 import static org.lwjgl.vulkan.VK10.*;
 
 public class VulkanDebugger {
-    private static final boolean ENABLE_VALIDATION_LAYERS = true;
+    static final boolean ENABLE_VALIDATION_LAYERS = false;
 
     private static final Set<String> VALIDATION_LAYERS;
     static {
@@ -97,6 +97,20 @@ public class VulkanDebugger {
             return availableLayerNames.containsAll(VALIDATION_LAYERS);
         }
     }
+
+    static PointerBuffer validationLayersAsPointerBuffer() {
+
+        MemoryStack stack = MemoryStack.stackGet();
+
+        PointerBuffer buffer = stack.mallocPointer(VALIDATION_LAYERS.size());
+
+        VALIDATION_LAYERS.stream()
+            .map(stack::UTF8)
+            .forEach(buffer::put);
+
+        return buffer.rewind();
+    }
+
 
     static boolean checkDebugStatus() {
         return !(ENABLE_VALIDATION_LAYERS && !checkValidationLayerSupport());

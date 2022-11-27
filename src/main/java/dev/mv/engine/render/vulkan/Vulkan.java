@@ -20,6 +20,7 @@ public class Vulkan {
     static VkInstance instance;
     static VkPhysicalDevice GPU;
     static VkDevice GPUWrapper;
+    static VkQueue graphicsQueue;
 
     public static boolean init(ApplicationConfig config) {
         if (!createInstance(config)) return false;
@@ -117,7 +118,6 @@ public class Vulkan {
             }
 
             //System.out.println(deviceProperties.deviceNameString() + ": " + score);
-
             return score;
         }
     }
@@ -140,6 +140,38 @@ public class Vulkan {
                 .findFirst()
                 .ifPresent(index -> indices.graphicsFamily = index);
             return indices;
+        }
+    }
+
+    private boolean createLogicalDevice() {
+        try(MemoryStack stack = MemoryStack.stackPush()) {
+            QueueFamilyIndices indices = findQueueFamilies(GPU);
+            VkDeviceQueueCreateInfo.Buffer queueCreateInfos = VkDeviceQueueCreateInfo.calloc(1, stack);
+
+            queueCreateInfos.sType(VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO);
+            queueCreateInfos.queueFamilyIndex(indices.graphicsFamily);
+            queueCreateInfos.pQueuePriorities(stack.floats(1.0f));
+
+            VkPhysicalDeviceFeatures deviceFeatures = VkPhysicalDeviceFeatures.callocStack(stack);
+            VkDeviceCreateInfo createInfo = VkDeviceCreateInfo.calloc(stack);
+
+            createInfo.sType(VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO);
+            createInfo.pQueueCreateInfos(queueCreateInfos);
+            createInfo.pEnabledFeatures(deviceFeatures);
+
+            if(VulkanDebugger.ENABLE_VALIDATION_LAYERS) {
+                createInfo.ppEnabledLayerNames(VulkanDebugger.validationLayersAsPointerBuffer());
+            }
+            PointerBuffer pDevice = stack.pointers(VK_NULL_HANDLE);
+            if(vkCreateDevice(GPU, createInfo, null, pDevice) != VK_SUCCESS) {
+                return false;
+            }
+
+            GPUWrapper = new VkDevice(pDevice.get(0), GPU, createInfo);
+            PointerBuffer pGraphicsQueue = stack.pointers(VK_NULL_HANDLE);
+            vkGetDeviceQueue(GPUWrapper, indices.graphicsFamily, 0, pGraphicsQueue);
+            graphicsQueue = new VkQueue(pGraphicsQueue.get(0), GPUWrapper);
+            return true;
         }
     }
 }
