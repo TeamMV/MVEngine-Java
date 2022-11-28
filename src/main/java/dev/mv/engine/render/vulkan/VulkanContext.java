@@ -11,8 +11,9 @@ public class VulkanContext {
     VkPhysicalDevice GPU;
     VkDevice logicalGPU;
     VulkanSwapChain swapChain;
+    long surface;
 
-    public VulkanContext(VulkanWindow window) {
+    VulkanContext(VulkanWindow window) {
         this.window = window;
         vulkan = new Vulkan(this);
     }

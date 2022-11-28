@@ -26,6 +26,7 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class VulkanWindow implements Window {
 
+    VulkanContext context;
     WindowCreateInfo info;
     ImGuiImplGlfw glfwImpl;
     int width, height;
@@ -41,6 +42,7 @@ public class VulkanWindow implements Window {
 
     public VulkanWindow(WindowCreateInfo info) {
         this.info = info;
+        context = new VulkanContext(this);
     }
 
     @Override
