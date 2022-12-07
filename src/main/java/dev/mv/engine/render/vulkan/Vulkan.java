@@ -4,23 +4,17 @@ import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.utils.RenderUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
-import org.lwjgl.util.vma.VmaAllocatorCreateInfo;
-import org.lwjgl.util.vma.VmaVulkanFunctions;
 import org.lwjgl.vulkan.*;
 
-import java.nio.Buffer;
+import java.io.IOException;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.joml.Math.*;
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFWVulkan.*;
-import static org.lwjgl.system.MemoryStack.*;
-import static org.lwjgl.util.vma.Vma.*;
+import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
+import static org.lwjgl.glfw.GLFWVulkan.glfwGetRequiredInstanceExtensions;
+import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
 import static org.lwjgl.vulkan.VK10.*;
@@ -42,6 +36,7 @@ public class Vulkan {
         if(!createInstance()) return false;
         if(!pickPhysicalDevice()) return false;
         if(!createLogicalDevice()) return false;
+        if(!createSwapChain()) return false;
         return true;
     }
 
@@ -198,25 +193,159 @@ public class Vulkan {
             LongBuffer pSwapChain = stack.longs(VK_NULL_HANDLE);
 
             if(vkCreateSwapchainKHR(context.logicalGPU, createInfo, null, pSwapChain) != VK_SUCCESS) {
-                throw new RuntimeException("Failed to create swap chain");
+                return false;
             }
 
-            context.swapChain = pSwapChain.get(0);
+            context.swapChain.id = pSwapChain.get(0);
 
-            vkGetSwapchainImagesKHR(context.logicalGPU, context.swapChain, imageCount, null);
+            vkGetSwapchainImagesKHR(context.logicalGPU, context.swapChain.id, imageCount, null);
 
             LongBuffer pSwapchainImages = stack.mallocLong(imageCount.get(0));
 
-            vkGetSwapchainImagesKHR(context.logicalGPU, context.swapChain, imageCount, pSwapchainImages);
+            vkGetSwapchainImagesKHR(context.logicalGPU, context.swapChain.id, imageCount, pSwapchainImages);
 
-            swapChainImages = new ArrayList<>(imageCount.get(0));
+            context.swapChain.images = new ArrayList<>(imageCount.get(0));
 
             for(int i = 0;i < pSwapchainImages.capacity();i++) {
-                swapChainImages.add(pSwapchainImages.get(i));
+                context.swapChain.images.add(pSwapchainImages.get(i));
             }
 
-            swapChainImageFormat = surfaceFormat.format();
-            swapChainExtent = VkExtent2D.create().set(extent);
+            context.swapChain.imageFormat = surfaceFormat.format();
+            context.swapChain.extent = VkExtent2D.create().set(extent);
+        }
+
+        return true;
+    }
+
+    private boolean createImageViews() {
+        context.swapChain.imageViews = new ArrayList<>(context.swapChain.images.size());
+        try(MemoryStack stack = stackPush()) {
+            LongBuffer pImageView = stack.mallocLong(1);
+            for(long swapChainImage : context.swapChain.images) {
+                VkImageViewCreateInfo createInfo = VkImageViewCreateInfo.callocStack(stack);
+                createInfo.sType(VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO);
+                createInfo.image(swapChainImage);
+                createInfo.viewType(VK_IMAGE_VIEW_TYPE_2D);
+                createInfo.format(context.swapChain.imageFormat);
+
+                createInfo.components().r(VK_COMPONENT_SWIZZLE_IDENTITY);
+                createInfo.components().g(VK_COMPONENT_SWIZZLE_IDENTITY);
+                createInfo.components().b(VK_COMPONENT_SWIZZLE_IDENTITY);
+                createInfo.components().a(VK_COMPONENT_SWIZZLE_IDENTITY);
+
+                createInfo.subresourceRange().aspectMask(VK_IMAGE_ASPECT_COLOR_BIT);
+                createInfo.subresourceRange().baseMipLevel(0);
+                createInfo.subresourceRange().levelCount(1);
+                createInfo.subresourceRange().baseArrayLayer(0);
+                createInfo.subresourceRange().layerCount(1);
+
+                if (vkCreateImageView(context.logicalGPU, createInfo, null, pImageView) != VK_SUCCESS) {
+                    return false;
+                }
+                context.swapChain.imageViews.add(pImageView.get(0));
+            }
+        }
+        return true;
+    }
+
+    private boolean createGraphicsPipeline(VulkanShaderCreateInfo shaderInfo, RenderMode renderMode) throws IOException {
+        try(MemoryStack stack = MemoryStack.stackPush()) {
+            long vertex = new SPIRV(shaderInfo.vertextPath, SPIRV.ShaderType.VERTEX, context).getShaderModule();
+            long fragment = new SPIRV(shaderInfo.fragmentPath, SPIRV.ShaderType.FRAGMENT, context).getShaderModule();
+
+            VkPipelineShaderStageCreateInfo vertShaderStageInfo = VkPipelineShaderStageCreateInfo.calloc(stack);
+            vertShaderStageInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO);
+            vertShaderStageInfo.stage(VK_SHADER_STAGE_VERTEX_BIT);
+            vertShaderStageInfo.module(vertex);
+            vertShaderStageInfo.pName(RenderUtils.store("main"));
+
+            VkPipelineShaderStageCreateInfo fragShaderStageInfo = VkPipelineShaderStageCreateInfo.calloc(stack);
+            vertShaderStageInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO);
+            vertShaderStageInfo.stage(VK_SHADER_STAGE_FRAGMENT_BIT);
+            vertShaderStageInfo.module(fragment);
+            vertShaderStageInfo.pName(RenderUtils.store("main"));
+
+            VkPipelineShaderStageCreateInfo[] shaderStages = {vertShaderStageInfo, fragShaderStageInfo};
+
+            VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo.calloc(stack);
+            vertexInputInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO);
+            vertexInputInfo.vertexBindingDescriptionCount();
+            vertexInputInfo.pVertexBindingDescriptions(null);
+            vertexInputInfo.vertexAttributeDescriptionCount();
+            vertexInputInfo.pVertexAttributeDescriptions(null);
+
+            VkPipelineInputAssemblyStateCreateInfo inputAssembly = VkPipelineInputAssemblyStateCreateInfo.calloc(stack);
+            inputAssembly.sType(VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO);
+            inputAssembly.topology(renderMode.asVulkanMode());
+            inputAssembly.primitiveRestartEnable(false);
+
+            VkViewport viewport = VkViewport.calloc(stack);
+            viewport.x(0.0f);
+            viewport.y(0.0f);
+            viewport.width((float) context.swapChain.extent.width());
+            viewport.height((float) context.swapChain.extent.height());
+            viewport.minDepth(0.0f);
+            viewport.maxDepth(1.0f);
+
+            VkRect2D scissor = VkRect2D.calloc(stack);
+            scissor.offset();
+            scissor.extent(context.swapChain.extent);
+
+            int[] dynamicStates = {
+                VK_DYNAMIC_STATE_VIEWPORT,
+                VK_DYNAMIC_STATE_SCISSOR
+            };
+            VkPipelineDynamicStateCreateInfo dynamicState = VkPipelineDynamicStateCreateInfo.calloc(stack);
+            dynamicState.sType(VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO);
+            dynamicState.dynamicStateCount();
+            dynamicState.pDynamicStates(RenderUtils.store(dynamicStates));
+
+            VkPipelineViewportStateCreateInfo viewportState = VkPipelineViewportStateCreateInfo.calloc(stack);
+            viewportState.sType(VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO);
+            viewportState.viewportCount(1);
+            viewportState.scissorCount(1);
+
+            VkPipelineRasterizationStateCreateInfo rasterizer = VkPipelineRasterizationStateCreateInfo.calloc(stack);
+            rasterizer.sType(VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO);
+            rasterizer.depthClampEnable(false);
+            rasterizer.rasterizerDiscardEnable(false);
+            rasterizer.polygonMode(VK_POLYGON_MODE_FILL);
+            rasterizer.lineWidth(1f);
+            rasterizer.cullMode(VK_CULL_MODE_BACK_BIT);
+            rasterizer.frontFace(VK_FRONT_FACE_CLOCKWISE);
+            rasterizer.depthBiasEnable(false);
+            rasterizer.depthBiasConstantFactor(0f);
+            rasterizer.depthBiasClamp(0f);
+            rasterizer.depthBiasSlopeFactor(0f);
+            //Multisampling chapter next inside "Fixed Functions"
+
+            vkDestroyShaderModule(context.logicalGPU, vertex, null);
+            vkDestroyShaderModule(context.logicalGPU, fragment, null);
+            return true;
+        }
+    }
+
+    public enum RenderMode{
+        POINTS(1),
+        LINES(2),
+        LINE_STRIP(3),
+        TRIANGLES(4),
+        TRIANGLE_STRIP(5);
+        int i;
+
+        RenderMode(int i) {
+            this.i = i;
+        }
+
+        int asVulkanMode() {
+            return switch(i) {
+                case 1: yield VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+                case 2: yield VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+                case 3: yield VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+                case 4: yield VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+                case 5: yield VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+                default: yield -1;
+            };
         }
     }
 
@@ -241,11 +370,11 @@ public class Vulkan {
 
     private VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR capabilities) {
 
-        if(capabilities.currentExtent().width() != UINT32_MAX) {
+        if(capabilities.currentExtent().width() != Integer.MAX_VALUE) {
             return capabilities.currentExtent();
         }
 
-        VkExtent2D actualExtent = VkExtent2D.mallocStack().set(WIDTH, HEIGHT);
+        VkExtent2D actualExtent = VkExtent2D.malloc().set(context.window.width, context.window.height);
 
         VkExtent2D minExtent = capabilities.minImageExtent();
         VkExtent2D maxExtent = capabilities.maxImageExtent();
@@ -255,6 +384,33 @@ public class Vulkan {
 
         return actualExtent;
     }
+
+    private VulkanSwapChain.SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, MemoryStack stack) {
+
+        VulkanSwapChain.SwapChainSupportDetails details = new VulkanSwapChain.SwapChainSupportDetails();
+
+        details.capabilities = VkSurfaceCapabilitiesKHR.malloc(stack);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, context.window.surface, details.capabilities);
+
+        IntBuffer count = stack.ints(0);
+
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, context.window.surface, count, null);
+
+        if(count.get(0) != 0) {
+            details.formats = VkSurfaceFormatKHR.malloc(count.get(0), stack);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, context.window.surface, count, details.formats);
+        }
+
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device,context.window.surface, count, null);
+
+        if(count.get(0) != 0) {
+            details.presentModes = stack.mallocInt(count.get(0));
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, context.window.surface, count, details.presentModes);
+        }
+
+        return details;
+    }
+
 
     private int clamp(int min, int max, int value) {
         return Math.max(min, Math.min(max, value));
