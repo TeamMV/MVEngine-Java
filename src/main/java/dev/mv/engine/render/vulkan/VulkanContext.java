@@ -11,6 +11,7 @@ public class VulkanContext {
     VkPhysicalDevice GPU;
     VkDevice logicalGPU;
     VulkanSwapChain swapChain;
+    VulkanProgram[] programs;
     long surface;
 
     VulkanContext(VulkanWindow window) {

@@ -7,6 +7,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.ArrayList;
@@ -248,81 +249,19 @@ public class Vulkan {
         return true;
     }
 
-    private boolean createGraphicsPipeline(VulkanShaderCreateInfo shaderInfo, RenderMode renderMode) throws IOException {
-        try(MemoryStack stack = MemoryStack.stackPush()) {
-            long vertex = new SPIRV(shaderInfo.vertextPath, SPIRV.ShaderType.VERTEX, context).getShaderModule();
-            long fragment = new SPIRV(shaderInfo.fragmentPath, SPIRV.ShaderType.FRAGMENT, context).getShaderModule();
-
-            VkPipelineShaderStageCreateInfo vertShaderStageInfo = VkPipelineShaderStageCreateInfo.calloc(stack);
-            vertShaderStageInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO);
-            vertShaderStageInfo.stage(VK_SHADER_STAGE_VERTEX_BIT);
-            vertShaderStageInfo.module(vertex);
-            vertShaderStageInfo.pName(RenderUtils.store("main"));
-
-            VkPipelineShaderStageCreateInfo fragShaderStageInfo = VkPipelineShaderStageCreateInfo.calloc(stack);
-            vertShaderStageInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO);
-            vertShaderStageInfo.stage(VK_SHADER_STAGE_FRAGMENT_BIT);
-            vertShaderStageInfo.module(fragment);
-            vertShaderStageInfo.pName(RenderUtils.store("main"));
-
-            VkPipelineShaderStageCreateInfo[] shaderStages = {vertShaderStageInfo, fragShaderStageInfo};
-
-            VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo.calloc(stack);
-            vertexInputInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO);
-            vertexInputInfo.vertexBindingDescriptionCount();
-            vertexInputInfo.pVertexBindingDescriptions(null);
-            vertexInputInfo.vertexAttributeDescriptionCount();
-            vertexInputInfo.pVertexAttributeDescriptions(null);
-
-            VkPipelineInputAssemblyStateCreateInfo inputAssembly = VkPipelineInputAssemblyStateCreateInfo.calloc(stack);
-            inputAssembly.sType(VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO);
-            inputAssembly.topology(renderMode.asVulkanMode());
-            inputAssembly.primitiveRestartEnable(false);
-
-            VkViewport viewport = VkViewport.calloc(stack);
-            viewport.x(0.0f);
-            viewport.y(0.0f);
-            viewport.width((float) context.swapChain.extent.width());
-            viewport.height((float) context.swapChain.extent.height());
-            viewport.minDepth(0.0f);
-            viewport.maxDepth(1.0f);
-
-            VkRect2D scissor = VkRect2D.calloc(stack);
-            scissor.offset();
-            scissor.extent(context.swapChain.extent);
-
-            int[] dynamicStates = {
-                VK_DYNAMIC_STATE_VIEWPORT,
-                VK_DYNAMIC_STATE_SCISSOR
-            };
-            VkPipelineDynamicStateCreateInfo dynamicState = VkPipelineDynamicStateCreateInfo.calloc(stack);
-            dynamicState.sType(VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO);
-            dynamicState.dynamicStateCount();
-            dynamicState.pDynamicStates(RenderUtils.store(dynamicStates));
-
-            VkPipelineViewportStateCreateInfo viewportState = VkPipelineViewportStateCreateInfo.calloc(stack);
-            viewportState.sType(VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO);
-            viewportState.viewportCount(1);
-            viewportState.scissorCount(1);
-
-            VkPipelineRasterizationStateCreateInfo rasterizer = VkPipelineRasterizationStateCreateInfo.calloc(stack);
-            rasterizer.sType(VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO);
-            rasterizer.depthClampEnable(false);
-            rasterizer.rasterizerDiscardEnable(false);
-            rasterizer.polygonMode(VK_POLYGON_MODE_FILL);
-            rasterizer.lineWidth(1f);
-            rasterizer.cullMode(VK_CULL_MODE_BACK_BIT);
-            rasterizer.frontFace(VK_FRONT_FACE_CLOCKWISE);
-            rasterizer.depthBiasEnable(false);
-            rasterizer.depthBiasConstantFactor(0f);
-            rasterizer.depthBiasClamp(0f);
-            rasterizer.depthBiasSlopeFactor(0f);
-            //Multisampling chapter next inside "Fixed Functions"
-
-            vkDestroyShaderModule(context.logicalGPU, vertex, null);
-            vkDestroyShaderModule(context.logicalGPU, fragment, null);
-            return true;
+    private boolean createGraphicsPipelines(VulkanProgramsCreateInfo programsCreateInfo) throws IOException {
+        context.programs = new VulkanProgram[programsCreateInfo.programs.size()];
+        int i = 0;
+        for(VulkanProgramCreateInfo programCreateInfo : programsCreateInfo.programs) {
+            VulkanShader shader = new VulkanShader(programCreateInfo.shaderCreateInfo, context);
+            shader.make(context.window);
+            int iShader = VulkanProgram.genShader(shader);
+            VulkanPipeline pipeline = new VulkanPipeline(context, shader, programCreateInfo.renderMode);
+            int iPipeline = VulkanProgram.genPipeline(pipeline);
+            VulkanProgram program = new VulkanProgram(iShader, iPipeline);
+            context.programs[i] = program;
         }
+        return true;
     }
 
     public enum RenderMode{
