@@ -68,7 +68,7 @@ public class VulkanWindow implements Window {
         }
 
         if (info.fullscreen) {
-            //setFullscreen(true);
+            setFullscreen(true);
         }
 
         //declareProjection();
@@ -140,6 +140,7 @@ public class VulkanWindow implements Window {
         double deltaU = 0, deltaF = 0;
         int frames = 0, ticks = 0;
         long timer = System.currentTimeMillis();
+        VulkanBasicRendering baseRenderer = new VulkanBasicRendering(context);
         while (!glfwWindowShouldClose(window)) {
             currentTime = System.nanoTime();
             deltaU += (currentTime - initialTime) / timeU;
@@ -169,7 +170,8 @@ public class VulkanWindow implements Window {
                 //ImGui.render();
                 //vulkanImpl.renderDrawData(ImGui.getDrawData());
 
-                glfwSwapBuffers(window);
+                //glfwSwapBuffers(window);
+                baseRenderer.drawFrame();
                 currentFrame++;
                 frames++;
                 deltaF--;

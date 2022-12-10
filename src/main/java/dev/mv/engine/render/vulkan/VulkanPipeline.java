@@ -124,9 +124,6 @@ public class VulkanPipeline {
             }
             pipelineLayout = pPipelineLayout.get(0);
 
-            vkDestroyShaderModule(context.logicalGPU, shader.getVertexModule(), null);
-            vkDestroyShaderModule(context.logicalGPU, shader.getFragmentModule(), null);
-
             VkPipelineShaderStageCreateInfo.Buffer pShaderStages = VkPipelineShaderStageCreateInfo.calloc(shaderStages.length, stack);
             int i = 0;
             for(VkPipelineShaderStageCreateInfo shaderStageCreateInfo : shaderStages) {
@@ -147,7 +144,7 @@ public class VulkanPipeline {
             pipelineInfo.renderPass(renderPass.getRenderPass());
             pipelineInfo.subpass(0);
             pipelineInfo.basePipelineHandle(VK_NULL_HANDLE);
-            pipelineInfo.basePipelineIndex(-1);
+            pipelineInfo.basePipelineIndex(0);
 
             VkGraphicsPipelineCreateInfo.Buffer pPipelineInfo = VkGraphicsPipelineCreateInfo.calloc(1, stack);
             pPipelineInfo.put(0, pipelineInfo);
@@ -157,6 +154,9 @@ public class VulkanPipeline {
             }
 
             graphicsPipeline = graphicsPipelineArray[0];
+
+            vkDestroyShaderModule(context.logicalGPU, shader.getVertexModule(), null);
+            vkDestroyShaderModule(context.logicalGPU, shader.getFragmentModule(), null);
         }
     }
 

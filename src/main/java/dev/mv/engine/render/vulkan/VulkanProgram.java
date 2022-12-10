@@ -63,4 +63,16 @@ public class VulkanProgram {
         this.vulkanPipeline = vulkanPipeline;
         this.vulkanRenderPass = vulkanRenderPass;
     }
+
+    public int getVulkanShader() {
+        return vulkanShader;
+    }
+
+    public int getVulkanPipeline() {
+        return vulkanPipeline;
+    }
+
+    public int getVulkanRenderPass() {
+        return vulkanRenderPass;
+    }
 }

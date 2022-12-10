@@ -6,10 +6,10 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
-import java.io.IOException;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,8 +23,8 @@ import static org.lwjgl.vulkan.VK13.*;
 
 public class Vulkan {
     VulkanContext context;
-    long allocator;
-    long commandPool;
+    private boolean isBufferRecording;
+    private VkCommandBuffer currentCommandBuffer;
 
     private static final Set<String> DEVICE_EXTENSIONS = Stream.of(VK_KHR_SWAPCHAIN_EXTENSION_NAME).collect(Collectors.toSet());
 
@@ -53,9 +53,12 @@ public class Vulkan {
         if(!pickPhysicalDevice()) return false;
         if(!createLogicalDevice()) return false;
         if(!createSwapChain()) return false;
-        System.out.println(5);
+        if(!createImageViews()) return false;
         if(!createGraphicsPipelinesAndRenderPasses(programsCreateInfo)) return false;
-        System.out.println(6);
+        if(!createFrameBuffers()) return false;
+        if(!createCommandPool()) return false;
+        if(!createCommandBuffer()) return false;
+        if(!createSyncObjects()) return false;
         return true;
     }
 
@@ -63,6 +66,13 @@ public class Vulkan {
         vkDestroyDevice(context.logicalGPU, null);
         vkDestroySurfaceKHR(context.instance, context.window.surface, null);
         vkDestroyInstance(context.instance, null);
+        for (long framebuffer : context.swapChainFramebuffers) {
+            vkDestroyFramebuffer(context.logicalGPU, framebuffer, null);
+        }
+        vkDestroyCommandPool(context.logicalGPU, context.commandPool, null);
+        vkDestroySemaphore(context.logicalGPU, context.imageAvailableSemaphore, null);
+        vkDestroySemaphore(context.logicalGPU, context.renderFinishedSemaphore, null);
+        vkDestroyFence(context.logicalGPU, context.inFlightFence, null);
     }
 
     private boolean createInstance() {
@@ -147,6 +157,14 @@ public class Vulkan {
             }
 
             context.logicalGPU = new VkDevice(pLogicalDevice.get(0), context.GPU, createInfo);
+
+            PointerBuffer pQueue = stack.pointers(VK_NULL_HANDLE);
+
+            vkGetDeviceQueue(context.logicalGPU, indices.graphicsFamily, 0, pQueue);
+            context.graphicsQueue = new VkQueue(pQueue.get(0), context.logicalGPU);
+
+            vkGetDeviceQueue(context.logicalGPU, indices.presentFamily, 0, pQueue);
+            context.presentQueue = new VkQueue(pQueue.get(0), context.logicalGPU);
         }
 
         return true;
@@ -270,28 +288,216 @@ public class Vulkan {
         for(VulkanProgramCreateInfo programCreateInfo : programsCreateInfo.programs) {
             try {
                 VulkanShader shader = new VulkanShader(programCreateInfo.shaderCreateInfo, context);
-                System.out.println("Shader parsed");
                 shader.make(context.window);
-                System.out.println("Shader made");
                 int iShader = VulkanProgram.genShader(shader);
-                System.out.println("Shader id made");
                 VulkanRenderPass renderPass = new VulkanRenderPass(context);
-                System.out.println("Render pass made");
                 int iRenderPass = VulkanProgram.genRenderPass(renderPass);
-                System.out.println("Render pass id made");
                 VulkanPipeline pipeline = new VulkanPipeline(context, shader, programCreateInfo.renderMode, renderPass);
-                System.out.println("Pipeline made");
                 int iPipeline = VulkanProgram.genPipeline(pipeline);
-                System.out.println("Pipeline id made");
                 VulkanProgram program = new VulkanProgram(iShader, iPipeline, iRenderPass);
-                System.out.println("Program made");
                 context.programs[i] = program;
             } catch (Exception e) {
                 VulkanProgram.cleanupMess();
                 return false;
             }
         }
+        context.currentProgram = context.programs[0];
         return true;
+    }
+    private boolean createFrameBuffers() {
+        try(MemoryStack stack = stackPush()) {
+            context.swapChainFramebuffers = new long[context.swapChain.imageViews.size()];
+            for (int i = 0; i < context.swapChain.imageViews.size(); i++) {
+                long[] attachments = {
+                    context.swapChain.imageViews.get(i)
+                };
+
+                VkFramebufferCreateInfo framebufferInfo = VkFramebufferCreateInfo.calloc(stack);
+                framebufferInfo.sType(VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO);
+                framebufferInfo.renderPass(context.currentProgram.getVulkanRenderPass());
+                framebufferInfo.pAttachments(RenderUtils.store(attachments));
+                framebufferInfo.width(context.swapChain.extent.width());
+                framebufferInfo.height(context.swapChain.extent.height());
+                framebufferInfo.layers(1);
+
+                if (vkCreateFramebuffer(context.logicalGPU, framebufferInfo, null, stack.longs(context.swapChainFramebuffers[i])) !=VK_SUCCESS){
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean createCommandPool() {
+        try(MemoryStack stack = stackPush()) {
+            VulkanQueueFamilyIndices queueFamilyIndices = findQueueFamilies(context.GPU);
+
+            VkCommandPoolCreateInfo poolInfo = VkCommandPoolCreateInfo.calloc(stack);
+            poolInfo.sType(VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO);
+            poolInfo.flags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+            poolInfo.queueFamilyIndex(queueFamilyIndices.graphicsFamily);
+
+            LongBuffer pCommandPool = stack.callocLong(1);
+            if (vkCreateCommandPool(context.logicalGPU, poolInfo, null, pCommandPool) != VK_SUCCESS) {
+                return false;
+            }
+            context.commandPool = pCommandPool.get(0);
+        }
+
+        return true;
+    }
+
+    private boolean createCommandBuffer() {
+        try(MemoryStack stack = stackPush()) {
+            VkCommandBufferAllocateInfo allocInfo = VkCommandBufferAllocateInfo.calloc();
+            allocInfo.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO);
+            allocInfo.commandPool(context.commandPool);
+            allocInfo.level(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+            allocInfo.commandBufferCount(1);
+
+            PointerBuffer pCommandBuffer = stack.callocPointer(1);
+            if (vkAllocateCommandBuffers(context.logicalGPU, allocInfo, pCommandBuffer) !=VK_SUCCESS){
+                return false;
+            }
+            context.commandBuffer = new VkCommandBuffer(pCommandBuffer.get(0), context.logicalGPU);
+            return true;
+        }
+    }
+
+    private boolean createSyncObjects() {
+        try(MemoryStack stack = MemoryStack.stackPush()) {
+            VkSemaphoreCreateInfo semaphoreInfo = VkSemaphoreCreateInfo.calloc(stack);
+            semaphoreInfo.sType(VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
+
+            VkFenceCreateInfo fenceInfo = VkFenceCreateInfo.calloc(stack);
+            fenceInfo.sType(VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
+            fenceInfo.flags(VK_FENCE_CREATE_SIGNALED_BIT);
+
+            LongBuffer pImageAvailableSemaphore = stack.mallocLong(1);
+            LongBuffer pRenderFinishedSemaphore = stack.mallocLong(1);
+            LongBuffer pFence = stack.mallocLong(1);
+
+            if(vkCreateSemaphore(context.logicalGPU, semaphoreInfo, null, pImageAvailableSemaphore) != VK_SUCCESS
+                || vkCreateSemaphore(context.logicalGPU, semaphoreInfo, null, pRenderFinishedSemaphore) != VK_SUCCESS
+                || vkCreateFence(context.logicalGPU, fenceInfo, null, pFence) != VK_SUCCESS) {
+                return false;
+            }
+
+            context.imageAvailableSemaphore = pImageAvailableSemaphore.get(0);
+            context.renderFinishedSemaphore = pRenderFinishedSemaphore.get(0);
+            context.inFlightFence = pFence.get(0);
+        }
+
+        return true;
+    }
+
+    void beginCommandBufferRecording(VkCommandBuffer commandBuffer, int imageIndex) throws BufferRecordException {
+        try(MemoryStack stack = MemoryStack.stackPush()) {
+            VkCommandBufferBeginInfo beginInfo = VkCommandBufferBeginInfo.calloc(stack);
+            beginInfo.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO);
+            beginInfo.flags(0);
+            beginInfo.pInheritanceInfo(null);
+
+            if (vkBeginCommandBuffer(commandBuffer, beginInfo) != VK_SUCCESS){
+                throw new BufferRecordException("failed to begin recording command buffer!");
+            }
+
+            VkClearValue clearColor = new VkClearValue(RenderUtils.storeAsByte(0.0f, 0.0f, 0.0f, 1.0f));
+            VkClearValue.Buffer pClearColor = VkClearValue.calloc(1, stack);
+            pClearColor.put(clearColor);
+            VkRenderPassBeginInfo renderPassInfo = VkRenderPassBeginInfo.calloc(stack);
+            renderPassInfo.sType(VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO);
+            renderPassInfo.renderPass(context.currentProgram.getVulkanRenderPass());
+            renderPassInfo.framebuffer(context.swapChainFramebuffers[imageIndex]);
+            renderPassInfo.renderArea().offset(new VkOffset2D(RenderUtils.storeAsByte(0, 0)));
+            renderPassInfo.renderArea().extent(context.swapChain.extent);
+            renderPassInfo.clearValueCount(1);
+            renderPassInfo.pClearValues(pClearColor);
+
+            vkCmdBeginRenderPass(commandBuffer, renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        }
+
+        isBufferRecording = true;
+        currentCommandBuffer = commandBuffer;
+    }
+
+    private void checkBufferRecording() throws NoBufferRecordingException {
+        if(!isBufferRecording) throw new NoBufferRecordingException("You have to record first when executing commands!");
+    }
+
+    VkCommandBuffer getCurrentCommandBuffer() {
+        return currentCommandBuffer;
+    }
+
+    void execute_bindGraphicsPipeline(VulkanPipeline pipeline) throws NoBufferRecordingException {
+        checkBufferRecording();
+
+        vkCmdBindPipeline(currentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
+
+        try(MemoryStack stack = stackPush()) {
+            VkViewport viewport = VkViewport.calloc(stack);
+            viewport.x(0.0f);
+            viewport.y(0.0f);
+            viewport.width(context.swapChain.extent.width());
+            viewport.height(context.swapChain.extent.height());
+            viewport.minDepth(0.0f);
+            viewport.maxDepth(1.0f);
+
+            VkViewport.Buffer pViewport = VkViewport.calloc(1, stack);
+            pViewport.put(viewport);
+            vkCmdSetViewport(currentCommandBuffer, 0, pViewport);
+
+            VkRect2D scissor = VkRect2D.calloc(stack);
+            scissor.offset(new VkOffset2D(RenderUtils.storeAsByte(0, 0)));
+            scissor.extent(context.swapChain.extent);
+
+            VkRect2D.Buffer pScissor = VkRect2D.calloc(1, stack);
+            pScissor.put(scissor);
+            vkCmdSetScissor(currentCommandBuffer, 0, pScissor);
+        }
+    }
+
+    void execute_draw(int vertexCount, int first) throws NoBufferRecordingException {
+        checkBufferRecording();
+        vkCmdDraw(currentCommandBuffer, vertexCount, 1, first, 0);
+    }
+
+    void endCommandBufferRecording() throws BufferRecordException {
+        vkCmdEndRenderPass(currentCommandBuffer);
+        if (vkEndCommandBuffer(currentCommandBuffer) != VK_SUCCESS) {
+            throw new BufferRecordException("failed to end recording of command buffer!");
+        }
+        isBufferRecording = false;
+        currentCommandBuffer = null;
+    }
+
+    public class BufferRecordException extends Exception {
+        public BufferRecordException() {
+            super();
+        }
+
+        public BufferRecordException(String msg) {
+            super(msg);
+        }
+
+        public BufferRecordException(Exception e) {
+            super(e);
+        }
+    }
+
+    public class NoBufferRecordingException extends Exception {
+        public NoBufferRecordingException() {
+            super();
+        }
+
+        public NoBufferRecordingException(String msg) {
+            super(msg);
+        }
+
+        public NoBufferRecordingException(Exception e) {
+            super(e);
+        }
     }
 
     public enum RenderMode {
@@ -458,7 +664,7 @@ public class Vulkan {
             VkQueueFamilyProperties.Buffer queueFamilies = VkQueueFamilyProperties.malloc(queueFamilyCount.get(0), stack);
             vkGetPhysicalDeviceQueueFamilyProperties(device, queueFamilyCount, queueFamilies);
             IntBuffer presentSupport = stack.ints(VK_FALSE);
-            for(int i = 0;i < queueFamilies.capacity() || !indices.isComplete();i++) {
+            for(int i = 0; i < queueFamilies.capacity() && !indices.isComplete(); i++) {
                 if((queueFamilies.get(i).queueFlags() & VK_QUEUE_GRAPHICS_BIT) != 0) {
                     indices.graphicsFamily = i;
                 }

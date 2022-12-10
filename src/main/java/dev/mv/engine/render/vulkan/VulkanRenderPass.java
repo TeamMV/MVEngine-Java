@@ -1,10 +1,7 @@
 package dev.mv.engine.render.vulkan;
 
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.vulkan.VkAttachmentDescription;
-import org.lwjgl.vulkan.VkAttachmentReference;
-import org.lwjgl.vulkan.VkRenderPassCreateInfo;
-import org.lwjgl.vulkan.VkSubpassDescription;
+import org.lwjgl.vulkan.*;
 
 import java.nio.LongBuffer;
 
@@ -40,14 +37,25 @@ public class VulkanRenderPass {
             subpass.colorAttachmentCount(1);
             subpass.pColorAttachments(pColorAttachmentRef);
 
+            VkSubpassDependency dependency = VkSubpassDependency.calloc(stack);
+            dependency.srcSubpass(VK_SUBPASS_EXTERNAL);
+            dependency.dstSubpass(0);
+            dependency.srcStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+            dependency.srcAccessMask(0);
+            dependency.dstStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+            dependency.dstAccessMask(VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+
             VkAttachmentDescription.Buffer pColorAttachment = VkAttachmentDescription.calloc(1, stack);
             pColorAttachment.put(0, colorAttachment);
             VkSubpassDescription.Buffer pSubpass = VkSubpassDescription.calloc(1, stack);
             pSubpass.put(0, subpass);
+            VkSubpassDependency.Buffer pDependency = VkSubpassDependency.calloc(1, stack);
+            pDependency.put(dependency);
             VkRenderPassCreateInfo renderPassInfo = VkRenderPassCreateInfo.calloc(stack);
             renderPassInfo.sType(VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO);
             renderPassInfo.pAttachments(pColorAttachment);
             renderPassInfo.pSubpasses(pSubpass);
+            renderPassInfo.pDependencies(pDependency);
 
             LongBuffer pRenderPass = stack.callocLong(1);
             if (vkCreateRenderPass(context.logicalGPU, renderPassInfo, null, pRenderPass) != VK_SUCCESS) {

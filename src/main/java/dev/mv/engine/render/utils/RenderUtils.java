@@ -1,54 +1,93 @@
 package dev.mv.engine.render.utils;
 
-import org.joml.*;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.LongBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.lwjgl.system.MemoryStack.stackGet;
 
 public class RenderUtils {
 
-    public static FloatBuffer store(float[] data) {
+    public static FloatBuffer store(float... data) {
         FloatBuffer buffer = MemoryUtil.memAllocFloat(data.length);
         buffer.put(data).flip();
         return buffer;
     }
 
-    public static IntBuffer store(int[] data) {
+    public static IntBuffer store(int... data) {
         IntBuffer buffer = MemoryUtil.memAllocInt(data.length);
         buffer.put(data).flip();
         return buffer;
     }
 
-    public static ByteBuffer store(byte[] data) {
+    public static LongBuffer store(long... data) {
+        LongBuffer buffer = MemoryUtil.memAllocLong(data.length);
+        buffer.put(data).flip();
+        return buffer;
+    }
+
+    public static ByteBuffer storeAsByte(float... data) {
+        ByteBuffer buffer = MemoryUtil.memAlloc(data.length * Float.BYTES);
+        for(float f : data) {
+            buffer.putFloat(f);
+        }
+        buffer.flip();
+        return buffer;
+    }
+
+    public static ByteBuffer storeAsByte(int... data) {
+        ByteBuffer buffer = MemoryUtil.memAlloc(data.length * Integer.BYTES);
+        for(int i : data) {
+            buffer.putInt(i);
+        }
+        buffer.flip();
+        return buffer;
+    }
+
+    public static ByteBuffer storeAsByte(long... data) {
+        ByteBuffer buffer = MemoryUtil.memAlloc(data.length * Long.BYTES);
+        for(long l : data) {
+            buffer.putLong(l);
+        }
+        buffer.flip();
+        return buffer;
+    }
+
+    public static ByteBuffer store(byte... data) {
         ByteBuffer buffer = MemoryUtil.memAlloc(data.length);
         buffer.put(data).flip();
         return buffer;
     }
 
-    public static FloatBuffer storeTerminated(float[] data) {
+    public static FloatBuffer storeTerminated(float... data) {
         FloatBuffer buffer = MemoryUtil.memAllocFloat(data.length + 1);
         buffer.put(data).put(0f).flip();
         return buffer;
     }
 
-    public static IntBuffer storeTerminated(int[] data) {
+    public static IntBuffer storeTerminated(int... data) {
         IntBuffer buffer = MemoryUtil.memAllocInt(data.length + 1);
         buffer.put(data).put(0).flip();
         return buffer;
     }
 
-    public static ByteBuffer storeTerminated(byte[] data) {
+    public static LongBuffer storeTerminated(long... data) {
+        LongBuffer buffer = MemoryUtil.memAllocLong(data.length + 1);
+        buffer.put(data).put(0).flip();
+        return buffer;
+    }
+
+    public static ByteBuffer storeTerminated(byte... data) {
         ByteBuffer buffer = MemoryUtil.memAlloc(data.length + 1);
         buffer.put(data).put((byte) 0).flip();
         return buffer;

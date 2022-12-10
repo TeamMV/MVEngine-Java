@@ -1,5 +1,6 @@
 package dev.mv.editor;
 
+import dev.mv.LogFileEliminator;
 import dev.mv.editor.launcher.EditorLauncher;
 import dev.mv.editor.launcher.LaunchConfig;
 import dev.mv.editor.launcher.LauncherScreen;
@@ -47,6 +48,7 @@ public class Main {
 
     @SneakyThrows
     public static void main(String[] args) {
+        LogFileEliminator.__void__();
         MVEngine.init(new ApplicationConfig()
             .setName("MVEngine")
             .setVersion(Version.parse("v0.1.0"))

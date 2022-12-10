@@ -1,0 +1,182 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007fdaf8636025, pid=16755, tid=16757
+#
+# JRE version: OpenJDK Runtime Environment (18.0.2+9) (build 18.0.2+9-61)
+# Java VM: OpenJDK 64-Bit Server VM (18.0.2+9-61, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, linux-amd64)
+# Problematic frame:
+# C  [libvulkan_intel.so+0x12b025]
+#
+# Core dump will be written. Default location: Core dumps may be processed with "/usr/share/apport/apport -p%p -s%s -c%c -d%d -P%P -u%u -g%g -- %E" (or dumping to /home/v22/Schreibtisch/coding/java/MVEngine/core.16755)
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugreport.java.com/bugreport/crash.jsp
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -agentlib:jdwp=transport=dt_socket,address=127.0.0.1:32941,suspend=y,server=n -javaagent:/home/v22/.local/share/JetBrains/Toolbox/apps/IDEA-U/ch-0/222.4345.14/plugins/java/lib/rt/debugger-agent.jar -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 dev.mv.editor.Main
+
+Host: Intel(R) Core(TM) i3-8100 CPU @ 3.60GHz, 4 cores, 15G, Ubuntu 22.04.1 LTS
+Time: Sat Dec 10 23:35:24 2022 CET elapsed time: 546.407224 seconds (0d 0h 9m 6s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007fdb7002a190):  JavaThread "main" [_thread_in_native, id=16757, stack(0x00007fdb7487e000,0x00007fdb7497e000)]
+
+Stack: [0x00007fdb7487e000,0x00007fdb7497e000],  sp=0x00007fdb7497c400,  free space=1017k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [libvulkan_intel.so+0x12b025]
+C  [libvulkan_intel.so+0x1e62f1]
+j  org.lwjgl.vulkan.VK10.nvkCmdBeginRenderPass(Lorg/lwjgl/vulkan/VkCommandBuffer;JI)V+17
+j  org.lwjgl.vulkan.VK10.vkCmdBeginRenderPass(Lorg/lwjgl/vulkan/VkCommandBuffer;Lorg/lwjgl/vulkan/VkRenderPassBeginInfo;I)V+6
+j  dev.mv.engine.render.vulkan.Vulkan.beginCommandBufferRecording(Lorg/lwjgl/vulkan/VkCommandBuffer;I)V+213
+j  dev.mv.engine.render.vulkan.VulkanBasicRendering.drawFrame()V+113
+j  dev.mv.engine.render.vulkan.VulkanWindow.loop()V+238
+j  dev.mv.engine.render.vulkan.VulkanWindow.run()V+89
+j  dev.mv.engine.render.vulkan.VulkanWindow.run(Ljava/lang/Runnable;Ljava/lang/Runnable;Ljava/lang/Runnable;)V+16
+j  dev.mv.editor.Main.main([Ljava/lang/String;)V+128
+v  ~StubRoutines::call_stub
+V  [libjvm.so+0x80d2f5]  JavaCalls::call_helper(JavaValue*, methodHandle const&, JavaCallArguments*, JavaThread*)+0x315
+V  [libjvm.so+0x8a6b6d]  jni_invoke_static(JNIEnv_*, JavaValue*, _jobject*, JNICallType, _jmethodID*, JNI_ArgumentPusher*, JavaThread*) [clone .constprop.1]+0x38d
+V  [libjvm.so+0x8a992e]  jni_CallStaticVoidMethod+0x15e
+C  [libjli.so+0x46ae]  JavaMain+0xcfe
+C  [libjli.so+0x7d29]  ThreadJavaMain+0x9
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  org.lwjgl.system.JNI.callPPV(JJIJ)V+0
+j  org.lwjgl.vulkan.VK10.nvkCmdBeginRenderPass(Lorg/lwjgl/vulkan/VkCommandBuffer;JI)V+17
+j  org.lwjgl.vulkan.VK10.vkCmdBeginRenderPass(Lorg/lwjgl/vulkan/VkCommandBuffer;Lorg/lwjgl/vulkan/VkRenderPassBeginInfo;I)V+6
+j  dev.mv.engine.render.vulkan.Vulkan.beginCommandBufferRecording(Lorg/lwjgl/vulkan/VkCommandBuffer;I)V+213
+j  dev.mv.engine.render.vulkan.VulkanBasicRendering.drawFrame()V+113
+j  dev.mv.engine.render.vulkan.VulkanWindow.loop()V+238
+j  dev.mv.engine.render.vulkan.VulkanWindow.run()V+89
+j  dev.mv.engine.render.vulkan.VulkanWindow.run(Ljava/lang/Runnable;Ljava/lang/Runnable;Ljava/lang/Runnable;)V+16
+j  dev.mv.editor.Main.main([Ljava/lang/String;)V+128
+v  ~StubRoutines::call_stub
+
+siginfo: si_signo: 11 (SIGSEGV), si_code: 1 (SEGV_MAPERR), si_addr: 0x0000000000000040
+
+Register to memory mapping:
+
+RAX=0x00007fdaf8dbb310: <offset 0x00000000008b0310> in /usr/lib/x86_64-linux-gnu/libvulkan_intel.so at 0x00007fdaf850b000
+RBX={method} {0x00007fdb344dc578} 'callPPV' '(JJIJ)V' in 'org/lwjgl/system/JNI'
+RCX=0x00007fdb70443118 points into unknown readable memory: 0x000000000000002b | 2b 00 00 00 00 00 00 00
+RDX=0x00007fdb7497c430 is pointing into the stack for thread: 0x00007fdb7002a190
+RSP=0x00007fdb7497c400 is pointing into the stack for thread: 0x00007fdb7002a190
+RBP=0x00007fdb7497c420 is pointing into the stack for thread: 0x00007fdb7002a190
+RSI=0x00007fdb70443118 points into unknown readable memory: 0x000000000000002b | 2b 00 00 00 00 00 00 00
+RDI=0x00007fdb714b3550 points into unknown readable memory: 0x00007fdb7080d690 | 90 d6 80 70 db 7f 00 00
+R8 =0x0 is NULL
+R9 =0x00007fdaf86f12b0: <offset 0x00000000001e62b0> in /usr/lib/x86_64-linux-gnu/libvulkan_intel.so at 0x00007fdaf850b000
+R10=0x00007fdb5962f918 is at code_begin+1592 in an Interpreter codelet
+method entry point (kind = native)  [0x00007fdb5962f2e0, 0x00007fdb59630120]  3648 bytes
+R11=0x000000071754f770 is an oop: java.lang.Class 
+{0x000000071754f770} - klass: 'java/lang/Class'
+ - ---- fields (total size 14 words):
+ - private volatile transient 'classRedefinedCount' 'I' @12  0
+ - abstract internal 'klass' 'J' @16  34372420560 (c183d0 8)
+ - abstract internal 'array_klass' 'J' @24  0 (0 0)
+ - abstract internal 'oop_size' 'I' @32  14 (e)
+ - abstract internal 'static_oop_field_count' 'I' @36  0
+ - private volatile transient 'cachedConstructor' 'Ljava/lang/reflect/Constructor;' @40  NULL (0)
+ - private transient 'name' 'Ljava/lang/String;' @44  "org.lwjgl.system.JNI"{0x000000071754f7e0} (e2ea9efc)
+ - private transient 'module' 'Ljava/lang/Module;' @48  a 'java/lang/Module'{0x0000000717401cd8} (e2e8039b)
+ - private final 'classLoader' 'Ljava/lang/ClassLoader;' @52  a 'jdk/internal/loader/ClassLoaders$AppClassLoader'{0x0000000717410a58} (e2e8214b)
+ - private transient 'classData' 'Ljava/lang/Object;' @56  NULL (0)
+ - private transient 'packageName' 'Ljava/lang/String;' @60  "org.lwjgl.system"{0x000000071747a410} (e2e8f482)
+ - private final 'componentType' 'Ljava/lang/Class;' @64  NULL (0)
+ - private volatile transient 'reflectionData' 'Ljava/lang/ref/SoftReference;' @68  NULL (0)
+ - private volatile transient 'genericInfo' 'Lsun/reflect/generics/repository/ClassRepository;' @72  NULL (0)
+ - private volatile transient 'enumConstants' '[Ljava/lang/Object;' @76  NULL (0)
+ - private volatile transient 'enumConstantDirectory' 'Ljava/util/Map;' @80  NULL (0)
+ - private volatile transient 'annotationData' 'Ljava/lang/Class$AnnotationData;' @84  NULL (0)
+ - private volatile transient 'annotationType' 'Lsun/reflect/annotation/AnnotationType;' @88  NULL (0)
+ - transient 'classValueMap' 'Ljava/lang/ClassValue$ClassValueMap;' @92  NULL (0)
+ - abstract internal 'protection_domain' 'Ljava/lang/Object;' @96  a 'java/security/ProtectionDomain'{0x000000071747a6a8} (e2e8f4d5)
+ - abstract internal 'signers_name' 'Ljava/lang/Object;' @100  NULL (0)
+ - abstract internal 'source_file' 'Ljava/lang/Object;' @104  NULL (0)
+ - signature: Lorg/lwjgl/system/JNI;
+ - ---- static fields (0):
+R12=0x00007fdb714b3550 points into unknown readable memory: 0x00007fdb7080d690 | 90 d6 80 70 db 7f 00 00
+R13=0x00007fdb70443118 points into unknown readable memory: 0x000000000000002b | 2b 00 00 00 00 00 00 00
+R14=0x0 is NULL
+R15=0x0 is NULL
+
+
+Registers:
+RAX=0x00007fdaf8dbb310, RBX=0x00007fdb344dc578, RCX=0x00007fdb70443118, RDX=0x00007fdb7497c430
+RSP=0x00007fdb7497c400, RBP=0x00007fdb7497c420, RSI=0x00007fdb70443118, RDI=0x00007fdb714b3550
+R8 =0x0000000000000000, R9 =0x00007fdaf86f12b0, R10=0x00007fdb5962f918, R11=0x000000071754f770
+R12=0x00007fdb714b3550, R13=0x00007fdb70443118, R14=0x0000000000000000, R15=0x0000000000000000
+RIP=0x00007fdaf8636025, EFLAGS=0x0000000000010246, CSGSFS=0x002b000000000033, ERR=0x0000000000000004
+  TRAPNO=0x000000000000000e
+
+Top of Stack: (sp=0x00007fdb7497c400)
+0x00007fdb7497c400:   0000000000000000 00007fdb344dc578
+0x00007fdb7497c410:   00007fdb7497c530 00007fdb7002a190
+0x00007fdb7497c420:   00007fdb7497c4e0 00007fdaf86f12f1
+0x00007fdb7497c430:   000000003b9c73cd 0000000000000000 
+
+Instructions: (pc=0x00007fdaf8636025)
+0x00007fdaf8635f25:   58 fb ff ff 8d 88 00 da ff ff 8b 85 50 fb ff ff
+0x00007fdaf8635f35:   83 e8 03 83 f8 01 77 05 83 f9 6f 76 34 41 80 be
+0x00007fdaf8635f45:   88 21 00 00 00 75 10 48 8d 05 bd 53 78 00 80 38
+0x00007fdaf8635f55:   00 0f 84 41 fd ff ff 8b 95 2c fb ff ff 48 8b bd
+0x00007fdaf8635f65:   00 fb ff ff 4c 89 f6 e8 af 8a 41 00 e9 27 fd ff
+0x00007fdaf8635f75:   ff c1 e9 03 89 ca 80 ac 15 b4 fb ff ff 01 75 bd
+0x00007fdaf8635f85:   b8 fe ff ff ff d3 c0 21 85 b0 fb ff ff eb ae 48
+0x00007fdaf8635f95:   8b bd 00 fb ff ff 4c 89 f6 e8 6d 8a 41 00 e9 4c
+0x00007fdaf8635fa5:   fd ff ff e8 c3 31 f4 ff 0f 1f 00 f3 0f 1e fa 55
+0x00007fdaf8635fb5:   48 89 e5 41 57 41 56 41 55 41 54 48 8b 47 68 49
+0x00007fdaf8635fc5:   89 fc 4c 8b 76 10 4c 8b 7e 18 48 8b 80 88 00 00
+0x00007fdaf8635fd5:   00 48 83 e4 f0 f6 00 01 0f 84 8d 00 00 00 f3 0f
+0x00007fdaf8635fe5:   6f 46 20 48 83 bf 58 21 00 00 00 49 89 f5 4c 89
+0x00007fdaf8635ff5:   bf a0 10 00 00 4c 89 b7 a8 10 00 00 0f 11 87 b8
+0x00007fdaf8636005:   10 00 00 0f 85 a2 00 00 00 41 80 bc 24 88 21 00
+0x00007fdaf8636015:   00 00 75 7f 48 8d 05 f0 52 78 00 80 38 00 75 73
+0x00007fdaf8636025:   41 8b 76 40 4c 89 e7 e8 bf 1e ff ff 85 c0 75 4f
+0x00007fdaf8636035:   4c 89 e9 4c 89 fa 4c 89 f6 4c 89 e7 e8 da 2a ff
+0x00007fdaf8636045:   ff 85 c0 75 3a 4c 89 e7 31 f6 e8 7c cb ff ff 48
+0x00007fdaf8636055:   8d 65 e0 4c 89 e7 31 f6 41 5c 41 5d 41 5e 41 5f
+0x00007fdaf8636065:   5d e9 45 a5 ff ff 0f 1f 44 00 00 8b 87 c8 00 00
+0x00007fdaf8636075:   00 85 c0 75 0a c7 87 c8 00 00 00 f3 ff ff ff 48
+0x00007fdaf8636085:   8d 65 e0 41 5c 41 5d 41 5e 41 5f 5d c3 66 0f 1f
+0x00007fdaf8636095:   44 00 00 49 8d bc 24 70 21 00 00 4c 89 e6 e8 28
+0x00007fdaf86360a5:   87 41 00 e9 78 ff ff ff 0f 1f 00 e8 0b cd f6 ff
+0x00007fdaf86360b5:   e9 54 ff ff ff 66 0f 1f 44 00 00 f3 0f 1e fa 8b
+0x00007fdaf86360c5:   87 c8 00 00 00 85 c0 74 02 c3 90 55 48 89 fd 53
+0x00007fdaf86360d5:   48 83 ec 08 48 8b 87 a8 10 00 00 48 8b 9f b0 10
+0x00007fdaf86360e5:   00 00 48 83 c0 58 48 29 c3 48 b8 c5 4e ec c4 4e
+0x00007fdaf86360f5:   ec c4 4e 48 c1 fb 03 48 0f af d8 e8 cb 9b ff ff
+0x00007fdaf8636105:   48 83 c4 08 48 89 ef 8d 73 01 5b 5d e9 9a a4 ff
+0x00007fdaf8636115:   ff 66 2e 0f 1f 84 00 00 00 00 00 f3 0f 1e fa 55 
+
+
+Stack slot to memory mapping:
+stack at sp + 0 slots: 0x0 is NULL
+stack at sp + 1 slots: {method} {0x00007fdb344dc578} 'callPPV' '(JJIJ)V' in 'org/lwjgl/system/JNI'
+stack at sp + 2 slots: 0x00007fdb7497c530 is pointing into the stack for thread: 0x00007fdb7002a190
+stack at sp + 3 slots: 0x00007fdb7002a190 is a thread
+stack at sp + 4 slots: 0x00007fdb7497c4e0 is pointing into the stack for thread: 0x00007fdb7002a190
+stack at sp + 5 slots: 0x00007fdaf86f12f1: <offset 0x00000000001e62f1> in /usr/lib/x86_64-linux-gnu/libvulkan_intel.so at 0x00007fdaf850b000
+stack at sp + 6 slots: 0x000000003b9c73cd is an unknown value
+stack at sp + 7 slots: 0x0 is NULL
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007fdafc004690, length=12, elements={
+0x00007fdb7002a190, 0x00007fdb70113950, 0x00007fdb70114df0, 0x00007fdb70119b80,
+0x00007fdb7011af20, 0x00007fdb7011c320, 0x00007fdb7011dcc0, 0x00007fdb7011f1e0,
+0x00007fdb70128630, 0x00007fdb70135540, 0x00007fdb7017d5b0, 0x00007fdb70192440
+}
+
+Java Threads: ( => current thread )
+=>0x00007fdb7002a190 JavaThread "main" [_thread_in_native, id=16757, stack(0x00007fdb7487e000,0x00007fdb7497e000)]
+  0x00007fdb70113950 JavaThread "Reference Handler" daemon [_thread_blocked, id=16764, stack(0x00007fdb4d1fb000,0x00007fdb4d2fb000)]
+  0x00007fdb70114df0
