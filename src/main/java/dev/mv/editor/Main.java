@@ -25,6 +25,7 @@ import dev.mv.utils.misc.Version;
 import lombok.SneakyThrows;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.system.Configuration;
 
 import java.io.IOException;
 

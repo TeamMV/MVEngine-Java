@@ -20,9 +20,13 @@ public class VulkanShader implements Shader {
         fragmentModule = new SPIRV(createInfo.fragmentPath, SPIRV.ShaderType.FRAGMENT, context).getShaderModule();
     }
 
+    void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public void make(Window window) {
-        id = VulkanProgram.genShader(this);
+
     }
 
     @Override

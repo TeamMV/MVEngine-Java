@@ -14,7 +14,7 @@ import static org.lwjgl.util.shaderc.Shaderc.*;
 import static org.lwjgl.vulkan.VK10.*;
 
 public class SPIRV {
-    private String bytecode;
+    private ByteBuffer bytecode;
     private long module;
     private VulkanContext context;
 
@@ -22,28 +22,27 @@ public class SPIRV {
         this.context = context;
         String code = new String(getClass().getResourceAsStream(shaderFile).readAllBytes());
 
-        bytecode = compileShader(code, type, shaderFile.substring(shaderFile.lastIndexOf(File.separator)));
+        bytecode = compileShader(code, type, shaderFile.substring(shaderFile.lastIndexOf(File.separator) + 1));
         module = createShaderModule(bytecode);
     }
 
-    private String compileShader(String source, ShaderType type, String filename) {
+    private ByteBuffer compileShader(String source, ShaderType type, String filename) {
         long compiler = shaderc_compiler_initialize();
         if (compiler == MemoryUtil.NULL) throw new RuntimeException("Failed to compile shader " + filename + "into SPIR-V");
-        long result = shaderc_compile_into_spv(compiler, source, type.getTypeAsShadercInt(), filename, "main", -1L);
+        long result = shaderc_compile_into_spv(compiler, source, type.getTypeAsShadercInt(), filename, "main", 0L);
         if (result == MemoryUtil.NULL) throw new RuntimeException("Failed to compile shader " + filename + "into SPIR-V");
         if(shaderc_result_get_compilation_status(result) != shaderc_compilation_status_success) {
             throw new RuntimeException("Failed to compile shader " + filename + "into SPIR-V:\n " + shaderc_result_get_error_message(result));
         }
         shaderc_compiler_release(compiler);
-        ByteBuffer buffer = shaderc_result_get_bytes(result);
-        return new String(buffer.array());
+        return shaderc_result_get_bytes(result);
     }
 
-    private long createShaderModule(String bytecode) {
+    private long createShaderModule(ByteBuffer bytecode) {
         try(MemoryStack stack = MemoryStack.stackPush()) {
             VkShaderModuleCreateInfo createInfo = VkShaderModuleCreateInfo.calloc(stack);
             createInfo.sType(VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO);
-            createInfo.pCode(RenderUtils.store(bytecode));
+            createInfo.pCode(bytecode);
 
             long[] sModule = new long[1];
             if (vkCreateShaderModule(context.logicalGPU, createInfo, null, sModule) != VK_SUCCESS) {

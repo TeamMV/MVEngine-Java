@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VulkanProgram {
-    private static int nextShader = 1;
+    private static int nextShader = 0;
     private static List<VulkanShader> shaders = new ArrayList<>();
-    private static int nextPipeline = 1;
+    private static int nextPipeline = 0;
     private static List<VulkanPipeline> pipelines = new ArrayList<>();
-    private static int nextRenderPass = 1;
+    private static int nextRenderPass = 0;
     private static List<VulkanRenderPass> renderPasses = new ArrayList<>();
 
     public static int genShader(VulkanShader shader) {
         shaders.add(nextShader, shader);
+        shader.setId(nextShader);
         return nextShader++;
     }
 
@@ -36,6 +37,21 @@ public class VulkanProgram {
 
     public static VulkanRenderPass findRenderPass(int id) {
         return renderPasses.get(id);
+    }
+
+    public static void cleanupMess() {
+        if (shaders.size() == 0) return;
+        if (shaders.size() > pipelines.size()) {
+            shaders.remove(--nextShader);
+            if (renderPasses.size() > pipelines.size()) {
+                renderPasses.remove(--nextRenderPass);
+            }
+        }
+        else {
+            shaders.remove(--nextShader);
+            renderPasses.remove(--nextRenderPass);
+            pipelines.remove(--nextPipeline);
+        }
     }
 
     private int vulkanShader;

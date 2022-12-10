@@ -1,6 +1,7 @@
 package dev.mv.engine.render.vulkan;
 
 import dev.mv.engine.render.utils.RenderUtils;
+import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
@@ -23,10 +24,10 @@ public class VulkanPipeline {
             vertShaderStageInfo.pName(RenderUtils.store("main"));
 
             VkPipelineShaderStageCreateInfo fragShaderStageInfo = VkPipelineShaderStageCreateInfo.calloc(stack);
-            vertShaderStageInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO);
-            vertShaderStageInfo.stage(VK_SHADER_STAGE_FRAGMENT_BIT);
-            vertShaderStageInfo.module(shader.getFragmentModule());
-            vertShaderStageInfo.pName(RenderUtils.store("main"));
+            fragShaderStageInfo.sType(VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO);
+            fragShaderStageInfo.stage(VK_SHADER_STAGE_FRAGMENT_BIT);
+            fragShaderStageInfo.module(shader.getFragmentModule());
+            fragShaderStageInfo.pName(RenderUtils.store("main"));
 
             VkPipelineShaderStageCreateInfo[] shaderStages = {vertShaderStageInfo, fragShaderStageInfo};
 

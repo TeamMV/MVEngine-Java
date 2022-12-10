@@ -177,7 +177,7 @@ public class Vulkan {
                 imageCount.put(0, swapChainSupport.capabilities.maxImageCount());
             }
 
-            VkSwapchainCreateInfoKHR createInfo = VkSwapchainCreateInfoKHR.callocStack(stack);
+            VkSwapchainCreateInfoKHR createInfo = VkSwapchainCreateInfoKHR.calloc(stack);
 
             createInfo.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR);
             createInfo.surface(context.window.surface);
@@ -238,7 +238,7 @@ public class Vulkan {
         try(MemoryStack stack = stackPush()) {
             LongBuffer pImageView = stack.mallocLong(1);
             for(long swapChainImage : context.swapChain.images) {
-                VkImageViewCreateInfo createInfo = VkImageViewCreateInfo.callocStack(stack);
+                VkImageViewCreateInfo createInfo = VkImageViewCreateInfo.calloc(stack);
                 createInfo.sType(VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO);
                 createInfo.image(swapChainImage);
                 createInfo.viewType(VK_IMAGE_VIEW_TYPE_2D);
@@ -270,16 +270,24 @@ public class Vulkan {
         for(VulkanProgramCreateInfo programCreateInfo : programsCreateInfo.programs) {
             try {
                 VulkanShader shader = new VulkanShader(programCreateInfo.shaderCreateInfo, context);
-                System.out.println("Shader created.");
+                System.out.println("Shader parsed");
                 shader.make(context.window);
+                System.out.println("Shader made");
                 int iShader = VulkanProgram.genShader(shader);
+                System.out.println("Shader id made");
                 VulkanRenderPass renderPass = new VulkanRenderPass(context);
+                System.out.println("Render pass made");
                 int iRenderPass = VulkanProgram.genRenderPass(renderPass);
+                System.out.println("Render pass id made");
                 VulkanPipeline pipeline = new VulkanPipeline(context, shader, programCreateInfo.renderMode, renderPass);
+                System.out.println("Pipeline made");
                 int iPipeline = VulkanProgram.genPipeline(pipeline);
+                System.out.println("Pipeline id made");
                 VulkanProgram program = new VulkanProgram(iShader, iPipeline, iRenderPass);
+                System.out.println("Program made");
                 context.programs[i] = program;
             } catch (Exception e) {
+                VulkanProgram.cleanupMess();
                 return false;
             }
         }
@@ -447,7 +455,7 @@ public class Vulkan {
         try(MemoryStack stack = stackPush()) {
             IntBuffer queueFamilyCount = stack.ints(0);
             vkGetPhysicalDeviceQueueFamilyProperties(device, queueFamilyCount, null);
-            VkQueueFamilyProperties.Buffer queueFamilies = VkQueueFamilyProperties.mallocStack(queueFamilyCount.get(0), stack);
+            VkQueueFamilyProperties.Buffer queueFamilies = VkQueueFamilyProperties.malloc(queueFamilyCount.get(0), stack);
             vkGetPhysicalDeviceQueueFamilyProperties(device, queueFamilyCount, queueFamilies);
             IntBuffer presentSupport = stack.ints(VK_FALSE);
             for(int i = 0;i < queueFamilies.capacity() || !indices.isComplete();i++) {
