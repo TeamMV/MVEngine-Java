@@ -51,11 +51,9 @@ public class Main {
             .setVersion(Version.parse("v0.1.0"))
             .setRenderingApi(ApplicationConfig.RenderingAPI.VULKAN));
 
-        System.out.println(MVEngine.getRenderingApi());
-
-        System.exit(0);
-
         WindowCreateInfo createInfo = new WindowCreateInfo();
+        createInfo.width = 800;
+        createInfo.height = 600;
         createInfo.title = "MVEngine";
         createInfo.resizeable = true;
         createInfo.appendFpsToTitle = true;
@@ -69,19 +67,20 @@ public class Main {
         Window window = MVEngine.createWindow(createInfo);
 
         window.run(() -> {
-            renderer3D = new DrawContext3D(window);
-            try {
-                ObjectLoader loader = MVEngine.getObjectLoader();
-                Model mCruiser = loader.loadExternalModel("/models/cruiser/cruiser.obj");
-                Texture tCruiser = RenderBuilder.newTexture("/models/cruiser/cruiser.bmp");
-                mCruiser.setTexture(tCruiser, 1.0f);
-                cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            System.out.println(MVEngine.getRenderingApi());
+            //renderer3D = new DrawContext3D(window);
+            //try {
+            //    ObjectLoader loader = MVEngine.getObjectLoader();
+            //    Model mCruiser = loader.loadExternalModel("/models/cruiser/cruiser.obj");
+            //    Texture tCruiser = RenderBuilder.newTexture("/models/cruiser/cruiser.bmp");
+            //    mCruiser.setTexture(tCruiser, 1.0f);
+            //    cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
+            //} catch (IOException e) {
+            //    throw new RuntimeException(e);
+            //}
 
         }, null, () -> {
-            renderer3D.object(cruiser);
+            //renderer3D.object(cruiser);
             //renderer3D.processPointLight(pointlight);
             //renderer3D.processSpotLight(spotlight);
             //renderer3D.processDirectionalLight(directionalLight);

@@ -42,6 +42,8 @@ public class VulkanWindow implements Window {
 
     public VulkanWindow(WindowCreateInfo info) {
         this.info = info;
+        width = info.width;
+        height = info.height;
         context = new VulkanContext(this);
     }
 
@@ -90,7 +92,7 @@ public class VulkanWindow implements Window {
         glfwWindowHint(GLFW_RESIZABLE, info.resizeable ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_DECORATED, info.decorated ? GLFW_TRUE : GLFW_FALSE);
 
-        window = glfwCreateWindow(width, height, info.title, NULL, NULL);
+        window = glfwCreateWindow(info.width, info.height, info.title, NULL, NULL);
         if (window == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
         }
@@ -119,13 +121,13 @@ public class VulkanWindow implements Window {
             );
         }
 
-        glfwSwapInterval(1);
-
         glfwImpl = new ImGuiImplGlfw();
         glfwImpl.init(window, true);
 
         glfwShowWindow(window);
-        return true;
+
+        Vulkan vulkan = new Vulkan(context);
+        return vulkan.init();
     }
 
     private void loop() {
@@ -155,15 +157,14 @@ public class VulkanWindow implements Window {
                 deltaU--;
             }
             if (deltaF >= 1) {
-
-                glfwImpl.newFrame();
-                ImGui.newFrame();
+                //glfwImpl.newFrame();
+                //ImGui.newFrame();
 
                 if (onDraw != null) {
                     onDraw.run();
                 }
 
-                ImGui.render();
+                //ImGui.render();
                 //vulkanImpl.renderDrawData(ImGui.getDrawData());
 
                 glfwSwapBuffers(window);

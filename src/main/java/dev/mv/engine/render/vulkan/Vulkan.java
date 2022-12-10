@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
@@ -34,16 +34,34 @@ public class Vulkan {
     }
 
     boolean init() {
+        VulkanShaderCreateInfo shaderCreateInfo = new VulkanShaderCreateInfo();
+        shaderCreateInfo.vertexPath = "/home/v22/Schreibtisch/coding/java/MVEngine/src/main/resources/shaders/2d/vDefault.vert";
+        shaderCreateInfo.fragmentPath = "/home/v22/Schreibtisch/coding/java/MVEngine/src/main/resources/shaders/2d/vDefault.frag";
+
+        VulkanProgramCreateInfo programCreateInfo = new VulkanProgramCreateInfo();
+        programCreateInfo.renderMode = RenderMode.TRIANGLES;
+        programCreateInfo.shaderCreateInfo = shaderCreateInfo;
+
+        VulkanProgramsCreateInfo programsCreateInfo = new VulkanProgramsCreateInfo();
+        programsCreateInfo.programs.add(programCreateInfo);
+
         if(!createInstance()) return false;
         if(!pickPhysicalDevice()) return false;
         if(!createLogicalDevice()) return false;
         if(!createSwapChain()) return false;
+        try {
+            if(!createGraphicsPipelinesAndRenderPasses(programsCreateInfo))
+            return false;
+        } catch (IOException e) {
+            return false;
+        }
+
         return true;
     }
 
     public void terminate() {
         vkDestroyDevice(context.logicalGPU, null);
-        //vkDestroySurfaceKHR(context.instance, context.surface, null);
+        vkDestroySurfaceKHR(context.instance, context.surface, null);
         vkDestroyInstance(context.instance, null);
     }
 
@@ -111,6 +129,7 @@ public class Vulkan {
             queueCreateInfo.pQueuePriorities(RenderUtils.store(new float[] {queuePriority}));
 
             VkDeviceQueueCreateInfo.Buffer pQueueCreateInfo = VkDeviceQueueCreateInfo.calloc(1, stack);
+            pQueueCreateInfo.put(0, queueCreateInfo);
 
             VkPhysicalDeviceFeatures deviceFeatures = VkPhysicalDeviceFeatures.calloc(stack);
             VkDeviceCreateInfo createInfo = VkDeviceCreateInfo.calloc(stack);
@@ -249,22 +268,28 @@ public class Vulkan {
         return true;
     }
 
-    private boolean createGraphicsPipelines(VulkanProgramsCreateInfo programsCreateInfo) throws IOException {
+    private boolean createGraphicsPipelinesAndRenderPasses(VulkanProgramsCreateInfo programsCreateInfo) throws IOException {
         context.programs = new VulkanProgram[programsCreateInfo.programs.size()];
         int i = 0;
         for(VulkanProgramCreateInfo programCreateInfo : programsCreateInfo.programs) {
-            VulkanShader shader = new VulkanShader(programCreateInfo.shaderCreateInfo, context);
-            shader.make(context.window);
-            int iShader = VulkanProgram.genShader(shader);
-            VulkanPipeline pipeline = new VulkanPipeline(context, shader, programCreateInfo.renderMode);
-            int iPipeline = VulkanProgram.genPipeline(pipeline);
-            VulkanProgram program = new VulkanProgram(iShader, iPipeline);
-            context.programs[i] = program;
+            try {
+                VulkanShader shader = new VulkanShader(programCreateInfo.shaderCreateInfo, context);
+                shader.make(context.window);
+                int iShader = VulkanProgram.genShader(shader);
+                VulkanRenderPass renderPass = new VulkanRenderPass(context);
+                int iRenderPass = VulkanProgram.genRenderPass(renderPass);
+                VulkanPipeline pipeline = new VulkanPipeline(context, shader, programCreateInfo.renderMode, renderPass);
+                int iPipeline = VulkanProgram.genPipeline(pipeline);
+                VulkanProgram program = new VulkanProgram(iShader, iPipeline, iRenderPass);
+                context.programs[i] = program;
+            } catch (Exception e) {
+                return false;
+            }
         }
         return true;
     }
 
-    public enum RenderMode{
+    public enum RenderMode {
         POINTS(1),
         LINES(2),
         LINE_STRIP(3),

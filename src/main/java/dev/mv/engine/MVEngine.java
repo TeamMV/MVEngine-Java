@@ -57,9 +57,6 @@ public class MVEngine {
 
     public static void terminate() {
         ImGui.destroyContext();
-        if (renderingApi == ApplicationConfig.RenderingAPI.OPENGL) {
-            Vulkan.terminate();
-        }
         glfwTerminate();
     }
 
