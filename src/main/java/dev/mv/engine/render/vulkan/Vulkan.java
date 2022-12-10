@@ -46,16 +46,20 @@ public class Vulkan {
         programsCreateInfo.programs.add(programCreateInfo);
 
         if(!createInstance()) return false;
+        System.out.println(1);
         if(!pickPhysicalDevice()) return false;
+        System.out.println(2);
         if(!createLogicalDevice()) return false;
+        System.out.println(3);
         if(!createSwapChain()) return false;
+        System.out.println(4);
         try {
             if(!createGraphicsPipelinesAndRenderPasses(programsCreateInfo))
             return false;
         } catch (IOException e) {
             return false;
         }
-
+        System.out.println(5);
         return true;
     }
 

@@ -58,6 +58,11 @@ public class VulkanWindow implements Window {
     @Override
     public void run() {
         if (!init()) {
+            glfwFreeCallbacks(window);
+            glfwDestroyWindow(window);
+            MVEngine.rollbackRenderingApi();
+            fallbackWindow = MVEngine.createWindow(info);
+            fallbackWindow.run(onStart, onUpdate, onDraw);
             return;
         }
 
@@ -97,15 +102,6 @@ public class VulkanWindow implements Window {
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
-        if (false) {
-            glfwFreeCallbacks(window);
-            glfwDestroyWindow(window);
-            MVEngine.rollbackRenderingApi();
-            fallbackWindow = MVEngine.createWindow(info);
-            fallbackWindow.run();
-            return false;
-        }
-
         try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1);
             IntBuffer pHeight = stack.mallocInt(1);
@@ -121,13 +117,18 @@ public class VulkanWindow implements Window {
             );
         }
 
+        Vulkan vulkan = new Vulkan(context);
+        if (!vulkan.init()) {
+            return false;
+        }
+
         glfwImpl = new ImGuiImplGlfw();
         glfwImpl.init(window, true);
+        //vulkanImpl = new ImGuiVulkanImpl();
+        //vulkanImpl.init("#version 450");
 
         glfwShowWindow(window);
-
-        Vulkan vulkan = new Vulkan(context);
-        return vulkan.init();
+        return true;
     }
 
     private void loop() {
