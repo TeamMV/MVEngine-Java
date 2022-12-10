@@ -4,6 +4,7 @@ import dev.mv.engine.render.utils.RenderUtils;
 import dev.mv.engine.render.vulkan.VulkanContext;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.vulkan.VkShaderModuleCreateInfo;
 
 import java.io.*;
@@ -17,23 +18,23 @@ public class SPIRV {
     private long module;
     private VulkanContext context;
 
-    public SPIRV(String shaderfile, ShaderType type, VulkanContext context) throws IOException {
+    public SPIRV(String shaderFile, ShaderType type, VulkanContext context) throws IOException {
         this.context = context;
-        BufferedReader reader = new BufferedReader(new FileReader(shaderfile));
-        String line = "";
-        String code = "";
-        while((line = reader.readLine()) != null) {
-            code += line;
-        }
-        reader.close();
+        String code = new String(getClass().getResourceAsStream(shaderFile).readAllBytes());
 
-        bytecode = compileShader(code, type, shaderfile.substring(shaderfile.lastIndexOf(File.separator)));
+        bytecode = compileShader(code, type, shaderFile.substring(shaderFile.lastIndexOf(File.separator)));
         module = createShaderModule(bytecode);
     }
 
     private String compileShader(String source, ShaderType type, String filename) {
-        long compiler = shaderc_compile_options_initialize();
-        long result = shaderc_compile_into_spv(compiler, source, type.getTypeAsShadercInt(), filename, source.substring(0, 5), -1L);
+        long compiler = shaderc_compiler_initialize();
+        if (compiler == MemoryUtil.NULL) throw new RuntimeException("Failed to compile shader " + filename + "into SPIR-V");
+        long result = shaderc_compile_into_spv(compiler, source, type.getTypeAsShadercInt(), filename, "main", -1L);
+        if (result == MemoryUtil.NULL) throw new RuntimeException("Failed to compile shader " + filename + "into SPIR-V");
+        if(shaderc_result_get_compilation_status(result) != shaderc_compilation_status_success) {
+            throw new RuntimeException("Failed to compile shader " + filename + "into SPIR-V:\n " + shaderc_result_get_error_message(result));
+        }
+        shaderc_compiler_release(compiler);
         ByteBuffer buffer = shaderc_result_get_bytes(result);
         return new String(buffer.array());
     }

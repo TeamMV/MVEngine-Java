@@ -10,9 +10,8 @@ public class VulkanContext {
     VkInstance instance;
     VkPhysicalDevice GPU;
     VkDevice logicalGPU;
-    VulkanSwapChain swapChain;
+    VulkanSwapChain swapChain = new VulkanSwapChain();
     VulkanProgram[] programs;
-    long surface;
 
     VulkanContext(VulkanWindow window) {
         this.window = window;

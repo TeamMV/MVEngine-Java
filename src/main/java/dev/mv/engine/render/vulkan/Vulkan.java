@@ -7,25 +7,28 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.*;
-import java.util.stream.IntStream;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static dev.mv.engine.render.utils.RenderUtils.asPointerBuffer;
 import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
 import static org.lwjgl.glfw.GLFWVulkan.glfwGetRequiredInstanceExtensions;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
-import static org.lwjgl.vulkan.VK10.*;
+import static org.lwjgl.vulkan.VK13.*;
 
 public class Vulkan {
     VulkanContext context;
     long allocator;
     long commandPool;
 
-    public Vulkan(VulkanContext context) {
+    private static final Set<String> DEVICE_EXTENSIONS = Stream.of(VK_KHR_SWAPCHAIN_EXTENSION_NAME).collect(Collectors.toSet());
+
+    Vulkan(VulkanContext context) {
         this.context = context;
     }
 
@@ -35,8 +38,8 @@ public class Vulkan {
 
     boolean init() {
         VulkanShaderCreateInfo shaderCreateInfo = new VulkanShaderCreateInfo();
-        shaderCreateInfo.vertexPath = "/home/v22/Schreibtisch/coding/java/MVEngine/src/main/resources/shaders/2d/vDefault.vert";
-        shaderCreateInfo.fragmentPath = "/home/v22/Schreibtisch/coding/java/MVEngine/src/main/resources/shaders/2d/vDefault.frag";
+        shaderCreateInfo.vertexPath = "/shaders/2d/vDefault.vert";
+        shaderCreateInfo.fragmentPath = "/shaders/2d/vDefault.frag";
 
         VulkanProgramCreateInfo programCreateInfo = new VulkanProgramCreateInfo();
         programCreateInfo.renderMode = RenderMode.TRIANGLES;
@@ -46,26 +49,19 @@ public class Vulkan {
         programsCreateInfo.programs.add(programCreateInfo);
 
         if(!createInstance()) return false;
-        System.out.println(1);
+        if(!createSurface()) return false;
         if(!pickPhysicalDevice()) return false;
-        System.out.println(2);
         if(!createLogicalDevice()) return false;
-        System.out.println(3);
         if(!createSwapChain()) return false;
-        System.out.println(4);
-        try {
-            if(!createGraphicsPipelinesAndRenderPasses(programsCreateInfo))
-            return false;
-        } catch (IOException e) {
-            return false;
-        }
         System.out.println(5);
+        if(!createGraphicsPipelinesAndRenderPasses(programsCreateInfo)) return false;
+        System.out.println(6);
         return true;
     }
 
     public void terminate() {
         vkDestroyDevice(context.logicalGPU, null);
-        vkDestroySurfaceKHR(context.instance, context.surface, null);
+        vkDestroySurfaceKHR(context.instance, context.window.surface, null);
         vkDestroyInstance(context.instance, null);
     }
 
@@ -77,7 +73,7 @@ public class Vulkan {
             appInfo.applicationVersion(MVEngine.getApplicationConfig().getVersion().toVulkanVersion());
             appInfo.pEngineName(stack.UTF8Safe("MVEngine"));
             appInfo.engineVersion(MVEngine.VERSION.toVulkanVersion());
-            appInfo.apiVersion(VK_MAKE_API_VERSION(0, 1, 3, 0));
+            appInfo.apiVersion(VK_API_VERSION_1_3);
 
             VkInstanceCreateInfo createInfo = VkInstanceCreateInfo.calloc(stack);
             createInfo.sType(VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO);
@@ -118,7 +114,10 @@ public class Vulkan {
                     }
                 }
             }
-            return false;
+            if (bestScore == 0) {
+                return false;
+            }
+            return true;
         }
     }
 
@@ -140,7 +139,7 @@ public class Vulkan {
             createInfo.sType(VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO);
             createInfo.pQueueCreateInfos(pQueueCreateInfo);
             createInfo.pEnabledFeatures(deviceFeatures);
-            createInfo.enabledExtensionCount();
+            createInfo.ppEnabledExtensionNames(asPointerBuffer(DEVICE_EXTENSIONS));
 
             PointerBuffer pLogicalDevice = stack.callocPointer(1);
             if (vkCreateDevice(context.GPU, createInfo, null, pLogicalDevice) != VK_SUCCESS) {
@@ -154,25 +153,18 @@ public class Vulkan {
     }
 
     private boolean createSurface() {
-
         try(MemoryStack stack = stackPush()) {
-
             LongBuffer pSurface = stack.longs(VK_NULL_HANDLE);
-
             if(glfwCreateWindowSurface(context.instance, context.window.window, null, pSurface) != VK_SUCCESS) {
                 return false;
             }
-
-            context.surface = pSurface.get(0);
+            context.window.surface = pSurface.get(0);
         }
-
         return true;
     }
 
     private boolean createSwapChain() {
-
         try(MemoryStack stack = stackPush()) {
-
             VulkanSwapChain.SwapChainSupportDetails swapChainSupport = querySwapChainSupport(context.GPU, stack);
 
             VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -188,7 +180,7 @@ public class Vulkan {
             VkSwapchainCreateInfoKHR createInfo = VkSwapchainCreateInfoKHR.callocStack(stack);
 
             createInfo.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR);
-            createInfo.surface(context.surface);
+            createInfo.surface(context.window.surface);
 
             // Image settings
             createInfo.minImageCount(imageCount.get(0));
@@ -272,12 +264,13 @@ public class Vulkan {
         return true;
     }
 
-    private boolean createGraphicsPipelinesAndRenderPasses(VulkanProgramsCreateInfo programsCreateInfo) throws IOException {
+    private boolean createGraphicsPipelinesAndRenderPasses(VulkanProgramsCreateInfo programsCreateInfo) {
         context.programs = new VulkanProgram[programsCreateInfo.programs.size()];
         int i = 0;
         for(VulkanProgramCreateInfo programCreateInfo : programsCreateInfo.programs) {
             try {
                 VulkanShader shader = new VulkanShader(programCreateInfo.shaderCreateInfo, context);
+                System.out.println("Shader created.");
                 shader.make(context.window);
                 int iShader = VulkanProgram.genShader(shader);
                 VulkanRenderPass renderPass = new VulkanRenderPass(context);
@@ -424,6 +417,27 @@ public class Vulkan {
     }
 
     private boolean isDeviceSuitable(VkPhysicalDevice device) {
+        try (MemoryStack stack = stackPush()) {
+            boolean swapchainExtFound = false;
+            IntBuffer pCount = stack.callocInt(1);
+            vkEnumerateDeviceExtensionProperties(device, (String)null, pCount, null);
+
+            if (pCount.get(0) > 0) {
+                VkExtensionProperties.Buffer device_extensions = VkExtensionProperties.malloc(pCount.get(0), stack);
+                vkEnumerateDeviceExtensionProperties(device, (String)null, pCount, device_extensions);
+
+                for (int i = 0; i < pCount.get(0); i++) {
+                    device_extensions.position(i);
+                    if (VK_KHR_SWAPCHAIN_EXTENSION_NAME.equals(device_extensions.extensionNameString())) {
+                        swapchainExtFound = true;
+                    }
+                }
+            }
+
+            if (!swapchainExtFound) {
+                return false;
+            }
+        }
         VulkanQueueFamilyIndices indices = findQueueFamilies(device);
         return indices.isComplete();
     }
@@ -433,13 +447,18 @@ public class Vulkan {
         try(MemoryStack stack = stackPush()) {
             IntBuffer queueFamilyCount = stack.ints(0);
             vkGetPhysicalDeviceQueueFamilyProperties(device, queueFamilyCount, null);
-            VkQueueFamilyProperties.Buffer queueFamilies = VkQueueFamilyProperties.malloc(queueFamilyCount.get(0), stack);
+            VkQueueFamilyProperties.Buffer queueFamilies = VkQueueFamilyProperties.mallocStack(queueFamilyCount.get(0), stack);
             vkGetPhysicalDeviceQueueFamilyProperties(device, queueFamilyCount, queueFamilies);
-            IntStream.range(0, queueFamilies.capacity())
-                .filter(index -> (queueFamilies.get(index).queueFlags() & VK_QUEUE_GRAPHICS_BIT) != 0)
-                .findFirst()
-                .ifPresent(index -> indices.graphicsFamily = index);
-
+            IntBuffer presentSupport = stack.ints(VK_FALSE);
+            for(int i = 0;i < queueFamilies.capacity() || !indices.isComplete();i++) {
+                if((queueFamilies.get(i).queueFlags() & VK_QUEUE_GRAPHICS_BIT) != 0) {
+                    indices.graphicsFamily = i;
+                }
+                vkGetPhysicalDeviceSurfaceSupportKHR(device, i, context.window.surface, presentSupport);
+                if(presentSupport.get(0) == VK_TRUE) {
+                    indices.presentFamily = i;
+                }
+            }
             return indices;
         }
     }

@@ -12,6 +12,7 @@ import imgui.glfw.ImGuiImplGlfw;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.GLFWVulkan;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VkDevice;
 import org.lwjgl.vulkan.VkInstance;
@@ -94,6 +95,7 @@ public class VulkanWindow implements Window {
     private boolean init() {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, info.resizeable ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_DECORATED, info.decorated ? GLFW_TRUE : GLFW_FALSE);
 
@@ -117,8 +119,7 @@ public class VulkanWindow implements Window {
             );
         }
 
-        Vulkan vulkan = new Vulkan(context);
-        if (!vulkan.init()) {
+        if (!context.vulkan.init()) {
             return false;
         }
 
