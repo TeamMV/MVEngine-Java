@@ -6,6 +6,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
+import java.io.Console;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.ArrayList;
@@ -356,7 +357,7 @@ public class Vulkan {
             allocInfo.level(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
             allocInfo.commandBufferCount(1);
 
-            PointerBuffer pCommandBuffer = stack.callocPointer(1);
+            PointerBuffer pCommandBuffer = stack.mallocPointer(1);
             if (vkAllocateCommandBuffers(context.logicalGPU, allocInfo, pCommandBuffer) !=VK_SUCCESS){
                 return false;
             }
@@ -403,17 +404,19 @@ public class Vulkan {
                 throw new BufferRecordException("failed to begin recording command buffer!");
             }
 
-            VkClearValue clearColor = new VkClearValue(RenderUtils.storeAsByte(0.0f, 0.0f, 0.0f, 1.0f));
-            VkClearValue.Buffer pClearColor = VkClearValue.calloc(1, stack);
-            pClearColor.put(clearColor);
+            VkClearValue.Buffer clearValues = VkClearValue.calloc(1, stack);
+            clearValues.color().float32(stack.floats(0.0f, 0.0f, 0.0f, 1.0f));
             VkRenderPassBeginInfo renderPassInfo = VkRenderPassBeginInfo.calloc(stack);
+
             renderPassInfo.sType(VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO);
-            renderPassInfo.renderPass(context.currentProgram.getVulkanRenderPass());
+            renderPassInfo.renderPass(VulkanProgram.findRenderPass(context.currentProgram.getVulkanRenderPass()).getRenderPass());
             renderPassInfo.framebuffer(context.swapChainFramebuffers[imageIndex]);
-            renderPassInfo.renderArea().offset(new VkOffset2D(RenderUtils.storeAsByte(0, 0)));
-            renderPassInfo.renderArea().extent(context.swapChain.extent);
+            VkRect2D renderArea = VkRect2D.calloc(stack);
+            renderArea.offset(VkOffset2D.calloc(stack).set(0, 0));
+            renderArea.extent(context.swapChain.extent);
+            renderPassInfo.renderArea(renderArea);
             renderPassInfo.clearValueCount(1);
-            renderPassInfo.pClearValues(pClearColor);
+            renderPassInfo.pClearValues(clearValues);
 
             vkCmdBeginRenderPass(commandBuffer, renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         }

@@ -25,6 +25,7 @@ public class LoadingScreen {
     private ImGuiImplGlfw glfwImpl;
     private ImGuiImplGl3 glImpl;
     private String message = "";
+    private int width, height;
     private volatile Texture texture = null;
 
     private volatile String file = null;
@@ -93,6 +94,13 @@ public class LoadingScreen {
         glEnable(GL_CULL_FACE_MODE);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glfwSetWindowSizeCallback(window, (window, w, h) -> {
+            width = w;
+            height = h;
+
+            glViewport(0, 0, w, h);
+        });
     }
 
     private void loop() {
@@ -161,4 +169,11 @@ public class LoadingScreen {
         glImpl.renderDrawData(ImGui.getDrawData());
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }

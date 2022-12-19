@@ -63,6 +63,36 @@ public class RenderUtils {
         return buffer;
     }
 
+    public static ByteBuffer storeAsByteTerminated(float... data) {
+        ByteBuffer buffer = MemoryUtil.memAlloc(data.length * Float.BYTES + 1);
+        for(float f : data) {
+            buffer.putFloat(f);
+        }
+        buffer.put((byte) 0b0);
+        buffer.flip();
+        return buffer;
+    }
+
+    public static ByteBuffer storeAsByteTerminated(int... data) {
+        ByteBuffer buffer = MemoryUtil.memAlloc(data.length * Integer.BYTES + 1);
+        for(int i : data) {
+            buffer.putInt(i);
+        }
+        buffer.put((byte) 0b0);
+        buffer.flip();
+        return buffer;
+    }
+
+    public static ByteBuffer storeAsByteTerminated(long... data) {
+        ByteBuffer buffer = MemoryUtil.memAlloc(data.length * Long.BYTES + 1);
+        for(long l : data) {
+            buffer.putLong(l);
+        }
+        buffer.put((byte) 0b0);
+        buffer.flip();
+        return buffer;
+    }
+
     public static ByteBuffer store(byte... data) {
         ByteBuffer buffer = MemoryUtil.memAlloc(data.length);
         buffer.put(data).flip();

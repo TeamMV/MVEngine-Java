@@ -5,6 +5,7 @@ import dev.mv.engine.render.shared.Render2D;
 import dev.mv.engine.render.shared.Render3D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.WindowCreateInfo;
+import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.utils.RenderUtils;
 import imgui.ImGui;
 import imgui.gl3.ImGuiImplGl3;
@@ -26,7 +27,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class OpenGLWindow implements Window {
     private final float FOV = (float) Math.toRadians(60);
-    private final float Z_NEAR = 0.001f;
+    private final float Z_NEAR = 0.01f;
     private final float Z_FAR = 100f;
     private int currentFPS, currentUPS;
     private int width, height;
@@ -61,7 +62,7 @@ public class OpenGLWindow implements Window {
         }
 
         declareProjection();
-        //render2D = new OpenGLRender2D(this);
+        render2D = new OpenGLRender2D(this);
         render3D = new OpenGLRender3D(this);
         camera = new Camera();
 
@@ -125,7 +126,8 @@ public class OpenGLWindow implements Window {
 
         glfwShowWindow(window);
 
-        glEnable(GL_CULL_FACE_MODE);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -186,7 +188,7 @@ public class OpenGLWindow implements Window {
                     onDraw.run();
                 }
                 //BatchController.finishAndRender();
-                render3D.render();
+                //render3D.render();
 
                 ImGui.render();
                 glImpl.renderDrawData(ImGui.getDrawData());
@@ -220,9 +222,8 @@ public class OpenGLWindow implements Window {
         if (projectionMatrix == null) {
             projectionMatrix = new Matrix4f();
         }
-        float[] mat = new float[16];
         projectionMatrix.identity();
-        projectionMatrix.ortho(0.0f, (float) this.getWidth(), 0.0f, (float) this.getHeight(), Z_NEAR, Z_FAR);
+        projectionMatrix.ortho(0.0f, (float) this.getWidth(), 0.0f, (float) this.getHeight(), 0.0f, Z_FAR);
     }
 
     @Override

@@ -48,7 +48,7 @@ public class OpenGLRender2D implements Render2D {
         shader.uniform("uResY", (float) window.getHeight());
 
         shader.uniform("uProjection", window.getProjectionMatrix2D());
-        shader.uniform("uView", Transformations3D.getViewMatrix(window.getCamera()));
+        shader.uniform("uView", Transformations3D.getViewMatrix2D(window.getCamera()));
 
         glVertexAttribPointer(0, Batch.POSITION_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.POSITION_OFFSET_BYTES);
         glEnableVertexAttribArray(0);

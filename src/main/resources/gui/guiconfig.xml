@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <themePath>
+        <relative>
+            themes/
+        </relative>
+    </themePath>
+    <layoutPath>
+        <relative>
+            layouts/
+        </relative>
+    </layoutPath>
+</config>

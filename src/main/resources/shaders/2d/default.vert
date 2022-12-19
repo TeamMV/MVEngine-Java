@@ -36,5 +36,5 @@ void main() {
     }
 
     //TODO: view matrix from camera
-    gl_Position = uProjection * vec4(pos, aVertPos.z, 1.0);
+    gl_Position = uProjection * uView * vec4(pos, aVertPos.z, 1.0);
 }

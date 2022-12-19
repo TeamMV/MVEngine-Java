@@ -7,10 +7,11 @@ import dev.mv.editor.launcher.LauncherScreen;
 import dev.mv.editor.loading.LoadingManager;
 import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.gui.components.TextLine;
+import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.WindowCreateInfo;
-import dev.mv.engine.render.shared.Camera;
-import dev.mv.engine.render.shared.DrawContext2D;
-import dev.mv.engine.render.shared.DrawContext3D;
+import dev.mv.engine.render.shared.*;
+import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.font.BitmapFont;
@@ -23,11 +24,13 @@ import dev.mv.engine.render.shared.shader.light.SpotLight;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.utils.async.Promise;
 import dev.mv.utils.misc.Version;
+import imgui.ImGui;
 import lombok.SneakyThrows;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.Configuration;
 
+import java.awt.*;
 import java.io.IOException;
 
 import static dev.mv.utils.Utils.await;
@@ -52,7 +55,7 @@ public class Main {
         MVEngine.init(new ApplicationConfig()
             .setName("MVEngine")
             .setVersion(Version.parse("v0.1.0"))
-            .setRenderingApi(ApplicationConfig.RenderingAPI.VULKAN));
+            .setRenderingApi(ApplicationConfig.RenderingAPI.OPENGL));
 
         WindowCreateInfo createInfo = new WindowCreateInfo();
         createInfo.width = 800;
@@ -69,30 +72,63 @@ public class Main {
 
         Window window = MVEngine.createWindow(createInfo);
 
+        Gradient base = new Gradient();
+        base.bottomLeft = new Color(255, 255, 255, 255);
+        base.topRight = new Color(0, 0, 0, 0);
+        base.topLeft = new Color(125, 125, 125, 255);
+        base.bottomRight = new Color(125, 125, 125, 255);
+
+        Gradient text = new Gradient();
+        text.setTop(new Color(255, 200, 200, 255));
+        text.setBottom(new Color(255, 255, 200, 255));
+
+        Theme.Normal normal = new Theme.Normal(
+            null,
+            new Color(255, 255, 255, 255),
+            base,
+            null,
+            null,
+            text
+        );
+
+        Theme theme = new Theme(normal, null);
+
+        TextLine line = new TextLine(window, 100, 100);
+
+        /*
         window.run(() -> {
             System.out.println(MVEngine.getRenderingApi());
-            //renderer3D = new DrawContext3D(window);
-            //try {
-            //    ObjectLoader loader = MVEngine.getObjectLoader();
-            //    Model mCruiser = loader.loadExternalModel("/models/cruiser/cruiser.obj");
-            //    Texture tCruiser = RenderBuilder.newTexture("/models/cruiser/cruiser.bmp");
-            //    mCruiser.setTexture(tCruiser, 1.0f);
-            //    cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
-            //} catch (IOException e) {
-            //    throw new RuntimeException(e);
-            //}
+            renderer2D = new DrawContext2D(window);
+            try {
+                font = new BitmapFont("/fonts/minecraft/minecraft.png", "/fonts/minecraft/minecraft.fnt");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            line.setHeight(64);
+            line.setText("Hello World!");
+            line.setFont(font);
+            renderer3D = new DrawContext3D(window);
+            try {
+                ObjectLoader loader = MVEngine.getObjectLoader();
+                Model mCruiser = loader.loadExternalModel("/models/cruiser/cruiser.obj");
+                Texture tCruiser = RenderBuilder.newTexture("/models/cruiser/cruiser.bmp");
+                mCruiser.setTexture(tCruiser, 1.0f);
+                cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
         }, null, () -> {
+            //renderer2D.color(255, 0, 0, 255);
+            //renderer2D.rectangle(100, 100, 500, 500);
+            //renderer2D.color(255, 255, 0, 255);
+            //renderer2D.rectangle(100, 100, 100, 100);
+            //line.draw(renderer2D, theme);
             //renderer3D.object(cruiser);
             //renderer3D.processPointLight(pointlight);
             //renderer3D.processSpotLight(spotlight);
             //renderer3D.processDirectionalLight(directionalLight);
-            //renderer3D.render();
-
-            r -= 0.1f;
-            if (r <= 0) {
-                r = 360f;
-            }
 
             //cruiser.incrementRotation(0.1f, 0.1f, 0.1f);
 
@@ -132,13 +168,13 @@ public class Main {
             }
         });
 
-        System.exit(0);
+        */
 
         LoadingManager.start("", "/LoadingLogo.png");
         LoadingManager.loadingDots();
-        await(sleep(2400));
+        await(sleep(500));
         LoadingManager.stop();
-        await(sleep(500)); //We need to wait a little to prevent any problems with multiple windows being open
+        await(sleep(50)); //We need to wait a little to prevent any problems with multiple windows being open
 
         LaunchConfig config = new LauncherScreen().run();
         EditorLauncher editor = new EditorLauncher(config);

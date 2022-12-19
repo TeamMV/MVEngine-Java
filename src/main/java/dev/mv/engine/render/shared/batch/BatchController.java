@@ -14,9 +14,10 @@ public class BatchController {
     private static int maxBatchSize;
     private static Shader defaultShader, prebuildDefaultShader;
     private static int currentBatch;
-    private static List<Batch> batches = new ArrayList<>();
+    private static final List<Batch> batches = new ArrayList<>();
 
-    private static String VERTEX_PATH = "/shaders/2d/default.vert", FRAGMENT_PATH = "/shaders/2d/default.frag";
+    private static final String VERTEX_PATH = "/shaders/2d/default.vert";
+    private static final String FRAGMENT_PATH = "/shaders/2d/default.frag";
 
     public static void init(Window window, int batchLimit) {
         if (batchLimit < 14) {
@@ -46,7 +47,7 @@ public class BatchController {
 
     public static void addVertices(VertexGroup vertexData) {
 
-        if (batches.get(currentBatch).isFull(vertexData.length() * batches.get(0).VERTEX_SIZE_FLOATS)) {
+        if (batches.get(currentBatch).isFull(vertexData.length() * Batch.VERTEX_SIZE_FLOATS)) {
             nextBatch();
         }
 
@@ -54,7 +55,7 @@ public class BatchController {
     }
 
     public static int addTexture(Texture tex) {
-        if (batches.get(currentBatch).isFullOfTextures() || batches.get(currentBatch).isFull(batches.get(0).VERTEX_SIZE_FLOATS * 4)) {
+        if (batches.get(currentBatch).isFullOfTextures() || batches.get(currentBatch).isFull(Batch.VERTEX_SIZE_FLOATS * 4)) {
             nextBatch();
         }
 
@@ -95,6 +96,7 @@ public class BatchController {
     }
 
     public static void render() {
+        defaultShader.use();
         for (int i = 0; i <= currentBatch; i++) {
             batches.get(i).render();
         }

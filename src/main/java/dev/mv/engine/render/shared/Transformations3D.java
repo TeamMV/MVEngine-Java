@@ -20,6 +20,16 @@ public class Transformations3D {
         return matrix;
     }
 
+    public static Matrix4f getViewMatrix2D(Camera camera3D) {
+        Vector3f loc = camera3D.getLocation();
+
+        Matrix4f matrix = new Matrix4f();
+        matrix.identity();
+        matrix.translate(-loc.x, -loc.y, -loc.z);
+
+        return matrix;
+    }
+
     public static Matrix4f getTransformationMatrix(Entity entity) {
         Matrix4f matrix = new Matrix4f();
         matrix.identity();

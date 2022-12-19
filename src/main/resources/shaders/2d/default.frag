@@ -3,7 +3,6 @@
 in vec4 fColor;
 in vec2 fTexCoords;
 in float fTexID;
-in float fRadius;
 
 out vec4 outColor;
 
@@ -24,7 +23,6 @@ void main() {
         }
     }
     else {
-
         outColor = fColor;
     }
 }

@@ -81,7 +81,7 @@ public class OpenGLTexture implements Texture {
 
     @Override
     public void bind(int index) {
-        glActiveTexture(GL_TEXTURE0 + index);
+        glActiveTexture(GL_TEXTURE0 + this.id);
         glBindTexture(GL_TEXTURE_2D, this.id);
     }
 
