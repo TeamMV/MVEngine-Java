@@ -8,6 +8,7 @@ import dev.mv.engine.render.shared.Render3D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.utils.RenderUtils;
 import imgui.ImGui;
+import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
@@ -302,5 +303,15 @@ public class VulkanWindow implements Window {
     @Override
     public Camera getCamera() {
         return null;
+    }
+
+    @Override
+    public ImGuiImplGl3 getImGuiGlImpl() {
+        return null;
+    }
+
+    @Override
+    public ImGuiImplGlfw getImGuiGlfwImpl() {
+        return glfwImpl;
     }
 }

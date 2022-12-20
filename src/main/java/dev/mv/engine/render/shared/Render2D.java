@@ -6,5 +6,5 @@ import dev.mv.engine.render.shared.texture.Texture;
 
 public interface Render2D {
 
-    void retrieveVertexData(Texture[] textures, int[] texIds, int[] indices, float[] vertices, int vboId, int iboId, Shader shader);
+    void retrieveVertexData(Texture[] textures, int[] texIds, int[] indices, float[] vertices, int vboId, int iboId, Shader shader, int renderMode);
 }

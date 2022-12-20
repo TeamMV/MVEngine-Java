@@ -26,15 +26,17 @@ public class OpenGLRender2D implements Render2D {
     }
 
     @Override
-    public void retrieveVertexData(Texture[] textures, int[] texIds, int[] indices, float[] vertices, int vboId, int iboId, Shader shader) {
+    public void retrieveVertexData(Texture[] textures, int[] texIds, int[] indices, float[] vertices, int vboId, int iboId, Shader shader, int renderMode) {
         if (window == null) {
             throw new IllegalStateException("Window is not set!");
         }
 
-        int i = 0;
-        for (Texture texture : textures) {
-            if (texture == null) continue;
-            texture.bind(i++);
+        if (textures != null) {
+            int i = 0;
+            for (Texture texture : textures) {
+                if (texture == null) continue;
+                texture.bind(i++);
+            }
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, vboId);
@@ -43,7 +45,9 @@ public class OpenGLRender2D implements Render2D {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_DYNAMIC_DRAW);
 
-        shader.uniform("TEX_SAMPLER", texIds);
+        if (textures != null) {
+            shader.uniform("TEX_SAMPLER", texIds);
+        }
         shader.uniform("uResX", (float) window.getWidth());
         shader.uniform("uResY", (float) window.getHeight());
 
@@ -63,14 +67,16 @@ public class OpenGLRender2D implements Render2D {
         glVertexAttribPointer(5, Batch.TEX_ID_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.TEX_ID_OFFSET_BYTES);
         glEnableVertexAttribArray(5);
 
-        glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
+        glDrawElements(renderMode, indices.length, GL_UNSIGNED_INT, 0);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-        for (Texture texture : textures) {
-            if (texture == null) continue;
-            texture.unbind();
+        if (textures != null) {
+            for (Texture texture : textures) {
+                if (texture == null) continue;
+                texture.unbind();
+            }
         }
     }
 }

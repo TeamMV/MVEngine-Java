@@ -1,4 +1,4 @@
-package dev.mv.editor.launcher;
+package dev.mv.editor.general;
 
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import imgui.ImGui;

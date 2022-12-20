@@ -22,6 +22,7 @@ import java.nio.IntBuffer;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL14.glBlendFuncSeparate;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -128,9 +129,12 @@ public class OpenGLWindow implements Window {
 
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
-        glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(true);
+        glDepthFunc(GL_LEQUAL);
+        glDepthRange(0.0f, Z_FAR);
 
         glfwSetWindowSizeCallback(window, (window, w, h) -> {
             width = w;
@@ -187,7 +191,7 @@ public class OpenGLWindow implements Window {
                 if (onDraw != null) {
                     onDraw.run();
                 }
-                //BatchController.finishAndRender();
+                BatchController.finishAndRender();
                 //render3D.render();
 
                 ImGui.render();
@@ -334,5 +338,15 @@ public class OpenGLWindow implements Window {
     @Override
     public Camera getCamera() {
         return camera;
+    }
+
+    @Override
+    public ImGuiImplGl3 getImGuiGlImpl() {
+        return glImpl;
+    }
+
+    @Override
+    public ImGuiImplGlfw getImGuiGlfwImpl() {
+        return glfwImpl;
     }
 }

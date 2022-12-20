@@ -1,5 +1,7 @@
 package dev.mv.engine.render.shared;
 
+import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
 import org.joml.Matrix4f;
 
 import java.util.function.Consumer;
@@ -46,4 +48,8 @@ public interface Window {
     Render3D getRender3D();
 
     Camera getCamera();
+
+    ImGuiImplGl3 getImGuiGlImpl();
+
+    ImGuiImplGlfw getImGuiGlfwImpl();
 }

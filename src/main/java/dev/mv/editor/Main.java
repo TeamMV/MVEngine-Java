@@ -93,9 +93,9 @@ public class Main {
 
         Theme theme = new Theme(normal, null);
 
-        TextLine line = new TextLine(window, 100, 100);
+        TextLine line = new TextLine(100, 100);
 
-        /*
+
         window.run(() -> {
             System.out.println(MVEngine.getRenderingApi());
             renderer2D = new DrawContext2D(window);
@@ -120,10 +120,23 @@ public class Main {
             }
 
         }, null, () -> {
-            //renderer2D.color(255, 0, 0, 255);
-            //renderer2D.rectangle(100, 100, 500, 500);
-            //renderer2D.color(255, 255, 0, 255);
-            //renderer2D.rectangle(100, 100, 100, 100);
+            renderer2D.color(255, 0, 0, 255);
+            renderer2D.voidCircle(100, 100, 200, 3, 50f);
+            renderer2D.color(255, 255, 0, 255);
+            renderer2D.circle(300, 300, 100, 20f);
+            renderer2D.color(0, 255, 0, 100);
+            renderer2D.circle(350, 250, 75, 20f);
+            renderer2D.color(255, 255, 255, 255);
+            renderer2D.font(font);
+            renderer2D.text(300, 20, 32, "Alpha circles :D");
+            renderer2D.color(0, 0, 255, 255);
+            renderer2D.arc(500, 300, 50, 90, (int)r, 20);
+            renderer2D.arc(500, 300, 50, 90, (int)r + 180, 20);
+
+            r += 5f;
+            if(r >= 360) {
+                r = 0;
+            }
             //line.draw(renderer2D, theme);
             //renderer3D.object(cruiser);
             //renderer3D.processPointLight(pointlight);
@@ -135,16 +148,16 @@ public class Main {
             Camera camera = window.getCamera();
 
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_W) == GLFW_PRESS) {
-                camera.move(0.0f, 0.0f, -0.01f);
+                camera.move(0.0f, 0.0f, -1f);
             }
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_A) == GLFW_PRESS) {
-                camera.move(-0.01f, 0.0f, 0.0f);
+                camera.move(-1f, 0.0f, 0.0f);
             }
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_S) == GLFW_PRESS) {
-                camera.move(0.0f, 0.0f, 0.01f);
+                camera.move(0.0f, 0.0f, 1f);
             }
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_D) == GLFW_PRESS) {
-                camera.move(0.01f, 0.0f, 0.0f);
+                camera.move(1f, 0.0f, 0.0f);
             }
 
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
@@ -168,7 +181,7 @@ public class Main {
             }
         });
 
-        */
+        System.exit(0);
 
         LoadingManager.start("", "/LoadingLogo.png");
         LoadingManager.loadingDots();

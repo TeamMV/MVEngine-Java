@@ -25,7 +25,7 @@ public class Transformations3D {
 
         Matrix4f matrix = new Matrix4f();
         matrix.identity();
-        matrix.translate(-loc.x, -loc.y, -loc.z);
+        matrix.translate(-loc.x, loc.z, 0);
 
         return matrix;
     }

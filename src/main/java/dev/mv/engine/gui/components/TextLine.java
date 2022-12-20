@@ -5,10 +5,7 @@ import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.event.TextChangeListener;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.DrawContext2D;
-import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
-import imgui.ImGui;
-import imgui.flag.ImGuiWindowFlags;
 
 public class TextLine extends Element{
     private String text;
@@ -18,9 +15,8 @@ public class TextLine extends Element{
         super(parent);
     }
 
-    public TextLine(Window window, int x, int y) {
+    public TextLine(int x, int y) {
         super(x, y);
-        setWindow(window);
     }
 
     public TextLine(int x, int y, Element parent) {
@@ -37,12 +33,14 @@ public class TextLine extends Element{
 
     @Override
     public void draw(DrawContext2D draw, Theme theme) {
-        ImGui.begin(" ", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoScrollbar);
-        ImGui.setCursorPos(x, y);
-        ImGui.setNextWindowSize(width, height);
-        ImGui.setNextWindowBgAlpha(0);
-        ImGui.textUnformatted(text);
-        ImGui.end();
+        if(theme.normal.getText_base() != null) {
+            draw.color(theme.normal.getText_base());
+        } else if(theme.normal.getText_gradient() != null) {
+            draw.color(theme.normal.getText_gradient());
+        }
+        draw.font(font);
+        draw.text(x, y, height, text);
+        draw.color(0, 0, 0, 255);
     }
 
     @Override

@@ -95,6 +95,37 @@ public class DrawContext2D {
         ));
     }
 
+    public void circle(int x, int y, int radius, float precision) {
+        double twicePi = Math.PI * 2.0;
+        double step = twicePi / precision;
+        for (double i = 0.0; i < twicePi; i += step)   {
+            BatchController.addVertices(verts.set(
+                v1.put((float) (x + (radius * Math.cos(i))), (float) (y + (radius * Math.sin(i))), 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
+                v2.put((float) (x + (radius * Math.cos(i + step))), (float) (y + (radius * Math.sin(i + step))), 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
+                v3.put(x, y, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f)));
+        }
+    }
+
+    public void voidCircle(int x, int y, int radius, int thickness, float precision) {
+        double twicePi = Math.PI * 2.0;
+        double step = twicePi / precision;
+        for (double i = 0.0; i < twicePi; i += step)   {
+            line((int) (x + (radius * Math.cos(i))), (int) (y + (radius * Math.sin(i))), (int) (x + (radius * Math.cos(i + step))), (int) (y + (radius * Math.sin(i + step))), thickness);
+        }
+    }
+
+    public void arc(int x, int y, int radius, int range, int start, float precision) {
+        double twicePi = Math.PI * 2.0;
+        double rRange = Math.PI * 2.0 - Math.toRadians(range);
+        double step = twicePi / precision;
+        for (double i = Math.toRadians(start); i < twicePi - rRange + Math.toRadians(start); i += step)   {
+            BatchController.addVertices(verts.set(
+                v1.put((float) (x + (radius * Math.cos(i))), (float) (y + (radius * Math.sin(i))), 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
+                v2.put((float) (x + (radius * Math.cos(i + step))), (float) (y + (radius * Math.sin(i + step))), 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
+                v3.put(x, y, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f)));
+        }
+    }
+
     public void line(int x1, int y1, int x2, int y2, int depth) {
         int w = (x2 - x1);
         int h = (y2 - y1);

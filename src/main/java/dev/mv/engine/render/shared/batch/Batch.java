@@ -194,7 +194,7 @@ public class Batch {
     }
 
     public void render() {
-        win.getRender2D().retrieveVertexData(textures, tex_ids, indices, data, vbo_id, ibo_id, shader);
+        win.getRender2D().retrieveVertexData(textures, tex_ids, indices, data, vbo_id, ibo_id, shader, GL_TRIANGLES);
 
         forceClearBatch();
     }
