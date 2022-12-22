@@ -1,13 +1,15 @@
 package dev.mv.engine.gui.components;
 
+import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.event.TextChangeListener;
+import dev.mv.engine.gui.input.Clickable;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.font.BitmapFont;
 
-public class TextLine extends Element{
+public class TextLine extends Element implements Text {
     private String text;
     private BitmapFont font;
 
@@ -33,36 +35,42 @@ public class TextLine extends Element{
 
     @Override
     public void draw(DrawContext2D draw, Theme theme) {
+        font = theme.getFont();
+
         if(theme.normal.getText_base() != null) {
             draw.color(theme.normal.getText_base());
         } else if(theme.normal.getText_gradient() != null) {
             draw.color(theme.normal.getText_gradient());
         }
-        draw.font(font);
+        draw.font(theme.getFont());
         draw.text(x, y, height, text);
-        draw.color(0, 0, 0, 255);
     }
 
     @Override
     public void attachListener(EventListener listener) {
         if(listener instanceof TextChangeListener textChangeListener) {
-            super.textChangeListener = textChangeListener;
-        }
-        if(listener instanceof ClickListener onClickListener) {
-            super.clickListener = onClickListener;
+            this.textChangeListener = textChangeListener;
         }
     }
 
+    @Override
     public void setText(String text) {
         if(textChangeListener != null) textChangeListener.onChange(this, this.text, text);
         this.text = text;
+        width = font.getWidth(text);
     }
 
-    public void setHeight(int height) {
-        this.height = height;
+    @Override
+    public String getText() {
+        return null;
     }
 
     public void setFont(BitmapFont font) {
         this.font = font;
+    }
+
+    @Override
+    public BitmapFont getFont(BitmapFont font) {
+        return font;
     }
 }

@@ -7,8 +7,12 @@ import dev.mv.editor.launcher.LauncherScreen;
 import dev.mv.editor.loading.LoadingManager;
 import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.gui.components.Button;
 import dev.mv.engine.gui.components.TextLine;
 import dev.mv.engine.gui.theme.Theme;
+import dev.mv.engine.input.InputCollector;
+import dev.mv.engine.input.InputProcessor;
+import dev.mv.engine.input.Input;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.*;
 import dev.mv.engine.render.shared.Color;
@@ -22,15 +26,11 @@ import dev.mv.engine.render.shared.shader.light.DirectionalLight;
 import dev.mv.engine.render.shared.shader.light.PointLight;
 import dev.mv.engine.render.shared.shader.light.SpotLight;
 import dev.mv.engine.render.shared.texture.Texture;
-import dev.mv.utils.async.Promise;
 import dev.mv.utils.misc.Version;
-import imgui.ImGui;
 import lombok.SneakyThrows;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.system.Configuration;
 
-import java.awt.*;
 import java.io.IOException;
 
 import static dev.mv.utils.Utils.await;
@@ -43,6 +43,7 @@ public class Main {
     public static DrawContext2D renderer2D;
     public static DrawContext3D renderer3D;
     static float r = 0;
+    private static Texture texture;
     private static BitmapFont font;
     private static Entity cruiser;
     private static PointLight pointlight = new PointLight(new Vector3f(0, 2, -2), new Vector3f(1, 1, 0.5f), 1f, 0, 0, 1f);
@@ -62,9 +63,6 @@ public class Main {
         createInfo.height = 600;
         createInfo.title = "MVEngine";
         createInfo.resizeable = true;
-        createInfo.appendFpsToTitle = true;
-        createInfo.fpsAppendConfiguration.betweenTitleAndValue = " - ";
-        createInfo.fpsAppendConfiguration.afterValue = " frames";
         createInfo.maxFPS = 60;
         createInfo.maxUPS = 30;
         createInfo.fullscreen = false;
@@ -72,20 +70,14 @@ public class Main {
 
         Window window = MVEngine.createWindow(createInfo);
 
-        Gradient base = new Gradient();
-        base.bottomLeft = new Color(255, 255, 255, 255);
-        base.topRight = new Color(0, 0, 0, 0);
-        base.topLeft = new Color(125, 125, 125, 255);
-        base.bottomRight = new Color(125, 125, 125, 255);
-
         Gradient text = new Gradient();
-        text.setTop(new Color(255, 200, 200, 255));
-        text.setBottom(new Color(255, 255, 200, 255));
+        text.setTop(new Color(255, 255, 255, 255));
+        text.setBottom(new Color(255, 255, 255, 255));
 
         Theme.Normal normal = new Theme.Normal(
-            null,
+            new Color(100, 100, 100, 255),
             new Color(255, 255, 255, 255),
-            base,
+            null,
             null,
             null,
             text
@@ -93,11 +85,21 @@ public class Main {
 
         Theme theme = new Theme(normal, null);
 
-        TextLine line = new TextLine(100, 100);
+        theme.setEdgeStyle(Theme.EdgeStyle.ROUND);
+        theme.setEdgeRadius(45);
+        theme.setOutline(true);
+        theme.setOutlineThickness(3);
 
+        TextLine line = new TextLine(100, 100);
+        Button button = new Button(100, 150, 200, 100);
 
         window.run(() -> {
             System.out.println(MVEngine.getRenderingApi());
+
+            InputProcessor processor = new InputProcessor();
+            new InputCollector(processor, window).start();
+            Input.init();
+
             renderer2D = new DrawContext2D(window);
             try {
                 font = new BitmapFont("/fonts/minecraft/minecraft.png", "/fonts/minecraft/minecraft.fnt");
@@ -105,11 +107,19 @@ public class Main {
                 throw new RuntimeException(e);
             }
 
+            theme.setFont(font);
+
             line.setHeight(64);
-            line.setText("Hello World!");
             line.setFont(font);
+            line.setText("Hello World!");
+
+            button.setFont(font);
+            button.setText("Click me!");
             renderer3D = new DrawContext3D(window);
+
             try {
+                texture = RenderBuilder.newTexture("/LoadingLogo.png");
+
                 ObjectLoader loader = MVEngine.getObjectLoader();
                 Model mCruiser = loader.loadExternalModel("/models/cruiser/cruiser.obj");
                 Texture tCruiser = RenderBuilder.newTexture("/models/cruiser/cruiser.bmp");
@@ -120,24 +130,14 @@ public class Main {
             }
 
         }, null, () -> {
-            renderer2D.color(255, 0, 0, 255);
-            renderer2D.voidCircle(100, 100, 200, 3, 50f);
-            renderer2D.color(255, 255, 0, 255);
-            renderer2D.circle(300, 300, 100, 20f);
-            renderer2D.color(0, 255, 0, 100);
-            renderer2D.circle(350, 250, 75, 20f);
-            renderer2D.color(255, 255, 255, 255);
-            renderer2D.font(font);
-            renderer2D.text(300, 20, 32, "Alpha circles :D");
-            renderer2D.color(0, 0, 255, 255);
-            renderer2D.arc(500, 300, 50, 90, (int)r, 20);
-            renderer2D.arc(500, 300, 50, 90, (int)r + 180, 20);
 
-            r += 5f;
-            if(r >= 360) {
+            r += 1f;
+            if(r >= 100) {
                 r = 0;
             }
-            //line.draw(renderer2D, theme);
+
+            button.draw(renderer2D, theme);
+
             //renderer3D.object(cruiser);
             //renderer3D.processPointLight(pointlight);
             //renderer3D.processSpotLight(spotlight);

@@ -1,28 +1,31 @@
 package dev.mv.engine.gui.components;
 
-import dev.mv.engine.gui.event.ClickListener;
-import dev.mv.engine.gui.event.EventListener;
-import dev.mv.engine.gui.event.KeyListener;
-import dev.mv.engine.gui.event.TextChangeListener;
+import dev.mv.engine.gui.event.*;
+import dev.mv.engine.gui.input.Clickable;
+import dev.mv.engine.gui.input.Draggable;
+import dev.mv.engine.gui.input.Keyboard;
+import dev.mv.engine.gui.input.Scrollable;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
 import dev.mv.engine.render.shared.DrawContext2D;
-import dev.mv.engine.render.shared.Render2D;
 import dev.mv.engine.render.shared.Window;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class Element {
     protected int x, y, width , height;
     protected Element parent;
     protected Window window;
-
-    private Map<Integer, Boolean> keysPressed;
+    protected List<String> tags;
+    protected String id;
 
     protected ClickListener clickListener = null;
     protected KeyListener keyListener = null;
     protected TextChangeListener textChangeListener = null;
+    protected HoverListener hoverListener = null;
+    protected ScrollListener scrollListener = null;
 
     protected Element(Element parent) {
         this(-1, -1, parent);
@@ -46,40 +49,35 @@ public abstract class Element {
         this.width = width;
         this.height = height;
         this.parent = parent;
-        this.keysPressed = new HashMap<>();
     }
 
-    abstract void draw(DrawContext2D draw, Theme theme);
+    public abstract void draw(DrawContext2D draw, Theme theme);
 
     public abstract void attachListener(EventListener listener);
-
-    //-----events-----
-
-    void click(int mx, int my, int btn, int add) {
-        if(clickListener == null) return;
-        if(GuiUtils.mouseNotInside(mx, my, x, y, width, height)) return;
-        clickListener.onCLick(this, btn, add);
+    
+    public void addTag(String tag) {
+        if(tags.contains(tag)) return;
+        tags.add(tag);
     }
-
-    void releaseMouse(int mx, int my, int btn, int add) {
-        if(clickListener == null) return;
-        if(GuiUtils.mouseNotInside(mx, my, x, y, width, height)) return;
-        clickListener.onRelease(this, btn, add);
+    
+    public void removeTag(String tag) {
+        tags.remove(tag);
     }
-
-    void keyPress(int keyCode, char keyChar, int add) {
-        if(keyListener == null) return;
-        keyListener.onPress(keyCode, keyChar, add);
-        if(!keysPressed.get(keyCode)) {
-            keyListener.onType(keyCode, keyChar, add);
-            keysPressed.put(keyCode, true);
-        }
+    
+    public boolean hasTag(String tag) {
+        return tags.contains(tag);
     }
-
-    void keyRelease(int keyCode, char keyChar, int add) {
-        if(keyListener == null) return;
-        keyListener.onRelease(keyCode, keyChar, add);
-        keysPressed.put(keyCode, false);
+    
+    public String[] getTags() {
+        return tags.toArray(new String[0]);
+    }
+    
+    public void setId(String id) {
+        this.id = id;
+    }
+    
+    public String getId() {
+        return id;
     }
 
     //-----getters-----

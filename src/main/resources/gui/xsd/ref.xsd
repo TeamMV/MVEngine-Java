@@ -1,0 +1,65 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="assets">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="files">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="file" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute type="xs:string" name="path" use="optional"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="textures">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:byte" name="sizeCategory"/>
+                            <xs:element name="texture" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute type="xs:string" name="file" use="optional"/>
+                                            <xs:attribute type="xs:byte" name="x" use="optional"/>
+                                            <xs:attribute type="xs:byte" name="y" use="optional"/>
+                                            <xs:attribute type="xs:byte" name="width" use="optional"/>
+                                            <xs:attribute type="xs:byte" name="height" use="optional"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="animations">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="animation">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="frame" maxOccurs="unbounded" minOccurs="0"/>
+                                    </xs:sequence>
+                                    <xs:attribute type="xs:string" name="name"/>
+                                    <xs:attribute type="xs:short" name="speed"/>
+                                    <xs:attribute type="xs:string" name="autoplay"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element type="xs:string" name="fonts">
+                    <xs:annotation>
+                        <xs:documentation>font png="fonts/font.png" fnt="font/font.fnt">font&lt;/font>
+                            &lt;defaultFont>font&lt;/defaultFont</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

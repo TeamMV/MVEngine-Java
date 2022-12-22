@@ -2,10 +2,47 @@ package dev.mv.engine.gui.theme;
 
 import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.Gradient;
+import dev.mv.engine.render.shared.font.BitmapFont;
 
 public class Theme {
+    //font
+
+    private BitmapFont font;
+
+    public BitmapFont getFont() {
+        return font;
+    }
+
+    public void setFont(BitmapFont font) {
+        this.font = font;
+    }
+
+    //outline
+
+    private int outlineThickness;
+    private boolean outline = false;
+
+    public int getOutlineThickness() {
+        return outlineThickness;
+    }
+
+    public void setOutlineThickness(int outlineThickness) {
+        this.outlineThickness = outlineThickness;
+    }
+
+    public boolean hasOutline() {
+        return outline;
+    }
+
+    public void setOutline(boolean outline) {
+        this.outline = outline;
+    }
+
+    //colors
+
     public Normal normal;
     public Hover hover;
+    private EdgeStyle edgeStyle;
 
     public Theme(Normal normal, Hover hover) {
         this.normal = normal;
@@ -96,5 +133,30 @@ public class Theme {
         public Gradient getText_gradient() {
             return text_gradient;
         }
+    }
+
+    public EdgeStyle getEdgeStyle() {
+        return edgeStyle;
+    }
+
+    public void setEdgeStyle(EdgeStyle edgeStyle) {
+        this.edgeStyle = edgeStyle;
+    }
+
+    public enum EdgeStyle{
+        ROUND,
+        TRIANGLE,
+        ARC
+    }
+
+    //round
+    private int edgeRadius;
+
+    public void setEdgeRadius(int edgeRadius) {
+        this.edgeRadius = edgeRadius;
+    }
+
+    public int getEdgeRadius() {
+        return edgeRadius;
     }
 }

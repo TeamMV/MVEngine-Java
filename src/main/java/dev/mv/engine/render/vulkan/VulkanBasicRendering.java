@@ -31,8 +31,8 @@ public class VulkanBasicRendering {
 
         vkResetCommandBuffer(context.commandBuffer, 0);
         try {
-            context.vulkan.beginCommandBufferRecording(context.commandBuffer, pImageIndex.get(0));
             context.vulkan.execute_bindGraphicsPipeline(VulkanProgram.findPipeline(context.currentProgram.getVulkanPipeline()));
+            context.vulkan.beginCommandBufferRecording(context.commandBuffer, pImageIndex.get(0));
         } catch (Vulkan.BufferRecordException | Vulkan.NoBufferRecordingException e) {
             throw new RuntimeException(e);
         }

@@ -45,13 +45,13 @@ public class BatchController {
         }
     }
 
-    public static void addVertices(VertexGroup vertexData) {
+    public static void addVertices(VertexGroup vertexData, boolean useCamera) {
 
         if (batches.get(currentBatch).isFull(vertexData.length() * Batch.VERTEX_SIZE_FLOATS)) {
             nextBatch();
         }
 
-        batches.get(currentBatch).addVertices(vertexData);
+        batches.get(currentBatch).addVertices(vertexData, useCamera);
     }
 
     public static int addTexture(Texture tex) {

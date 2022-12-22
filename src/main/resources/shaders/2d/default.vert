@@ -8,6 +8,7 @@ layout (location = 2) in vec2 aRotationOrigin;
 layout (location = 3) in vec4 aColor;
 layout (location = 4) in vec2 aTexCoords;
 layout (location = 5) in float aTexID;
+layout (location = 6) in float aUseCam;
 
 out vec4 fColor;
 out vec2 fTexCoords;
@@ -35,6 +36,9 @@ void main() {
         pos.xy += aRotationOrigin.xy;
     }
 
-    //TODO: view matrix from camera
-    gl_Position = uProjection * uView * vec4(pos, aVertPos.z, 1.0);
+    if(aUseCam == 1) {
+        gl_Position = uProjection * uView * vec4(pos, aVertPos.z, 1.0);
+    } else {
+        gl_Position = uProjection * vec4(pos, aVertPos.z, 1.0);
+    }
 }

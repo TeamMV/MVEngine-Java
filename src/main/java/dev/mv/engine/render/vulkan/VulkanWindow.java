@@ -1,23 +1,19 @@
 package dev.mv.engine.render.vulkan;
 
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.input.Input;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.Camera;
 import dev.mv.engine.render.shared.Render2D;
 import dev.mv.engine.render.shared.Render3D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.utils.RenderUtils;
-import imgui.ImGui;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.glfw.GLFWVulkan;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.vulkan.VkDevice;
-import org.lwjgl.vulkan.VkInstance;
-import org.lwjgl.vulkan.VkPhysicalDevice;
 
 import java.nio.IntBuffer;
 
@@ -157,6 +153,9 @@ public class VulkanWindow implements Window {
                     String fpsTitle = info.title + info.fpsAppendConfiguration.betweenTitleAndValue + getFPS() + info.fpsAppendConfiguration.afterValue;
                     glfwSetWindowTitle(window, RenderUtils.store(fpsTitle));
                 }
+
+                updateInputs();
+
                 ticks++;
                 deltaU--;
             }
@@ -185,6 +184,33 @@ public class VulkanWindow implements Window {
                 frames = 0;
                 ticks = 0;
                 timer += 1000;
+            }
+        }
+    }
+
+    private void updateInputs() {
+        if(Input.mouse[Input.MOUSE_SCROLL_X] == 1.0 || Input.mouse[Input.MOUSE_SCROLL_X] == -1.0) {
+            Input.mouse[Input.MOUSE_SCROLL_X] = 0;
+        }
+        if(Input.mouse[Input.MOUSE_SCROLL_Y] == 1.0 || Input.mouse[Input.MOUSE_SCROLL_Y] == -1.0) {
+            Input.mouse[Input.MOUSE_SCROLL_Y] = 0;
+        }
+
+        for (int i = 0; i < Input.keys.length; i++) {
+            if(Input.keys[i] == Input.State.ONPRESSED) {
+                Input.keys[i] = Input.State.PRESSED;
+            }
+            if(Input.keys[i] == Input.State.ONRELEASED) {
+                Input.keys[i] = Input.State.RELEASED;
+            }
+        }
+
+        for (int i = 0; i < Input.buttons.length; i++) {
+            if(Input.buttons[i] == Input.State.ONPRESSED) {
+                Input.buttons[i] = Input.State.PRESSED;
+            }
+            if(Input.buttons[i] == Input.State.ONRELEASED) {
+                Input.buttons[i] = Input.State.RELEASED;
             }
         }
     }

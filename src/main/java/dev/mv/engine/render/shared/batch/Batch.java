@@ -21,7 +21,8 @@ public class Batch {
     public static final int COLOR_SIZE = 4;
     public static final int UV_SIZE = 2;
     public static final int TEX_ID_SIZE = 1;
-    public static final int VERTEX_SIZE_FLOATS = POSITION_SIZE + ROTATION_SIZE + ROTATION_ORIGIN_SIZE + COLOR_SIZE + UV_SIZE + TEX_ID_SIZE;
+    public static final int USE_CAMERA_SIZE = 1;
+    public static final int VERTEX_SIZE_FLOATS = POSITION_SIZE + ROTATION_SIZE + ROTATION_ORIGIN_SIZE + COLOR_SIZE + UV_SIZE + TEX_ID_SIZE + USE_CAMERA_SIZE;
     public static final int VERTEX_SIZE_BYTES = VERTEX_SIZE_FLOATS * Float.BYTES;
     public static final int POSITION_OFFSET = 0;
     public static final int POSITION_OFFSET_BYTES = POSITION_OFFSET * Float.BYTES;
@@ -35,6 +36,8 @@ public class Batch {
     public static final int UV_OFFSET_BYTES = UV_OFFSET * Float.BYTES;
     public static final int TEX_ID_OFFSET = UV_OFFSET + UV_SIZE;
     public static final int TEX_ID_OFFSET_BYTES = TEX_ID_OFFSET * Float.BYTES;
+    public static final int USE_CAMERA_OFFSET = TEX_ID_OFFSET + TEX_ID_SIZE;
+    public static final int USE_CAMERA_OFFSET_BYTES = USE_CAMERA_OFFSET * Float.BYTES;
     private int maxSize;
     private float[] data;
     private int[] indices;
@@ -131,7 +134,7 @@ public class Batch {
         vertCount++;
     }
 
-    public void addVertices(VertexGroup vertData) {
+    public void addVertices(VertexGroup vertData, boolean useCamera) {
 
         if (isFull) return;
 
@@ -149,14 +152,14 @@ public class Batch {
         }
 
         for (int i = 0; i < vertData.length(); i++) {
-            addVertex(vertData.get(i));
+            addVertex(vertData.get(i).add(useCamera ? 1 : 0));
             if (vertCount > maxSize) {
                 isFull = true;
                 return;
             }
         }
         if (vertData.length() < 4) {
-            addVertex(vertData.get(0));
+            addVertex(vertData.get(0).add(useCamera ? 1 : 0));
             if (vertCount > maxSize) {
                 isFull = true;
                 return;

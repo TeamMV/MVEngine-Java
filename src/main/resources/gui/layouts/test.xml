@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<mve xmlns:mve="/home/v22/Schreibtisch/coding/java/MVEngine/src/main/resources/gui/xsd/MVEngineGui.xsd">
+    <mve:gui name="myGui">
+        <mve:text id="myText1">
+            <mve:tag>myText</mve:tag>
+        </mve:text>
+        <mve:text id="myText2">
+            <mve:tag>myText</mve:tag>
+        </mve:text>
+        <mve:layout>
+            <mve:layout>
+                <mve:layout>
+                    <mve:text>
+                        <mve:content>
+                            lol
+                        </mve:content>
+                        <mve:color>#FF0000FF</mve:color>
+                        <mve:tag>myText</mve:tag>
+                    </mve:text>
+                </mve:layout>
+            </mve:layout>
+        </mve:layout>
+    </mve:gui>
+</mve>

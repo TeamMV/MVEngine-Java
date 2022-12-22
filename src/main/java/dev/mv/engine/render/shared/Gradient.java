@@ -38,10 +38,18 @@ public class Gradient {
 
     public Gradient copy() {
         Gradient gradient = new Gradient();
-        gradient.topLeft = this.topLeft;
-        gradient.topRight = this.topRight;
-        gradient.bottomLeft = this.bottomLeft;
-        gradient.bottomRight = this.bottomRight;
+        gradient.topLeft = this.topLeft.copy();
+        gradient.topRight = this.topRight.copy();
+        gradient.bottomLeft = this.bottomLeft.copy();
+        gradient.bottomRight = this.bottomRight.copy();
         return gradient;
+    }
+
+    public Gradient normalize(float normalizedMaximum) {
+        topLeft.normalize(normalizedMaximum);
+        topRight.normalize(normalizedMaximum);
+        bottomLeft.normalize(normalizedMaximum);
+        bottomRight.normalize(normalizedMaximum);
+        return this;
     }
 }

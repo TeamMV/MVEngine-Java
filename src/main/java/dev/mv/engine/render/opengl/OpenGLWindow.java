@@ -1,5 +1,6 @@
 package dev.mv.engine.render.opengl;
 
+import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.Camera;
 import dev.mv.engine.render.shared.Render2D;
 import dev.mv.engine.render.shared.Render3D;
@@ -22,7 +23,6 @@ import java.nio.IntBuffer;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL14.glBlendFuncSeparate;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -179,6 +179,9 @@ public class OpenGLWindow implements Window {
                     String fpsTitle = info.title + info.fpsAppendConfiguration.betweenTitleAndValue + getFPS() + info.fpsAppendConfiguration.afterValue;
                     glfwSetWindowTitle(window, RenderUtils.store(fpsTitle));
                 }
+
+                updateInputs();
+
                 ticks++;
                 deltaU--;
             }
@@ -210,6 +213,33 @@ public class OpenGLWindow implements Window {
                 frames = 0;
                 ticks = 0;
                 timer += 1000;
+            }
+        }
+    }
+
+    private void updateInputs() {
+        if(Input.mouse[Input.MOUSE_SCROLL_X] == 1.0 || Input.mouse[Input.MOUSE_SCROLL_X] == -1.0) {
+            Input.mouse[Input.MOUSE_SCROLL_X] = 0;
+        }
+        if(Input.mouse[Input.MOUSE_SCROLL_Y] == 1.0 || Input.mouse[Input.MOUSE_SCROLL_Y] == -1.0) {
+            Input.mouse[Input.MOUSE_SCROLL_Y] = 0;
+        }
+
+        for (int i = 0; i < Input.keys.length; i++) {
+            if(Input.keys[i] == Input.State.ONPRESSED) {
+                Input.keys[i] = Input.State.PRESSED;
+            }
+            if(Input.keys[i] == Input.State.ONRELEASED) {
+                Input.keys[i] = Input.State.RELEASED;
+            }
+        }
+
+        for (int i = 0; i < Input.buttons.length; i++) {
+            if(Input.buttons[i] == Input.State.ONPRESSED) {
+                Input.buttons[i] = Input.State.PRESSED;
+            }
+            if(Input.buttons[i] == Input.State.ONRELEASED) {
+                Input.buttons[i] = Input.State.RELEASED;
             }
         }
     }

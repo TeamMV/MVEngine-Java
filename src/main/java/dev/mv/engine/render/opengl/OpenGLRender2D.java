@@ -66,6 +66,8 @@ public class OpenGLRender2D implements Render2D {
         glEnableVertexAttribArray(4);
         glVertexAttribPointer(5, Batch.TEX_ID_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.TEX_ID_OFFSET_BYTES);
         glEnableVertexAttribArray(5);
+        glVertexAttribPointer(6, Batch.USE_CAMERA_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.USE_CAMERA_OFFSET_BYTES);
+        glEnableVertexAttribArray(6);
 
         glDrawElements(renderMode, indices.length, GL_UNSIGNED_INT, 0);
 
