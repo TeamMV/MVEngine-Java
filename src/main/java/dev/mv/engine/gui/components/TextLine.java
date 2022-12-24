@@ -7,43 +7,44 @@ import dev.mv.engine.gui.event.TextChangeListener;
 import dev.mv.engine.gui.input.Clickable;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.DrawContext2D;
+import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
 
 public class TextLine extends Element implements Text {
     private String text;
     private BitmapFont font;
 
-    public TextLine(Element parent) {
-        super(parent);
+    public TextLine(Window window, Element parent, int height) {
+        super(window, -1, -1, 0, height, parent);
     }
 
-    public TextLine(int x, int y) {
-        super(x, y);
+    public TextLine(Window window, int x, int y, int height) {
+        super(window, x, y, 0, height, null);
     }
 
-    public TextLine(int x, int y, Element parent) {
-        super(x, y, parent);
+    public TextLine(Window window, int x, int y, int height, Element parent) {
+        super(window, x, y, 0, height, parent);
     }
 
-    public TextLine(int x, int y, int width, int height) {
-        super(x, y, width, height);
+    public TextLine(Window window, int x, int y, int width, int height) {
+        super(window, x, y, width, height, null);
     }
 
-    public TextLine(int x, int y, int width, int height, Element parent) {
-        super(x, y, width, height, parent);
+    public TextLine(Window window, int x, int y, int width, int height, Element parent) {
+        super(window, x, y, width, height, parent);
     }
 
     @Override
-    public void draw(DrawContext2D draw, Theme theme) {
+    public void draw(DrawContext2D draw) {
         font = theme.getFont();
 
-        if(theme.normal.getText_base() != null) {
-            draw.color(theme.normal.getText_base());
-        } else if(theme.normal.getText_gradient() != null) {
-            draw.color(theme.normal.getText_gradient());
+        if(theme.getText_base() != null) {
+            draw.color(theme.getText_base());
+        } else if(theme.getText_gradient() != null) {
+            draw.color(theme.getText_gradient());
         }
         draw.font(theme.getFont());
-        draw.text(x, y, height, text);
+        draw.text(initialState.posX, initialState.posY, initialState.height, text);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class TextLine extends Element implements Text {
     public void setText(String text) {
         if(textChangeListener != null) textChangeListener.onChange(this, this.text, text);
         this.text = text;
-        width = font.getWidth(text);
+        initialState.width = font.getWidth(text, getHeight());
     }
 
     @Override

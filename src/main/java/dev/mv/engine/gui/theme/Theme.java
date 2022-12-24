@@ -1,5 +1,6 @@
 package dev.mv.engine.gui.theme;
 
+import dev.mv.engine.gui.components.animations.ElementAnimation;
 import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.Gradient;
 import dev.mv.engine.render.shared.font.BitmapFont;
@@ -34,106 +35,106 @@ public class Theme {
         return outline;
     }
 
-    public void setOutline(boolean outline) {
+    public void setHasOutline(boolean outline) {
         this.outline = outline;
     }
 
     //colors
 
-    public Normal normal;
-    public Hover hover;
+    private Color baseColor;
+    private Color outlineColor;
+    private Gradient baseGradient;
+    private Gradient outlineGradient;
+    private Color text_base;
+    private Gradient text_gradient;
+    private Color disabledBaseColor;
+    private Color disabledOutlineColor;
+    private Color disabledTextColor;
+    private Color indicatorColor;
+
+    public Color getBaseColor() {
+        return baseColor;
+    }
+
+    public Color getOutlineColor() {
+        return outlineColor;
+    }
+
+    public Gradient getBaseGradient() {
+        return baseGradient;
+    }
+
+    public Gradient getOutlineGradient() {
+        return outlineGradient;
+    }
+
+    public Color getText_base() {
+        return text_base;
+    }
+
+    public Gradient getText_gradient() {
+        return text_gradient;
+    }
+
+    public void setBaseColor(Color baseColor) {
+        this.baseColor = baseColor;
+    }
+
+    public void setOutlineColor(Color outlineColor) {
+        this.outlineColor = outlineColor;
+    }
+
+    public void setBaseGradient(Gradient baseGradient) {
+        this.baseGradient = baseGradient;
+    }
+
+    public void setOutlineGradient(Gradient outlineGradient) {
+        this.outlineGradient = outlineGradient;
+    }
+
+    public void setText_base(Color text_base) {
+        this.text_base = text_base;
+    }
+
+    public void setText_gradient(Gradient text_gradient) {
+        this.text_gradient = text_gradient;
+    }
+
+    public Color getDisabledBaseColor() {
+        return disabledBaseColor;
+    }
+
+    public void setDisabledBaseColor(Color disabledBaseColor) {
+        this.disabledBaseColor = disabledBaseColor;
+    }
+
+    public Color getDisabledOutlineColor() {
+        return disabledOutlineColor;
+    }
+
+    public void setDisabledOutlineColor(Color disabledOutlineColor) {
+        this.disabledOutlineColor = disabledOutlineColor;
+    }
+
+    public Color getDisabledTextColor() {
+        return disabledTextColor;
+    }
+
+    public void setDisabledTextColor(Color disabledTextColor) {
+        this.disabledTextColor = disabledTextColor;
+    }
+
+    public Color getIndicatorColor() {
+        return indicatorColor;
+    }
+
+    public void setIndicatorColor(Color indicatorColor) {
+        this.indicatorColor = indicatorColor;
+    }
+
+    //edges
+
     private EdgeStyle edgeStyle;
-
-    public Theme(Normal normal, Hover hover) {
-        this.normal = normal;
-        this.hover = hover;
-    }
-
-    public static class Normal {
-        private Color base;
-        private Color outline;
-        private Gradient baseGradient;
-        private Gradient outlineGradient;
-
-        private Color text_base;
-        private Gradient text_gradient;
-
-        public Normal(Color base, Color outline, Gradient baseGradient, Gradient outlineGradient, Color text_base, Gradient text_gradient) {
-            this.base = base;
-            this.outline = outline;
-            this.baseGradient = baseGradient;
-            this.outlineGradient = outlineGradient;
-            this.text_base = text_base;
-            this.text_gradient = text_gradient;
-        }
-
-        public Color getBase() {
-            return base;
-        }
-
-        public Color getOutline() {
-            return outline;
-        }
-
-        public Gradient getBaseGradient() {
-            return baseGradient;
-        }
-
-        public Gradient getOutlineGradient() {
-            return outlineGradient;
-        }
-
-        public Color getText_base() {
-            return text_base;
-        }
-
-        public Gradient getText_gradient() {
-            return text_gradient;
-        }
-    }
-
-    public class Hover {
-        private Color base;
-        private Color outline;
-        private Gradient baseGradient;
-        private Gradient outlineGradient;
-
-        private Color text_base;
-        private Gradient text_gradient;
-
-        public Hover(Color base, Color outline, Gradient baseGradient, Gradient outlineGradient, Color text_base, Gradient text_gradient) {
-            this.base = base;
-            this.outline = outline;
-            this.baseGradient = baseGradient;
-            this.outlineGradient = outlineGradient;
-            this.text_base = text_base;
-            this.text_gradient = text_gradient;
-        }
-
-        public Color getBase() {
-            return base;
-        }
-
-        public Color getOutline() {
-            return outline;
-        }
-
-        public Gradient getBaseGradient() {
-            return baseGradient;
-        }
-
-        public Gradient getOutlineGradient() {
-            return outlineGradient;
-        }
-
-        public Color getText_base() {
-            return text_base;
-        }
-
-        public Gradient getText_gradient() {
-            return text_gradient;
-        }
-    }
 
     public EdgeStyle getEdgeStyle() {
         return edgeStyle;
@@ -146,10 +147,10 @@ public class Theme {
     public enum EdgeStyle{
         ROUND,
         TRIANGLE,
-        ARC
+        SQUARE
     }
 
-    //round
+    //--round and triangle
     private int edgeRadius;
 
     public void setEdgeRadius(int edgeRadius) {
@@ -158,5 +159,85 @@ public class Theme {
 
     public int getEdgeRadius() {
         return edgeRadius;
+    }
+
+    //animations
+
+    //--buttons
+    private int animationInTime;
+    private int animationOutTime;
+    private int animationFrames;
+    private ElementAnimation buttonAnimator = new ElementAnimation() {
+        @Override
+        public ElementAnimation.AnimationState transform(int frame, int totalFrames, ElementAnimation.AnimationState lastState) {
+            return lastState;
+        }
+
+        @Override
+        public ElementAnimation.AnimationState transformBack(int frame, int totalFrames, ElementAnimation.AnimationState lastState) {
+            return lastState;
+        }
+    };
+
+    public ElementAnimation getButtonAnimator() {
+        return buttonAnimator;
+    }
+
+    public void setButtonAnimator(ElementAnimation buttonAnimator) {
+        this.buttonAnimator = buttonAnimator;
+    }
+
+    public int getAnimationFrames() {
+        return animationFrames;
+    }
+
+    public void setAnimationFrames(int animationFrames) {
+        this.animationFrames = animationFrames;
+    }
+
+    public int getAnimationInTime() {
+        return animationInTime;
+    }
+
+    public void setAnimationInTime(int animationInTime) {
+        this.animationInTime = animationInTime;
+    }
+
+    public int getAnimationOutTime() {
+        return animationOutTime;
+    }
+
+    public void setAnimationOutTime(int animationOutTime) {
+        this.animationOutTime = animationOutTime;
+    }
+
+    //assets
+
+    private String guiAssetPath;
+    private int guiAssetsIconWidth;
+    private int guiAssetsIconHeight;
+
+    public String getGuiAssetPath() {
+        return guiAssetPath;
+    }
+
+    public void setGuiAssetPath(String guiAssetPath) {
+        this.guiAssetPath = guiAssetPath;
+    }
+
+    public int getGuiAssetsIconWidth() {
+        return guiAssetsIconWidth;
+    }
+
+    public void setGuiAssetsIconWidth(int guiAssetsIconWidth) {
+        this.guiAssetsIconWidth = guiAssetsIconWidth;
+    }
+
+    public int getGuiAssetsIconHeight() {
+        return guiAssetsIconHeight;
+    }
+
+    public void setGuiAssetsIconHeight(int guiAssetsIconHeight) {
+        this.guiAssetsIconHeight = guiAssetsIconHeight;
     }
 }

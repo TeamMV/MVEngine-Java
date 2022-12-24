@@ -26,6 +26,21 @@ public class Color {
         return a;
     }
 
+    public void setRed(float r) {
+        this.r = r;
+    }
+
+    public void setGreen(float g) {
+        this.g = g;
+    }
+
+    public void setBlue(float b) {
+        this.b = b;
+    }
+
+    public void setAlpha(float a) {
+        this.a = a;
+    }
 
     public Color normalize(float normalizeTreshold) {
         r = r / (255.0f / normalizeTreshold);
@@ -37,6 +52,13 @@ public class Color {
 
     public Color copy() {
         return new Color(r, g, b, a);
+    }
+
+    public void copyValuesTo(Color dest) {
+        dest.setRed(r);
+        dest.setGreen(g);
+        dest.setBlue(b);
+        dest.setAlpha(a);
     }
 
     @Override

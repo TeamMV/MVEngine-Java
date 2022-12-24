@@ -136,7 +136,7 @@ public class Input {
         try {
             if (action == InputCollector.KeyAction.PRESS || action == InputCollector.KeyAction.TYPE) {
                 int convertedCode = convertKey(rawCode);
-                if (keys[convertedCode] == State.ONRELEASED) {
+                if (!isKeyPressed(convertedCode)) {
                     keys[convertedCode] = State.ONPRESSED;
                 }
                 KEY_LAST = convertedCode;
@@ -152,7 +152,7 @@ public class Input {
     static void updateButton(int btn, InputCollector.MouseAction action) {
         if(action == InputCollector.MouseAction.PRESS) {
             int convertedCode = convertButton(btn);
-            if(buttons[convertedCode] == State.ONRELEASED) {
+            if(!isButtonPressed(convertedCode)) {
                 buttons[convertedCode] = State.ONPRESSED;
             }
             BUTTON_LAST = convertedCode;

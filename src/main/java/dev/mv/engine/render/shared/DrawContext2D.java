@@ -56,27 +56,25 @@ public class DrawContext2D {
         this.useCamera = useCamera;
     }
 
-
     public void triangle(int x1, int y1, int x2, int y2, int x3, int y3) {
+        triangle(x1, y1, x2, y2, x3, y3, 0.0f);
+    }
+
+    public void triangle(int x1, int y1, int x2, int y2, int x3, int y3, float rotation) {
+        triangle(x1, y1, x2, y2, x3, y3, rotation, (x1 + x2 + x3) / 3, (y1 + y2 + y3) / 3);
+    }
+
+    public void triangle(int x1, int y1, int x2, int y2, int x3, int y3, float rotation, int originX, int originY) {
+        float radRotation = (float) Math.toRadians(rotation);
         BatchController.addVertices(verts.set(
-            v1.put(x1, y1, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v2.put(x2, y2, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v3.put(x3, y3, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 0.0f, 0.0f, 0.0f)
+            v1.put(x1, y1, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
+            v2.put(x2, y2, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
+            v3.put(x3, y3, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 0.0f, 0.0f, 0.0f)
         ), useCamera);
     }
 
     public void rectangle(int x, int y, int width, int height) {
-        float ax = x;
-        float ay = y;
-        float ax2 = x + width;
-        float ay2 = y + height;
-
-        BatchController.addVertices(verts.set(
-            v1.put(ax, ay2, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v2.put(ax, ay, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v3.put(ax2, ay, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v4.put(ax2, ay2, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), 0.0f, 0.0f, 0.0f)
-        ), useCamera);
+        rectangle(x, y, width, height, 0.0f);
     }
 
     public void rectangle(int x, int y, int width, int height, float rotation) {
@@ -130,6 +128,24 @@ public class DrawContext2D {
         arc(x + radius, y + height - radius, radius, 90, 90, precision, rotation, originX, originY);
         arc(x + width - radius, y + radius, radius, 90, 270, precision, rotation, originX, originY);
         arc(x + width - radius, y + height - radius, radius, 90, 0, precision, rotation, originX, originY);
+    }
+
+    public void triangularRectangle(int x, int y, int width, int height, int radius) {
+        triangularRectangle(x, y, width, height, radius, 0.0f);
+    }
+
+    public void triangularRectangle(int x, int y, int width, int height, int radius, float rotation) {
+        triangularRectangle(x, y, width, height, radius, rotation, width / 2, height / 2);
+    }
+
+    public void triangularRectangle(int x, int y, int width, int height, int radius, float rotation, int originX, int originY) {
+        rectangle(x, y + radius, width, height - 2 * radius, rotation, originX, originY);
+        rectangle(x + radius, y, width - 2 * radius, radius, rotation, originX, originY);
+        rectangle(x + radius, y + height - radius, width - 2 * radius, radius, rotation, originX, originY);
+        triangle(x + radius, y + radius, x, y + radius, x + radius, y, rotation, originX, originY);
+        triangle(x, y + height - radius, x + radius, y + height - radius, x + radius, y + height, rotation, originX, originY);
+        triangle(x + width - radius, y + height, x + width - radius, y + height - radius, x + width, y + height - radius, rotation, originX, originY);
+        triangle(x + width, y + radius, x + width - radius, y + radius, x + width - radius, y, rotation, originX, originY);
     }
 
     public void voidRoundedRectangle(int x, int y, int width, int height, int thickness, int radius, float precision) {
@@ -219,11 +235,12 @@ public class DrawContext2D {
     }
 
     public void voidArc(int x, int y, int radius, int thickness, int range, int start, float precision, float rotation, int originX, int originY) {
+        int rRadius = radius - 1;
         double tau = Math.PI * 2.0;
         double rRange = Math.PI * 2.0 - Math.toRadians(range);
         double step = tau / precision;
         for (double i = Math.toRadians(start); i < tau - rRange + Math.toRadians(start); i += step)   {
-            line((int) (x + (radius * Math.cos(i))), (int) (y + (radius * Math.sin(i))), (int) (x + (radius * Math.cos(i + step))), (int) (y + (radius * Math.sin(i + step))), thickness, rotation, originX, originY);
+            line((int) (x + (rRadius * Math.cos(i))), (int) (y + (rRadius * Math.sin(i))), (int) (x + (rRadius * Math.cos(i + step))), (int) (y + (rRadius * Math.sin(i + step))), thickness + 1, rotation, originX, originY);
         }
     }
 
@@ -362,7 +379,7 @@ public class DrawContext2D {
     }
 
     public void text(int x, int y, int height, String text, BitmapFont font, float rotation) {
-        int width = font.getWidth(text);
+        int width = font.getWidth(text, height);
         text(x, y, height, text, font, rotation, x + width / 4, y + height / 4);
     }
 

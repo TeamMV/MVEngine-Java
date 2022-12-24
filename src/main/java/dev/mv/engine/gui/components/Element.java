@@ -1,25 +1,25 @@
 package dev.mv.engine.gui.components;
 
+import dev.mv.engine.gui.components.animations.ElementAnimation;
+import dev.mv.engine.gui.components.animations.ElementAnimator;
 import dev.mv.engine.gui.event.*;
-import dev.mv.engine.gui.input.Clickable;
-import dev.mv.engine.gui.input.Draggable;
-import dev.mv.engine.gui.input.Keyboard;
-import dev.mv.engine.gui.input.Scrollable;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
+import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public abstract class Element {
-    protected int x, y, width , height;
     protected Element parent;
     protected Window window;
     protected List<String> tags;
     protected String id;
+    protected ElementAnimation.AnimationState animationState;
+    protected ElementAnimation.AnimationState initialState;
+    protected ElementAnimator animator;
+    protected Theme theme;
 
     protected ClickListener clickListener = null;
     protected KeyListener keyListener = null;
@@ -27,31 +27,41 @@ public abstract class Element {
     protected HoverListener hoverListener = null;
     protected ScrollListener scrollListener = null;
 
-    protected Element(Element parent) {
-        this(-1, -1, parent);
+    protected Element(Window window, int x, int y, int width, int height, Element parent) {
+        this.window = window;
+        animationState = new ElementAnimation.AnimationState();
+        animationState.baseColor = new Color(0, 0, 0, 0);
+        animationState.outlineColor = new Color(0, 0, 0, 0);
+        animationState.textColor = new Color(0, 0, 0, 0);
+        initialState = new ElementAnimation.AnimationState();
+        initialState.posX = x;
+        initialState.posY = y;
+        initialState.width = width;
+        initialState.height = height;
+        initialState.rotation = 0;
+        initialState.originX = x + width / 2;
+        initialState.originY = y + height / 2;
+        initialState.baseColor = new Color(0, 0, 0, 0);
+        initialState.outlineColor = new Color(0, 0, 0, 0);
+        initialState.textColor = new Color(0, 0, 0, 0);
+        initialState.copyValuesTo(animationState);
+
+        animator = new ElementAnimator();
+        animator.setOnFinish(() -> {
+            initialState.copyValuesTo(animationState);
+        });
     }
 
-    protected Element(int x, int y) {
-        this(x, y, null);
-    }
+    public abstract void draw(DrawContext2D draw);
 
-    protected Element(int x, int y, Element parent) {
-        this(x, y, 0, 0, parent);
+    public void checkAnimations() {
+        if(!animator.isAnimating()) {
+            initialState.copyValuesTo(animationState);
+        }
+        animator.setState(animationState);
+        animator.loop(theme.getAnimationFrames());
+        animationState = animator.getState();
     }
-
-    protected Element(int x, int y, int width, int height) {
-        this(x, y, width, height, null);
-    }
-
-    protected Element(int x, int y, int width, int height, Element parent) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.parent = parent;
-    }
-
-    public abstract void draw(DrawContext2D draw, Theme theme);
 
     public abstract void attachListener(EventListener listener);
     
@@ -83,35 +93,39 @@ public abstract class Element {
     //-----getters-----
 
     public int getX() {
-        return x;
+        return initialState.posX;
     }
 
     public void setX(int x) {
-        this.x = x;
+        initialState.posX = x;
+        initialState.originX = x + initialState.width / 2;
     }
 
     public int getY() {
-        return y;
+        return initialState.posY;
     }
 
     public void setY(int y) {
-        this.y = y;
+        initialState.posY = y;
+        initialState.originY = y + initialState.height / 2;
     }
 
     public int getWidth() {
-        return width;
+        return initialState.width;
     }
 
     public void setWidth(int width) {
-        this.width = width;
+        initialState.width = width;
+        initialState.originX = initialState.posX + width / 2;
     }
 
     public int getHeight() {
-        return height;
+        return initialState.height;
     }
 
     public void setHeight(int height) {
-        this.height = height;
+        initialState.height = height;
+        initialState.originY = initialState.posY + height / 2;
     }
 
     public Element getParent() {
@@ -128,5 +142,22 @@ public abstract class Element {
 
     public void setWindow(Window window) {
         this.window = window;
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
+    public void setTheme(Theme theme) {
+        this.theme = theme;
+        this.animator.setAnimation(theme.getButtonAnimator());
+
+        theme.getBaseColor().copyValuesTo(initialState.baseColor);
+        theme.getText_base().copyValuesTo(initialState.textColor);
+        if(theme.hasOutline()) {
+            theme.getOutlineColor().copyValuesTo(initialState.outlineColor);
+        }
+
+        initialState.copyValuesTo(animationState);
     }
 }

@@ -154,8 +154,6 @@ public class VulkanWindow implements Window {
                     glfwSetWindowTitle(window, RenderUtils.store(fpsTitle));
                 }
 
-                updateInputs();
-
                 ticks++;
                 deltaU--;
             }
@@ -166,6 +164,8 @@ public class VulkanWindow implements Window {
                 if (onDraw != null) {
                     onDraw.run();
                 }
+
+                updateInputs();
 
                 //ImGui.render();
                 //vulkanImpl.renderDrawData(ImGui.getDrawData());

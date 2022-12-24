@@ -1,5 +1,6 @@
 package dev.mv.engine.render.opengl;
 
+import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.Camera;
 import dev.mv.engine.render.shared.Render2D;
@@ -52,6 +53,8 @@ public class OpenGLWindow implements Window {
         this.info = info;
         width = info.width;
         height = info.height;
+        currentFPS = info.maxFPS;
+        currentUPS = info.maxUPS;
     }
 
     @Override
@@ -180,8 +183,6 @@ public class OpenGLWindow implements Window {
                     glfwSetWindowTitle(window, RenderUtils.store(fpsTitle));
                 }
 
-                updateInputs();
-
                 ticks++;
                 deltaU--;
             }
@@ -194,6 +195,9 @@ public class OpenGLWindow implements Window {
                 if (onDraw != null) {
                     onDraw.run();
                 }
+
+                updateInputs();
+
                 BatchController.finishAndRender();
                 //render3D.render();
 
@@ -206,10 +210,8 @@ public class OpenGLWindow implements Window {
                 deltaF--;
             }
             if (System.currentTimeMillis() - timer > 1000) {
-                if (true) {
-                    currentUPS = ticks;
-                    currentFPS = frames;
-                }
+                currentUPS = ticks;
+                currentFPS = frames;
                 frames = 0;
                 ticks = 0;
                 timer += 1000;

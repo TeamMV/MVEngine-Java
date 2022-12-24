@@ -1,12 +1,15 @@
 package dev.mv.engine.gui;
 
 import dev.mv.engine.gui.components.Element;
+import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.gui.input.*;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
 import lombok.NonNull;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
@@ -18,13 +21,10 @@ public class Gui {
     private List<Element> elements;
 
     public Gui(@NonNull DrawContext2D drawContext, String name) {
-        this(drawContext, null, name);
-    }
-
-    public Gui(@NonNull DrawContext2D drawContext, Theme theme, String name) {
         this.drawContext = drawContext;
         this.theme = theme;
         this.name = name;
+        elements = new ArrayList<>();
     }
 
     public String getName() {
@@ -55,16 +55,26 @@ public class Gui {
         return elements.toArray(new Element[0]);
     }
 
-    public void drawAll() {
-        for(Element e : elements) {
-            e.draw(drawContext, theme);
+    public void applyTheme(Theme theme) throws IOException {
+        GuiAssets.init(theme);
+        this.theme = theme;
+        for(Element element : elements) {
+            element.setTheme(theme);
+        }
+    }
+
+    //----- draw -----
+
+    void draw() {
+        for(Element element : elements) {
+            element.draw(drawContext);
         }
     }
 
     public void drawSpecific(Predicate<? super Element> predicate) {
         for(Element e : elements) {
             if(predicate.test(e)) {
-                e.draw(drawContext, theme);
+                e.draw(drawContext);
             }
         }
     }

@@ -7,16 +7,19 @@ import dev.mv.editor.launcher.LauncherScreen;
 import dev.mv.editor.loading.LoadingManager;
 import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
-import dev.mv.engine.gui.components.Button;
-import dev.mv.engine.gui.components.TextLine;
+import dev.mv.engine.gui.Gui;
+import dev.mv.engine.gui.GuiRegistry;
+import dev.mv.engine.gui.components.*;
+import dev.mv.engine.gui.components.animations.ElementAnimation;
+import dev.mv.engine.gui.components.assets.GuiAssets;
+import dev.mv.engine.gui.components.layouts.VerticalLayout;
+import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.theme.Theme;
+import dev.mv.engine.input.Input;
 import dev.mv.engine.input.InputCollector;
 import dev.mv.engine.input.InputProcessor;
-import dev.mv.engine.input.Input;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.*;
-import dev.mv.engine.render.shared.Color;
-import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.font.BitmapFont;
 import dev.mv.engine.render.shared.models.Entity;
@@ -44,6 +47,7 @@ public class Main {
     public static DrawContext3D renderer3D;
     static float r = 0;
     private static Texture texture;
+    private static GuiRegistry guiRegistry = new GuiRegistry();
     private static BitmapFont font;
     private static Entity cruiser;
     private static PointLight pointlight = new PointLight(new Vector3f(0, 2, -2), new Vector3f(1, 1, 0.5f), 1f, 0, 0, 1f);
@@ -59,8 +63,8 @@ public class Main {
             .setRenderingApi(ApplicationConfig.RenderingAPI.OPENGL));
 
         WindowCreateInfo createInfo = new WindowCreateInfo();
-        createInfo.width = 800;
-        createInfo.height = 600;
+        createInfo.width = 1000;
+        createInfo.height = 800;
         createInfo.title = "MVEngine";
         createInfo.resizeable = true;
         createInfo.maxFPS = 60;
@@ -74,24 +78,55 @@ public class Main {
         text.setTop(new Color(255, 255, 255, 255));
         text.setBottom(new Color(255, 255, 255, 255));
 
-        Theme.Normal normal = new Theme.Normal(
-            new Color(100, 100, 100, 255),
-            new Color(255, 255, 255, 255),
-            null,
-            null,
-            null,
-            text
-        );
-
-        Theme theme = new Theme(normal, null);
-
+        Theme theme = new Theme();
+        theme.setBaseColor(new Color(47, 169, 235, 255));
+        theme.setOutlineColor(new Color(255, 255, 255, 255));
+        theme.setText_base(new Color(255, 255, 255, 255));
+        theme.setDisabledBaseColor(new Color(100, 100, 100, 255));
+        theme.setDisabledOutlineColor(new Color(70, 70, 70, 255));
+        theme.setDisabledTextColor(new Color(70, 70, 70, 255));
+        theme.setGuiAssetPath("/gui/assets/guiassets.png");
+        theme.setGuiAssetsIconWidth(32);
+        theme.setGuiAssetsIconHeight(32);
+        theme.setHasOutline(true);
         theme.setEdgeStyle(Theme.EdgeStyle.ROUND);
-        theme.setEdgeRadius(45);
-        theme.setOutline(true);
-        theme.setOutlineThickness(3);
+        theme.setEdgeRadius(10);
+        theme.setOutlineThickness(1);
+        theme.setAnimationFrames(5);
+        theme.setAnimationInTime(50);
+        theme.setAnimationOutTime(50);
+        theme.setButtonAnimator(new ElementAnimation() {
+            @Override
+            public AnimationState transform(int frame, int totalFrames, AnimationState lastState) {
+                lastState.baseColor.setAlpha(lastState.baseColor.getAlpha() - 20);
+                lastState.outlineColor.setAlpha(lastState.outlineColor.getAlpha() - 20);
 
-        TextLine line = new TextLine(100, 100);
-        Button button = new Button(100, 150, 200, 100);
+                lastState.width -= 4;
+                lastState.height -= 2;
+                lastState.posX += 2;
+                lastState.posY += 1;
+                return lastState;
+            }
+
+            @Override
+            public AnimationState transformBack(int frame, int totalFrames, AnimationState lastState) {
+                lastState.baseColor.setAlpha(lastState.baseColor.getAlpha() + 20);
+                lastState.outlineColor.setAlpha(lastState.outlineColor.getAlpha() + 20);
+
+                lastState.width += 4;
+                lastState.height += 2;
+                lastState.posX -= 2;
+                lastState.posY -= 1;
+                return lastState;
+            }
+        });
+
+        TextLine line = new TextLine(window, 100, 100, 100);
+        ImageButton button1 = new ImageButton(window, 100, 300, 120, 60);
+        Button button2 = new Button(window, 100, 150, 120, 60);
+        Checkbox checkbox = new Checkbox(window, 100, 225, 60, 60);
+
+        VerticalLayout layout = new VerticalLayout(window, 200, 500);
 
         window.run(() -> {
             System.out.println(MVEngine.getRenderingApi());
@@ -102,19 +137,11 @@ public class Main {
 
             renderer2D = new DrawContext2D(window);
             try {
-                font = new BitmapFont("/fonts/minecraft/minecraft.png", "/fonts/minecraft/minecraft.fnt");
+                font = new BitmapFont("/fonts/FreeSans/FreeSans.png", "/fonts/FreeSans/FreeSans.fnt");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-            theme.setFont(font);
-
-            line.setHeight(64);
-            line.setFont(font);
-            line.setText("Hello World!");
-
-            button.setFont(font);
-            button.setText("Click me!");
             renderer3D = new DrawContext3D(window);
 
             try {
@@ -129,6 +156,48 @@ public class Main {
                 throw new RuntimeException(e);
             }
 
+            //Gui test
+            theme.setFont(font);
+
+            line.setHeight(64);
+            line.setFont(font);
+            line.setText("Hello World!");
+
+            button1.setTexture(texture);
+
+            button2.setFont(font);
+            button2.setText("Click me!");
+            button2.attachListener(new ClickListener() {
+                @Override
+                public void onCLick(Element element, int button) {
+
+                }
+
+                @Override
+                public void onRelease(Element element, int button) {
+                    if(button == Input.BUTTON_LEFT) {
+                        button1.toggle();
+                    }
+                }
+            });
+
+            layout.addElement(button1);
+            layout.addElement(checkbox);
+            layout.addElement(button2);
+            layout.alignContent(VerticalLayout.Align.RIGHT);
+            layout.setSpacing(5);
+
+            Gui gui = new Gui(renderer2D, "test");
+            gui.addElement(layout);
+
+            try {
+                gui.applyTheme(theme);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            guiRegistry.addGui(gui);
+
         }, null, () -> {
 
             r += 1f;
@@ -136,7 +205,10 @@ public class Main {
                 r = 0;
             }
 
-            button.draw(renderer2D, theme);
+            //layout.setX(Input.mouse[Input.MOUSE_X]);
+            //layout.setY(Input.mouse[Input.MOUSE_Y]);
+
+            guiRegistry.renderGuis();
 
             //renderer3D.object(cruiser);
             //renderer3D.processPointLight(pointlight);

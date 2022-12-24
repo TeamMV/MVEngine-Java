@@ -1,5 +1,9 @@
 package dev.mv.engine.gui;
 
+import dev.mv.engine.gui.components.Element;
+import dev.mv.engine.gui.theme.Theme;
+import dev.mv.engine.render.shared.DrawContext2D;
+
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -38,6 +42,19 @@ public class GuiRegistry implements Iterable<Gui> {
         return guiMap.values().toArray(new Gui[0]);
     }
 
+    public void renderGuis() {
+        for(Gui gui : this) {
+            gui.draw();
+            gui.loop();
+        }
+    }
+
+    public void applyTheme(Theme theme) {
+        for(Gui gui : this) {
+
+        }
+    }
+
     private class GuiRegistryIterator implements Iterator<Gui> {
         private boolean hasNext = true;
         private int index = 0;
@@ -54,10 +71,10 @@ public class GuiRegistry implements Iterable<Gui> {
 
         @Override
         public Gui next() {
-            if(index++ >= collection.size()) {
+            if(index + 2 >= collection.size()) {
                 hasNext = false;
             }
-            return collection.get(index);
+            return collection.get(index++);
         }
 
         @Override

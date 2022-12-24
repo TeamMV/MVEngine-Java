@@ -134,20 +134,21 @@ public class BitmapFont {
 
     public int getWidth(char c) {
         try {
-            return chars.get(c + 0).getWidth();
+            return (int) (chars.get(c + 0).getWidth());
         } catch (NullPointerException e) {
             MVEngine.Exceptions.Throw(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
             return -1;
         }
     }
 
-    public int getWidth(String s) {
+    public int getWidth(String s, int height) {
         int result = 0;
+        float multiplier = multiplier(height);
 
         for (char c : s.toCharArray()) {
-            result += getWidth(c) + getGlyph(c).getXAdvance();
+            result += (getWidth(c) + (getGlyph(c).getXAdvance() - getWidth(c))) * multiplier;
         }
-        result -= getGlyph('a').getXAdvance();
+        result -= (getGlyph('a').getXAdvance() - getWidth('a')) * multiplier;
 
         return result;
     }

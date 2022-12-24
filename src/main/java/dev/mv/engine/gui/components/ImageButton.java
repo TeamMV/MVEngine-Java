@@ -1,7 +1,8 @@
 package dev.mv.engine.gui.components;
 
+import dev.mv.engine.MVEngine;
+import dev.mv.engine.gui.components.extras.Image;
 import dev.mv.engine.gui.components.extras.Toggle;
-import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.input.Clickable;
@@ -9,48 +10,23 @@ import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
-import dev.mv.engine.render.shared.font.BitmapFont;
+import dev.mv.engine.render.shared.texture.Texture;
+import dev.mv.engine.render.shared.texture.TextureRegion;
 
-public class Button extends Element implements Text, Toggle, Clickable {
-    private String text;
-    private BitmapFont font;
-    private boolean enabled = true;
+public class ImageButton extends Element implements Toggle, Image, Clickable {
+    protected TextureRegion texture;
+    protected boolean enabled = true;
 
-    public Button(Window window, Element parent, int width, int height) {
+    public ImageButton(Window window, Element parent, int width, int height) {
         super(window, -1, -1, width, height, parent);
     }
 
-    public Button(Window window, int x, int y, Element parent, int width, int height) {
+    public ImageButton(Window window, int x, int y, Element parent, int width, int height) {
         super(window, x, y, width, height, parent);
     }
 
-    public Button(Window window, int x, int y, int width, int height) {
+    public ImageButton(Window window, int x, int y, int width, int height) {
         super(window, x, y, width, height, null);
-    }
-
-    @Override
-    public void setFont(BitmapFont font) {
-        this.font = font;
-    }
-
-    @Override
-    public BitmapFont getFont(BitmapFont font) {
-        return null;
-    }
-
-    @Override
-    public void setText(String text) {
-        this.text = text;
-        initialState.text = text;
-        animationState.text = text;
-        if(initialState.width < font.getWidth(text, initialState.height - textDistance()) + textDistance()) {
-            setWidth(font.getWidth(text, initialState.height - textDistance()) + textDistance());
-        }
-    }
-
-    @Override
-    public String getText() {
-        return null;
     }
 
     @Override
@@ -70,9 +46,15 @@ public class Button extends Element implements Text, Toggle, Clickable {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.roundedRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.color(0, 0, 0, 0);
+                if(texture != null) {
+                    draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
+                }
             } else {
-                draw.color(animationState.baseColor);
-                draw.roundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.color(0, 0, 0, 0);
+                if(texture != null) {
+                    draw.image(animationState.posX, animationState.posY, animationState.width, animationState.height, texture, animationState.rotation, animationState.originX, animationState.originY);
+                }
             }
         } else if(theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
             if(theme.hasOutline()) {
@@ -87,9 +69,15 @@ public class Button extends Element implements Text, Toggle, Clickable {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.triangularRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.color(0, 0, 0, 0);
+                if(texture != null) {
+                    draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
+                }
             } else {
-                draw.color(animationState.baseColor);
-                draw.triangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.color(0, 0, 0, 0);
+                if(texture != null) {
+                    draw.image(animationState.posX, animationState.posY, animationState.width, animationState.height, texture, animationState.rotation, animationState.originX, animationState.originY);
+                }
             }
         } else if(theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
             if(theme.hasOutline()) {
@@ -103,26 +91,17 @@ public class Button extends Element implements Text, Toggle, Clickable {
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
-                draw.rectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, animationState.rotation, animationState.originX, animationState.originY);
+                draw.color(0, 0, 0, 0);
+                if(texture != null) {
+                    draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
+                }
             } else {
-                draw.color(animationState.baseColor);
-                draw.rectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
+                draw.color(0, 0, 0, 0);
+                if(texture != null) {
+                    draw.image(animationState.posX, animationState.posY, animationState.width, animationState.height, texture, animationState.rotation, animationState.originX, animationState.originY);
+                }
             }
         }
-
-        if(theme.getText_base() != null) {
-            draw.color(theme.getText_base());
-        } else if(theme.getText_gradient() != null) {
-            draw.color(theme.getText_gradient());
-        }
-        if(!enabled) {
-            draw.color(theme.getDisabledTextColor());
-        }
-        draw.text(animationState.posX + animationState.width / 2 - font.getWidth(text, animationState.height - textDistance() * 2) / 2, animationState.posY + textDistance(), animationState.height - textDistance() * 2, animationState.text, font, animationState.rotation, animationState.originX, animationState.originY);
-    }
-
-    private int textDistance() {
-        return getHeight() / 5;
     }
 
     @Override
@@ -170,5 +149,20 @@ public class Button extends Element implements Text, Toggle, Clickable {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @Override
+    public void setTexture(Texture texture) {
+        this.texture = texture.convertToRegion();
+    }
+
+    @Override
+    public void setTexture(TextureRegion textureRegion) {
+        this.texture = textureRegion;
+    }
+
+    @Override
+    public TextureRegion getTexture() {
+        return texture;
     }
 }
