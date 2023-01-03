@@ -20,5 +20,11 @@
                 </mve:layout>
             </mve:layout>
         </mve:layout>
+        <text>
+            <tag></tag>
+            <tag></tag>
+            <content></content>
+            <color></color>
+        </text>
     </mve:gui>
 </mve>

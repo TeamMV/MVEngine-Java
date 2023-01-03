@@ -82,16 +82,6 @@ public class Gui {
     //----- event calls -----
 
     public void loop() {
-        //keys
-        for(int i = 0; i < Input.keys.length; i++) {
-            if(Input.keys[i] == Input.State.ONPRESSED) {
-                keyType(i);
-            } else if(Input.keys[i] == Input.State.PRESSED) {
-                keyPress(i);
-            } else if(Input.keys[i] == Input.State.ONRELEASED) {
-                keyRelease(i);
-            }
-        }
 
         //mouseButtons
         for(int i = 0; i < Input.buttons.length; i++) {
@@ -113,6 +103,18 @@ public class Gui {
         if(Input.mouse[Input.MOUSE_SCROLL_Y] != 0.0) {
             scrollY(Input.mouse[Input.MOUSE_SCROLL_Y]);
         }
+    }
+
+    public void pressKey(int keyCode) {
+        keyPress(keyCode);
+    }
+
+    public void typeKey(int keyCode) {
+        keyType(keyCode);
+    }
+
+    public void releaseKey(int keyCode) {
+        keyRelease(keyCode);
     }
 
     private void click(int x, int y, int btn) {

@@ -102,4 +102,22 @@ public class GuiRegistry implements Iterable<Gui> {
     public Spliterator<Gui> spliterator() {
         return Iterable.super.spliterator();
     }
+
+    public void pressKey(int keyCode) {
+        guiMap.values().forEach(gui -> {
+            gui.pressKey(keyCode);
+        });
+    }
+
+    public void typeKey(int keyCode) {
+        guiMap.values().forEach(gui -> {
+            gui.typeKey(keyCode);
+        });
+    }
+
+    public void releaseKey(int keyCode) {
+        guiMap.values().forEach(gui -> {
+            gui.releaseKey(keyCode);
+        });
+    }
 }

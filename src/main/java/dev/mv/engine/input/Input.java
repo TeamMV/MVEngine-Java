@@ -91,6 +91,8 @@ public class Input {
     public static final int KEY_NUM_7 = 81;
     public static final int KEY_NUM_8 = 82;
     public static final int KEY_NUM_9 = 83;
+    public static final int KEY_SPACE = 84;
+    public static final int KEY_BACKSPACE = 85;
     public static int KEY_LAST = -1;
 
     public static final int BUTTON_LEFT = 0;
@@ -106,7 +108,7 @@ public class Input {
     public static final int MOUSE_SCROLL_Y = 3;
 
     private static int totalNumKeys() {
-        return 83 + 1;
+        return 85 + 1;
     }
 
     private static int totalNumButtons() {
@@ -174,7 +176,7 @@ public class Input {
         mouse[MOUSE_SCROLL_Y] = sy;
     }
 
-    private static int convertKey(int rawCode) {
+    public static int convertKey(int rawCode) {
         return switch (rawCode) {
             default -> -1;
             case 48 -> KEY_0;
@@ -262,6 +264,8 @@ public class Input {
             case 65429 -> KEY_NUM_7;
             case 65431 -> KEY_NUM_8;
             case 65434 -> KEY_NUM_9;
+            case 32 -> KEY_SPACE;
+            case 65288 -> KEY_BACKSPACE;
         };
     }
 
@@ -273,6 +277,51 @@ public class Input {
             case 3 -> BUTTON_4;
             case 4 -> BUTTON_5;
             default -> -1;
+        };
+    }
+
+    public static String keyToStr(int key) {
+        return switch (key) {
+            default -> "-";
+            case KEY_0 -> "0";
+            case KEY_1 -> "1";
+            case KEY_2 -> "2";
+            case KEY_3 -> "3";
+            case KEY_4 -> "4";
+            case KEY_5 -> "5";
+            case KEY_6 -> "6";
+            case KEY_7 -> "7";
+            case KEY_8 -> "8";
+            case KEY_9 -> "9";
+            case KEY_A -> "a";
+            case KEY_B -> "b";
+            case KEY_C -> "c";
+            case KEY_D -> "d";
+            case KEY_E -> "e";
+            case KEY_F -> "f";
+            case KEY_G -> "g";
+            case KEY_H -> "h";
+            case KEY_I -> "i";
+            case KEY_J -> "j";
+            case KEY_K -> "k";
+            case KEY_L -> "l";
+            case KEY_M -> "m";
+            case KEY_N -> "n";
+            case KEY_O -> "o";
+            case KEY_P -> "p";
+            case KEY_Q -> "q";
+            case KEY_R -> "r";
+            case KEY_S -> "s";
+            case KEY_T -> "t";
+            case KEY_U -> "u";
+            case KEY_V -> "v";
+            case KEY_W -> "w";
+            case KEY_X -> "x";
+            case KEY_Y -> "y";
+            case KEY_Z -> "z";
+            case KEY_RETURN -> "\n";
+            case KEY_NUM_RETURN -> "\n";
+            case KEY_SPACE -> " ";
         };
     }
 

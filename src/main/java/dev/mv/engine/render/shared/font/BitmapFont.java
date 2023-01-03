@@ -148,9 +148,21 @@ public class BitmapFont {
         for (char c : s.toCharArray()) {
             result += (getWidth(c) + (getGlyph(c).getXAdvance() - getWidth(c))) * multiplier;
         }
-        result -= (getGlyph('a').getXAdvance() - getWidth('a')) * multiplier;
+        result -= (getWidth('a') - getGlyph('a').getXAdvance()) * multiplier;
 
         return result;
+    }
+
+    public int possibleAmountOfChars(String s, int limitWidth, int height) {
+        int totalWidth = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            totalWidth += getWidth(s.charAt(i) + "", height);
+            if(totalWidth > limitWidth) {
+                return i;
+            }
+        }
+        return s.length();
     }
 
     public int getMaxXOffset() {

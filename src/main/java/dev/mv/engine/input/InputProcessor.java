@@ -1,5 +1,7 @@
 package dev.mv.engine.input;
 
+import dev.mv.engine.resources.R;
+
 public class InputProcessor {
     public void mousePosUpdate(int x, int y) {
         Input.updateMouse(x, y);
@@ -15,5 +17,6 @@ public class InputProcessor {
 
     public void keyUpdate(int key, InputCollector.KeyAction action) {
         Input.updateKey(key, action);
+        R.sendInputKeyEvent(key, action);
     }
 }

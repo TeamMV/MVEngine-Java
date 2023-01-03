@@ -12,6 +12,7 @@ import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.components.*;
 import dev.mv.engine.gui.components.animations.ElementAnimation;
 import dev.mv.engine.gui.components.assets.GuiAssets;
+import dev.mv.engine.gui.components.layouts.HorizontalLayout;
 import dev.mv.engine.gui.components.layouts.VerticalLayout;
 import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.theme.Theme;
@@ -29,6 +30,7 @@ import dev.mv.engine.render.shared.shader.light.DirectionalLight;
 import dev.mv.engine.render.shared.shader.light.PointLight;
 import dev.mv.engine.render.shared.shader.light.SpotLight;
 import dev.mv.engine.render.shared.texture.Texture;
+import dev.mv.engine.resources.R;
 import dev.mv.utils.misc.Version;
 import lombok.SneakyThrows;
 import org.joml.Vector3f;
@@ -92,9 +94,9 @@ public class Main {
         theme.setEdgeStyle(Theme.EdgeStyle.ROUND);
         theme.setEdgeRadius(10);
         theme.setOutlineThickness(1);
-        theme.setAnimationFrames(5);
+        theme.setAnimationFrames(10);
         theme.setAnimationInTime(50);
-        theme.setAnimationOutTime(50);
+        theme.setAnimationOutTime(100);
         theme.setButtonAnimator(new ElementAnimation() {
             @Override
             public AnimationState transform(int frame, int totalFrames, AnimationState lastState) {
@@ -125,6 +127,15 @@ public class Main {
         ImageButton button1 = new ImageButton(window, 100, 300, 120, 60);
         Button button2 = new Button(window, 100, 150, 120, 60);
         Checkbox checkbox = new Checkbox(window, 100, 225, 60, 60);
+        NumericInputBox inputBox = new NumericInputBox(window, 100, 25, 200, 60);
+        PasswordInputBox passwordInputBox = new PasswordInputBox(window, 100, 0, 200, 60);
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout(window, -1, -1);
+
+        horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
+        horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
+        horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
+        horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
 
         VerticalLayout layout = new VerticalLayout(window, 200, 500);
 
@@ -181,11 +192,23 @@ public class Main {
                 }
             });
 
+
+
+            inputBox.setLimit(15);
+            inputBox.setFont(font);
+
+            passwordInputBox.setLimit(32);
+            passwordInputBox.setFont(font);
+
             layout.addElement(button1);
             layout.addElement(checkbox);
             layout.addElement(button2);
-            layout.alignContent(VerticalLayout.Align.RIGHT);
+            layout.addElement(inputBox);
+            layout.addElement(passwordInputBox);
+            layout.alignContent(VerticalLayout.Align.CENTER);
             layout.setSpacing(5);
+
+            layout.addElement(horizontalLayout);
 
             Gui gui = new Gui(renderer2D, "test");
             gui.addElement(layout);
@@ -198,6 +221,8 @@ public class Main {
 
             guiRegistry.addGui(gui);
 
+            R.GUIS = guiRegistry;
+
         }, null, () -> {
 
             r += 1f;
@@ -208,7 +233,7 @@ public class Main {
             //layout.setX(Input.mouse[Input.MOUSE_X]);
             //layout.setY(Input.mouse[Input.MOUSE_Y]);
 
-            guiRegistry.renderGuis();
+            R.GUIS.renderGuis();
 
             //renderer3D.object(cruiser);
             //renderer3D.processPointLight(pointlight);
