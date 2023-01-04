@@ -8,7 +8,7 @@ public interface ElementAnimation {
         public int rotation;
         public int originX, originY;
         public int posX, posY;
-        public Color baseColor, outlineColor, textColor;
+        public Color baseColor, outlineColor, textColor, extraColor;
         public String text;
 
         public void copyValuesTo(AnimationState dest) {
@@ -22,6 +22,7 @@ public interface ElementAnimation {
             if(dest.baseColor != null) baseColor.copyValuesTo(dest.baseColor);
             if(dest.outlineColor != null) outlineColor.copyValuesTo(dest.outlineColor);
             if(dest.textColor != null) textColor.copyValuesTo(dest.textColor);
+            if(dest.extraColor != null) extraColor.copyValuesTo(dest.extraColor);
             dest.text = text;
         }
     }

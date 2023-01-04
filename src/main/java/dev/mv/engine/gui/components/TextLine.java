@@ -50,13 +50,13 @@ public class TextLine extends Element implements Text {
     @Override
     public void attachListener(EventListener listener) {
         if(listener instanceof TextChangeListener textChangeListener) {
-            this.textChangeListener = textChangeListener;
+            this.textChangeListeners.add(textChangeListener);
         }
     }
 
     @Override
     public void setText(String text) {
-        if(textChangeListener != null) textChangeListener.onChange(this, this.text, text);
+        if(!textChangeListeners.isEmpty()) textChangeListeners.forEach(l -> l.onChange(this, this.text, text));
         this.text = text;
         initialState.width = font.getWidth(text, getHeight());
     }

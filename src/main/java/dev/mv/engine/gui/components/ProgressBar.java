@@ -1,56 +1,53 @@
 package dev.mv.engine.gui.components;
 
 import dev.mv.engine.gui.components.extras.Toggle;
-import dev.mv.engine.gui.components.extras.Text;
-import dev.mv.engine.gui.event.ClickListener;
+import dev.mv.engine.gui.components.extras.ValueChange;
 import dev.mv.engine.gui.event.EventListener;
-import dev.mv.engine.gui.input.Clickable;
+import dev.mv.engine.gui.event.ProgressListener;
 import dev.mv.engine.gui.theme.Theme;
-import dev.mv.engine.gui.utils.GuiUtils;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
-import dev.mv.engine.render.shared.font.BitmapFont;
+import dev.mv.utils.Utils;
 
-public class Button extends Element implements Text, Toggle, Clickable {
-    private String text;
-    private BitmapFont font;
+public class ProgressBar extends Element implements Toggle, ValueChange {
+    private float currentValue = 0;
+    private int totalValue = 0;
     private boolean enabled = true;
 
-    public Button(Window window, Element parent, int width, int height) {
-        super(window, -1, -1, width, height, parent);
-    }
-
-    public Button(Window window, int x, int y, Element parent, int width, int height) {
+    public ProgressBar(Window window, int x, int y, int width, int height, Element parent) {
         super(window, x, y, width, height, parent);
     }
 
-    public Button(Window window, int x, int y, int width, int height) {
+    public ProgressBar(Window window, int width, int height, Element parent) {
+        super(window, -1, -1, width, height, parent);
+    }
+
+    public ProgressBar(Window window, int x, int y, int width, int height) {
         super(window, x, y, width, height, null);
     }
 
-    @Override
-    public void setFont(BitmapFont font) {
-        this.font = font;
+    public float getCurrentValue() {
+        return currentValue;
     }
 
-    @Override
-    public BitmapFont getFont(BitmapFont font) {
-        return null;
+    public void setCurrentValue(int currentValue) {
+        this.currentValue = currentValue;
     }
 
-    @Override
-    public void setText(String text) {
-        this.text = text;
-        initialState.text = text;
-        animationState.text = text;
-        if(initialState.width < font.getWidth(text, initialState.height - textDistance()) + textDistance()) {
-            setWidth(font.getWidth(text, initialState.height - textDistance()) + textDistance());
-        }
+    public int getTotalValue() {
+        return totalValue;
     }
 
-    @Override
-    public String getText() {
-        return null;
+    public void setTotalValue(int totalValue) {
+        this.totalValue = totalValue;
+    }
+
+    public float getPercentage() {
+        return Utils.getPercent((int) currentValue, totalValue);
+    }
+
+    public void setPercentage(float percentage) {
+        currentValue = Utils.getValue(percentage, totalValue);
     }
 
     @Override
@@ -70,11 +67,18 @@ public class Button extends Element implements Text, Toggle, Clickable {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.roundedRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+
+                draw.color(animationState.extraColor);
+                draw.roundedRectangle(animationState.posX + thickness, animationState.posY + thickness, Math.max(Utils.getValue(15, totalValue), Utils.getValue(Utils.getPercent(currentValue, totalValue), animationState.width)) - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
             } else {
                 draw.color(animationState.baseColor);
                 draw.roundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+
+                draw.color(animationState.extraColor);
+                draw.roundedRectangle(animationState.posX, animationState.posY, Math.max(Utils.getValue(15, totalValue), Utils.getValue(Utils.getPercent(currentValue, totalValue), animationState.width)), animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
             }
-        } else if(theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
+        }
+        else if(theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
             if(theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
@@ -87,9 +91,14 @@ public class Button extends Element implements Text, Toggle, Clickable {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.triangularRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.color(animationState.extraColor);
+                draw.triangularRectangle(animationState.posX + thickness, animationState.posY + thickness, Math.max(Utils.getValue(15, totalValue), Utils.getValue(Utils.getPercent(currentValue, totalValue), animationState.width)) - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
             } else {
                 draw.color(animationState.baseColor);
                 draw.triangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+
+                draw.color(animationState.extraColor);
+                draw.triangularRectangle(animationState.posX, animationState.posY, Math.max(Utils.getValue(15, totalValue), Utils.getValue(Utils.getPercent(currentValue, totalValue), animationState.width)), animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
             }
         } else if(theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
             if(theme.hasOutline()) {
@@ -104,51 +113,23 @@ public class Button extends Element implements Text, Toggle, Clickable {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.rectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, animationState.rotation, animationState.originX, animationState.originY);
+
+                draw.color(animationState.extraColor);
+                draw.rectangle(animationState.posX + thickness, animationState.posY + thickness, Math.max(Utils.getValue(0, totalValue), Utils.getValue(Utils.getPercent(currentValue, totalValue), animationState.width)) - 2 * thickness, animationState.height - 2 * thickness, animationState.rotation, animationState.originX, animationState.originY);
             } else {
                 draw.color(animationState.baseColor);
                 draw.rectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
+
+                draw.color(animationState.extraColor);
+                draw.rectangle(animationState.posX, animationState.posY, Math.max(Utils.getValue(0, totalValue), Utils.getValue(Utils.getPercent(currentValue, totalValue), animationState.width)), animationState.height, animationState.rotation, animationState.originX, animationState.originY);
             }
         }
-
-        if(theme.getText_base() != null) {
-            draw.color(theme.getText_base());
-        } else if(theme.getText_gradient() != null) {
-            draw.color(theme.getText_gradient());
-        }
-        if(!enabled) {
-            draw.color(theme.getDisabledTextColor());
-        }
-        draw.text(animationState.posX + animationState.width / 2 - font.getWidth(text, animationState.height - textDistance() * 2) / 2, animationState.posY + textDistance(), animationState.height - textDistance() * 2, animationState.text, font, animationState.rotation, animationState.originX, animationState.originY);
-    }
-
-    private int textDistance() {
-        return getHeight() / 5;
     }
 
     @Override
     public void attachListener(EventListener listener) {
-        if(listener instanceof ClickListener clickListener) {
-            clickListeners.add(clickListener);
-        }
-    }
-
-    @Override
-    public void click(int x, int y, int btn) {
-        if(!enabled) return;
-        if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) return;
-        animator.animate(theme.getAnimationInTime(), theme.getAnimationFrames());
-        if(!clickListeners.isEmpty()) {
-            clickListeners.forEach(l -> l.onCLick(this, btn));
-        }
-    }
-
-    @Override
-    public void clickRelease(int x, int y, int btn) {
-        if(!enabled) return;
-        animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
-        if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) return;
-        if(!clickListeners.isEmpty()) {
-            clickListeners.forEach(l -> l.onRelease(this, btn));
+        if(listener instanceof ProgressListener progressListener) {
+            progressListeners.add(progressListener);
         }
     }
 
@@ -170,5 +151,31 @@ public class Button extends Element implements Text, Toggle, Clickable {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @Override
+    public void increment(int amount) {
+        currentValue = Utils.clamp(0, (int) (currentValue + amount), totalValue);
+        if(!progressListeners.isEmpty()) {
+            progressListeners.forEach(l -> l.onIncrement((Element) this, (int) currentValue, totalValue, (int) getPercentage()));
+        }
+    }
+
+    @Override
+    public void decrement(int amount) {
+        currentValue = Utils.clamp(0, (int) (currentValue - amount), totalValue);
+        if(!progressListeners.isEmpty()) {
+            progressListeners.forEach(l -> l.onDecrement(this, (int) currentValue, totalValue, (int) getPercentage()));
+        }
+    }
+
+    @Override
+    public void incrementByPercentage(int amount) {
+        increment(Utils.getValue(amount, totalValue));
+    }
+
+    @Override
+    public void decrementByPercentage(int amount) {
+        decrement(Utils.getValue(amount, totalValue));
     }
 }

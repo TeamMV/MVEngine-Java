@@ -145,10 +145,10 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     @Override
     public void attachListener(EventListener listener) {
         if(listener instanceof TextChangeListener textChangeListener) {
-            this.textChangeListener = textChangeListener;
+            this.textChangeListeners.add(textChangeListener);
         }
         if(listener instanceof ClickListener clickListener) {
-            this.clickListener = clickListener;
+            this.clickListeners.add(clickListener);
         }
 
     }
@@ -181,8 +181,8 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
             selected = false;
             animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
         }
-        if(clickListener != null) {
-            clickListener.onCLick(this, btn);
+        if(!clickListeners.isEmpty()) {
+            clickListeners.forEach(l -> l.onCLick(this, btn));
         }
         if(!selected) {
             animator.animate(theme.getAnimationInTime(), theme.getAnimationFrames());
@@ -198,8 +198,8 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
             return;
         }
         selected = true;
-        if(clickListener != null) {
-            clickListener.onRelease(this, btn);
+        if(!clickListeners.isEmpty()) {
+            clickListeners.forEach(l -> l.onRelease(this, btn));
         }
     }
 

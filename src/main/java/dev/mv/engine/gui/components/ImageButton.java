@@ -91,6 +91,7 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
+                draw.rectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(0, 0, 0, 0);
                 if(texture != null) {
                     draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
@@ -107,7 +108,7 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
     @Override
     public void attachListener(EventListener listener) {
         if(listener instanceof ClickListener clickListener) {
-            this.clickListener = clickListener;
+            this.clickListeners.add(clickListener);
         }
     }
 
@@ -116,8 +117,8 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
         if(!enabled) return;
         if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) return;
         animator.animate(theme.getAnimationInTime(), theme.getAnimationFrames());
-        if(clickListener != null) {
-            clickListener.onCLick(this, btn);
+        if(!clickListeners.isEmpty()) {
+            clickListeners.forEach(l -> l.onCLick(this, btn));
         }
     }
 
@@ -126,8 +127,8 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
         if(!enabled) return;
         animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
         if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) return;
-        if(clickListener != null) {
-            clickListener.onRelease(this, btn);
+        if(!clickListeners.isEmpty()) {
+            clickListeners.forEach(l -> l.onRelease(this, btn));
         }
     }
 

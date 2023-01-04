@@ -9,6 +9,7 @@ import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Element {
@@ -21,11 +22,12 @@ public abstract class Element {
     protected ElementAnimator animator;
     protected Theme theme;
 
-    protected ClickListener clickListener = null;
-    protected KeyListener keyListener = null;
-    protected TextChangeListener textChangeListener = null;
-    protected HoverListener hoverListener = null;
-    protected ScrollListener scrollListener = null;
+    protected List<ClickListener> clickListeners;
+    protected List<KeyListener> keyListeners;
+    protected List<TextChangeListener> textChangeListeners;
+    protected List<HoverListener> hoverListeners;
+    protected List<ScrollListener> scrollListeners;
+    protected List<ProgressListener> progressListeners;
 
     protected Element(Window window, int x, int y, int width, int height, Element parent) {
         this.window = window;
@@ -33,6 +35,7 @@ public abstract class Element {
         animationState.baseColor = new Color(0, 0, 0, 0);
         animationState.outlineColor = new Color(0, 0, 0, 0);
         animationState.textColor = new Color(0, 0, 0, 0);
+        animationState.extraColor = new Color(0, 0, 0, 0);
         initialState = new ElementAnimation.AnimationState();
         initialState.posX = x;
         initialState.posY = y;
@@ -44,12 +47,20 @@ public abstract class Element {
         initialState.baseColor = new Color(0, 0, 0, 0);
         initialState.outlineColor = new Color(0, 0, 0, 0);
         initialState.textColor = new Color(0, 0, 0, 0);
+        initialState.extraColor = new Color(0, 0, 0, 0);
         initialState.copyValuesTo(animationState);
 
         animator = new ElementAnimator();
         animator.setOnFinish(() -> {
             initialState.copyValuesTo(animationState);
         });
+
+        clickListeners = new ArrayList<>();
+        keyListeners = new ArrayList<>();
+        textChangeListeners = new ArrayList<>();
+        hoverListeners = new ArrayList<>();
+        scrollListeners = new ArrayList<>();
+        progressListeners = new ArrayList<>();
     }
 
     public abstract void draw(DrawContext2D draw);
@@ -157,6 +168,7 @@ public abstract class Element {
         if(theme.hasOutline()) {
             theme.getOutlineColor().copyValuesTo(initialState.outlineColor);
         }
+        theme.getExtraColor().copyValuesTo(initialState.extraColor);
 
         initialState.copyValuesTo(animationState);
     }

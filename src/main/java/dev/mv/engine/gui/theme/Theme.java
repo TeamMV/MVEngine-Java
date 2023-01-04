@@ -47,9 +47,11 @@ public class Theme {
     private Gradient outlineGradient;
     private Color text_base;
     private Gradient text_gradient;
+    private Color extraColor;
     private Color disabledBaseColor;
     private Color disabledOutlineColor;
     private Color disabledTextColor;
+    private Color diabledExtraColor;
     private Color indicatorColor;
 
     public Color getBaseColor() {
@@ -130,6 +132,22 @@ public class Theme {
 
     public void setIndicatorColor(Color indicatorColor) {
         this.indicatorColor = indicatorColor;
+    }
+
+    public Color getExtraColor() {
+        return extraColor;
+    }
+
+    public void setExtraColor(Color extraColor) {
+        this.extraColor = extraColor;
+    }
+
+    public Color getDiabledExtraColor() {
+        return diabledExtraColor;
+    }
+
+    public void setDiabledExtraColor(Color diabledExtraColor) {
+        this.diabledExtraColor = diabledExtraColor;
     }
 
     //edges

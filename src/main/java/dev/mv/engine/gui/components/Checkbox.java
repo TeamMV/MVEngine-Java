@@ -55,8 +55,8 @@ public class Checkbox extends ImageButton{
         if(!enabled) return;
         if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) return;
         animator.animate(theme.getAnimationInTime(), theme.getAnimationFrames());
-        if(clickListener != null) {
-            clickListener.onCLick(this, btn);
+        if(!clickListeners.isEmpty()) {
+            clickListeners.forEach(l -> l.onCLick(this, btn));
         }
     }
     @Override
@@ -65,8 +65,8 @@ public class Checkbox extends ImageButton{
         animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
         if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) return;
         invertChecked();
-        if(clickListener != null) {
-            clickListener.onRelease(this, btn);
+        if(!clickListeners.isEmpty()) {
+            clickListeners.forEach(l -> l.onRelease(this, btn));
         }
     }
 

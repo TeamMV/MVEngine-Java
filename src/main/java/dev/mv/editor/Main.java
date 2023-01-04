@@ -11,10 +11,10 @@ import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.components.*;
 import dev.mv.engine.gui.components.animations.ElementAnimation;
-import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.gui.components.layouts.HorizontalLayout;
 import dev.mv.engine.gui.components.layouts.VerticalLayout;
 import dev.mv.engine.gui.event.ClickListener;
+import dev.mv.engine.gui.event.ProgressListener;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.input.InputCollector;
@@ -31,6 +31,7 @@ import dev.mv.engine.render.shared.shader.light.PointLight;
 import dev.mv.engine.render.shared.shader.light.SpotLight;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.resources.R;
+import dev.mv.utils.async.PromiseNull;
 import dev.mv.utils.misc.Version;
 import lombok.SneakyThrows;
 import org.joml.Vector3f;
@@ -87,6 +88,7 @@ public class Main {
         theme.setDisabledBaseColor(new Color(100, 100, 100, 255));
         theme.setDisabledOutlineColor(new Color(70, 70, 70, 255));
         theme.setDisabledTextColor(new Color(70, 70, 70, 255));
+        theme.setExtraColor(new Color(0, 255, 0, 255));
         theme.setGuiAssetPath("/gui/assets/guiassets.png");
         theme.setGuiAssetsIconWidth(32);
         theme.setGuiAssetsIconHeight(32);
@@ -107,6 +109,7 @@ public class Main {
                 lastState.height -= 2;
                 lastState.posX += 2;
                 lastState.posY += 1;
+                lastState.rotation += 2;
                 return lastState;
             }
 
@@ -119,6 +122,7 @@ public class Main {
                 lastState.height += 2;
                 lastState.posX -= 2;
                 lastState.posY -= 1;
+                lastState.rotation -= 2;
                 return lastState;
             }
         });
@@ -129,15 +133,18 @@ public class Main {
         Checkbox checkbox = new Checkbox(window, 100, 225, 60, 60);
         NumericInputBox inputBox = new NumericInputBox(window, 100, 25, 200, 60);
         PasswordInputBox passwordInputBox = new PasswordInputBox(window, 100, 0, 200, 60);
-
         HorizontalLayout horizontalLayout = new HorizontalLayout(window, -1, -1);
 
         horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
         horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
         horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
         horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
+        horizontalLayout.alignContent(HorizontalLayout.Align.CENTER);
+        horizontalLayout.setSpacing(5);
 
-        VerticalLayout layout = new VerticalLayout(window, 200, 500);
+        ProgressBar progressBar = new ProgressBar(window, 100, 100, 200, 60);
+
+        VerticalLayout layout = new VerticalLayout(window, 200, 100);
 
         window.run(() -> {
             System.out.println(MVEngine.getRenderingApi());
@@ -192,7 +199,17 @@ public class Main {
                 }
             });
 
+            button2.attachListener(new ClickListener() {
+                @Override
+                public void onCLick(Element element, int button) {
 
+                }
+
+                @Override
+                public void onRelease(Element element, int button) {
+                    progressBar.incrementByPercentage(1);
+                }
+            });
 
             inputBox.setLimit(15);
             inputBox.setFont(font);
@@ -200,15 +217,36 @@ public class Main {
             passwordInputBox.setLimit(32);
             passwordInputBox.setFont(font);
 
+            progressBar.setTotalValue(100);
+            progressBar.setCurrentValue(10);
+            progressBar.attachListener(new ProgressListener() {
+                @Override
+                public void onIncrement(Element e, int currentValue, int totalValue, int percentage) {
+                    if(currentValue >= totalValue) progressBar.setCurrentValue(1);
+                }
+
+                @Override
+                public void onDecrement(Element e,int currentValue, int totalValue, int percentage) {
+
+                }
+            });
+
+            new PromiseNull((res, rej) -> {
+                while(true) {
+                    progressBar.incrementByPercentage(1);
+                    await(sleep(100));
+                }
+            });
+
             layout.addElement(button1);
             layout.addElement(checkbox);
             layout.addElement(button2);
             layout.addElement(inputBox);
             layout.addElement(passwordInputBox);
+            layout.addElement(horizontalLayout);
+            layout.addElement(progressBar);
             layout.alignContent(VerticalLayout.Align.CENTER);
             layout.setSpacing(5);
-
-            layout.addElement(horizontalLayout);
 
             Gui gui = new Gui(renderer2D, "test");
             gui.addElement(layout);

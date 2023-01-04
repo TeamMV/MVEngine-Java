@@ -31,7 +31,7 @@ public class VerticalLayout extends AbstractLayout{
 
     @Override
     public void draw(DrawContext2D draw) {
-        int yStart = getY();
+        int yStart = getY() + getHeight();
         int xStart = getX();
 
         if (currentAlign == Align.LEFT) {
@@ -59,5 +59,18 @@ public class VerticalLayout extends AbstractLayout{
                 yStart -= spacing;
             }
         }
+    }
+
+    @Override
+    public int getWidth() {
+        return maxWidth;
+    }
+
+    @Override
+    public int getHeight() {
+        int res = 0;
+        for(Element e : elements) {
+            res += e.getHeight() + spacing;
+        } return res;
     }
 }

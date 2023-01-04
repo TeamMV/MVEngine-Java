@@ -31,33 +31,46 @@ public class HorizontalLayout extends AbstractLayout{
 
     @Override
     public void draw(DrawContext2D draw) {
-        int yStart = getY();
         int xStart = getX();
+        int yStart = getY();
 
         if (currentAlign == HorizontalLayout.Align.TOP) {
             for (Element e : elements) {
                 e.setX(xStart);
-                e.setY(yStart - e.getHeight());
+                e.setY(yStart + maxHeight - e.getHeight());
                 e.draw(draw);
                 xStart += e.getWidth();
                 xStart += spacing;
             }
         } else if (currentAlign == HorizontalLayout.Align.CENTER) {
             for (Element e : elements) {
-                e.setX(xStart + ((maxWidth / 2) - (e.getWidth() / 2)));
-                e.setY(yStart - e.getHeight());
+                e.setX(xStart);
+                e.setY(yStart + maxHeight / 2 - e.getHeight() / 2);
                 e.draw(draw);
-                xStart -= e.getWidth();
-                xStart -= spacing;
+                xStart += e.getWidth();
+                xStart += spacing;
             }
         } else if (currentAlign == HorizontalLayout.Align.BOTTOM) {
             for (Element e : elements) {
-                e.setX(xStart + (maxWidth - e.getWidth()));
-                e.setY(yStart - e.getHeight());
+                e.setX(xStart);
+                e.setY(yStart);
                 e.draw(draw);
-                xStart -= e.getWidth();
-                xStart -= spacing;
+                xStart += e.getWidth();
+                xStart += spacing;
             }
         }
+    }
+
+    @Override
+    public int getWidth() {
+        int res = 0;
+        for(Element e : elements) {
+            res += e.getWidth() + spacing;
+        } return res;
+    }
+
+    @Override
+    public int getHeight() {
+        return maxHeight;
     }
 }
