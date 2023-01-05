@@ -15,7 +15,7 @@ import dev.mv.engine.render.shared.texture.TextureRegion;
 
 public class ImageButton extends Element implements Toggle, Image, Clickable {
     protected TextureRegion texture;
-    protected boolean enabled = true;
+    protected boolean enabled = true, useTextColor = false;
 
     public ImageButton(Window window, Element parent, int width, int height) {
         super(window, -1, -1, width, height, parent);
@@ -47,11 +47,17 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
                 }
                 draw.roundedRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(0, 0, 0, 0);
+                if(useTextColor) {
+                    draw.color(animationState.textColor);
+                }
                 if(texture != null) {
                     draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
                 }
             } else {
                 draw.color(0, 0, 0, 0);
+                if(useTextColor) {
+                    draw.color(animationState.textColor);
+                }
                 if(texture != null) {
                     draw.image(animationState.posX, animationState.posY, animationState.width, animationState.height, texture, animationState.rotation, animationState.originX, animationState.originY);
                 }
@@ -70,11 +76,17 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
                 }
                 draw.triangularRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(0, 0, 0, 0);
+                if(useTextColor) {
+                    draw.color(animationState.textColor);
+                }
                 if(texture != null) {
                     draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
                 }
             } else {
                 draw.color(0, 0, 0, 0);
+                if(useTextColor) {
+                    draw.color(animationState.textColor);
+                }
                 if(texture != null) {
                     draw.image(animationState.posX, animationState.posY, animationState.width, animationState.height, texture, animationState.rotation, animationState.originX, animationState.originY);
                 }
@@ -93,11 +105,17 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
                 }
                 draw.rectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(0, 0, 0, 0);
+                if(useTextColor) {
+                    draw.color(animationState.textColor);
+                }
                 if(texture != null) {
                     draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
                 }
             } else {
                 draw.color(0, 0, 0, 0);
+                if(useTextColor) {
+                    draw.color(animationState.textColor);
+                }
                 if(texture != null) {
                     draw.image(animationState.posX, animationState.posY, animationState.width, animationState.height, texture, animationState.rotation, animationState.originX, animationState.originY);
                 }
@@ -160,6 +178,14 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
     @Override
     public void setTexture(TextureRegion textureRegion) {
         this.texture = textureRegion;
+    }
+
+    public boolean usesTextColor() {
+        return useTextColor;
+    }
+
+    public void setUseTextColor(boolean useTextColor) {
+        this.useTextColor = useTextColor;
     }
 
     @Override

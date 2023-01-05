@@ -1,6 +1,7 @@
 package dev.mv.engine.gui.components;
 
 import dev.mv.engine.gui.components.assets.GuiAssets;
+import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
@@ -28,7 +29,7 @@ public class PasswordInputBox extends InputBox{
     }
 
     private void prepareButton(Window window, Element parent, int x, int y, int width, int height) {
-        visibilityButton = new ImageButton(window, x + width - height + 5, y, parent, height, height);
+        visibilityButton = new ImageButton(window, x + width - height, y, parent, height, height);
         visibilityButton.attachListener(new ClickListener() {
             @Override
             public void onCLick(Element element, int button) {
@@ -82,7 +83,7 @@ public class PasswordInputBox extends InputBox{
     public void setX(int x) {
         initialState.posX = x;
         initialState.originX = x + initialState.width / 2;
-        visibilityButton.setX(x + getWidth() - getHeight() + 5);
+        visibilityButton.setX(x + getWidth() - getHeight());
     }
 
     @Override
@@ -179,8 +180,11 @@ public class PasswordInputBox extends InputBox{
             draw.color(theme.getDisabledTextColor());
         }
         if(!isHidden) {
-            draw.text(animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
-        } else {
+            if(displayText.isEmpty() && !selected) {
+                draw.text(animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height -  textDistance() * 2)), font, animationState.rotation, animationState.originX, animationState.originY);
+            } else {
+                draw.text(animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
+            }        } else {
             draw.text(animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, "*".repeat(displayText.length()), font, animationState.rotation, animationState.originX, animationState.originY);
         }
 
@@ -197,19 +201,13 @@ public class PasswordInputBox extends InputBox{
 
     @Override
     public void setTheme(Theme theme) {
-        this.theme = theme;
-        this.animator.setAnimation(theme.getButtonAnimator());
-
-        theme.getBaseColor().copyValuesTo(initialState.baseColor);
-        theme.getText_base().copyValuesTo(initialState.textColor);
-        if(theme.hasOutline()) {
-            theme.getOutlineColor().copyValuesTo(initialState.outlineColor);
-        }
-
-        initialState.copyValuesTo(animationState);
+        super.setTheme(theme);
 
         visibilityButton.setTheme(theme);
         visibilityButton.setTexture(GuiAssets.EYE_CLOSED);
+        visibilityButton.setUseTextColor(theme.isShouldPasswordInputBoxButtonUseTextColor());
+
+        setFont(theme.getFont());
     }
 
     @Override

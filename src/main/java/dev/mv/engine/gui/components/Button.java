@@ -31,6 +31,10 @@ public class Button extends Element implements Text, Toggle, Clickable {
     @Override
     public void setFont(BitmapFont font) {
         this.font = font;
+        if(font == null) return;
+        if(initialState.width < font.getWidth(text, initialState.height - textDistance()) + textDistance()) {
+            setWidth(font.getWidth(text, initialState.height - textDistance()) + textDistance());
+        }
     }
 
     @Override
@@ -43,6 +47,7 @@ public class Button extends Element implements Text, Toggle, Clickable {
         this.text = text;
         initialState.text = text;
         animationState.text = text;
+        if(font == null) return;
         if(initialState.width < font.getWidth(text, initialState.height - textDistance()) + textDistance()) {
             setWidth(font.getWidth(text, initialState.height - textDistance()) + textDistance());
         }

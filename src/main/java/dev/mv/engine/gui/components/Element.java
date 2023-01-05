@@ -1,7 +1,10 @@
 package dev.mv.engine.gui.components;
 
+import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.components.animations.ElementAnimation;
 import dev.mv.engine.gui.components.animations.ElementAnimator;
+import dev.mv.engine.gui.components.extras.Text;
+import dev.mv.engine.gui.components.layouts.UpdateSection;
 import dev.mv.engine.gui.event.*;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
@@ -16,11 +19,12 @@ public abstract class Element {
     protected Element parent;
     protected Window window;
     protected List<String> tags;
-    protected String id;
+    protected String id = "";
     protected ElementAnimation.AnimationState animationState;
     protected ElementAnimation.AnimationState initialState;
     protected ElementAnimator animator;
     protected Theme theme;
+    protected Gui gui;
 
     protected List<ClickListener> clickListeners;
     protected List<KeyListener> keyListeners;
@@ -50,7 +54,7 @@ public abstract class Element {
         initialState.extraColor = new Color(0, 0, 0, 0);
         initialState.copyValuesTo(animationState);
 
-        animator = new ElementAnimator();
+        animator = new ElementAnimator(this);
         animator.setOnFinish(() -> {
             initialState.copyValuesTo(animationState);
         });
@@ -61,6 +65,10 @@ public abstract class Element {
         hoverListeners = new ArrayList<>();
         scrollListeners = new ArrayList<>();
         progressListeners = new ArrayList<>();
+    }
+
+    public ElementAnimation.AnimationState getInitialState() {
+        return initialState;
     }
 
     public abstract void draw(DrawContext2D draw);
@@ -77,6 +85,7 @@ public abstract class Element {
     public abstract void attachListener(EventListener listener);
     
     public void addTag(String tag) {
+        if(tags == null) tags = new ArrayList<>();
         if(tags.contains(tag)) return;
         tags.add(tag);
     }
@@ -90,7 +99,7 @@ public abstract class Element {
     }
     
     public String[] getTags() {
-        return tags.toArray(new String[0]);
+        return tags != null ? tags.toArray(new String[0]) : null;
     }
     
     public void setId(String id) {
@@ -171,5 +180,61 @@ public abstract class Element {
         theme.getExtraColor().copyValuesTo(initialState.extraColor);
 
         initialState.copyValuesTo(animationState);
+
+        if(this instanceof Text textInstance) {
+            textInstance.setFont(theme.getFont());
+        }
+    }
+
+    public ElementAnimator getAnimator() {
+        return animator;
+    }
+
+    public void setAnimator(ElementAnimator animator) {
+        this.animator = animator;
+    }
+
+    public void setBaseColor(Color color) {
+        initialState.baseColor = color;
+        animationState.baseColor = color;
+    }
+
+    public void setOutlineColor(Color color) {
+        initialState.outlineColor = color;
+        animationState.outlineColor = color;
+    }
+
+    public void setTextColor(Color color) {
+        initialState.textColor = color;
+        animationState.textColor = color;
+    }
+
+    public void setExtraColor(Color color) {
+        initialState.extraColor = color;
+        animationState.extraColor = color;
+    }
+
+    public Color getBaseColor() {
+        return initialState.baseColor;
+    }
+
+    public Color getOutlineColor() {
+        return initialState.outlineColor;
+    }
+
+    public Color getTextColor() {
+        return initialState.textColor;
+    }
+
+    public Color getExtraColor() {
+        return initialState.extraColor;
+    }
+
+    public Gui getGui() {
+        return gui;
+    }
+
+    public void setGui(Gui gui) {
+        this.gui = gui;
     }
 }

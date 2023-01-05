@@ -1,9 +1,10 @@
 package dev.mv.engine.gui.components.animations;
 
+import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.render.shared.Color;
 import dev.mv.utils.async.PromiseNull;
 
-public class ElementAnimator implements Cloneable {
+public class ElementAnimator {
 
     private boolean shouldAnimate;
     private volatile int currentFrame = 0;
@@ -12,6 +13,11 @@ public class ElementAnimator implements Cloneable {
     private ElementAnimation animation;
     private Runnable onFinish;
     private boolean isWorking = false;
+    private Element target;
+
+    public ElementAnimator(Element target) {
+        this.target = target;
+    }
 
     public ElementAnimation getAnimation() {
         return animation;
@@ -46,8 +52,10 @@ public class ElementAnimator implements Cloneable {
     }
 
     public void animateBack(int milliseconds, int frameCount) {
+        target.getInitialState().copyValuesTo(state);
         shouldAnimateBack = true;
         shouldAnimate = false;
+
         new PromiseNull((res, rej) -> {
             while(currentFrame >= 0 && shouldAnimateBack) {
                 currentFrame--;

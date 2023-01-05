@@ -178,7 +178,6 @@ public class BitmapFont {
     }
 
     public int getMaxYOffset(int height) {
-        System.out.println((int) (maxYOff));
         return (int) (maxYOff * multiplier(height));
     }
 

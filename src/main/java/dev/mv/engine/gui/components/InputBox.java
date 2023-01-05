@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InputBox extends Element implements Toggle, Text, Clickable, Keyboard {
-    protected String displayText = "", actualText = "";
+    protected String displayText = "", actualText = "", placeholderText = "";
     protected int cursorOffset = 0;
     protected int textShift = 0;
     protected BitmapFont font;
@@ -131,8 +131,11 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
         if(!enabled) {
             draw.color(theme.getDisabledTextColor());
         }
-        draw.text(animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
-
+        if(displayText.isEmpty() && !selected) {
+            draw.text(animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height -  textDistance() * 2)), font, animationState.rotation, animationState.originX, animationState.originY);
+        } else {
+            draw.text(animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
+        }
         if(selected) {
             draw.rectangle(animationState.posX + textDistance() + font.getWidth(displayText.substring(0, cursorOffset), getHeight() - textDistance() * 2), animationState.posY + textDistance(), 2, getHeight() - textDistance() * 2, animationState.rotation, animationState.originX, animationState.originY);
         }
@@ -265,6 +268,14 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
         actualText = text;
     }
 
+    public void setPlaceholderText(String placeholderText) {
+        this.placeholderText = placeholderText;
+    }
+
+    public String getPlaceholderText() {
+        return placeholderText;
+    }
+
     @Override
     public String getText() {
         return actualText;
@@ -297,7 +308,6 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     protected void shiftText(int amount) {
         textShift += amount;
         displayText = actualText.substring(textShift, textShift + font.possibleAmountOfChars(actualText.substring(textShift), getWidth() - textDistance() * 2, getHeight() - textDistance() * 2));
-        System.out.println(getWidth() - textDistance() * 2);
     }
 
     private void push(String s) {

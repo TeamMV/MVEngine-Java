@@ -58,6 +58,7 @@ public class TextLine extends Element implements Text {
     public void setText(String text) {
         if(!textChangeListeners.isEmpty()) textChangeListeners.forEach(l -> l.onChange(this, this.text, text));
         this.text = text;
+        if(font == null) return;
         initialState.width = font.getWidth(text, getHeight());
     }
 
@@ -68,6 +69,8 @@ public class TextLine extends Element implements Text {
 
     public void setFont(BitmapFont font) {
         this.font = font;
+        if(font == null) return;
+        initialState.width = font.getWidth(text, getHeight());
     }
 
     @Override

@@ -11,7 +11,9 @@ import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.components.*;
 import dev.mv.engine.gui.components.animations.ElementAnimation;
+import dev.mv.engine.gui.components.layouts.ChoiceGroup;
 import dev.mv.engine.gui.components.layouts.HorizontalLayout;
+import dev.mv.engine.gui.components.layouts.UpdateSection;
 import dev.mv.engine.gui.components.layouts.VerticalLayout;
 import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.event.ProgressListener;
@@ -66,8 +68,8 @@ public class Main {
             .setRenderingApi(ApplicationConfig.RenderingAPI.OPENGL));
 
         WindowCreateInfo createInfo = new WindowCreateInfo();
-        createInfo.width = 1000;
-        createInfo.height = 800;
+        createInfo.width = 1200;
+        createInfo.height = 1000;
         createInfo.title = "MVEngine";
         createInfo.resizeable = true;
         createInfo.maxFPS = 60;
@@ -82,23 +84,26 @@ public class Main {
         text.setBottom(new Color(255, 255, 255, 255));
 
         Theme theme = new Theme();
-        theme.setBaseColor(new Color(47, 169, 235, 255));
-        theme.setOutlineColor(new Color(255, 255, 255, 255));
-        theme.setText_base(new Color(255, 255, 255, 255));
-        theme.setDisabledBaseColor(new Color(100, 100, 100, 255));
-        theme.setDisabledOutlineColor(new Color(70, 70, 70, 255));
-        theme.setDisabledTextColor(new Color(70, 70, 70, 255));
-        theme.setExtraColor(new Color(0, 255, 0, 255));
+        theme.setBaseColor(new Color(125, 122, 105, 255));
+        theme.setOutlineColor(new Color(163, 134, 2, 255));
+        theme.setText_base(new Color(59, 59, 57, 255));
+        theme.setDisabledBaseColor(new Color(82, 81, 81, 255));
+        theme.setDisabledOutlineColor(new Color(255, 217, 0, 255));
+        theme.setDisabledTextColor(new Color(59, 59, 57, 255));
+        theme.setExtraColor(new Color(255, 217, 0, 255));
+        theme.setShouldChoiceUseTextColor(true);
+        theme.setShouldCheckboxUseTextColor(true);
+        theme.setShouldPasswordInputBoxButtonUseTextColor(true);
         theme.setGuiAssetPath("/gui/assets/guiassets.png");
         theme.setGuiAssetsIconWidth(32);
         theme.setGuiAssetsIconHeight(32);
         theme.setHasOutline(true);
-        theme.setEdgeStyle(Theme.EdgeStyle.ROUND);
+        theme.setEdgeStyle(Theme.EdgeStyle.TRIANGLE);
         theme.setEdgeRadius(10);
-        theme.setOutlineThickness(1);
+        theme.setOutlineThickness(3);
         theme.setAnimationFrames(10);
         theme.setAnimationInTime(50);
-        theme.setAnimationOutTime(100);
+        theme.setAnimationOutTime(50);
         theme.setButtonAnimator(new ElementAnimation() {
             @Override
             public AnimationState transform(int frame, int totalFrames, AnimationState lastState) {
@@ -127,22 +132,39 @@ public class Main {
             }
         });
 
+        Space space = new Space(window, 0, 0, 0, 10);
+
         TextLine line = new TextLine(window, 100, 100, 100);
         ImageButton button1 = new ImageButton(window, 100, 300, 120, 60);
         Button button2 = new Button(window, 100, 150, 120, 60);
         Checkbox checkbox = new Checkbox(window, 100, 225, 60, 60);
-        NumericInputBox inputBox = new NumericInputBox(window, 100, 25, 200, 60);
-        PasswordInputBox passwordInputBox = new PasswordInputBox(window, 100, 0, 200, 60);
+        InputBox inputBox = new InputBox(window, 100, 25, 400, 60);
+        Separator separator = new Separator(window, 0, 0, 400, 1);
+        inputBox.setPlaceholderText("E-Mail address");
+        PasswordInputBox passwordInputBox = new PasswordInputBox(window, 100, 0, 400, 60);
+        passwordInputBox.setPlaceholderText("Password");
         HorizontalLayout horizontalLayout = new HorizontalLayout(window, -1, -1);
 
         horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
         horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
-        horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
+        UpdateSection updateSection = new UpdateSection(window, null);
+        updateSection.enable();
+        updateSection.addElement(new Checkbox(window, 100, 225, 60, 60));
+        horizontalLayout.addElement(updateSection);
         horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
         horizontalLayout.alignContent(HorizontalLayout.Align.CENTER);
         horizontalLayout.setSpacing(5);
+        horizontalLayout.setPadding(5, 5, 5, 5);
+        horizontalLayout.showFrame();
 
         ProgressBar progressBar = new ProgressBar(window, 100, 100, 200, 60);
+        ChoiceGroup choiceGroup = new ChoiceGroup(window, null);
+        Choice choice1 = new Choice(window, null, 60, 60);
+        Choice choice2 = new Choice(window, null, 60, 60);
+        Choice choice3 = new Choice(window, null, 60, 60);
+        choiceGroup.addChoice(choice1);
+        choiceGroup.addChoice(choice2);
+        choiceGroup.addChoice(choice3);
 
         VerticalLayout layout = new VerticalLayout(window, 200, 100);
 
@@ -178,12 +200,10 @@ public class Main {
             theme.setFont(font);
 
             line.setHeight(64);
-            line.setFont(font);
             line.setText("Hello World!");
 
             button1.setTexture(texture);
 
-            button2.setFont(font);
             button2.setText("Click me!");
             button2.attachListener(new ClickListener() {
                 @Override
@@ -211,11 +231,9 @@ public class Main {
                 }
             });
 
-            inputBox.setLimit(15);
-            inputBox.setFont(font);
+            inputBox.setLimit(32);
 
             passwordInputBox.setLimit(32);
-            passwordInputBox.setFont(font);
 
             progressBar.setTotalValue(100);
             progressBar.setCurrentValue(10);
@@ -238,18 +256,38 @@ public class Main {
                 }
             });
 
+            checkbox.setText("Toggle");
+
+            choice1.setText("Choice1");
+            choice2.setText("Choice2");
+            choice3.setText("Choice3");
+
             layout.addElement(button1);
             layout.addElement(checkbox);
             layout.addElement(button2);
+            layout.addElement(space);
+            layout.addElement(separator);
             layout.addElement(inputBox);
             layout.addElement(passwordInputBox);
+            layout.addElement(separator);
+            layout.addElement(space);
             layout.addElement(horizontalLayout);
             layout.addElement(progressBar);
-            layout.alignContent(VerticalLayout.Align.CENTER);
+            layout.addElement(choiceGroup);
+            layout.alignContent(VerticalLayout.Align.LEFT);
             layout.setSpacing(5);
+            layout.setPadding(10, 10, 10, 10);
+            layout.showFrame();
 
-            Gui gui = new Gui(renderer2D, "test");
+            Gui gui = new Gui(renderer2D, window, "test");
             gui.addElement(layout);
+
+            button1.setId("myButton");
+            button1.addTag("tag1");
+            button1.addTag("tag2");
+            button1.addTag("tag3");
+            System.out.println(button1.getGui().toString());
+            button2.getGui().getRoot().enable();
 
             try {
                 gui.applyTheme(theme);

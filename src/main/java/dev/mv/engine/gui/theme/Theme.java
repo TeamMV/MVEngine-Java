@@ -53,6 +53,9 @@ public class Theme {
     private Color disabledTextColor;
     private Color diabledExtraColor;
     private Color indicatorColor;
+    private boolean shouldCheckboxUseTextColor = false;
+    private boolean shouldChoiceUseTextColor = false;
+    private boolean shouldPasswordInputBoxButtonUseTextColor = false;
 
     public Color getBaseColor() {
         return baseColor;
@@ -148,6 +151,30 @@ public class Theme {
 
     public void setDiabledExtraColor(Color diabledExtraColor) {
         this.diabledExtraColor = diabledExtraColor;
+    }
+
+    public boolean isShouldCheckboxUseTextColor() {
+        return shouldCheckboxUseTextColor;
+    }
+
+    public void setShouldCheckboxUseTextColor(boolean shouldCheckboxUseTextColor) {
+        this.shouldCheckboxUseTextColor = shouldCheckboxUseTextColor;
+    }
+
+    public boolean isShouldChoiceUseTextColor() {
+        return shouldChoiceUseTextColor;
+    }
+
+    public void setShouldChoiceUseTextColor(boolean shouldChoiceUseTextColor) {
+        this.shouldChoiceUseTextColor = shouldChoiceUseTextColor;
+    }
+
+    public boolean isShouldPasswordInputBoxButtonUseTextColor() {
+        return shouldPasswordInputBoxButtonUseTextColor;
+    }
+
+    public void setShouldPasswordInputBoxButtonUseTextColor(boolean shouldPasswordInputBoxButtonUseTextColor) {
+        this.shouldPasswordInputBoxButtonUseTextColor = shouldPasswordInputBoxButtonUseTextColor;
     }
 
     //edges

@@ -1,5 +1,6 @@
 package dev.mv.engine.gui.components.layouts;
 
+import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.input.Clickable;
@@ -9,12 +10,11 @@ import dev.mv.engine.gui.input.Scrollable;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.Window;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public abstract class AbstractLayout extends Element implements Clickable, Draggable, Keyboard, Scrollable{
+public abstract class AbstractLayout extends Element implements Clickable, Draggable, Keyboard, Scrollable, Iterable<Element>{
     protected List<Element> elements;
     protected int maxWidth, maxHeight;
     protected int spacing = 0;
@@ -58,6 +58,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         elements.add(e);
         measureMaxSize();
         e.setParent(this);
+        e.setGui(gui);
     }
 
     public void addElements(Element[] e) {
@@ -65,6 +66,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         measureMaxSize();
         for(Element element : e) {
             element.setParent(this);
+            element.setGui(gui);
         }
     }
 
@@ -72,6 +74,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         elements.remove(e);
         measureMaxSize();
         e.setParent(null);
+        e.setGui(null);
     }
 
     public void removeElements(Element[] e) {
@@ -79,6 +82,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         measureMaxSize();
         for(Element element : e) {
             element.setParent(null);
+            element.setGui(null);
         }
     }
 
@@ -87,6 +91,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
             if(predicate.test(element)) {
                 elements.remove(element);
                 element.setParent(null);
+                element.setGui(null);
             }
         }
         measureMaxSize();
@@ -94,6 +99,28 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     public Element[] elements() {
         return elements.toArray(new Element[0]);
+    }
+
+    @Override
+    public void setGui(Gui gui) {
+        for(Element element : elements) {
+            element.setGui(gui);
+        }
+    }
+
+    public void addAllChildElementsDeep(List<Element> list) {
+        list.addAll(List.of(elements()));
+        for(Element element : elements) {
+            if(element instanceof AbstractLayout abstractLayout) {
+                abstractLayout.addAllChildElementsDeep(list);
+            }
+        }
+    }
+
+    public Element[] allElementsDeep() {
+        List<Element> allElements = new ArrayList<>();
+        addAllChildElementsDeep(allElements);
+        return allElements.toArray(new Element[0]);
     }
 
     @Override
@@ -188,8 +215,79 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void setTheme(Theme theme) {
+        this.theme = theme;
         for (Element element : elements) {
             element.setTheme(theme);
         }
+        measureMaxSize();
+    }
+
+    public class ElementIterator implements Iterator<Element> {
+        private boolean hasNext = true;
+        private int index = 0;
+        private List<Element> collection;
+
+        public ElementIterator() {
+            collection = List.of(elements());
+        }
+
+        @Override
+        public boolean hasNext() {
+            return hasNext;
+        }
+
+        @Override
+        public Element next() {
+            if(index + 2 >= collection.size()) {
+                hasNext = false;
+            }
+            return collection.get(index++);
+        }
+
+        @Override
+        public void remove() {
+            collection.remove(index - 1);
+        }
+
+        @Override
+        public void forEachRemaining(Consumer<? super Element> action) {
+            Iterator.super.forEachRemaining(action);
+        }
+    }
+
+    @Override
+    public Iterator<Element> iterator() {
+        return new ElementIterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super Element> action) {
+        Iterable.super.forEach(action);
+    }
+
+    @Override
+    public Spliterator<Element> spliterator() {
+        return Iterable.super.spliterator();
+    }
+
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
+    public String toString(int indent) {
+        StringBuilder result = new StringBuilder();
+        result.append("| ".repeat(indent)).append(this.getClass().getSimpleName()).append(": ").append(getId()).append(" ").append(getTags() != null ? Arrays.toString(getTags()) : "[]").append(System.lineSeparator());
+        indent += 1;
+
+        for(Element element : elements()) {
+            if(element instanceof AbstractLayout layout) {
+                result.append(layout.toString(indent));
+            } else {
+                result.append("| ".repeat(indent)).append(element.getClass().getSimpleName()).append(": ").append(element.getId()).append(" ").append(element.getTags() != null ? Arrays.toString(element.getTags()) : "[]").append(System.lineSeparator());
+            }
+        }
+
+        return result.toString();
     }
 }

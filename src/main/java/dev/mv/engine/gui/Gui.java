@@ -2,29 +2,36 @@ package dev.mv.engine.gui;
 
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.assets.GuiAssets;
-import dev.mv.engine.gui.input.*;
+import dev.mv.engine.gui.components.layouts.AbstractLayout;
+import dev.mv.engine.gui.components.layouts.UpdateSection;
+import dev.mv.engine.gui.input.Clickable;
+import dev.mv.engine.gui.input.Draggable;
+import dev.mv.engine.gui.input.Keyboard;
+import dev.mv.engine.gui.input.Scrollable;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
+import dev.mv.engine.render.shared.Window;
 import lombok.NonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class Gui {
     private DrawContext2D drawContext;
     private Theme theme = null;
     private String name;
-    private List<Element> elements;
+    private UpdateSection root;
 
-    public Gui(@NonNull DrawContext2D drawContext, String name) {
+    public Gui(@NonNull DrawContext2D drawContext, Window window, String name) {
         this.drawContext = drawContext;
-        this.theme = theme;
         this.name = name;
-        elements = new ArrayList<>();
+        root = new UpdateSection(window, null);
+        root.setGui(this);
     }
 
     public String getName() {
@@ -32,33 +39,75 @@ public class Gui {
     }
 
     public void addElement(Element e) {
-        elements.add(e);
+        root.addElement(e);
+        e.setGui(this);
     }
 
     public void addElements(Element[] e) {
-        elements.addAll(Arrays.asList(e));
+        root.addElements(e);
+        for(Element element : e) {
+            element.setGui(this);
+        }
     }
 
     public void removeElement(Element e) {
-        elements.remove(e);
+        root.removeElement(e);
+        e.setGui(null);
     }
 
     public void removeElements(Element[] e) {
-        elements.removeAll(Arrays.asList(e));
+        root.removeElements(e);
+        for(Element element : e) {
+            element.setGui(null);
+        }
     }
 
     public void removeElements(Predicate<? super Element> predicate) {
-        elements.removeIf(predicate);
+        root.removeElements(predicate);
     }
 
     public Element[] elements() {
-        return elements.toArray(new Element[0]);
+        return root.elements();
+    }
+
+    public void deepLoop(Consumer<Element> elementConsumer) {
+        List<Element> allElements = new ArrayList<>(List.of(elements()));
+        root.addAllChildElementsDeep(allElements);
+        allElements.forEach(elementConsumer);
+    }
+
+    public Element[] deepLoop() {
+        List<Element> allElements = new ArrayList<>(List.of(elements()));
+        root.addAllChildElementsDeep(allElements);
+        return allElements.toArray(new Element[0]);
+    }
+
+    public void disableAllUpdates() {
+        root.disable();
+        for(Element element : deepLoop()) {
+            if(element instanceof UpdateSection updateSection) {
+                updateSection.disable();
+            }
+        }
+    }
+
+    public void enableAllUpdates() {
+        root.enable();
+        for(Element element : deepLoop()) {
+            if(element instanceof UpdateSection updateSection) {
+                updateSection.enable();
+            }
+        }
+    }
+
+    public UpdateSection getRoot() {
+        return root;
     }
 
     public void applyTheme(Theme theme) throws IOException {
         GuiAssets.init(theme);
         this.theme = theme;
-        for(Element element : elements) {
+        for(Element element : root) {
             element.setTheme(theme);
         }
     }
@@ -66,13 +115,13 @@ public class Gui {
     //----- draw -----
 
     void draw() {
-        for(Element element : elements) {
+        for(Element element : root) {
             element.draw(drawContext);
         }
     }
 
     public void drawSpecific(Predicate<? super Element> predicate) {
-        for(Element e : elements) {
+        for(Element e : root) {
             if(predicate.test(e)) {
                 e.draw(drawContext);
             }
@@ -118,82 +167,59 @@ public class Gui {
     }
 
     private void click(int x, int y, int btn) {
-        for(Element e : elements) {
-            if(e instanceof Clickable clickable) {
-                clickable.click(x, y, btn);
-            }
-        }
+        root.click(x, y, btn);
     }
 
     private void release(int x, int y, int btn) {
-        for(Element e : elements) {
-            if(e instanceof Clickable clickable) {
-                clickable.clickRelease(x, y, btn);
-            }
-        }
+        root.clickRelease(x, y, btn);
     }
 
     private void dragBegin(int x, int y, int btn) {
-        for(Element e : elements) {
-            if(e instanceof Draggable draggable) {
-                draggable.dragBegin(x, y, btn);
-            }
-        }
+        root.dragBegin(x, y, btn);
     }
 
     private void drag(int x, int y, int btn) {
-        for(Element e : elements) {
-            if(e instanceof Draggable draggable) {
-                draggable.drag(x, y, btn);
-            }
-        }
+        root.drag(x, y, btn);
     }
 
     private void dragEnd(int x, int y, int btn) {
-        for(Element e : elements) {
-            if(e instanceof Draggable draggable) {
-                draggable.dragLeave(x, y, btn);
-            }
-        }
+        root.dragBegin(x, y, btn);
     }
 
     private void keyPress(int key) {
-        for(Element e : elements) {
-            if(e instanceof Keyboard keyboard) {
-                keyboard.keyPress(key);
-            }
-        }
+        root.keyPress(key);
     }
 
     private void keyType(int key) {
-        for(Element e : elements) {
-            if(e instanceof Keyboard keyboard) {
-                keyboard.keyType(key);
-            }
-        }
+        root.keyType(key);
     }
 
     private void keyRelease(int key) {
-        for(Element e : elements) {
-            if(e instanceof Keyboard keyboard) {
-                keyboard.keyRelease(key);
-            }
-        }
+        root.keyRelease(key);
     }
 
     private void scrollX(int amt) {
-        for(Element e : elements) {
-            if(e instanceof Scrollable scrollable) {
-                scrollable.scrollX(amt);
-            }
-        }
+        root.scrollX(amt);
     }
 
     private void scrollY(int amt) {
-        for(Element e : elements) {
-            if(e instanceof Scrollable scrollable) {
-                scrollable.scrollY(amt);
+        root.scrollY(amt);
+    }
+
+    @Override
+    public String toString() {
+        int indent = 0;
+        StringBuilder result = new StringBuilder("Root").append(System.lineSeparator());
+        indent += 1;
+
+        for(Element element : elements()) {
+            if(element instanceof AbstractLayout layout) {
+                result.append(layout.toString(indent));
+            } else {
+                result.append("| ".repeat(indent)).append(element.getClass().getSimpleName()).append(": ").append(element.getId()).append(" ").append(element.getTags() != null ? Arrays.toString(element.getTags()) : "[]").append(System.lineSeparator());
             }
         }
+
+        return result.toString();
     }
 }

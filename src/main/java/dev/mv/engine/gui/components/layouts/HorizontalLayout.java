@@ -1,14 +1,34 @@
 package dev.mv.engine.gui.components.layouts;
 
 import dev.mv.engine.gui.components.Element;
+import dev.mv.engine.gui.components.extras.IgnoreDraw;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
-public class HorizontalLayout extends AbstractLayout{
+public class HorizontalLayout extends FramedLayout{
     public enum Align{
         TOP,
         CENTER,
         BOTTOM
+    }
+
+    @Override
+    protected int getElementWidth() {
+        int res = 0;
+        for(Element e : elements) {
+            if(e instanceof IgnoreDraw ignoreDraw) {
+                for(Element element : ignoreDraw.toRender()) {
+                    res += element.getWidth() + spacing;
+                }
+                continue;
+            }
+            res += e.getWidth() + spacing;
+        } return res;
+    }
+
+    @Override
+    protected int getElementHeight() {
+        return maxHeight;
     }
 
     private HorizontalLayout.Align currentAlign = Align.TOP;
@@ -31,11 +51,23 @@ public class HorizontalLayout extends AbstractLayout{
 
     @Override
     public void draw(DrawContext2D draw) {
-        int xStart = getX();
-        int yStart = getY();
+        drawFrame(draw);
+
+        int xStart = getElementX();
+        int yStart = getElementY();
 
         if (currentAlign == HorizontalLayout.Align.TOP) {
             for (Element e : elements) {
+                if(e instanceof IgnoreDraw ignoreDraw) {
+                    for(Element element : ignoreDraw.toRender()) {
+                        element.setX(xStart);
+                        element.setY(yStart + maxHeight - element.getHeight());
+                        element.draw(draw);
+                        xStart += element.getWidth();
+                        xStart += spacing;
+                    }
+                    continue;
+                }
                 e.setX(xStart);
                 e.setY(yStart + maxHeight - e.getHeight());
                 e.draw(draw);
@@ -44,6 +76,16 @@ public class HorizontalLayout extends AbstractLayout{
             }
         } else if (currentAlign == HorizontalLayout.Align.CENTER) {
             for (Element e : elements) {
+                if(e instanceof IgnoreDraw ignoreDraw) {
+                    for(Element element : ignoreDraw.toRender()) {
+                        element.setX(xStart);
+                        element.setY(yStart + maxHeight / 2 - element.getHeight() / 2);
+                        element.draw(draw);
+                        xStart += element.getWidth();
+                        xStart += spacing;
+                    }
+                    continue;
+                }
                 e.setX(xStart);
                 e.setY(yStart + maxHeight / 2 - e.getHeight() / 2);
                 e.draw(draw);
@@ -52,6 +94,16 @@ public class HorizontalLayout extends AbstractLayout{
             }
         } else if (currentAlign == HorizontalLayout.Align.BOTTOM) {
             for (Element e : elements) {
+                if(e instanceof IgnoreDraw ignoreDraw) {
+                    for(Element element : ignoreDraw.toRender()) {
+                        element.setX(xStart);
+                        element.setY(yStart);
+                        element.draw(draw);
+                        xStart += element.getWidth();
+                        xStart += spacing;
+                    }
+                    continue;
+                }
                 e.setX(xStart);
                 e.setY(yStart);
                 e.draw(draw);
@@ -59,18 +111,5 @@ public class HorizontalLayout extends AbstractLayout{
                 xStart += spacing;
             }
         }
-    }
-
-    @Override
-    public int getWidth() {
-        int res = 0;
-        for(Element e : elements) {
-            res += e.getWidth() + spacing;
-        } return res;
-    }
-
-    @Override
-    public int getHeight() {
-        return maxHeight;
     }
 }
