@@ -66,14 +66,11 @@ public class GuiRegistry implements Iterable<Gui> {
 
         @Override
         public boolean hasNext() {
-            return hasNext;
+            return index != collection.size();
         }
 
         @Override
         public Gui next() {
-            if(index + 2 >= collection.size()) {
-                hasNext = false;
-            }
             return collection.get(index++);
         }
 

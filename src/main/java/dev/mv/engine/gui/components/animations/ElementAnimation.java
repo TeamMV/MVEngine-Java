@@ -9,7 +9,6 @@ public interface ElementAnimation {
         public int originX, originY;
         public int posX, posY;
         public Color baseColor, outlineColor, textColor, extraColor;
-        public String text;
 
         public void copyValuesTo(AnimationState dest) {
             dest.width = width;
@@ -23,7 +22,6 @@ public interface ElementAnimation {
             if(dest.outlineColor != null) outlineColor.copyValuesTo(dest.outlineColor);
             if(dest.textColor != null) textColor.copyValuesTo(dest.textColor);
             if(dest.extraColor != null) extraColor.copyValuesTo(dest.extraColor);
-            dest.text = text;
         }
     }
     AnimationState transform(int frame, int totalFrames, AnimationState lastState);

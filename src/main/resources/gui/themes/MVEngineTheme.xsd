@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="theme" type="themeType"/>
+  <xs:complexType name="enabledType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="base"/>
+      <xs:element type="xs:string" name="outline"/>
+      <xs:element type="xs:string" name="text"/>
+      <xs:element type="xs:string" name="extra"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="disabledType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="base"/>
+      <xs:element type="xs:string" name="outline"/>
+      <xs:element type="xs:string" name="text"/>
+      <xs:element type="xs:string" name="extra"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="shouldUseTextColorType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="checkbox"/>
+      <xs:element type="xs:string" name="choice"/>
+      <xs:element type="xs:string" name="inputBox"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="colorsType">
+    <xs:sequence>
+      <xs:element type="enabledType" name="enabled"/>
+      <xs:element type="disabledType" name="disabled"/>
+      <xs:element type="shouldUseTextColorType" name="shouldUseTextColor"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="edgesType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="style"/>
+      <xs:element type="xs:string" name="radius"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="outlineType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="thickness"/>
+      <xs:element type="xs:string" name="use"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="iconsType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="width"/>
+      <xs:element type="xs:string" name="height"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="guiAssetsType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="path"/>
+      <xs:element type="iconsType" name="icons"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="generalType">
+    <xs:sequence>
+      <xs:element type="edgesType" name="edges"/>
+      <xs:element type="outlineType" name="outline"/>
+      <xs:element type="guiAssetsType" name="guiAssets"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="timesType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="in"/>
+      <xs:element type="xs:string" name="out"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="colorType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+        <xs:attribute type="xs:string" name="value" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="substractType">
+    <xs:sequence>
+      <xs:element type="colorType" name="color" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="propertyType" name="property" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="value" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="propertyType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="addType">
+    <xs:sequence>
+      <xs:element type="propertyType" name="property" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="colorType" name="color" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="value" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="inType">
+    <xs:sequence>
+      <xs:element type="substractType" name="substract" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="addType" name="add" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="outType">
+    <xs:sequence>
+      <xs:element type="addType" name="add" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="substractType" name="substract" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="animationType">
+    <xs:sequence>
+      <xs:element type="inType" name="in"/>
+      <xs:element type="outType" name="out"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="animationsType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="frameCount"/>
+      <xs:element type="timesType" name="times"/>
+      <xs:element type="animationType" name="animation"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="themeType">
+    <xs:sequence>
+      <xs:element type="colorsType" name="colors"/>
+      <xs:element type="generalType" name="general"/>
+      <xs:element type="animationsType" name="animations"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

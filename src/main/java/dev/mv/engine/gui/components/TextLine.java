@@ -11,7 +11,7 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
 
 public class TextLine extends Element implements Text {
-    private String text;
+    private String text = "";
     private BitmapFont font;
 
     public TextLine(Window window, Element parent, int height) {
@@ -36,15 +36,9 @@ public class TextLine extends Element implements Text {
 
     @Override
     public void draw(DrawContext2D draw) {
-        font = theme.getFont();
+        draw.color(animationState.textColor);
 
-        if(theme.getText_base() != null) {
-            draw.color(theme.getText_base());
-        } else if(theme.getText_gradient() != null) {
-            draw.color(theme.getText_gradient());
-        }
-        draw.font(theme.getFont());
-        draw.text(initialState.posX, initialState.posY, initialState.height, text);
+        draw.text(initialState.posX, initialState.posY, initialState.height, text, font, initialState.rotation, initialState.originX, initialState.originY);
     }
 
     @Override
@@ -67,6 +61,7 @@ public class TextLine extends Element implements Text {
         return null;
     }
 
+    @Override
     public void setFont(BitmapFont font) {
         this.font = font;
         if(font == null) return;
@@ -74,7 +69,7 @@ public class TextLine extends Element implements Text {
     }
 
     @Override
-    public BitmapFont getFont(BitmapFont font) {
+    public BitmapFont getFont() {
         return font;
     }
 }

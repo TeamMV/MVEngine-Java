@@ -38,15 +38,13 @@ public class Button extends Element implements Text, Toggle, Clickable {
     }
 
     @Override
-    public BitmapFont getFont(BitmapFont font) {
+    public BitmapFont getFont() {
         return null;
     }
 
     @Override
     public void setText(String text) {
         this.text = text;
-        initialState.text = text;
-        animationState.text = text;
         if(font == null) return;
         if(initialState.width < font.getWidth(text, initialState.height - textDistance()) + textDistance()) {
             setWidth(font.getWidth(text, initialState.height - textDistance()) + textDistance());
@@ -123,7 +121,7 @@ public class Button extends Element implements Text, Toggle, Clickable {
         if(!enabled) {
             draw.color(theme.getDisabledTextColor());
         }
-        draw.text(animationState.posX + animationState.width / 2 - font.getWidth(text, animationState.height - textDistance() * 2) / 2, animationState.posY + textDistance(), animationState.height - textDistance() * 2, animationState.text, font, animationState.rotation, animationState.originX, animationState.originY);
+        draw.text(animationState.posX + animationState.width / 2 - font.getWidth(text, animationState.height - textDistance() * 2) / 2, animationState.posY + textDistance(), animationState.height - textDistance() * 2, text, font, animationState.rotation, animationState.originX, animationState.originY);
     }
 
     private int textDistance() {

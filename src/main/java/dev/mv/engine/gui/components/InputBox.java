@@ -259,7 +259,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     }
 
     @Override
-    public BitmapFont getFont(BitmapFont font) {
+    public BitmapFont getFont() {
         return font;
     }
 

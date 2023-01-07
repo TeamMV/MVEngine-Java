@@ -11,6 +11,8 @@ import java.io.IOException;
 public class GuiAssets {
     public static TextureRegion TICK;
     public static TextureRegion DOT;
+    public static TextureRegion ARROW_UP;
+    public static TextureRegion ARROW_DOWN;
     public static TextureRegion EYE_OPEN;
     public static TextureRegion EYE_CLOSED;
 
@@ -18,6 +20,8 @@ public class GuiAssets {
         Texture guiAssetSheet = RenderBuilder.newTexture(theme.getGuiAssetPath());
         TICK = guiAssetSheet.cutRegion(theme.getGuiAssetsIconWidth(), 0, theme.getGuiAssetsIconWidth(), theme.getGuiAssetsIconHeight());
         DOT = guiAssetSheet.cutRegion(0, theme.getGuiAssetsIconHeight(), theme.getGuiAssetsIconWidth(), theme.getGuiAssetsIconHeight());
+        ARROW_UP = guiAssetSheet.cutRegion(0, theme.getGuiAssetsIconHeight() * 3, theme.getGuiAssetsIconWidth(), theme.getGuiAssetsIconHeight());
+        ARROW_DOWN = guiAssetSheet.cutRegion(theme.getGuiAssetsIconWidth(), theme.getGuiAssetsIconHeight() * 3, theme.getGuiAssetsIconWidth(), theme.getGuiAssetsIconHeight());
         EYE_OPEN = guiAssetSheet.cutRegion(0, theme.getGuiAssetsIconHeight() * 2, theme.getGuiAssetsIconWidth(), theme.getGuiAssetsIconHeight());
         EYE_CLOSED = guiAssetSheet.cutRegion(theme.getGuiAssetsIconWidth(), theme.getGuiAssetsIconHeight() * 2, theme.getGuiAssetsIconWidth(), theme.getGuiAssetsIconHeight());
     }

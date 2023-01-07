@@ -190,9 +190,12 @@ public class Theme {
     }
 
     public enum EdgeStyle{
-        ROUND,
-        TRIANGLE,
-        SQUARE
+        ROUND("round"),
+        TRIANGLE("triangle"),
+        SQUARE("square");
+
+        EdgeStyle(String s) {
+        }
     }
 
     //--round and triangle
@@ -228,7 +231,7 @@ public class Theme {
         return buttonAnimator;
     }
 
-    public void setButtonAnimator(ElementAnimation buttonAnimator) {
+    public void setAnimator(ElementAnimation buttonAnimator) {
         this.buttonAnimator = buttonAnimator;
     }
 

@@ -10,6 +10,8 @@ import dev.mv.engine.gui.input.Scrollable;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
+import java.util.Arrays;
+
 public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw {
     private boolean enabled = true;
 

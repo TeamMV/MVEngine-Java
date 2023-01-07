@@ -229,7 +229,7 @@ public class Checkbox extends ImageButton implements Text {
     }
 
     @Override
-    public BitmapFont getFont(BitmapFont font) {
+    public BitmapFont getFont() {
         return font;
     }
 

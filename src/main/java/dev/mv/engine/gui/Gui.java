@@ -2,12 +2,10 @@ package dev.mv.engine.gui;
 
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.assets.GuiAssets;
+import dev.mv.engine.gui.components.extras.IgnoreDraw;
 import dev.mv.engine.gui.components.layouts.AbstractLayout;
+import dev.mv.engine.gui.components.layouts.LayerSection;
 import dev.mv.engine.gui.components.layouts.UpdateSection;
-import dev.mv.engine.gui.input.Clickable;
-import dev.mv.engine.gui.input.Draggable;
-import dev.mv.engine.gui.input.Keyboard;
-import dev.mv.engine.gui.input.Scrollable;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
@@ -26,16 +24,34 @@ public class Gui {
     private Theme theme = null;
     private String name;
     private UpdateSection root;
+    private List<List<LayerSection>> layers;
 
     public Gui(@NonNull DrawContext2D drawContext, Window window, String name) {
         this.drawContext = drawContext;
         this.name = name;
         root = new UpdateSection(window, null);
         root.setGui(this);
+        root.setId("root");
+        layers = new ArrayList<>(10);
+        for(int i = 0; i < 10; i++) {
+            layers.add(new ArrayList<>());
+        }
     }
 
     public String getName() {
         return name;
+    }
+
+    public List<List<LayerSection>> getLayers() {
+        return layers;
+    }
+
+    private void drawLayers(DrawContext2D draw) {
+        for(List<LayerSection> layer : layers) {
+            for(LayerSection section : layer) {
+                section.draw(drawContext);
+            }
+        }
     }
 
     public void addElement(Element e) {
@@ -70,13 +86,13 @@ public class Gui {
         return root.elements();
     }
 
-    public void deepLoop(Consumer<Element> elementConsumer) {
+    public void elementsDeep(Consumer<Element> elementConsumer) {
         List<Element> allElements = new ArrayList<>(List.of(elements()));
         root.addAllChildElementsDeep(allElements);
         allElements.forEach(elementConsumer);
     }
 
-    public Element[] deepLoop() {
+    public Element[] elementsDeep() {
         List<Element> allElements = new ArrayList<>(List.of(elements()));
         root.addAllChildElementsDeep(allElements);
         return allElements.toArray(new Element[0]);
@@ -84,7 +100,7 @@ public class Gui {
 
     public void disableAllUpdates() {
         root.disable();
-        for(Element element : deepLoop()) {
+        for(Element element : elementsDeep()) {
             if(element instanceof UpdateSection updateSection) {
                 updateSection.disable();
             }
@@ -93,7 +109,7 @@ public class Gui {
 
     public void enableAllUpdates() {
         root.enable();
-        for(Element element : deepLoop()) {
+        for(Element element : elementsDeep()) {
             if(element instanceof UpdateSection updateSection) {
                 updateSection.enable();
             }
@@ -116,16 +132,19 @@ public class Gui {
 
     void draw() {
         for(Element element : root) {
+            if(element instanceof IgnoreDraw ignoreDraw) {
+                if(ignoreDraw instanceof LayerSection layerSection) {
+                    getLayers().get(layerSection.getLayerToRenderOn()).add(layerSection);
+                    continue;
+                }
+                for(Element e : ignoreDraw.toRender()) {
+                    e.draw(drawContext);
+                }
+                continue;
+            }
             element.draw(drawContext);
         }
-    }
-
-    public void drawSpecific(Predicate<? super Element> predicate) {
-        for(Element e : root) {
-            if(predicate.test(e)) {
-                e.draw(drawContext);
-            }
-        }
+        drawLayers(drawContext);
     }
 
     //----- event calls -----

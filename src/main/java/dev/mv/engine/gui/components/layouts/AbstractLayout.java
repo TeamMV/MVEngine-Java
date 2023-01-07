@@ -9,6 +9,7 @@ import dev.mv.engine.gui.input.Keyboard;
 import dev.mv.engine.gui.input.Scrollable;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.Window;
+import dev.mv.utils.Utils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -103,14 +104,15 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void setGui(Gui gui) {
-        for(Element element : elements) {
+        this.gui = gui;
+        for(Element element : this) {
             element.setGui(gui);
         }
     }
 
     public void addAllChildElementsDeep(List<Element> list) {
         list.addAll(List.of(elements()));
-        for(Element element : elements) {
+        for(Element element : this) {
             if(element instanceof AbstractLayout abstractLayout) {
                 abstractLayout.addAllChildElementsDeep(list);
             }
@@ -125,7 +127,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void click(int x, int y, int btn) {
-        for(Element element : elements) {
+        for(Element element : this) {
             if(element instanceof Clickable clickable) {
                 clickable.click(x, y, btn);
             }
@@ -134,7 +136,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void clickRelease(int x, int y, int btn) {
-        for(Element element : elements) {
+        for(Element element : this) {
             if(element instanceof Clickable clickable) {
                 clickable.clickRelease(x, y, btn);
             }
@@ -143,7 +145,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void dragBegin(int x, int y, int btn) {
-        for(Element element : elements) {
+        for(Element element : this) {
             if(element instanceof Draggable draggable) {
                 draggable.dragBegin(x, y, btn);
             }
@@ -152,7 +154,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void drag(int x, int y, int btn) {
-        for(Element element : elements) {
+        for(Element element : this) {
             if(element instanceof Draggable draggable) {
                 draggable.drag(x, y, btn);
             }
@@ -161,7 +163,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void dragLeave(int x, int y, int btn) {
-        for(Element element : elements) {
+        for(Element element : this) {
             if(element instanceof Draggable draggable) {
                 draggable.dragLeave(x, y, btn);
             }
@@ -170,7 +172,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void keyPress(int key) {
-        for(Element element : elements) {
+        for(Element element : this) {
             if(element instanceof Keyboard keyboard) {
                 keyboard.keyPress(key);
             }
@@ -179,7 +181,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void keyType(int key) {
-        for(Element element : elements) {
+        for(Element element : this) {
             if(element instanceof Keyboard keyboard) {
                 keyboard.keyType(key);
             }
@@ -188,7 +190,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void keyRelease(int key) {
-        for(Element element : elements) {
+        for(Element element : this) {
             if(element instanceof Keyboard keyboard) {
                 keyboard.keyRelease(key);
             }
@@ -197,7 +199,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void scrollX(int amount) {
-        for(Element element : elements) {
+        for(Element element : this) {
             if(element instanceof Scrollable scrollable) {
                 scrollable.scrollX(amount);
             }
@@ -206,7 +208,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void scrollY(int amount) {
-        for(Element element : elements) {
+        for(Element element : this) {
             if(element instanceof Scrollable scrollable) {
                 scrollable.scrollY(amount);
             }
@@ -216,7 +218,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
     @Override
     public void setTheme(Theme theme) {
         this.theme = theme;
-        for (Element element : elements) {
+        for (Element element : this) {
             element.setTheme(theme);
         }
         measureMaxSize();
@@ -228,19 +230,16 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         private List<Element> collection;
 
         public ElementIterator() {
-            collection = List.of(elements());
+            collection = List.copyOf(elements);
         }
 
         @Override
         public boolean hasNext() {
-            return hasNext;
+            return index != collection.size();
         }
 
         @Override
         public Element next() {
-            if(index + 2 >= collection.size()) {
-                hasNext = false;
-            }
             return collection.get(index++);
         }
 
@@ -289,5 +288,22 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         }
 
         return result.toString();
+    }
+
+    public <T> T findElementById(String id) {
+        for(Element e : allElementsDeep()) {
+            if(id.equals(e.getId())) return (T) e;
+        }
+        return null;
+    }
+
+    public <T> T[] findElementsByTag(String tag) {
+        List<Element> elementList = new ArrayList<>();
+        for(Element e : allElementsDeep()) {
+            for(String elementTag : e.getTags()) {
+                if(tag.equals(tag) && !elementList.contains(e)) elementList.add(e);
+            }
+        }
+        return (T[]) Utils.array(elementList);
     }
 }
