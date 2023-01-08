@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<theme>
+<theme xmlns="file:///home/v22/Schreibtisch/coding/java/MVEngine/src/main/resources/gui/xsd/MVEngineTheme.xsd">
     <colors>
         <enabled>
             <base>125, 122, 100, 255</base>

@@ -3,6 +3,7 @@ package dev.mv.engine.gui.parsing.theme;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.components.animations.ElementAnimation;
 import dev.mv.engine.gui.parsing.InvalidGuiFileException;
+import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.Color;
 import dev.mv.utils.Utils;
@@ -14,14 +15,23 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.io.IOException;
 import java.util.function.IntUnaryOperator;
 import java.util.function.UnaryOperator;
 
 public class ThemeParser {
     private File file;
+    private String themePath;
 
-    public Theme parse(File file) {
-        this.file = file;
+    public ThemeParser(GuiConfig guiConfig) {
+        themePath = guiConfig.getThemePath();
+    }
+
+    public Theme parse(String name) throws IOException {
+        this.file = new File(themePath + name);
+        if(!file.exists()) {
+            throw new IOException("Could not find file \"" + name + "\" inside the given themePath!");
+        }
         Theme returnTheme = new Theme();
 
         try{
@@ -31,7 +41,7 @@ public class ThemeParser {
             document.getDocumentElement().normalize();
 
             if (!document.getDocumentElement().getTagName().equals("theme")) {
-                MVEngine.Exceptions.Throw(new InvalidGuiFileException("Could not find 'theme' root tag!"));
+                MVEngine.Exceptions.Throw(new InvalidGuiFileException("Root should be \"theme\""));
             }
 
             NodeList tags = document.getDocumentElement().getChildNodes();
@@ -77,15 +87,28 @@ public class ThemeParser {
                     }
                 }
                 if(tag.getNodeName().equals("disabled")) {
-                    NodeList enabledColors = tag.getChildNodes();
-                    for(int j = 0; j < enabledColors.getLength(); j++) {
-                        Node enabledColor = enabledColors.item(j);
+                    NodeList disabledColors = tag.getChildNodes();
+                    for(int j = 0; j < disabledColors.getLength(); j++) {
+                        Node enabledColor = disabledColors.item(j);
                         if(enabledColor.getNodeType() == Node.ELEMENT_NODE) {
                             switch (enabledColor.getNodeName()) {
                                 case "base" -> theme.setDisabledBaseColor(parseColor(enabledColor.getTextContent()));
                                 case "outline" -> theme.setDisabledOutlineColor(parseColor(enabledColor.getTextContent()));
                                 case "text" -> theme.setDisabledTextColor(parseColor(enabledColor.getTextContent()));
                                 case "extra" -> theme.setDiabledExtraColor(parseColor(enabledColor.getTextContent()));
+                            }
+                        }
+                    }
+                }
+                if(tag.getNodeName().equals("shouldUseTextColor")) {
+                    NodeList useTextColors = tag.getChildNodes();
+                    for(int j = 0; j < useTextColors.getLength(); j++) {
+                        Node useTextColor = useTextColors.item(j);
+                        if(useTextColor.getNodeType() == Node.ELEMENT_NODE) {
+                            switch (useTextColor.getNodeName()) {
+                                case "checkbox" -> theme.setShouldCheckboxUseTextColor(Boolean.parseBoolean(useTextColor.getTextContent()));
+                                case "choice" -> theme.setShouldChoiceUseTextColor(Boolean.parseBoolean(useTextColor.getTextContent()));
+                                case "inputBox" -> theme.setShouldPasswordInputBoxButtonUseTextColor(Boolean.parseBoolean(useTextColor.getTextContent()));
                             }
                         }
                     }
@@ -132,13 +155,13 @@ public class ThemeParser {
                                 theme.setGuiAssetPath(assetProp.getTextContent());
                             }
                             if(assetProp.getNodeName().equals("icons")) {
-                                NodeList icons = tag.getChildNodes();
+                                NodeList icons = assetProp.getChildNodes();
                                 for (int k = 0; k < icons.getLength(); k++) {
                                     Node iconProp = icons.item(k);
                                     if (iconProp.getNodeType() == Node.ELEMENT_NODE) {
                                         switch (iconProp.getNodeName()) {
-                                            case "width" -> theme.setOutlineThickness(Integer.parseInt(iconProp.getTextContent()));
-                                            case "height" -> theme.setHasOutline(Boolean.parseBoolean(iconProp.getTextContent()));
+                                            case "width" -> theme.setGuiAssetsIconWidth(Integer.parseInt(iconProp.getTextContent()));
+                                            case "height" -> theme.setGuiAssetsIconHeight(Integer.parseInt(iconProp.getTextContent()));
                                         }
                                     }
                                 }
@@ -245,10 +268,10 @@ public class ThemeParser {
                         }
                         if(propElement.getTagName().equals("color")) {
                             switch (propElement.getAttribute("name")) {
-                                case "base" ->      baseColorOperator = generateColorOperator(propElement.getAttribute("value"), value, true);
-                                case "outline" ->   outlineColorOperator = generateColorOperator(propElement.getAttribute("value"), value, true);
-                                case "text" ->      textColorOperator = generateColorOperator(propElement.getAttribute("value"), value, true);
-                                case "extra" ->     extraColorOperator = generateColorOperator(propElement.getAttribute("value"), value, true);
+                                case "base" ->      baseColorOperator =     generateColorOperator(propElement.getAttribute("value"), value, true);
+                                case "outline" ->   outlineColorOperator =  generateColorOperator(propElement.getAttribute("value"), value, true);
+                                case "text" ->      textColorOperator =     generateColorOperator(propElement.getAttribute("value"), value, true);
+                                case "extra" ->     extraColorOperator =    generateColorOperator(propElement.getAttribute("value"), value, true);
                             }
                         }
                     }
@@ -275,10 +298,10 @@ public class ThemeParser {
                         }
                         if(propElement.getTagName().equals("color")) {
                             switch (propElement.getAttribute("name")) {
-                                case "base" ->      baseColorOperator = generateColorOperator(propElement.getAttribute("value"), value, false);
-                                case "outline" ->   outlineColorOperator = generateColorOperator(propElement.getAttribute("value"), value, false);
-                                case "text" ->      textColorOperator = generateColorOperator(propElement.getAttribute("value"), value, false);
-                                case "extra" ->     extraColorOperator = generateColorOperator(propElement.getAttribute("value"), value, false);
+                                case "base" ->      baseColorOperator =     generateColorOperator(propElement.getAttribute("value"), value, false);
+                                case "outline" ->   outlineColorOperator =  generateColorOperator(propElement.getAttribute("value"), value, false);
+                                case "text" ->      textColorOperator =     generateColorOperator(propElement.getAttribute("value"), value, false);
+                                case "extra" ->     extraColorOperator =    generateColorOperator(propElement.getAttribute("value"), value, false);
                             }
                         }
                     }
@@ -307,10 +330,10 @@ public class ThemeParser {
             state.rotation =    intOperators[4].applyAsInt(state.rotation);
             state.originX =     intOperators[5].applyAsInt(state.originX);
             state.originY =     intOperators[6].applyAsInt(state.originY);
-            Utils.ifNotNull(state.baseColor).then((c) ->    state.baseColor = colorOperators[0].apply(c));
-            Utils.ifNotNull(state.outlineColor).then((c) -> state.baseColor = colorOperators[1].apply(c));
-            Utils.ifNotNull(state.textColor).then((c) ->    state.baseColor = colorOperators[2].apply(c));
-            Utils.ifNotNull(state.extraColor).then((c) ->   state.baseColor = colorOperators[3].apply(c));
+            Utils.ifNotNull(state.baseColor).then((c) ->    state.baseColor =       colorOperators[0].apply(c));
+            Utils.ifNotNull(state.outlineColor).then((c) -> state.outlineColor =    colorOperators[1].apply(c));
+            Utils.ifNotNull(state.textColor).then((c) ->    state.textColor =       colorOperators[2].apply(c));
+            Utils.ifNotNull(state.extraColor).then((c) ->   state.extraColor =      colorOperators[3].apply(c));
             return state;
         };
     }

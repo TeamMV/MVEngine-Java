@@ -7,20 +7,20 @@ import dev.mv.editor.launcher.LauncherScreen;
 import dev.mv.editor.loading.LoadingManager;
 import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
-import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.GuiRegistry;
-import dev.mv.engine.gui.components.*;
-import dev.mv.engine.gui.components.animations.ElementAnimation;
-import dev.mv.engine.gui.components.layouts.*;
-import dev.mv.engine.gui.event.ClickListener;
-import dev.mv.engine.gui.event.ProgressListener;
+import dev.mv.engine.gui.components.ProgressBar;
+import dev.mv.engine.gui.parsing.GuiConfig;
+import dev.mv.engine.gui.parsing.gui.GuiParser;
 import dev.mv.engine.gui.parsing.theme.ThemeParser;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.input.InputCollector;
 import dev.mv.engine.input.InputProcessor;
 import dev.mv.engine.render.WindowCreateInfo;
-import dev.mv.engine.render.shared.*;
+import dev.mv.engine.render.shared.Camera;
+import dev.mv.engine.render.shared.DrawContext2D;
+import dev.mv.engine.render.shared.DrawContext3D;
+import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.font.BitmapFont;
 import dev.mv.engine.render.shared.models.Entity;
@@ -37,7 +37,6 @@ import lombok.SneakyThrows;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.io.File;
 import java.io.IOException;
 
 import static dev.mv.utils.Utils.await;
@@ -51,7 +50,7 @@ public class Main {
     public static DrawContext3D renderer3D;
     static float r = 0;
     private static Texture texture;
-    private static GuiRegistry guiRegistry = new GuiRegistry();
+    private static GuiRegistry guiRegistry;
     private static BitmapFont font;
     private static Entity cruiser;
     private static PointLight pointlight = new PointLight(new Vector3f(0, 2, -2), new Vector3f(1, 1, 0.5f), 1f, 0, 0, 1f);
@@ -78,110 +77,13 @@ public class Main {
 
         Window window = MVEngine.createWindow(createInfo);
 
-        Gradient text = new Gradient();
-        text.setTop(new Color(255, 255, 255, 255));
-        text.setBottom(new Color(255, 255, 255, 255));
+        GuiConfig guiConfig = new GuiConfig("/gui/guiconfig.xml");
 
-        //Theme theme = new Theme();
-        //theme.setBaseColor(new Color(125, 122, 100, 255));
-        //theme.setOutlineColor(new Color(200, 200, 200, 255));
-        //theme.setText_base(new Color(255, 255, 255, 255));
-        //theme.setExtraColor(new Color(255, 217, 0, 255));
-        //theme.setDisabledBaseColor(new Color(82, 81, 81, 255));
-        //theme.setDisabledOutlineColor(new Color(100, 100, 100, 255));
-        //theme.setDisabledTextColor(new Color(59, 59, 57, 255));
-        //theme.setDiabledExtraColor(new Color(100, 50, 0, 255));
-        //theme.setShouldChoiceUseTextColor(true);
-        //theme.setShouldCheckboxUseTextColor(true);
-        //theme.setShouldPasswordInputBoxButtonUseTextColor(true);
-        //theme.setGuiAssetPath("/gui/assets/guiassets.png");
-        //theme.setGuiAssetsIconWidth(32);
-        //theme.setGuiAssetsIconHeight(32);
-        //theme.setHasOutline(true);
-        //theme.setEdgeStyle(Theme.EdgeStyle.ROUND);
-        //theme.setEdgeRadius(10);
-        //theme.setOutlineThickness(3);
-        //theme.setAnimationFrames(10);
-        //theme.setAnimationInTime(50);
-        //theme.setAnimationOutTime(50);
-        //theme.setAnimator(new ElementAnimation() {
-        //    @Override
-        //    public AnimationState transform(int frame, int totalFrames, AnimationState lastState) {
-        //        lastState.baseColor.setAlpha(lastState.baseColor.getAlpha() - 20);
-        //        lastState.outlineColor.setAlpha(lastState.outlineColor.getAlpha() - 20);
-//
-        //        lastState.width -= 4;
-        //        lastState.height -= 2;
-        //        lastState.posX += 2;
-        //        lastState.posY += 1;
-        //        lastState.rotation += 2;
-        //        return lastState;
-        //    }
-//
-        //    @Override
-        //    public AnimationState transformBack(int frame, int totalFrames, AnimationState lastState) {
-        //        lastState.baseColor.setAlpha(lastState.baseColor.getAlpha() + 20);
-        //        lastState.outlineColor.setAlpha(lastState.outlineColor.getAlpha() + 20);
-//
-        //        lastState.width += 4;
-        //        lastState.height += 2;
-        //        lastState.posX -= 2;
-        //        lastState.posY -= 1;
-        //        lastState.rotation -= 2;
-        //        return lastState;
-        //    }
-        //});
+        ThemeParser parser = new ThemeParser(guiConfig);
 
-        ThemeParser parser = new ThemeParser();
+        Theme theme = parser.parse("testTheme.xml");
 
-        Theme theme = parser.parse(new File("./src/main/resources/gui/themes/test.xml"));
-        theme.setShouldCheckboxUseTextColor(true);
-        theme.setShouldChoiceUseTextColor(true);
-        theme.setShouldPasswordInputBoxButtonUseTextColor(true);
-
-        Space space = new Space(window, 0, 0, 0, 10);
-
-        ImageButton button1 = new ImageButton(window, 100, 300, 120, 60);
-        Button button2 = new Button(window, 100, 150, 120, 60);
-        Checkbox checkbox = new Checkbox(window, 100, 225, 60, 60);
-        InputBox inputBox = new InputBox(window, 100, 25, 400, 60);
-        Separator separator = new Separator(window, 0, 0, 400, 1);
-        inputBox.setPlaceholderText("E-Mail address");
-        PasswordInputBox passwordInputBox = new PasswordInputBox(window, 100, 0, 400, 60);
-        passwordInputBox.setPlaceholderText("Password");
-
-        CollapseMenu collapseMenu = new CollapseMenu(window, 60, 60, null);
-        collapseMenu.setText("Options");
-        Checkbox checkbox1 = new Checkbox(window, collapseMenu, 60, 60);
-        checkbox1.setText("check1");
-        collapseMenu.addElement(checkbox1);
-        Checkbox checkbox2 = new Checkbox(window, collapseMenu, 60, 60);
-        checkbox2.setText("check1");
-        collapseMenu.addElement(checkbox2);
-        Checkbox checkbox3 = new Checkbox(window, collapseMenu, 60, 60);
-        checkbox3.setText("check1");
-        collapseMenu.addElement(checkbox3);
-
-        HorizontalLayout horizontalLayout = new HorizontalLayout(window, -1, -1);
-        horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
-        horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
-        horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
-        horizontalLayout.addElement(new Checkbox(window, 100, 225, 60, 60));
-        horizontalLayout.alignContent(HorizontalLayout.Align.CENTER);
-        horizontalLayout.setSpacing(5);
-        horizontalLayout.setPadding(5, 5, 5, 5);
-        horizontalLayout.showFrame();
-
-        ProgressBar progressBar = new ProgressBar(window, 100, 100, 200, 60);
-        ChoiceGroup choiceGroup = new ChoiceGroup(window, null);
-        Choice choice1 = new Choice(window, null, 60, 60);
-        Choice choice2 = new Choice(window, null, 60, 60);
-        Choice choice3 = new Choice(window, null, 60, 60);
-        choiceGroup.addChoice(choice1);
-        choiceGroup.addChoice(choice2);
-        choiceGroup.addChoice(choice3);
-
-        VerticalLayout layout = new VerticalLayout(window, 200, 100);
+        GuiParser guiParser = new GuiParser(guiConfig);
 
         window.run(() -> {
             System.out.println(MVEngine.getRenderingApi());
@@ -211,9 +113,11 @@ public class Main {
                 throw new RuntimeException(e);
             }
 
+            guiRegistry = guiParser.parse(window, renderer2D);
+
             //Gui test
             theme.setFont(font);
-
+            /*
             button1.setTexture(texture);
 
             button2.setText("Click me!");
@@ -243,12 +147,6 @@ public class Main {
                 }
             });
 
-            inputBox.setLimit(32);
-
-            passwordInputBox.setLimit(32);
-
-            progressBar.setTotalValue(100);
-            progressBar.setCurrentValue(10);
             progressBar.attachListener(new ProgressListener() {
                 @Override
                 public void onIncrement(Element e, int currentValue, int totalValue, int percentage) {
@@ -260,55 +158,21 @@ public class Main {
 
                 }
             });
-
+            */
             new PromiseNull((res, rej) -> {
                 while(true) {
-                    progressBar.incrementByPercentage(1);
+                    ((ProgressBar) guiRegistry.findGui("myGui").getRoot().findElementById("prgbar1")).incrementByPercentage(1);
                     await(sleep(100));
                 }
             });
 
-            checkbox.setText("Toggle");
-
-            choice1.setText("Choice1");
-            choice2.setText("Choice2");
-            choice3.setText("Choice3");
-
-            layout.addElement(button1);
-            layout.addElement(checkbox);
-            layout.addElement(button2);
-            layout.addElement(space);
-            layout.addElement(separator);
-            layout.addElement(inputBox);
-            layout.addElement(passwordInputBox);
-            layout.addElement(collapseMenu);
-            layout.addElement(separator);
-            layout.addElement(space);
-            layout.addElement(horizontalLayout);
-            layout.addElement(progressBar);
-            layout.addElement(choiceGroup);
-            layout.alignContent(VerticalLayout.Align.LEFT);
-            layout.setSpacing(5);
-            layout.setPadding(10, 10, 10, 10);
-            //layout.showFrame();
-
-            Gui gui = new Gui(renderer2D, window, "test");
-            gui.addElement(layout);
-
-            button1.setId("myButton");
-            button1.addTag("tag1");
-            button1.addTag("tag2");
-            button1.addTag("tag3");
-            System.out.println(button1.getGui().toString());
-            button2.getGui().getRoot().enable();
-
             try {
-                gui.applyTheme(theme);
+                guiRegistry.applyTheme(theme);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-            guiRegistry.addGui(gui);
+            System.out.println(guiRegistry.getGuis()[0]);
 
             R.GUIS = guiRegistry;
 

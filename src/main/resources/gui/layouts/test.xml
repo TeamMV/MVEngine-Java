@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<mve xmlns:mve="/home/v22/Schreibtisch/coding/java/MVEngine/src/main/resources/gui/xsd/MVEngineGui.xsd">
-    <mve:gui name="myGui">
-
-    </mve:gui>
-</mve>

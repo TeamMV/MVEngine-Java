@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<config>
+<mvt:config xmlns:mvt="file:///home/v22/Schreibtisch/coding/java/MVEngine/src/main/resources/gui/xsd/MVEngineGuiconfig.xsd">
     <themePath>
-        <relative>
-            themes/
-        </relative>
+        <relative>/themes/</relative>
     </themePath>
     <layoutPath>
-        <relative>
-            layouts/
-        </relative>
+        <relative>/layouts/</relative>
     </layoutPath>
-</config>
+</mvt:config>

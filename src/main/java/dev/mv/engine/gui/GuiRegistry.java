@@ -4,6 +4,7 @@ import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.DrawContext2D;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -49,9 +50,9 @@ public class GuiRegistry implements Iterable<Gui> {
         }
     }
 
-    public void applyTheme(Theme theme) {
+    public void applyTheme(Theme theme) throws IOException {
         for(Gui gui : this) {
-
+            gui.applyTheme(theme);
         }
     }
 

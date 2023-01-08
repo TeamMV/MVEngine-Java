@@ -2,6 +2,7 @@ package dev.mv.engine.resources;
 
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.input.InputCollector;
+import dev.mv.engine.render.shared.texture.TextureRegion;
 
 //Stop making rip off android classes we need to be original not a fucking copycat
 //dude
@@ -19,5 +20,9 @@ public class R {
             if(action == InputCollector.KeyAction.TYPE) GUIS.typeKey(keyCode);
             if(action == InputCollector.KeyAction.RELEASE) GUIS.releaseKey(keyCode);
         }
+    }
+
+    public static TextureRegion getTexture(String textId) {
+        return null;
     }
 }

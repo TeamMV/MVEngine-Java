@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="gui">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="variables" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="var">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="references" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ref" type="refType"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element ref="textLine"/>
+        <xs:element ref="button"/>
+        <xs:element ref="imageButton"/>
+        <xs:element ref="checkbox"/>
+        <xs:element ref="input"/>
+        <xs:element ref="progressBar"/>
+        <xs:element ref="separator"/>
+        <xs:element ref="space"/>
+        <xs:element ref="choiceGroup"/>
+        <xs:element ref="verticalLayout"/>
+        <xs:element ref="horizontalLayout"/>
+        <xs:element ref="collapseMenu"/>
+
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="containerType">
+    <xs:complexContent>
+      <xs:extension base="baseElementType">
+        <xs:sequence>
+          <xs:element ref="textLine"/>
+          <xs:element ref="button"/>
+          <xs:element ref="imageButton"/>
+          <xs:element ref="checkbox"/>
+          <xs:element ref="input"/>
+          <xs:element ref="progressBar"/>
+          <xs:element ref="separator"/>
+          <xs:element ref="space"/>
+          <xs:element ref="choiceGroup"/>
+          <xs:element ref="verticalLayout"/>
+          <xs:element ref="horizontalLayout"/>
+          <xs:element ref="collapseMenu"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="refType">
+    <xs:complexContent>
+      <xs:extension base="containerType">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="baseElementType">
+    <xs:attribute name="x" type="xs:string" use="optional"/>
+    <xs:attribute name="y" type="xs:string" use="optional"/>
+    <xs:attribute name="id" type="xs:string" use="optional"/>
+    <xs:attribute name="tags" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="elementType">
+    <xs:complexContent>
+      <xs:extension base="baseElementType">
+        <xs:attribute name="width" type="xs:string" use="optional"/>
+        <xs:attribute name="height" type="xs:string" use="optional"/>
+        <xs:attribute name="x" type="xs:string" use="optional"/>
+        <xs:attribute name="y" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="textLineType">
+    <xs:attribute name="height" type="xs:string" use="optional"/>
+    <xs:attribute name="x" type="xs:string" use="optional"/>
+    <xs:attribute name="y" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="imageButtonType">
+    <xs:complexContent>
+      <xs:extension base="elementType">
+        <xs:attribute name="texture" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="inputType">
+    <xs:complexContent>
+      <xs:extension base="elementType">
+        <xs:attribute name="type" use="required">
+          <xs:simpleType>
+            <xs:restriction>
+              <xs:enumeration value="string"/>
+              <xs:enumeration value="number"/>
+              <xs:enumeration value="password"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="choiceGroupType">
+    <xs:complexContent>
+      <xs:extension base="baseElementType">
+        <xs:sequence>
+          <xs:element ref="choice"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="textLine" type="textLineType"/>
+  <xs:element name="button" type="elementType"/>
+  <xs:element name="imageButton" type="imageButtonType"/>
+  <xs:element name="checkbox" type="elementType"/>
+  <xs:element name="input" type="inputType"/>
+  <xs:element name="progressBar" type="elementType"/>
+  <xs:element name="separator" type="elementType"/>
+  <xs:element name="space" type="elementType"/>
+  <xs:element name="choice" type="elementType"/>
+
+  <xs:element name="verticalLayout" type="containerType"/>
+  <xs:element name="horizontalLayout" type="containerType"/>
+  <xs:element name="collapseMenu" type="containerType"/>
+  <xs:element name="choiceGroup" type="choiceGroupType"/>
+</xs:schema>
