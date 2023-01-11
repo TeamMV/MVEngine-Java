@@ -23,7 +23,7 @@
         <verticalLayout x="200" y="100" spacing="5" showFrame="false">
             <imageButton width="120" height="$VAR(height)" id="myButton" tags="[tag1,tag2,tag3]"/>
             <checkbox width="$VAR(height)" height="$VAR(height)">Toggle</checkbox>
-            <button width="60" height="$VAR(height)">click me!</button>
+            <button width="60" height="$VAR(height)" onclick="btnClick">click me!</button>
             <ref name="defaultSpace"/>
             <ref name="defaultSeparator"/>
             <input type="string" width="400" height="$VAR(height)">E-Mail address</input>
@@ -36,7 +36,7 @@
             </collapseMenu>
             <ref name="defaultSeparator"/>
             <ref name="defaultSpace"/>
-            <horizontalLayout showFrame="true" spacing="5" padding="[5,5,5,50]">
+            <horizontalLayout showFrame="true" spacing="5" padding="[5]">
                 <ref name="checkbox" params="[check1]"/>
                 <ref name="checkbox" params="[check2]"/>
                 <ref name="checkbox" params="[check3]"/>

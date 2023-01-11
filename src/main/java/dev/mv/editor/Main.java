@@ -32,6 +32,7 @@ import dev.mv.engine.render.shared.shader.light.SpotLight;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.resources.R;
 import dev.mv.utils.async.PromiseNull;
+import dev.mv.utils.logger.Logger;
 import dev.mv.utils.misc.Version;
 import lombok.SneakyThrows;
 import org.joml.Vector3f;
@@ -63,7 +64,7 @@ public class Main {
         MVEngine.init(new ApplicationConfig()
             .setName("MVEngine")
             .setVersion(Version.parse("v0.1.0"))
-            .setRenderingApi(ApplicationConfig.RenderingAPI.OPENGL));
+            .setRenderingApi(ApplicationConfig.RenderingAPI.VULKAN));
 
         WindowCreateInfo createInfo = new WindowCreateInfo();
         createInfo.width = 1200;
@@ -74,6 +75,10 @@ public class Main {
         createInfo.maxUPS = 30;
         createInfo.fullscreen = false;
         createInfo.decorated = true;
+
+        Logger.setLogOutput((msg, lvl) -> {
+            System.out.println(msg);
+        });
 
         Window window = MVEngine.createWindow(createInfo);
 
@@ -88,35 +93,35 @@ public class Main {
         window.run(() -> {
             System.out.println(MVEngine.getRenderingApi());
 
-            InputProcessor processor = new InputProcessor();
-            new InputCollector(processor, window).start();
-            Input.init();
+            //InputProcessor processor = new InputProcessor();
+            //new InputCollector(processor, window).start();
+            //Input.init();
+//
+            ////renderer2D = new DrawContext2D(window);
+            //try {
+            //    font = new BitmapFont("/fonts/FreeSans/FreeSans.png", "/fonts/FreeSans/FreeSans.fnt");
+            //} catch (IOException e) {
+            //    throw new RuntimeException(e);
+            //}
 
-            renderer2D = new DrawContext2D(window);
-            try {
-                font = new BitmapFont("/fonts/FreeSans/FreeSans.png", "/fonts/FreeSans/FreeSans.fnt");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            //renderer3D = new DrawContext3D(window);
 
-            renderer3D = new DrawContext3D(window);
+            //try {
+            //    texture = RenderBuilder.newTexture("/images/LoadingLogo.png");
+//
+            //    ObjectLoader loader = MVEngine.getObjectLoader();
+            //    Model mCruiser = loader.loadExternalModel("/models/cruiser/cruiser.obj");
+            //    Texture tCruiser = RenderBuilder.newTexture("/models/cruiser/cruiser.bmp");
+            //    mCruiser.setTexture(tCruiser, 1.0f);
+            //    cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
+            //} catch (IOException e) {
+            //    throw new RuntimeException(e);
+            //}
 
-            try {
-                texture = RenderBuilder.newTexture("/LoadingLogo.png");
-
-                ObjectLoader loader = MVEngine.getObjectLoader();
-                Model mCruiser = loader.loadExternalModel("/models/cruiser/cruiser.obj");
-                Texture tCruiser = RenderBuilder.newTexture("/models/cruiser/cruiser.bmp");
-                mCruiser.setTexture(tCruiser, 1.0f);
-                cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            guiRegistry = guiParser.parse(window, renderer2D);
+            //guiRegistry = guiParser.parse(window, renderer2D);
 
             //Gui test
-            theme.setFont(font);
+            //theme.setFont(font);
             /*
             button1.setTexture(texture);
 
@@ -159,22 +164,22 @@ public class Main {
                 }
             });
             */
-            new PromiseNull((res, rej) -> {
-                while(true) {
-                    ((ProgressBar) guiRegistry.findGui("myGui").getRoot().findElementById("prgbar1")).incrementByPercentage(1);
-                    await(sleep(100));
-                }
-            });
-
-            try {
-                guiRegistry.applyTheme(theme);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            System.out.println(guiRegistry.getGuis()[0]);
-
-            R.GUIS = guiRegistry;
+            //new PromiseNull((res, rej) -> {
+            //    while(true) {
+            //        ((ProgressBar) guiRegistry.findGui("myGui").getRoot().findElementById("prgbar1")).incrementByPercentage(1);
+            //        await(sleep(100));
+            //    }
+            //});
+//
+            //try {
+            //    guiRegistry.applyTheme(theme);
+            //} catch (IOException e) {
+            //    throw new RuntimeException(e);
+            //}
+//
+            //System.out.println(guiRegistry.getGuis()[0]);
+//
+            //R.GUIS = guiRegistry;
 
         }, null, () -> {
 
@@ -186,7 +191,7 @@ public class Main {
             //layout.setX(Input.mouse[Input.MOUSE_X]);
             //layout.setY(Input.mouse[Input.MOUSE_Y]);
 
-            R.GUIS.renderGuis();
+            //R.GUIS.renderGuis();
 
             //renderer3D.object(cruiser);
             //renderer3D.processPointLight(pointlight);
@@ -233,7 +238,7 @@ public class Main {
 
         System.exit(0);
 
-        LoadingManager.start("", "/LoadingLogo.png");
+        LoadingManager.start("", "/images/LoadingLogo.png");
         LoadingManager.loadingDots();
         await(sleep(500));
         LoadingManager.stop();

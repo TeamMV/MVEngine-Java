@@ -2,6 +2,7 @@ package dev.mv.engine.gui.parsing.theme;
 
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.components.animations.ElementAnimation;
+import dev.mv.engine.gui.functions.GuiFunction;
 import dev.mv.engine.gui.parsing.InvalidGuiFileException;
 import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.theme.Theme;
@@ -350,7 +351,7 @@ public class ThemeParser {
 
     private Color parseColor(String color) {
         if (color.startsWith("#")) {
-            color.replaceAll("#", "");
+            color = color.replaceAll("#", "");
             if (!color.matches("-?[0-9a-fA-F]+")) {
                 MVEngine.Exceptions.Throw(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: # colors must be hexadecimal characters!"));
             }
@@ -367,7 +368,7 @@ public class ThemeParser {
             }
             return new Color(r, g, b, a);
         } else if (color.startsWith("0x")) {
-            color.replaceAll("#", "");
+            color = color.replaceAll("0x", "");
             if (!color.matches("-?[0-9a-fA-F]+")) {
                 MVEngine.Exceptions.Throw(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: 0x colors must be hexadecimal characters!"));
             }
@@ -386,7 +387,7 @@ public class ThemeParser {
         } else {
             String split = ",";
             if (color.contains(" ") && color.contains(",")) {
-                color.replaceAll(" ", "");
+                color = color.replaceAll(" ", "");
             } else if (color.contains(" ")) {
                 split = " ";
             }

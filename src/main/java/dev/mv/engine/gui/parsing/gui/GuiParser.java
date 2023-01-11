@@ -13,6 +13,7 @@ import dev.mv.engine.gui.parsing.InvalidGuiFileException;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.resources.R;
+import dev.mv.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -146,7 +147,7 @@ public class GuiParser {
     private String getParam(String query) {
         if(query == null) return "";
         if(query.startsWith("$PARAM(") && query.endsWith(")")) {
-            return variables.get(query.substring(7, query.length() - 1));
+            return currentRefLookup.get(query.substring(7, query.length() - 1));
         }
 
         return null;
@@ -221,7 +222,7 @@ public class GuiParser {
         if(attrib.startsWith("$VAR(") && attrib.endsWith(")")) {
             return Integer.parseInt(getVariable(attrib));
         } else if(attrib.startsWith("$PARAM(") && attrib.endsWith(")")) {
-            return Integer.parseInt(getParam(currentRefLookup.get(attrib)));
+            return Integer.parseInt(getParam(attrib));
         } else {
             return Integer.parseInt(attrib);
         }
@@ -231,7 +232,7 @@ public class GuiParser {
         if(attrib.startsWith("$VAR(") && attrib.endsWith(")")) {
             return getVariable(attrib);
         } else if(attrib.startsWith("$PARAM(") && attrib.endsWith(")")) {
-            return getParam(currentRefLookup.get(attrib));
+            return getParam(attrib);
         } else {
             return attrib;
         }
@@ -242,7 +243,7 @@ public class GuiParser {
         if(attrib.startsWith("$VAR(") && attrib.endsWith(")")) {
             return Boolean.parseBoolean(getVariable(attrib));
         } else if(attrib.startsWith("$PARAM(") && attrib.endsWith(")")) {
-            return Boolean.parseBoolean(getParam(currentRefLookup.get(attrib)));
+            return Boolean.parseBoolean(getParam(attrib));
         } else {
             return Boolean.parseBoolean(attrib);
         }
@@ -429,6 +430,18 @@ public class GuiParser {
             String padding = getStringAttrib(tag.getAttribute("padding"));
             if(padding.startsWith("[") && padding.endsWith("]")) {
                 int[] values = Arrays.stream(padding.replace("[", "").replace("]", "").split(",")).mapToInt(this::getIntAttrib).toArray();
+                if(values.length == 1) {
+                    values = Utils.repeat(values[0], 4);
+                }
+                if(values.length == 2) {
+                    int h = values[0];
+                    int v = values[1];
+                    values = new int[4];
+                    values[0] = h;
+                    values[1] = h;
+                    values[2] = v;
+                    values[3] = v;
+                }
                 layout.setPadding(values[0], values[1], values[2], values[3]);
             } else {
                 int padd = Integer.parseInt(padding);
@@ -469,6 +482,18 @@ public class GuiParser {
             String padding = getStringAttrib(tag.getAttribute("padding"));
             if(padding.startsWith("[") && padding.endsWith("]")) {
                 int[] values = Arrays.stream(padding.replace("[", "").replace("]", "").split(",")).mapToInt(this::getIntAttrib).toArray();
+                if(values.length == 1) {
+                    values = Utils.repeat(values[0], 4);
+                }
+                if(values.length == 2) {
+                    int h = values[0];
+                    int v = values[1];
+                    values = new int[4];
+                    values[0] = h;
+                    values[1] = h;
+                    values[2] = v;
+                    values[3] = v;
+                }
                 layout.setPadding(values[0], values[1], values[2], values[3]);
             } else {
                 int padd = Integer.parseInt(padding);

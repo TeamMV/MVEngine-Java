@@ -10,6 +10,7 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.utils.RenderUtils;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import lombok.SneakyThrows;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -24,7 +25,6 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class VulkanWindow implements Window {
 
-    VulkanContext context;
     WindowCreateInfo info;
     ImGuiImplGlfw glfwImpl;
     int width, height;
@@ -42,7 +42,6 @@ public class VulkanWindow implements Window {
         this.info = info;
         width = info.width;
         height = info.height;
-        context = new VulkanContext(this);
     }
 
     @Override
@@ -116,10 +115,6 @@ public class VulkanWindow implements Window {
             );
         }
 
-        if (!context.vulkan.init()) {
-            return false;
-        }
-
         glfwImpl = new ImGuiImplGlfw();
         glfwImpl.init(window, true);
         //vulkanImpl = new ImGuiVulkanImpl();
@@ -129,6 +124,7 @@ public class VulkanWindow implements Window {
         return true;
     }
 
+    @SneakyThrows
     private void loop() {
         long initialTime = System.nanoTime();
         long currentTime = initialTime;
@@ -137,7 +133,12 @@ public class VulkanWindow implements Window {
         double deltaU = 0, deltaF = 0;
         int frames = 0, ticks = 0;
         long timer = System.currentTimeMillis();
-        VulkanBasicRendering baseRenderer = new VulkanBasicRendering(context);
+        VulkanRender.VulkanRenderInfo renderInfo = new VulkanRender.VulkanRenderInfo();
+        renderInfo.physicalDeviceName = "";
+        renderInfo.requestedImages = 3;
+        renderInfo.vsync = true;
+        renderInfo.shouldValidate = true;
+        VulkanRender vulkanRender = new VulkanRender(this, renderInfo);
         while (!glfwWindowShouldClose(window)) {
             currentTime = System.nanoTime();
             deltaU += (currentTime - initialTime) / timeU;
@@ -162,16 +163,15 @@ public class VulkanWindow implements Window {
                 //ImGui.newFrame();
 
                 if (onDraw != null) {
-                    onDraw.run();
+                    //onDraw.run();
                 }
 
-                updateInputs();
+                //updateInputs();
 
                 //ImGui.render();
                 //vulkanImpl.renderDrawData(ImGui.getDrawData());
 
                 //glfwSwapBuffers(window);
-                baseRenderer.drawFrame();
                 currentFrame++;
                 frames++;
                 deltaF--;
