@@ -431,7 +431,7 @@ public class GuiParser {
             if(padding.startsWith("[") && padding.endsWith("]")) {
                 int[] values = Arrays.stream(padding.replace("[", "").replace("]", "").split(",")).mapToInt(this::getIntAttrib).toArray();
                 if(values.length == 1) {
-                    values = Utils.repeat(values[0], 4);
+                    values = new int[] {values[0], values[0], values[0], values[0]};
                 }
                 if(values.length == 2) {
                     int h = values[0];
@@ -483,7 +483,7 @@ public class GuiParser {
             if(padding.startsWith("[") && padding.endsWith("]")) {
                 int[] values = Arrays.stream(padding.replace("[", "").replace("]", "").split(",")).mapToInt(this::getIntAttrib).toArray();
                 if(values.length == 1) {
-                    values = Utils.repeat(values[0], 4);
+                    values = new int[] {values[0], values[0], values[0], values[0]};
                 }
                 if(values.length == 2) {
                     int h = values[0];

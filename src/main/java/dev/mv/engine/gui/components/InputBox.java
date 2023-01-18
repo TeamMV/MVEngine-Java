@@ -1,5 +1,7 @@
 package dev.mv.engine.gui.components;
 
+import dev.mv.engine.gui.components.animations.TextAnimation;
+import dev.mv.engine.gui.components.animations.TextAnimator;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.components.extras.Toggle;
 import dev.mv.engine.gui.event.ClickListener;
@@ -28,6 +30,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     protected int limit = 10;
     protected List<Character> blacklist = new ArrayList<>();
     protected List<Character> allowedList = new ArrayList<>();
+    protected boolean chroma;
 
     public InputBox(Window window, Element parent, int width, int height) {
         super(window, -1, -1, width, height, parent);
@@ -77,7 +80,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
                 if(!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.roundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRoundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
@@ -94,7 +97,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
                 if(!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.triangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidTriangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
@@ -111,7 +114,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
                 if(!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.rectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
@@ -132,9 +135,9 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
             draw.color(theme.getDisabledTextColor());
         }
         if(displayText.isEmpty() && !selected) {
-            draw.text(animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height -  textDistance() * 2)), font, animationState.rotation, animationState.originX, animationState.originY);
+            draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height -  textDistance() * 2)), font, animationState.rotation, animationState.originX, animationState.originY);
         } else {
-            draw.text(animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
+            draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
         }
         if(selected) {
             draw.rectangle(animationState.posX + textDistance() + font.getWidth(displayText.substring(0, cursorOffset), getHeight() - textDistance() * 2), animationState.posY + textDistance(), 2, getHeight() - textDistance() * 2, animationState.rotation, animationState.originX, animationState.originY);
@@ -279,6 +282,21 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     @Override
     public String getText() {
         return actualText;
+    }
+
+    @Override
+    public void applyAnimation(TextAnimation animation) {
+
+    }
+
+    @Override
+    public TextAnimator getTextAnimator() {
+        return null;
+    }
+
+    @Override
+    public void setUseChroma(boolean chroma) {
+        this.chroma = chroma;
     }
 
     protected void moveCursor(int amount) {

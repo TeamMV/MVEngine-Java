@@ -40,7 +40,7 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
                 if(!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.roundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRoundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
@@ -69,7 +69,7 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
                 if(!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.triangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidTriangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
@@ -98,7 +98,7 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
                 if(!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.rectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());

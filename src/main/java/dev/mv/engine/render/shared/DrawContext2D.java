@@ -1,5 +1,7 @@
 package dev.mv.engine.render.shared;
 
+import dev.mv.engine.gui.components.animations.TextAnimation;
+import dev.mv.engine.gui.components.animations.TextAnimator;
 import dev.mv.engine.render.shared.font.BitmapFont;
 import dev.mv.engine.render.shared.font.Glyph;
 import dev.mv.engine.render.shared.texture.Animation;
@@ -8,7 +10,9 @@ import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.Vertex;
 import dev.mv.engine.render.shared.batch.VertexGroup;
 import dev.mv.engine.render.shared.texture.TextureRegion;
+import dev.mv.utils.Utils;
 import org.joml.Vector2f;
+import org.joml.Vector4f;
 
 public class DrawContext2D {
     private boolean useCamera;
@@ -16,28 +20,28 @@ public class DrawContext2D {
     private BitmapFont font;
     private VertexGroup verts = new VertexGroup();
     private Vertex v1 = new Vertex(), v2 = new Vertex(), v3 = new Vertex(), v4 = new Vertex();
+    private Vector4f canvas;
+    private Window window;
 
     public DrawContext2D(Window window) {
+        this.window = window;
         BatchController.init(window, 1000);
         gradient = new Gradient();
+        canvas = new Vector4f(0, 0, window.getWidth(), window.getHeight());
     }
 
     public DrawContext2D(Window window, int batchLimit) {
+        this.window = window;
         BatchController.init(window, batchLimit);
         gradient = new Gradient();
+        canvas = new Vector4f(0, 0, window.getWidth(), window.getHeight());
     }
 
-
     public void color(float r, float g, float b, float a) {
-        Color c = new Color(
-            r / 255.0f,
-            g / 255.0f,
-            b / 255.0f,
-            a / 255.0f);
-        this.gradient.topLeft = c;
-        this.gradient.topRight = c;
-        this.gradient.bottomLeft = c;
-        this.gradient.bottomRight = c;
+        this.gradient.topLeft.set(r, g, b, a).normalize(1.0f);
+        this.gradient.topRight.set(r, g, b, a).normalize(1.0f);
+        this.gradient.bottomLeft.set(r, g, b, a).normalize(1.0f);
+        this.gradient.bottomRight.set(r, g, b, a).normalize(1.0f);
     }
 
     public void color(Color color) {
@@ -67,9 +71,9 @@ public class DrawContext2D {
     public void triangle(int x1, int y1, int x2, int y2, int x3, int y3, float rotation, int originX, int originY) {
         float radRotation = (float) Math.toRadians(rotation);
         BatchController.addVertices(verts.set(
-            v1.put(x1, y1, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v2.put(x2, y2, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v3.put(x3, y3, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 0.0f, 0.0f, 0.0f)
+            v1.put(x1, y1, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v2.put(x2, y2, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v3.put(x3, y3, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
         ), useCamera);
     }
 
@@ -90,10 +94,10 @@ public class DrawContext2D {
         float radRotation = (float) (rotation * (Math.PI / 180));
 
         BatchController.addVertices(verts.set(
-            v1.put(ax, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v2.put(ax, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v3.put(ax2, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v4.put(ax2, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), 0.0f, 0.0f, 0.0f)
+            v1.put(ax, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v2.put(ax, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v3.put(ax2, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v4.put(ax2, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
         ), useCamera);
     }
 
@@ -157,14 +161,33 @@ public class DrawContext2D {
     }
 
     public void voidRoundedRectangle(int x, int y, int width, int height, int thickness, int radius, float precision, float rotation, int originX, int originY) {
-        rectangle(x + radius, y, width - 2 * radius, thickness);
-        rectangle(x + radius, y + height - thickness, width - 2 * radius, thickness);
-        rectangle(x, y + radius, thickness, height - 2 * radius);
+        rectangle(x + radius, y, width - 2 * radius, thickness, rotation, originX, originY);
+        rectangle(x + radius, y + height - thickness, width - 2 * radius, thickness, rotation, originX, originY);
+        rectangle(x, y + radius, thickness, height - 2 * radius, rotation, originX, originY);
         rectangle(x + width - thickness, y + radius, thickness, height - 2 * radius);
         voidArc(x + radius, y + radius, radius, thickness, 90, 180, precision, rotation, originX, originY);
         voidArc(x + radius, y + height - radius, radius, thickness, 90, 90, precision, rotation, originX, originY);
         voidArc(x + width - radius, y + radius, radius, thickness, 90, 270, precision, rotation, originX, originY);
         voidArc(x + width - radius, y + height - radius, radius, thickness, 90, 0, precision, rotation, originX, originY);
+    }
+
+    public void voidTriangularRectangle(int x, int y, int width, int height, int thickness, int radius) {
+        voidTriangularRectangle(x, y, width, height, thickness, radius, 0.0f);
+    }
+
+    public void voidTriangularRectangle(int x, int y, int width, int height, int thickness, int radius, float rotation) {
+        voidTriangularRectangle(x, y, width, height, thickness, radius, rotation, width / 2, height / 2);
+    }
+
+    public void voidTriangularRectangle(int x, int y, int width, int height, int thickness, int radius, float rotation, int originX, int originY) {
+        rectangle(x + radius, y, width - 2 * radius, thickness, rotation, originX, originY);
+        rectangle(x + radius, y + height - thickness, width - 2 * radius, thickness, rotation, originX, originY);
+        rectangle(x, y + radius, thickness, height - 2 * radius, rotation, originX, originY);
+        rectangle(x + width - thickness, y + radius, thickness, height - 2 * radius, rotation, originX, originY);
+        line(x + radius, y, x, y + radius, thickness, rotation, originX, originY);
+        line(x, y + height - radius, x + radius, y + height, thickness, rotation, originX, originY);
+        line(x + width - radius, y + height, x + width, y + height - radius, thickness, rotation, originX, originY);
+        line(x + width, y + radius, x + width - radius, y, thickness, rotation, originX, originY);
     }
 
     public void circle(int x, int y, int radius, float precision) {
@@ -181,9 +204,9 @@ public class DrawContext2D {
         float radRotation = (float) Math.toRadians(rotation);
         for (double i = 0.0; i < tau; i += step)   {
             BatchController.addVertices(verts.set(
-                v1.put((float) (x + (radius * Math.cos(i))), (float) (y + (radius * Math.sin(i))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-                v2.put((float) (x + (radius * Math.cos(i + step))), (float) (y + (radius * Math.sin(i + step))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-                v3.put(x, y, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f)
+                v1.put((float) (x + (radius * Math.cos(i))), (float) (y + (radius * Math.sin(i))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+                v2.put((float) (x + (radius * Math.cos(i + step))), (float) (y + (radius * Math.sin(i + step))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+                v3.put(x, y, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
             ), useCamera);
         }
     }
@@ -219,9 +242,9 @@ public class DrawContext2D {
         float radRotation = (float) Math.toRadians(rotation);
         for (double i = Math.toRadians(start); i < tau - rRange + Math.toRadians(start); i += step)   {
             BatchController.addVertices(verts.set(
-                v1.put((float) (x + (radius * Math.cos(i))), (float) (y + (radius * Math.sin(i))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-                v2.put((float) (x + (radius * Math.cos(i + step))), (float) (y + (radius * Math.sin(i + step))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-                v3.put(x, y, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f)
+                v1.put((float) (x + (radius * Math.cos(i))), (float) (y + (radius * Math.sin(i))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+                v2.put((float) (x + (radius * Math.cos(i + step))), (float) (y + (radius * Math.sin(i + step))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+                v3.put(x, y, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
             ), useCamera);
         }
     }
@@ -235,7 +258,7 @@ public class DrawContext2D {
     }
 
     public void voidArc(int x, int y, int radius, int thickness, int range, int start, float precision, float rotation, int originX, int originY) {
-        int rRadius = radius - 1;
+        int rRadius = radius - Math.floorDiv(thickness, 2);
         double tau = Math.PI * 2.0;
         double rRange = Math.PI * 2.0 - Math.toRadians(range);
         double step = tau / precision;
@@ -249,7 +272,7 @@ public class DrawContext2D {
     }
 
     public void line(int x1, int y1, int x2, int y2, int thickness, float rotation) {
-        line(x1, y1, x2, y2, thickness, 0.0f, (x1 + x2) / 2, (y1 + y2) / 2);
+        line(x1, y1, x2, y2, thickness, rotation, (x1 + x2) / 2, (y1 + y2) / 2);
     }
 
     public void line(int x1, int y1, int x2, int y2, int thickness, float rotation, int originX, int originY) {
@@ -259,10 +282,10 @@ public class DrawContext2D {
         float radRotation = (float) Math.toRadians(rotation);
 
         BatchController.addVertices(verts.set(
-            v1.put(x1 - thetaCos, y1 + thetaSin, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v2.put(x1 + thetaCos, y1 - thetaSin, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v3.put(x2 + thetaCos, y2 - thetaSin, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 0.0f, 0.0f, 0.0f),
-            v4.put(x2 - thetaCos, y2 + thetaSin, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), 0.0f, 0.0f, 0.0f)
+            v1.put(x1 - thetaCos, y1 + thetaSin, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v2.put(x1 + thetaCos, y1 - thetaSin, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v3.put(x2 + thetaCos, y2 - thetaSin, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v4.put(x2 - thetaCos, y2 + thetaSin, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
         ), useCamera);
     }
 
@@ -293,10 +316,10 @@ public class DrawContext2D {
         int texID = BatchController.addTexture(texture);
 
         BatchController.addVertices(verts.set(
-            v1.put(ax, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, (float) texID),
-            v2.put(ax, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 1.0f, (float) texID),
-            v3.put(ax2, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 1.0f, 1.0f, (float) texID),
-            v4.put(ax2, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), 1.0f, 0.0f, (float) texID)
+            v1.put(ax, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
+            v2.put(ax, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 1.0f, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
+            v3.put(ax2, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 1.0f, 1.0f, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
+            v4.put(ax2, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), 1.0f, 0.0f, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w)
         ), useCamera);
     }
 
@@ -316,10 +339,10 @@ public class DrawContext2D {
         int texID = BatchController.addTexture(texture.getParentTexture());
 
         BatchController.addVertices(verts.set(
-            v1.put(ax, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), ux0, uy0, (float) texID),
-            v2.put(ax, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), ux0, uy1, (float) texID),
-            v3.put(ax2, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), ux1, uy1, (float) texID),
-            v4.put(ax2, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), ux1, uy0, (float) texID)
+            v1.put(ax, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), ux0, uy0, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
+            v2.put(ax, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), ux0, uy1, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
+            v3.put(ax2, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), ux1, uy1, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
+            v4.put(ax2, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), ux1, uy0, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w)
         ), useCamera);
     }
 
@@ -331,10 +354,10 @@ public class DrawContext2D {
         int texID = BatchController.addTexture(texture);
 
         BatchController.addVertices(verts.set(
-            v1.put(x1 - thetaCos, y1 + thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, texID),
-            v2.put(x1 + thetaCos, y1 - thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 1.0f, texID),
-            v3.put(x2 + thetaCos, y2 - thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 1.0f, 1.0f, texID),
-            v4.put(x2 - thetaCos, y2 + thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), 1.0f, 0.0f, texID)
+            v1.put(x1 - thetaCos, y1 + thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, texID, canvas.x, canvas.y, canvas.z, canvas.w),
+            v2.put(x1 + thetaCos, y1 - thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 1.0f, texID, canvas.x, canvas.y, canvas.z, canvas.w),
+            v3.put(x2 + thetaCos, y2 - thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 1.0f, 1.0f, texID, canvas.x, canvas.y, canvas.z, canvas.w),
+            v4.put(x2 - thetaCos, y2 + thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), 1.0f, 0.0f, texID, canvas.x, canvas.y, canvas.z, canvas.w)
         ), useCamera);
     }
 
@@ -351,10 +374,10 @@ public class DrawContext2D {
         int texID = BatchController.addTexture(texture.getParentTexture());
 
         BatchController.addVertices(verts.set(
-            v1.put(x1 - thetaCos, y1 + thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), ux0, uy0, texID),
-            v2.put(x1 + thetaCos, y1 - thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), ux0, uy1, texID),
-            v3.put(x2 + thetaCos, y2 - thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), ux1, uy1, texID),
-            v4.put(x2 - thetaCos, y2 + thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), ux1, uy0, texID)
+            v1.put(x1 - thetaCos, y1 + thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), ux0, uy0, texID, canvas.x, canvas.y, canvas.z, canvas.w),
+            v2.put(x1 + thetaCos, y1 - thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), ux0, uy1, texID, canvas.x, canvas.y, canvas.z, canvas.w),
+            v3.put(x2 + thetaCos, y2 - thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), ux1, uy1, texID, canvas.x, canvas.y, canvas.z, canvas.w),
+            v4.put(x2 - thetaCos, y2 + thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), ux1, uy0, texID, canvas.x, canvas.y, canvas.z, canvas.w)
         ), useCamera);
     }
 
@@ -370,20 +393,20 @@ public class DrawContext2D {
 
     }
 
-    public void text(int x, int y, int height, String text) {
-        text(x, y, height, text, font, 0.0f, 0, 0);
+    public void text(boolean textChroma, int x, int y, int height, String text) {
+        text(textChroma, x, y, height, text, font, 0.0f, 0, 0);
     }
 
-    public void text(int x, int y, int height, String text, BitmapFont font) {
-        text(x, y, height, text, font, 0.0f, 0, 0);
+    public void text(boolean textChroma, int x, int y, int height, String text, BitmapFont font) {
+        text(textChroma, x, y, height, text, font, 0.0f, 0, 0);
     }
 
-    public void text(int x, int y, int height, String text, BitmapFont font, float rotation) {
+    public void text(boolean textChroma, int x, int y, int height, String text, BitmapFont font, float rotation) {
         int width = font.getWidth(text, height);
-        text(x, y, height, text, font, rotation, x + width / 4, y + height / 4);
+        text(textChroma, x, y, height, text, font, rotation, x + width / 4, y + height / 4);
     }
 
-    public void text(int x, int y, int height, String text, BitmapFont font, float rotation, int originX, int originY) {
+    public void text(boolean textChroma, int x, int y, int height, String text, BitmapFont font, float rotation, int originX, int originY) {
         int charX = 0;
         float radRotation = (float) Math.toRadians(rotation);
 
@@ -393,6 +416,76 @@ public class DrawContext2D {
             if (c <= 31) continue;
 
             Glyph glyph = font.getGlyph(c);
+
+            int yOff = glyph.getYOffset(height) - (font.getMaxHeight(height) - glyph.getHeight(height));
+
+            float ax = x + charX + glyph.getXOffset(height);
+            float ay = y - yOff;
+            float ax2 = x + charX + glyph.getXOffset(height) + glyph.getWidth(height);
+            float ay2 = y + glyph.getHeight(height) - yOff;
+
+            if(textChroma) {
+                gradient.resetTo(0, 0, 0, 255);
+                gradient.setLeft(gradient.bottomLeft.toRGB(Utils.overlap(getHue((int) ax, (int) ay), 0, 359), 1, 1));
+                gradient.setRight(gradient.bottomRight.toRGB(Utils.overlap(getHue((int) ax2, (int) ay2), 0, 359), 1, 1));
+                gradient = gradient.normalize(1.0f);
+            }
+
+            charX += glyph.getXAdvance(height);
+
+            Vector2f[] uvs = glyph.getCoordinates();
+            float ux0 = uvs[0].x;
+            float ux1 = uvs[1].x;
+            float uy1 = uvs[0].y;
+            float uy0 = uvs[1].y;
+
+            int texID = BatchController.addTexture(font.getBitmap());
+
+            BatchController.addVertices(verts.set(
+                v1.put(ax, ay2, 0.0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), ux0, uy0, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
+                v2.put(ax, ay, 0.0f, radRotation, originX, originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), ux0, uy1, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
+                v3.put(ax2, ay, 0.0f, radRotation, originX, originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), ux1, uy1, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
+                v4.put(ax2, ay2, 0.0f, radRotation, originX, originY, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), ux1, uy0, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w)
+            ), useCamera);
+        }
+    }
+
+    private int getHue(int x, int y) {
+        return (int) (((x * 180 / window.getWidth()) + ((y * 180 / window.getHeight()) * -0.5) + (window.getCurrentFrame())) * 5.0);
+    }
+
+    public void animatedText(TextAnimator animator) {
+        animatedText(animator, font, 0.0f, 0, 0);
+    }
+
+    public void animatedText(TextAnimator animator, BitmapFont font) {
+        animatedText(animator, font, 0.0f, 0, 0);
+    }
+
+    public void animatedText(TextAnimator animator, BitmapFont font, float rotation) {
+        int width = animator.getTotalWidth(font);
+        int height = animator.getHeight();
+        animatedText(animator, font, rotation, animator.getX() + width / 4, animator.getY() + height / 4);
+    }
+
+    public void animatedText(TextAnimator animator, BitmapFont font, float rotation, int originX, int originY) {
+        int charX = 0;
+        float radRotation = (float) Math.toRadians(rotation);
+
+        for (int i = 0; i < animator.getStates().length; i++) {
+            TextAnimation.TextState state = animator.getStates()[i];
+
+            char c = state.content;
+
+            if (c <= 31) continue;
+
+            Glyph glyph = font.getGlyph(c);
+
+            if(glyph == null) return;
+
+            int height = state.height;
+            int x = state.x;
+            int y = state.y;
 
             int yOff = glyph.getYOffset(height) - (font.getMaxHeight(height) - glyph.getHeight(height));
 
@@ -412,10 +505,10 @@ public class DrawContext2D {
             int texID = BatchController.addTexture(font.getBitmap());
 
             BatchController.addVertices(verts.set(
-                v1.put(ax, ay2, 0.0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), ux0, uy0, (float) texID),
-                v2.put(ax, ay, 0.0f, radRotation, originX, originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), ux0, uy1, (float) texID),
-                v3.put(ax2, ay, 0.0f, radRotation, originX, originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), ux1, uy1, (float) texID),
-                v4.put(ax2, ay2, 0.0f, radRotation, originX, originY, gradient.bottomRight.getRed(), gradient.bottomRight.getGreen(), gradient.bottomRight.getBlue(), gradient.bottomRight.getAlpha(), ux1, uy0, (float) texID)
+                v1.put(ax, ay2, 0.0f, radRotation, originX, originY, state.color.r, state.color.g, state.color.b, state.color.a, ux0, uy0, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
+                v2.put(ax, ay, 0.0f, radRotation, originX, originY, state.color.r, state.color.g, state.color.b, state.color.a, ux0, uy1, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
+                v3.put(ax2, ay, 0.0f, radRotation, originX, originY, state.color.r, state.color.g, state.color.b, state.color.a, ux1, uy1, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
+                v4.put(ax2, ay2, 0.0f, radRotation, originX, originY, state.color.r, state.color.g, state.color.b, state.color.a, ux1, uy0, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w)
             ), useCamera);
         }
     }

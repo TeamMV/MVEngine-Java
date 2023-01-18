@@ -51,6 +51,6 @@ public class LayerSection extends AbstractLayout implements IgnoreDraw {
     }
 
     public void setLayerToRenderOn(@Range(from=0, to=10) int layerToRenderOn) {
-        this.layerToRenderOn = Utils.clamp(0, layerToRenderOn, 10);
+        this.layerToRenderOn = Utils.clamp(layerToRenderOn, 0, 10);
     }
 }

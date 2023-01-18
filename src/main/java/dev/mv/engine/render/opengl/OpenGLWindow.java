@@ -1,6 +1,5 @@
 package dev.mv.engine.render.opengl;
 
-import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.Camera;
 import dev.mv.engine.render.shared.Render2D;
@@ -340,6 +339,11 @@ public class OpenGLWindow implements Window {
     public void setUPSCap(int cap) {
         info.maxUPS = cap;
         timeU = 1000000000f / info.maxUPS;
+    }
+
+    @Override
+    public long getCurrentFrame() {
+        return currentFrame;
     }
 
     @Override

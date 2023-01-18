@@ -8,7 +8,11 @@ import dev.mv.editor.loading.LoadingManager;
 import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.GuiRegistry;
+import dev.mv.engine.gui.components.Button;
 import dev.mv.engine.gui.components.ProgressBar;
+import dev.mv.engine.gui.components.animations.TextAnimation;
+import dev.mv.engine.gui.components.layouts.CollapseMenu;
+import dev.mv.engine.gui.components.layouts.HorizontalLayout;
 import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.parsing.gui.GuiParser;
 import dev.mv.engine.gui.parsing.theme.ThemeParser;
@@ -17,10 +21,7 @@ import dev.mv.engine.input.Input;
 import dev.mv.engine.input.InputCollector;
 import dev.mv.engine.input.InputProcessor;
 import dev.mv.engine.render.WindowCreateInfo;
-import dev.mv.engine.render.shared.Camera;
-import dev.mv.engine.render.shared.DrawContext2D;
-import dev.mv.engine.render.shared.DrawContext3D;
-import dev.mv.engine.render.shared.Window;
+import dev.mv.engine.render.shared.*;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.font.BitmapFont;
 import dev.mv.engine.render.shared.models.Entity;
@@ -39,6 +40,8 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import static dev.mv.utils.Utils.await;
 import static dev.mv.utils.Utils.sleep;
@@ -64,7 +67,7 @@ public class Main {
         MVEngine.init(new ApplicationConfig()
             .setName("MVEngine")
             .setVersion(Version.parse("v0.1.0"))
-            .setRenderingApi(ApplicationConfig.RenderingAPI.VULKAN));
+            .setRenderingApi(ApplicationConfig.RenderingAPI.OPENGL));
 
         WindowCreateInfo createInfo = new WindowCreateInfo();
         createInfo.width = 1200;
@@ -93,36 +96,34 @@ public class Main {
         window.run(() -> {
             System.out.println(MVEngine.getRenderingApi());
 
-            //InputProcessor processor = new InputProcessor();
-            //new InputCollector(processor, window).start();
-            //Input.init();
-//
-            ////renderer2D = new DrawContext2D(window);
-            //try {
-            //    font = new BitmapFont("/fonts/FreeSans/FreeSans.png", "/fonts/FreeSans/FreeSans.fnt");
-            //} catch (IOException e) {
-            //    throw new RuntimeException(e);
-            //}
+            InputProcessor processor = new InputProcessor();
+            new InputCollector(processor, window).start();
+            Input.init();
 
-            //renderer3D = new DrawContext3D(window);
+            renderer2D = new DrawContext2D(window);
+            try {
+                font = new BitmapFont("/fonts/FreeSans/FreeSans.png", "/fonts/FreeSans/FreeSans.fnt");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-            //try {
-            //    texture = RenderBuilder.newTexture("/images/LoadingLogo.png");
-//
-            //    ObjectLoader loader = MVEngine.getObjectLoader();
-            //    Model mCruiser = loader.loadExternalModel("/models/cruiser/cruiser.obj");
-            //    Texture tCruiser = RenderBuilder.newTexture("/models/cruiser/cruiser.bmp");
-            //    mCruiser.setTexture(tCruiser, 1.0f);
-            //    cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
-            //} catch (IOException e) {
-            //    throw new RuntimeException(e);
-            //}
+            renderer3D = new DrawContext3D(window);
+            try {
+                texture = RenderBuilder.newTexture("/images/LoadingLogo.png");
+                ObjectLoader loader = MVEngine.getObjectLoader();
+                Model mCruiser = loader.loadExternalModel("/models/cruiser/cruiser.obj");
+                Texture tCruiser = RenderBuilder.newTexture("/models/cruiser/cruiser.bmp");
+                mCruiser.setTexture(tCruiser, 1.0f);
+                cruiser = new Entity(mCruiser, new Vector3f(0, 0, -2.5f), new Vector3f(0, 0, 0), 1);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            theme.setFont(font);
 
-            //guiRegistry = guiParser.parse(window, renderer2D);
-
-            //Gui test
-            //theme.setFont(font);
+            guiRegistry = guiParser.parse(window, renderer2D);
             /*
+            Gui test
+
             button1.setTexture(texture);
 
             button2.setText("Click me!");
@@ -164,44 +165,39 @@ public class Main {
                 }
             });
             */
-            //new PromiseNull((res, rej) -> {
-            //    while(true) {
-            //        ((ProgressBar) guiRegistry.findGui("myGui").getRoot().findElementById("prgbar1")).incrementByPercentage(1);
-            //        await(sleep(100));
-            //    }
-            //});
-//
-            //try {
-            //    guiRegistry.applyTheme(theme);
-            //} catch (IOException e) {
-            //    throw new RuntimeException(e);
-            //}
-//
-            //System.out.println(guiRegistry.getGuis()[0]);
-//
-            //R.GUIS = guiRegistry;
+            new PromiseNull((res, rej) -> {
+                while(true) {
+                    ((ProgressBar) guiRegistry.findGui("myGui").getRoot().findElementById("prgbar1")).incrementByPercentage(1);
+                    await(sleep(100));
+                }
+            });
 
-        }, null, () -> {
+            try {
+                guiRegistry.applyTheme(theme);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
+            List<CollapseMenu> menus = guiRegistry.findGui("myGui").getRoot().findElementsByType(CollapseMenu.class);
+            menus.forEach(menu -> menu.setBaseColor(Color.BLACK));
+
+            System.out.println(guiRegistry.getGuis()[0]);
+            R.GUIS = guiRegistry;
+
+            }, null, () -> {
             r += 1f;
             if(r >= 100) {
                 r = 0;
             }
-
             //layout.setX(Input.mouse[Input.MOUSE_X]);
             //layout.setY(Input.mouse[Input.MOUSE_Y]);
-
-            //R.GUIS.renderGuis();
-
+            R.GUIS.renderGuis();
             //renderer3D.object(cruiser);
             //renderer3D.processPointLight(pointlight);
             //renderer3D.processSpotLight(spotlight);
             //renderer3D.processDirectionalLight(directionalLight);
-
             //cruiser.incrementRotation(0.1f, 0.1f, 0.1f);
-
             Camera camera = window.getCamera();
-
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_W) == GLFW_PRESS) {
                 camera.move(0.0f, 0.0f, -1f);
             }
@@ -214,7 +210,6 @@ public class Main {
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_D) == GLFW_PRESS) {
                 camera.move(1f, 0.0f, 0.0f);
             }
-
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
                 camera.rotate(0.0f, 1.0f, 0.0f);
             }
@@ -227,7 +222,6 @@ public class Main {
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_DOWN) == GLFW_PRESS) {
                 camera.rotate(1.0f, 0.0f, 0.0f);
             }
-
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_SPACE) == GLFW_PRESS) {
                 camera.move(0.0f, 0.01f, 0.0f);
             }

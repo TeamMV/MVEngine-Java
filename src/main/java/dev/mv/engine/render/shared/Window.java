@@ -4,8 +4,6 @@ import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import org.joml.Matrix4f;
 
-import java.util.function.Consumer;
-
 public interface Window {
     void run();
 
@@ -28,6 +26,8 @@ public interface Window {
     int getUPSCap();
 
     void setUPSCap(int cap);
+
+    long getCurrentFrame();
 
     long getGlfwId();
 

@@ -221,8 +221,8 @@ public class VulkanSwapChain {
         VkExtent2D result = VkExtent2D.calloc(stack);
         if (surfCapabilities.currentExtent().width() == 0xFFFFFFFF) {
             // Surface size undefined. Set to the window size if within bounds
-            int width = Utils.clamp(surfCapabilities.minImageExtent().width(), window.getWidth(), surfCapabilities.maxImageExtent().width());
-            int height = Utils.clamp(surfCapabilities.minImageExtent().height(), window.getHeight(), surfCapabilities.maxImageExtent().height());
+            int width = Utils.clamp(window.getWidth(), surfCapabilities.minImageExtent().width(), surfCapabilities.maxImageExtent().width());
+            int height = Utils.clamp(window.getHeight(), surfCapabilities.minImageExtent().height(), surfCapabilities.maxImageExtent().height());
 
             result.width(width);
             result.height(height);

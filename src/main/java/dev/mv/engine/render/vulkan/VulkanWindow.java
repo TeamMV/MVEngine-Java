@@ -265,6 +265,11 @@ public class VulkanWindow implements Window {
     }
 
     @Override
+    public long getCurrentFrame() {
+        return 0;
+    }
+
+    @Override
     public long getGlfwId() {
         return window;
     }

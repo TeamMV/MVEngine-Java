@@ -1,5 +1,7 @@
 package dev.mv.engine.gui.components;
 
+import dev.mv.engine.gui.components.animations.TextAnimation;
+import dev.mv.engine.gui.components.animations.TextAnimator;
 import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.event.ClickListener;
@@ -18,6 +20,7 @@ public class Checkbox extends ImageButton implements Text {
     private TextureRegion tick;
     private BitmapFont font;
     private String text = "";
+    private boolean chroma;
 
     public Checkbox(Window window, Element parent, int width, int height) {
         super(window, parent, width, height);
@@ -45,7 +48,7 @@ public class Checkbox extends ImageButton implements Text {
                 if(!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.roundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRoundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
@@ -74,7 +77,7 @@ public class Checkbox extends ImageButton implements Text {
                 if(!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.triangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidTriangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
@@ -103,7 +106,7 @@ public class Checkbox extends ImageButton implements Text {
                 if(!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.rectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
@@ -132,7 +135,7 @@ public class Checkbox extends ImageButton implements Text {
             draw.color(theme.getDisabledTextColor());
         }
 
-        draw.text(initialState.posX + initialState.width + 5, initialState.posY + textDistance(), initialState.height - textDistance() * 2, text, font, initialState.rotation, initialState.originX, initialState.originY);
+        draw.text(chroma, initialState.posX + initialState.width + 5, initialState.posY + textDistance(), initialState.height - textDistance() * 2, text, font, initialState.rotation, initialState.originX, initialState.originY);
     }
 
     protected int textDistance() {
@@ -241,6 +244,21 @@ public class Checkbox extends ImageButton implements Text {
     @Override
     public String getText() {
         return text;
+    }
+
+    @Override
+    public void applyAnimation(TextAnimation animation) {
+
+    }
+
+    @Override
+    public TextAnimator getTextAnimator() {
+        return null;
+    }
+
+    @Override
+    public void setUseChroma(boolean chroma) {
+        this.chroma = chroma;
     }
 
     @Override

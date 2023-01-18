@@ -125,7 +125,7 @@ public class PasswordInputBox extends InputBox{
                 if(!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.roundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRoundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
@@ -142,7 +142,7 @@ public class PasswordInputBox extends InputBox{
                 if(!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.triangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidTriangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
@@ -159,7 +159,7 @@ public class PasswordInputBox extends InputBox{
                 if(!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.rectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if(!enabled) {
                     draw.color(theme.getDisabledBaseColor());
@@ -181,11 +181,11 @@ public class PasswordInputBox extends InputBox{
         }
         if(!isHidden) {
             if(displayText.isEmpty() && !selected) {
-                draw.text(animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height -  textDistance() * 2)), font, animationState.rotation, animationState.originX, animationState.originY);
+                draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height -  textDistance() * 2)), font, animationState.rotation, animationState.originX, animationState.originY);
             } else {
-                draw.text(animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
+                draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
             }        } else {
-            draw.text(animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, "*".repeat(displayText.length()), font, animationState.rotation, animationState.originX, animationState.originY);
+            draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, "*".repeat(displayText.length()), font, animationState.rotation, animationState.originX, animationState.originY);
         }
 
         if(selected) {

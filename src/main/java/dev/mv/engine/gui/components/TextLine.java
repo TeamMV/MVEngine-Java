@@ -1,5 +1,7 @@
 package dev.mv.engine.gui.components;
 
+import dev.mv.engine.gui.components.animations.TextAnimation;
+import dev.mv.engine.gui.components.animations.TextAnimator;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.event.EventListener;
@@ -13,6 +15,7 @@ import dev.mv.engine.render.shared.font.BitmapFont;
 public class TextLine extends Element implements Text {
     private String text = "";
     private BitmapFont font;
+    private boolean chroma;
 
     public TextLine(Window window, Element parent, int height) {
         super(window, -1, -1, 0, height, parent);
@@ -38,7 +41,7 @@ public class TextLine extends Element implements Text {
     public void draw(DrawContext2D draw) {
         draw.color(animationState.textColor);
 
-        draw.text(initialState.posX, initialState.posY, initialState.height, text, font, initialState.rotation, initialState.originX, initialState.originY);
+        draw.text(chroma, initialState.posX, initialState.posY, initialState.height, text, font, initialState.rotation, initialState.originX, initialState.originY);
     }
 
     @Override
@@ -59,6 +62,21 @@ public class TextLine extends Element implements Text {
     @Override
     public String getText() {
         return null;
+    }
+
+    @Override
+    public void applyAnimation(TextAnimation animation) {
+
+    }
+
+    @Override
+    public TextAnimator getTextAnimator() {
+        return null;
+    }
+
+    @Override
+    public void setUseChroma(boolean chroma) {
+        this.chroma = chroma;
     }
 
     @Override

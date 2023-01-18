@@ -9,10 +9,12 @@ layout (location = 3) in vec4 aColor;
 layout (location = 4) in vec2 aTexCoords;
 layout (location = 5) in float aTexID;
 layout (location = 6) in float aUseCam;
-
+layout (location = 7) in vec4 aCanvasCoords;
 out vec4 fColor;
 out vec2 fTexCoords;
 out float fTexID;
+out vec4 fCanvasCoords;
+out vec2 fRes;
 
 uniform mat4 uProjection;
 uniform mat4 uView;
@@ -24,6 +26,8 @@ void main() {
     fColor = aColor;
     fTexCoords = aTexCoords;
     fTexID = aTexID;
+    fCanvasCoords = aCanvasCoords;
+    fRes = vec2(uResX, uResY);
 
     vec2 pos = aVertPos.xy;
 

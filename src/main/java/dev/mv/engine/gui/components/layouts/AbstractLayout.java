@@ -217,6 +217,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void setTheme(Theme theme) {
+        super.setTheme(theme);
         this.theme = theme;
         for (Element element : this) {
             element.setTheme(theme);
@@ -297,13 +298,21 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         return null;
     }
 
-    public <T> T[] findElementsByTag(String tag) {
-        List<Element> elementList = new ArrayList<>();
+    public <T> List<T> findElementsByTag(String tag) {
+        List<T> elementList = new ArrayList<>();
         for(Element e : allElementsDeep()) {
             for(String elementTag : e.getTags()) {
-                if(tag.equals(tag) && !elementList.contains(e)) elementList.add(e);
+                if(elementTag.equals(tag) && !elementList.contains(e)) elementList.add((T) e);
             }
         }
-        return (T[]) Utils.array(elementList);
+        return elementList;
+    }
+
+    public <T> List<T> findElementsByType(Class<? extends T> type) {
+        List<T> elementList = new ArrayList<>();
+        for(Element e : allElementsDeep()) {
+            if(e.getClass().equals(type) && !elementList.contains(e)) elementList.add((T) e);
+        }
+        return elementList;
     }
 }

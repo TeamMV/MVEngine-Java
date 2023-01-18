@@ -3,6 +3,8 @@ package dev.mv.engine.gui.components.layouts;
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.ImageButton;
 import dev.mv.engine.gui.components.TextLine;
+import dev.mv.engine.gui.components.animations.TextAnimation;
+import dev.mv.engine.gui.components.animations.TextAnimator;
 import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.components.extras.Toggle;
@@ -11,6 +13,7 @@ import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
 import dev.mv.engine.input.Input;
+import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
@@ -19,6 +22,7 @@ import java.util.function.Predicate;
 public class CollapseMenu extends AbstractLayout implements Toggle, Text{
     private boolean collapsed = true;
     private LayerSection layerSection;
+    private boolean chroma;
 
     private UpdateSection updateSection;
     private HorizontalLayout rootLayout;
@@ -48,10 +52,10 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
         stackLayout = new VerticalLayout(window, rootLayout);
         stackLayout.setSpacing(5);
         stackLayout.alignContent(VerticalLayout.Align.LEFT);
-        headerLayout = new HorizontalLayout(window, rootLayout);
+        headerLayout = new HorizontalLayout(window, stackLayout);
         headerLayout.setPadding(5, 5, 5, 5);
         headerLayout.showFrame();
-        contentLayout = new VerticalLayout(window, rootLayout);
+        contentLayout = new VerticalLayout(window, stackLayout);
         contentLayout.setSpacing(5);
         stackLayout.addElement(headerLayout);
 
@@ -77,6 +81,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
         headerLayout.setSpacing(5);
 
         contentLayout.setPadding(5, 5, 5, 5);
+        contentLayout.setSpacing(5);
         contentLayout.showFrame();
 
         layerSection.addElement(updateSection);
@@ -129,7 +134,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
 
     @Override
     public void draw(DrawContext2D draw) {
-        updateSection.draw(draw);
+        layerSection.draw(draw);
     }
 
     @Override
@@ -150,6 +155,22 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
     @Override
     public String getText() {
         return collapseButtonText.getText();
+    }
+
+    @Override
+    public void applyAnimation(TextAnimation animation) {
+
+    }
+
+    @Override
+    public TextAnimator getTextAnimator() {
+        return null;
+    }
+
+    @Override
+    public void setUseChroma(boolean chroma) {
+        this.chroma = chroma;
+        collapseButtonText.setUseChroma(chroma);
     }
 
     @Override
@@ -222,7 +243,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
 
     @Override
     public int getX() {
-        return rootLayout != null ? rootLayout.getX() : 0;
+        return headerLayout != null ? headerLayout.getX() : 0;
     }
 
     @Override
@@ -232,7 +253,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
 
     @Override
     public int getY() {
-        return rootLayout != null ?  rootLayout.getY() : 0;
+        return headerLayout != null ?  headerLayout.getY() : 0;
     }
 
     @Override
@@ -253,12 +274,37 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
 
     @Override
     public int getHeight() {
-        return headerLayout != null ?  headerLayout.getHeight() : 0;
+        //for some weird reason, the root layout height works here even if it should'nt lol.
+        return rootLayout != null ?  rootLayout.getHeight() : 0;
     }
 
     @Override
     public void setHeight(int height) {
         initialState.height = height;
         initialState.originY = initialState.posY + height / 2;
+    }
+
+    @Override
+    public void setBaseColor(Color color) {
+        headerLayout.setBaseColor(color);
+        contentLayout.setBaseColor(color);
+    }
+
+    @Override
+    public void setOutlineColor(Color color) {
+        headerLayout.setOutlineColor(color);
+        contentLayout.setOutlineColor(color);
+    }
+
+    @Override
+    public void setTextColor(Color color) {
+        headerLayout.setTextColor(color);
+        contentLayout.setTextColor(color);
+    }
+
+    @Override
+    public void setExtraColor(Color color) {
+        headerLayout.setExtraColor(color);
+        contentLayout.setExtraColor(color);
     }
 }

@@ -6,24 +6,51 @@ public class Gradient {
     public Color bottomLeft;
     public Color bottomRight;
 
+    public Gradient() {
+        topLeft = new Color(0, 0, 0, 0);
+        topRight = new Color(0, 0, 0, 0);
+        bottomLeft = new Color(0, 0, 0, 0);
+        bottomRight = new Color(0, 0, 0, 0);
+    }
+
     public void setTop(Color color) {
-        topLeft = color;
-        topRight = color;
+        topLeft.set(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        topRight.set(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
     }
 
     public void setBottom(Color color) {
-        bottomLeft = color;
-        bottomRight = color;
+        bottomLeft.set(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        bottomRight.set(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
     }
 
     public void setLeft(Color color) {
-        topLeft = color;
-        bottomLeft = color;
+        topLeft.set(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        bottomLeft.set(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
     }
 
     public void setRight(Color color) {
-        topRight = color;
-        bottomRight = color;
+        topRight.set(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        bottomRight.set(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+    }
+
+    public void setTop(float r, float g, float b, float a) {
+        topLeft.set(r, g, b, a);
+        topRight.set(r, g, b, a);
+    }
+
+    public void setBottom(float r, float g, float b, float a) {
+        bottomLeft.set(r, g, b, a);
+        bottomRight.set(r, g, b, a);
+    }
+
+    public void setLeft(float r, float g, float b, float a) {
+        topLeft.set(r, g, b, a);
+        bottomLeft.set(r, g, b, a);
+    }
+
+    public void setRight(float r, float g, float b, float a) {
+        topRight.set(r, g, b, a);
+        bottomRight.set(r, g, b, a);
     }
 
     @Override
@@ -51,5 +78,12 @@ public class Gradient {
         bottomLeft.normalize(normalizedMaximum);
         bottomRight.normalize(normalizedMaximum);
         return this;
+    }
+
+    public void resetTo(int r, int g, int b, int a) {
+        topLeft.set(r, g, b, a);
+        bottomLeft.set(r, g, b, a);
+        topRight.set(r, g, b, a);
+        bottomRight.set(r, g, b, a);
     }
 }
