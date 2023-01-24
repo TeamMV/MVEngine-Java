@@ -7,6 +7,7 @@ import dev.mv.engine.render.shared.Render3D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.batch.BatchController;
+import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.utils.RenderUtils;
 import imgui.ImGui;
 import imgui.gl3.ImGuiImplGl3;
@@ -30,7 +31,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class OpenGLWindow implements Window {
     private final float FOV = (float) Math.toRadians(60);
     private final float Z_NEAR = 0.01f;
-    private final float Z_FAR = 100f;
+    private final float Z_FAR = 200f;
     private int currentFPS, currentUPS;
     private int width, height;
     private double deltaF;
@@ -42,6 +43,8 @@ public class OpenGLWindow implements Window {
     private Matrix4f projectionMatrix = null;
     private ImGuiImplGlfw glfwImpl;
     private ImGuiImplGl3 glImpl;
+    BatchController batchController;
+    BatchController3D batchController3D;
     @Getter
     private WindowCreateInfo info;
     private int oW, oH, oX, oY;
@@ -69,6 +72,11 @@ public class OpenGLWindow implements Window {
         render2D = new OpenGLRender2D(this);
         render3D = new OpenGLRender3D(this);
         camera = new Camera();
+        camera.moveTo(0, 30, 0);
+        batchController3D = new BatchController3D(this, 1000);
+        batchController3D.start();
+        //batchController = new BatchController(this, 1000);
+        //batchController.start();
 
         if (onStart != null) {
             onStart.run();
@@ -130,8 +138,8 @@ public class OpenGLWindow implements Window {
 
         glfwShowWindow(window);
 
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        //glEnable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
@@ -198,8 +206,9 @@ public class OpenGLWindow implements Window {
 
                 updateInputs();
 
-                BatchController.finishAndRender();
-                //render3D.render();
+                //batchController.finishAndRender();
+                batchController3D.finishAndRender();
+                render3D.render();
 
                 ImGui.render();
                 glImpl.renderDrawData(ImGui.getDrawData());
@@ -385,5 +394,15 @@ public class OpenGLWindow implements Window {
     @Override
     public ImGuiImplGlfw getImGuiGlfwImpl() {
         return glfwImpl;
+    }
+
+    @Override
+    public BatchController getBatchController() {
+        return batchController;
+    }
+
+    @Override
+    public BatchController3D getBatchController3D() {
+        return batchController3D;
     }
 }

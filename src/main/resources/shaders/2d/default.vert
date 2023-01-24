@@ -35,9 +35,9 @@ void main() {
         mat2 rot;
         rot[0] = vec2(cos(aRotation), -sin(aRotation));
         rot[1] = vec2(sin(aRotation), cos(aRotation));
-        pos.xy -= aRotationOrigin.xy;
+        pos -= aRotationOrigin;
         pos = rot * pos;
-        pos.xy += aRotationOrigin.xy;
+        pos += aRotationOrigin;
     }
 
     if(aUseCam == 1) {

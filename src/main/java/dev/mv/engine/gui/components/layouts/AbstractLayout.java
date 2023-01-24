@@ -315,4 +315,31 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         }
         return elementList;
     }
+
+    public <T> List<T> findElementsBySuperType(Class<? extends T> type) {
+        List<T> elementList = new ArrayList<>();
+        for(Element e : allElementsDeep()) {
+            if(type.isAssignableFrom(e.getClass()) && !elementList.contains(e)) elementList.add((T) e);
+        }
+        return elementList;
+    }
+
+    @Override
+    public void setWidth(int width) {
+        //for(Element e : allElementsDeep()) {
+        //    if (!(e instanceof AbstractLayout)) {
+        //        e.setWidth(e.getWidth() + width);
+        //    }
+        //}
+    }
+
+    @Override
+    public void setHeight(int height) {
+        //for(Element e : allElementsDeep()) {
+        //    if (!(e instanceof AbstractLayout)) {
+        //        e.setHeight(e.getHeight() + height);
+        //        System.out.println(e.getHeight() + ": " + e);
+        //    }
+        //}
+    }
 }

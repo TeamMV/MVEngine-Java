@@ -7,6 +7,7 @@ const int MAX_LIGHTS = 5;
 in vec2 oTextureCoord;
 in vec3 oNormal;
 in vec3 oPos;
+in vec4 oColor;
 
 out vec4 fragColor;
 
@@ -128,4 +129,7 @@ void main() {
 
     fragColor = ambientC * vec4(uAmbient, 1.0) + lightResult;
     fragColor = texture(uTexSampler, oTextureCoord);
+    if(oColor.a != 0.0) {
+        fragColor = oColor;
+    }
 }

@@ -269,6 +269,6 @@ public class Checkbox extends ImageButton implements Text {
 
         if(font == null) return super.getWidth();
 
-        return super.getWidth() + 5 + font.getWidth(text, getHeight() - textDistance() * 2);
+        return super.getWidth() + 10 + font.getWidth(text, getHeight() - textDistance() * 2);
     }
 }

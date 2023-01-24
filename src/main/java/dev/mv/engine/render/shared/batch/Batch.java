@@ -39,7 +39,7 @@ public class Batch {
     public static final int TEX_ID_OFFSET_BYTES = TEX_ID_OFFSET * Float.BYTES;
     public static final int USE_CAMERA_OFFSET = TEX_ID_OFFSET + TEX_ID_SIZE;
     public static final int USE_CAMERA_OFFSET_BYTES = USE_CAMERA_OFFSET * Float.BYTES;
-    public static final int CANVAS_COORDS_OFFSET = USE_CAMERA_OFFSET + CANVAS_COORDS_SIZE;
+    public static final int CANVAS_COORDS_OFFSET = USE_CAMERA_OFFSET + USE_CAMERA_SIZE;
     public static final int CANVAS_COORDS_OFFSET_BYTES = CANVAS_COORDS_OFFSET * Float.BYTES;
     private int maxSize;
     private float[] data;

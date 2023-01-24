@@ -1,13 +1,22 @@
 package dev.mv.engine.render.shared;
 
-import dev.mv.engine.render.opengl.OpenGLRender3D;
+import dev.mv.engine.render.shared.batch.BatchController3D;
+import dev.mv.engine.render.shared.batch.Vertex;
+import dev.mv.engine.render.shared.batch.VertexGroup;
 import dev.mv.engine.render.shared.models.Entity;
 
 public class DrawContext3D {
-    private static Render3D ctx3D = null;
+    private Render3D ctx3D = null;
+    protected Window window;
+    private Color color;
+    private VertexGroup verts = new VertexGroup();
+    private Vertex v1 = new Vertex(), v2 = new Vertex(), v3 = new Vertex(), v4 = new Vertex();
+    private boolean useCamera = true;
 
     public DrawContext3D(Window window) {
+        this.window = window;
         ctx3D = window.getRender3D();
+        color = new Color(0, 0, 0, 0);
     }
 
     public void object(Entity entity) {
@@ -16,5 +25,19 @@ public class DrawContext3D {
         } else {
             ctx3D.entity(entity);
         }
+    }
+
+    public void color(float r, float g, float b, float a) {
+        color.set(r / 255f, g / 255f, b / 255f, a / 255f);
+    }
+
+    public void color(Color color) {
+        color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+    }
+
+    public void point(int x, int y, int z) {
+        window.getBatchController3D().pushVertex(
+            v1.put(x, y, z, color.r, color.g, color.b, color.a)
+        );
     }
 }

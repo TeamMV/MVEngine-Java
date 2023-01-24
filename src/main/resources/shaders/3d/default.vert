@@ -1,10 +1,12 @@
 #version 400
 
 layout (location = 0) in vec3 position;
-layout (location = 1) in vec2 texCoord;
-layout (location = 2) in vec3 normal;
+layout (location = 1) in vec4 color;
+layout (location = 2) in vec2 texCoord;
+layout (location = 3) in vec3 normal;
 
 out vec2 oTextureCoord;
+out vec4 oColor;
 out vec3 oNormal;
 out vec3 oPos;
 
@@ -18,4 +20,5 @@ void main() {
     oTextureCoord = texCoord;
     oNormal = normal;
     oPos = worldPos.xyz;
+    oColor = color;
 }

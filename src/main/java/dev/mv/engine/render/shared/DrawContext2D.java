@@ -6,7 +6,6 @@ import dev.mv.engine.render.shared.font.BitmapFont;
 import dev.mv.engine.render.shared.font.Glyph;
 import dev.mv.engine.render.shared.texture.Animation;
 import dev.mv.engine.render.shared.texture.Texture;
-import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.Vertex;
 import dev.mv.engine.render.shared.batch.VertexGroup;
 import dev.mv.engine.render.shared.texture.TextureRegion;
@@ -25,16 +24,8 @@ public class DrawContext2D {
 
     public DrawContext2D(Window window) {
         this.window = window;
-        BatchController.init(window, 1000);
         gradient = new Gradient();
-        canvas = new Vector4f(0, 0, window.getWidth(), window.getHeight());
-    }
-
-    public DrawContext2D(Window window, int batchLimit) {
-        this.window = window;
-        BatchController.init(window, batchLimit);
-        gradient = new Gradient();
-        canvas = new Vector4f(0, 0, window.getWidth(), window.getHeight());
+        canvas = new Vector4f(500, 0, window.getWidth(), window.getHeight());
     }
 
     public void color(float r, float g, float b, float a) {
@@ -70,7 +61,7 @@ public class DrawContext2D {
 
     public void triangle(int x1, int y1, int x2, int y2, int x3, int y3, float rotation, int originX, int originY) {
         float radRotation = (float) Math.toRadians(rotation);
-        BatchController.addVertices(verts.set(
+        window.getBatchController().addVertices(verts.set(
             v1.put(x1, y1, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
             v2.put(x2, y2, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
             v3.put(x3, y3, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
@@ -93,7 +84,7 @@ public class DrawContext2D {
 
         float radRotation = (float) (rotation * (Math.PI / 180));
 
-        BatchController.addVertices(verts.set(
+        window.getBatchController().addVertices(verts.set(
             v1.put(ax, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
             v2.put(ax, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
             v3.put(ax2, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -203,7 +194,7 @@ public class DrawContext2D {
         double step = tau / precision;
         float radRotation = (float) Math.toRadians(rotation);
         for (double i = 0.0; i < tau; i += step)   {
-            BatchController.addVertices(verts.set(
+            window.getBatchController().addVertices(verts.set(
                 v1.put((float) (x + (radius * Math.cos(i))), (float) (y + (radius * Math.sin(i))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
                 v2.put((float) (x + (radius * Math.cos(i + step))), (float) (y + (radius * Math.sin(i + step))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
                 v3.put(x, y, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
@@ -241,7 +232,7 @@ public class DrawContext2D {
         double step = tau / precision;
         float radRotation = (float) Math.toRadians(rotation);
         for (double i = Math.toRadians(start); i < tau - rRange + Math.toRadians(start); i += step)   {
-            BatchController.addVertices(verts.set(
+            window.getBatchController().addVertices(verts.set(
                 v1.put((float) (x + (radius * Math.cos(i))), (float) (y + (radius * Math.sin(i))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
                 v2.put((float) (x + (radius * Math.cos(i + step))), (float) (y + (radius * Math.sin(i + step))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
                 v3.put(x, y, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
@@ -281,7 +272,7 @@ public class DrawContext2D {
         float thetaCos = (float) (Math.cos(theta) * (thickness / 2));
         float radRotation = (float) Math.toRadians(rotation);
 
-        BatchController.addVertices(verts.set(
+        window.getBatchController().addVertices(verts.set(
             v1.put(x1 - thetaCos, y1 + thetaSin, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
             v2.put(x1 + thetaCos, y1 - thetaSin, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
             v3.put(x2 + thetaCos, y2 - thetaSin, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -313,9 +304,9 @@ public class DrawContext2D {
 
         float radRotation = (float) (rotation * (Math.PI / 180));
 
-        int texID = BatchController.addTexture(texture);
+        int texID = window.getBatchController().addTexture(texture);
 
-        BatchController.addVertices(verts.set(
+        window.getBatchController().addVertices(verts.set(
             v1.put(ax, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
             v2.put(ax, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 1.0f, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
             v3.put(ax2, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 1.0f, 1.0f, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -336,9 +327,9 @@ public class DrawContext2D {
 
         float radRotation = (float) (rotation * (Math.PI / 180));
 
-        int texID = BatchController.addTexture(texture.getParentTexture());
+        int texID = window.getBatchController().addTexture(texture.getParentTexture());
 
-        BatchController.addVertices(verts.set(
+        window.getBatchController().addVertices(verts.set(
             v1.put(ax, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), ux0, uy0, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
             v2.put(ax, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), ux0, uy1, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
             v3.put(ax2, ay, 0.0f, radRotation, (float) originX, (float) originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), ux1, uy1, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -351,9 +342,9 @@ public class DrawContext2D {
         float thetaSin = (float) (Math.sin(theta) * thickness);
         float thetaCos = (float) (Math.cos(theta) * thickness);
 
-        int texID = BatchController.addTexture(texture);
+        int texID = window.getBatchController().addTexture(texture);
 
-        BatchController.addVertices(verts.set(
+        window.getBatchController().addVertices(verts.set(
             v1.put(x1 - thetaCos, y1 + thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, texID, canvas.x, canvas.y, canvas.z, canvas.w),
             v2.put(x1 + thetaCos, y1 - thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), 0.0f, 1.0f, texID, canvas.x, canvas.y, canvas.z, canvas.w),
             v3.put(x2 + thetaCos, y2 - thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), 1.0f, 1.0f, texID, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -371,9 +362,9 @@ public class DrawContext2D {
         float uy1 = texture.getUVCoordinates()[2];
         float uy0 = texture.getUVCoordinates()[3];
 
-        int texID = BatchController.addTexture(texture.getParentTexture());
+        int texID = window.getBatchController().addTexture(texture.getParentTexture());
 
-        BatchController.addVertices(verts.set(
+        window.getBatchController().addVertices(verts.set(
             v1.put(x1 - thetaCos, y1 + thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), ux0, uy0, texID, canvas.x, canvas.y, canvas.z, canvas.w),
             v2.put(x1 + thetaCos, y1 - thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), ux0, uy1, texID, canvas.x, canvas.y, canvas.z, canvas.w),
             v3.put(x2 + thetaCos, y2 - thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), ux1, uy1, texID, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -439,9 +430,9 @@ public class DrawContext2D {
             float uy1 = uvs[0].y;
             float uy0 = uvs[1].y;
 
-            int texID = BatchController.addTexture(font.getBitmap());
+            int texID = window.getBatchController().addTexture(font.getBitmap());
 
-            BatchController.addVertices(verts.set(
+            window.getBatchController().addVertices(verts.set(
                 v1.put(ax, ay2, 0.0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), ux0, uy0, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
                 v2.put(ax, ay, 0.0f, radRotation, originX, originY, gradient.topLeft.getRed(), gradient.topLeft.getGreen(), gradient.topLeft.getBlue(), gradient.topLeft.getAlpha(), ux0, uy1, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
                 v3.put(ax2, ay, 0.0f, radRotation, originX, originY, gradient.topRight.getRed(), gradient.topRight.getGreen(), gradient.topRight.getBlue(), gradient.topRight.getAlpha(), ux1, uy1, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -502,9 +493,9 @@ public class DrawContext2D {
             float uy1 = uvs[0].y;
             float uy0 = uvs[1].y;
 
-            int texID = BatchController.addTexture(font.getBitmap());
+            int texID = window.getBatchController().addTexture(font.getBitmap());
 
-            BatchController.addVertices(verts.set(
+            window.getBatchController().addVertices(verts.set(
                 v1.put(ax, ay2, 0.0f, radRotation, originX, originY, state.color.r, state.color.g, state.color.b, state.color.a, ux0, uy0, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
                 v2.put(ax, ay, 0.0f, radRotation, originX, originY, state.color.r, state.color.g, state.color.b, state.color.a, ux0, uy1, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
                 v3.put(ax2, ay, 0.0f, radRotation, originX, originY, state.color.r, state.color.g, state.color.b, state.color.a, ux1, uy1, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),

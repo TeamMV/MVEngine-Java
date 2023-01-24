@@ -5,6 +5,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Transformations3D {
+    public static Matrix4f IDENTITY = new Matrix4f().identity();
+
     public static Matrix4f getViewMatrix(Camera camera3D) {
         Vector3f loc = camera3D.getLocation();
         Vector3f rot = camera3D.getRotation();

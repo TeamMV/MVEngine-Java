@@ -9,13 +9,17 @@ import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.components.Button;
+import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.ProgressBar;
-import dev.mv.engine.gui.components.animations.TextAnimation;
+import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.components.layouts.CollapseMenu;
-import dev.mv.engine.gui.components.layouts.HorizontalLayout;
+import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.parsing.gui.GuiParser;
 import dev.mv.engine.gui.parsing.theme.ThemeParser;
+import dev.mv.engine.gui.screens.Pager;
+import dev.mv.engine.gui.screens.transitions.LinearShiftTransition;
+import dev.mv.engine.gui.screens.transitions.Transition;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.input.InputCollector;
@@ -32,7 +36,9 @@ import dev.mv.engine.render.shared.shader.light.PointLight;
 import dev.mv.engine.render.shared.shader.light.SpotLight;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.resources.R;
+import dev.mv.engine.terrain.Terrain;
 import dev.mv.utils.async.PromiseNull;
+import dev.mv.utils.generic.Pair;
 import dev.mv.utils.logger.Logger;
 import dev.mv.utils.misc.Version;
 import lombok.SneakyThrows;
@@ -40,8 +46,9 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static dev.mv.utils.Utils.await;
 import static dev.mv.utils.Utils.sleep;
@@ -60,6 +67,7 @@ public class Main {
     private static PointLight pointlight = new PointLight(new Vector3f(0, 2, -2), new Vector3f(1, 1, 0.5f), 1f, 0, 0, 1f);
     private static SpotLight spotlight = new SpotLight(pointlight, new Vector3f(r, 0, 0), (float) Math.toRadians(180));
     private static DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1, 1, 1), new Vector3f(2, 0, 0), 1.0f);
+    private static Terrain terrain;
 
     @SneakyThrows
     public static void main(String[] args) {
@@ -121,6 +129,9 @@ public class Main {
             theme.setFont(font);
 
             guiRegistry = guiParser.parse(window, renderer2D);
+
+            terrain = new Terrain(renderer3D, window, "lol");
+            terrain.setScl(0.1f);
             /*
             Gui test
 
@@ -172,17 +183,55 @@ public class Main {
                 }
             });
 
-            try {
-                guiRegistry.applyTheme(theme);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            //try {
+            //    guiRegistry.applyTheme(theme);
+            //} catch (IOException e) {
+            //    throw new RuntimeException(e);
+            //}
 
             List<CollapseMenu> menus = guiRegistry.findGui("myGui").getRoot().findElementsByType(CollapseMenu.class);
-            menus.forEach(menu -> menu.setBaseColor(Color.BLACK));
+            menus.forEach(menu -> {
+                menu.setBaseColor(Color.BLACK);
+            });
+
+            guiRegistry.findGui("myGui").getRoot().findElementsBySuperType(Text.class).forEach(t -> t.setUseChroma(true));
 
             System.out.println(guiRegistry.getGuis()[0]);
             R.GUIS = guiRegistry;
+
+            Pager pager = new Pager(window);
+            Map<String, Pair<Transition, Float>> transotionMap = new HashMap<>();
+            transotionMap.put("myGui", new Pair<>(new LinearShiftTransition(0, -20), 0.2f));
+            transotionMap.put("2ndGui", new Pair<>(new LinearShiftTransition(0, -20), 0.2f));
+            pager.map(transotionMap);
+            guiRegistry.applyPager(pager);
+            guiRegistry.swap(null, "myGui");
+
+            Button button = guiRegistry.findGui("myGui").getRoot().findElementById("chromaButton");
+            button.attachListener(new ClickListener() {
+                @Override
+                public void onCLick(Element element, int button) {
+
+                }
+
+                @Override
+                public void onRelease(Element element, int button) {
+                    guiRegistry.swap("myGui", "2ndGui");
+                }
+            });
+
+            Button button2 = guiRegistry.findGui("2ndGui").getRoot().findElementById("btn");
+            button2.attachListener(new ClickListener() {
+                @Override
+                public void onCLick(Element element, int button) {
+
+                }
+
+                @Override
+                public void onRelease(Element element, int button) {
+                    guiRegistry.swap("2ndGui", "myGui");
+                }
+            });
 
             }, null, () -> {
             r += 1f;
@@ -191,7 +240,9 @@ public class Main {
             }
             //layout.setX(Input.mouse[Input.MOUSE_X]);
             //layout.setY(Input.mouse[Input.MOUSE_Y]);
-            R.GUIS.renderGuis();
+            //R.GUIS.renderGuis();
+            int[] tiles = terrain.generateTerrain(0, 0);
+            terrain.render(tiles);
             //renderer3D.object(cruiser);
             //renderer3D.processPointLight(pointlight);
             //renderer3D.processSpotLight(spotlight);
@@ -199,16 +250,16 @@ public class Main {
             //cruiser.incrementRotation(0.1f, 0.1f, 0.1f);
             Camera camera = window.getCamera();
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_W) == GLFW_PRESS) {
-                camera.move(0.0f, 0.0f, -1f);
+                camera.move(0.0f, 0.0f, -0.1f);
             }
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_A) == GLFW_PRESS) {
-                camera.move(-1f, 0.0f, 0.0f);
+                camera.move(-0.1f, 0.0f, 0.0f);
             }
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_S) == GLFW_PRESS) {
-                camera.move(0.0f, 0.0f, 1f);
+                camera.move(0.0f, 0.0f, 0.1f);
             }
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_D) == GLFW_PRESS) {
-                camera.move(1f, 0.0f, 0.0f);
+                camera.move(0.1f, 0.0f, 0.0f);
             }
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
                 camera.rotate(0.0f, 1.0f, 0.0f);
@@ -223,10 +274,10 @@ public class Main {
                 camera.rotate(1.0f, 0.0f, 0.0f);
             }
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_SPACE) == GLFW_PRESS) {
-                camera.move(0.0f, 0.01f, 0.0f);
+                camera.move(0.0f, 0.1f, 0.0f);
             }
             if (glfwGetKey(window.getGlfwId(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-                camera.move(0.0f, -0.01f, 0.0f);
+                camera.move(0.0f, -0.1f, 0.0f);
             }
         });
 

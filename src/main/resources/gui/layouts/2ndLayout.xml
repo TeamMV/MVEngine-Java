@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<gui name="2ndGui">
+    <elements>
+        <verticalLayout x="200" y="100" spacing="5" showFrame="false" align="CENTER">
+            <button width="60" height="60" onclick="btnClick" id="btn">click me!</button>
+        </verticalLayout>
+    </elements>
+</gui>

@@ -1,8 +1,10 @@
 package dev.mv.engine.gui;
 
 import dev.mv.engine.gui.components.Element;
+import dev.mv.engine.gui.screens.Pager;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.DrawContext2D;
+import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 import java.io.IOException;
 import java.util.*;
@@ -10,9 +12,12 @@ import java.util.function.Consumer;
 
 public class GuiRegistry implements Iterable<Gui> {
     private Map<String, Gui> guiMap;
+    private Pager pager;
+    private List<Gui> toRender;
 
     public GuiRegistry() {
         guiMap = new HashMap<>();
+        toRender = new ArrayList<>();
     }
 
     public void addGui(Gui gui) {
@@ -43,8 +48,26 @@ public class GuiRegistry implements Iterable<Gui> {
         return guiMap.values().toArray(new Gui[0]);
     }
 
+    public void applyPager(Pager pager) {
+        this.pager = pager;
+        this.pager.setRegistry(this);
+    }
+
+    public void swap(String from, String to) {
+        if(!guiMap.containsKey(to)) return;
+        if(pager != null) {
+            pager.swap(from, to);
+        }
+
+        if(!toRender.contains(findGui(to)))
+        toRender.add(findGui(to));
+    }
+
+
+
     public void renderGuis() {
-        for(Gui gui : this) {
+        for (Iterator<Gui> it = toRender(); it.hasNext(); ) {
+            Gui gui = it.next();
             gui.draw();
             gui.loop();
         }
@@ -61,8 +84,8 @@ public class GuiRegistry implements Iterable<Gui> {
         private int index = 0;
         private List<Gui> collection;
 
-        public GuiRegistryIterator() {
-            collection = List.of(guiMap.values().toArray(new Gui[0]));
+        public GuiRegistryIterator(Collection<Gui> list) {
+            collection = List.copyOf(list);
         }
 
         @Override
@@ -88,7 +111,18 @@ public class GuiRegistry implements Iterable<Gui> {
 
     @Override
     public Iterator<Gui> iterator() {
-        return new GuiRegistryIterator();
+        return new GuiRegistryIterator(guiMap.values());
+    }
+
+    public Iterator<Gui> toRender() {
+        if(toRender.isEmpty()) {
+            return new GuiRegistryIterator(Collections.EMPTY_LIST);
+        }
+        return new GuiRegistryIterator(toRender);
+    }
+
+    public List<Gui> toRenderList() {
+        return toRender;
     }
 
     @Override
@@ -102,20 +136,23 @@ public class GuiRegistry implements Iterable<Gui> {
     }
 
     public void pressKey(int keyCode) {
-        guiMap.values().forEach(gui -> {
+        for (Iterator<Gui> it = toRender(); it.hasNext(); ) {
+            Gui gui = it.next();
             gui.pressKey(keyCode);
-        });
+        }
     }
 
     public void typeKey(int keyCode) {
-        guiMap.values().forEach(gui -> {
+        for (Iterator<Gui> it = toRender(); it.hasNext(); ) {
+            Gui gui = it.next();
             gui.typeKey(keyCode);
-        });
+        }
     }
 
     public void releaseKey(int keyCode) {
-        guiMap.values().forEach(gui -> {
+        for (Iterator<Gui> it = toRender(); it.hasNext(); ) {
+            Gui gui = it.next();
             gui.releaseKey(keyCode);
-        });
+        }
     }
 }

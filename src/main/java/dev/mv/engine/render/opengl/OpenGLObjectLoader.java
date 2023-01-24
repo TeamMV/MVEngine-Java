@@ -86,8 +86,8 @@ public class OpenGLObjectLoader implements ObjectLoader {
         int id = createVAO();
         storeIndicesBuffer(indices);
         storeDataInAttribList(0, 3, vertices);
-        storeDataInAttribList(1, 2, texCoords);
-        storeDataInAttribList(2, 3, normals);
+        storeDataInAttribList(2, 2, texCoords);
+        storeDataInAttribList(3, 3, normals);
         unbind();
         return new Model(id, indices.length);
     }

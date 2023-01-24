@@ -7,6 +7,8 @@ import dev.mv.engine.render.shared.Camera;
 import dev.mv.engine.render.shared.Render2D;
 import dev.mv.engine.render.shared.Render3D;
 import dev.mv.engine.render.shared.Window;
+import dev.mv.engine.render.shared.batch.BatchController;
+import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.utils.RenderUtils;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
@@ -344,5 +346,15 @@ public class VulkanWindow implements Window {
     @Override
     public ImGuiImplGlfw getImGuiGlfwImpl() {
         return glfwImpl;
+    }
+
+    @Override
+    public BatchController getBatchController() {
+        return null;
+    }
+
+    @Override
+    public BatchController3D getBatchController3D() {
+        return null;
     }
 }

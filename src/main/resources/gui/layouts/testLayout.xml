@@ -20,7 +20,7 @@
     </references>
 
     <elements>
-        <verticalLayout x="200" y="100" spacing="5" showFrame="false">
+        <verticalLayout x="200" y="100" spacing="5" showFrame="false" align="CENTER">
             <imageButton width="120" height="$VAR(height)" id="myButton" tags="[tag1,tag2,tag3]"/>
             <checkbox width="$VAR(height)" height="$VAR(height)">Toggle</checkbox>
             <button width="60" height="$VAR(height)" onclick="btnClick" id="chromaButton">click me!</button>
@@ -29,10 +29,8 @@
             <input type="string" width="400" height="$VAR(height)">E-Mail address</input>
             <input type="password" width="400" height="$VAR(height)">Password</input>
             <collapseMenu width="$VAR(height)" height="$VAR(height)" title="Options">
-                <verticalLayout showFrame="false">
-                    <ref name="collapseCheckbox" params="[checkbox]"/>
-                    <button width="60" height="$VAR(height)" id="button2" tags="[1,2,3]">click</button>
-                </verticalLayout>
+                <ref name="collapseCheckbox" params="[checkbox]"/>
+                <button width="60" height="$VAR(height)" id="button2" tags="[1,2,3]">click</button>
             </collapseMenu>
             <ref name="defaultSeparator"/>
             <ref name="defaultSpace"/>

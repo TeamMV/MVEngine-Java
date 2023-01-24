@@ -1,5 +1,7 @@
 package dev.mv.engine.render.shared;
 
+import dev.mv.engine.render.shared.batch.BatchController;
+import dev.mv.engine.render.shared.batch.BatchController3D;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import org.joml.Matrix4f;
@@ -52,4 +54,8 @@ public interface Window {
     ImGuiImplGl3 getImGuiGlImpl();
 
     ImGuiImplGlfw getImGuiGlfwImpl();
+
+    BatchController getBatchController();
+
+    BatchController3D getBatchController3D();
 }

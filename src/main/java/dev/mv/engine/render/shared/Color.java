@@ -120,4 +120,8 @@ public class Color {
         return set(rgb[0], rgb[1], rgb[2], 255);
 
     }
+
+    public void copyFrom(Color other) {
+        set(other.getRed(), other.getGreen(), other.getBlue(), other.getAlpha());
+    }
 }
