@@ -1,5 +1,6 @@
 package dev.mv.engine.render.opengl;
 
+import dev.mv.editor.ApplicationLoop;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.Camera;
 import dev.mv.engine.render.shared.Render2D;
@@ -37,7 +38,7 @@ public class OpenGLWindow implements Window {
     private double deltaF;
     private long window;
     private long currentFrame = 0, currentTime = 0;
-    private Runnable onStart = null, onUpdate = null, onDraw = null;
+    private ApplicationLoop applicationLoop = null;
     private OpenGLRender2D render2D = null;
     private OpenGLRender3D render3D = null;
     private Matrix4f projectionMatrix = null;
@@ -78,8 +79,8 @@ public class OpenGLWindow implements Window {
         //batchController = new BatchController(this, 1000);
         //batchController.start();
 
-        if (onStart != null) {
-            onStart.run();
+        if (applicationLoop != null) {
+            applicationLoop.start(this);
         }
 
         loop();
@@ -87,10 +88,8 @@ public class OpenGLWindow implements Window {
     }
 
     @Override
-    public void run(Runnable onStart, Runnable onUpdate, Runnable onDraw) {
-        this.onStart = onStart;
-        this.onUpdate = onUpdate;
-        this.onDraw = onDraw;
+    public void run(ApplicationLoop applicationLoop) {
+        this.applicationLoop = applicationLoop;
         run();
     }
 
@@ -183,8 +182,8 @@ public class OpenGLWindow implements Window {
             glfwPollEvents();
             this.deltaF = deltaF;
             if (deltaU >= 1) {
-                if (onUpdate != null) {
-                    onUpdate.run();
+                if (applicationLoop != null) {
+                    applicationLoop.update(this);
                 }
                 if (info.appendFpsToTitle) {
                     String fpsTitle = info.title + info.fpsAppendConfiguration.betweenTitleAndValue + getFPS() + info.fpsAppendConfiguration.afterValue;
@@ -200,8 +199,8 @@ public class OpenGLWindow implements Window {
                 glfwImpl.newFrame();
                 ImGui.newFrame();
 
-                if (onDraw != null) {
-                    onDraw.run();
+                if (applicationLoop != null) {
+                    applicationLoop.draw(this);
                 }
 
                 updateInputs();

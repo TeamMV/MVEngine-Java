@@ -1,5 +1,6 @@
 package dev.mv.engine.render.vulkan;
 
+import dev.mv.editor.ApplicationLoop;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.WindowCreateInfo;
@@ -26,16 +27,15 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class VulkanWindow implements Window {
-
-    WindowCreateInfo info;
-    ImGuiImplGlfw glfwImpl;
-    int width, height;
-    int currentFPS, currentUPS;
-    long currentFrame = 0, currentTime = 0;
-    double deltaF;
-    long window, surface, renderPass;
-    Runnable onStart, onUpdate, onDraw;
-    Window fallbackWindow = null;
+    private WindowCreateInfo info;
+    private ImGuiImplGlfw glfwImpl;
+    private int width, height;
+    private int currentFPS, currentUPS;
+    private long currentFrame = 0, currentTime = 0;
+    private double deltaF;
+    private long window, surface, renderPass;
+    private ApplicationLoop applicationLoop = null;
+    private Window fallbackWindow = null;
     private int oW, oH, oX, oY;
     private double timeU, timeF;
 
@@ -47,10 +47,8 @@ public class VulkanWindow implements Window {
     }
 
     @Override
-    public void run(Runnable onStart, Runnable onUpdate, Runnable onDraw) {
-        this.onStart = onStart;
-        this.onUpdate = onUpdate;
-        this.onDraw = onDraw;
+    public void run(ApplicationLoop applicationLoop) {
+        this.applicationLoop = applicationLoop;
         run();
     }
 
@@ -61,7 +59,7 @@ public class VulkanWindow implements Window {
             glfwDestroyWindow(window);
             MVEngine.rollbackRenderingApi();
             fallbackWindow = MVEngine.createWindow(info);
-            fallbackWindow.run(onStart, onUpdate, onDraw);
+            fallbackWindow.run(applicationLoop);
             return;
         }
 
@@ -74,8 +72,8 @@ public class VulkanWindow implements Window {
         //render3D = new OpenGLRender3D(this);
         //camera = new Camera();
 
-        if (onStart != null) {
-            onStart.run();
+        if (applicationLoop != null) {
+            applicationLoop.start(this);
         }
 
         loop();
@@ -149,8 +147,8 @@ public class VulkanWindow implements Window {
             glfwPollEvents();
             this.deltaF = deltaF;
             if (deltaU >= 1) {
-                if (onUpdate != null) {
-                    onUpdate.run();
+                if (applicationLoop != null) {
+                    applicationLoop.update(this);
                 }
                 if (info.appendFpsToTitle) {
                     String fpsTitle = info.title + info.fpsAppendConfiguration.betweenTitleAndValue + getFPS() + info.fpsAppendConfiguration.afterValue;
@@ -164,8 +162,8 @@ public class VulkanWindow implements Window {
                 //glfwImpl.newFrame();
                 //ImGui.newFrame();
 
-                if (onDraw != null) {
-                    //onDraw.run();
+                if (applicationLoop != null) {
+                    applicationLoop.draw(this);
                 }
 
                 //updateInputs();

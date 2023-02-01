@@ -1,5 +1,6 @@
 package dev.mv.engine.render.shared;
 
+import dev.mv.editor.ApplicationLoop;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import imgui.gl3.ImGuiImplGl3;
@@ -9,7 +10,7 @@ import org.joml.Matrix4f;
 public interface Window {
     void run();
 
-    void run(Runnable onStart, Runnable onUpdate, Runnable onDraw);
+    void run(ApplicationLoop applicationLoop);
 
     void stop();
 
