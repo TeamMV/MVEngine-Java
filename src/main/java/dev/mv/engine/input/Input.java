@@ -144,11 +144,12 @@ public class Input {
                 KEY_LAST = convertedCode;
             } else if (action == InputCollector.KeyAction.RELEASE) {
                 int convertedCode = convertKey(rawCode);
-                if (isKeyPressed(convertedCode)) {
-                    keys[convertedCode] = State.ONRELEASED;
-                }
+                keys[convertedCode] = State.ONRELEASED;
             }
-        } catch (NullPointerException | IndexOutOfBoundsException ignore) {}
+        } catch (NullPointerException | IndexOutOfBoundsException ignore) {
+            int convertedCode = convertKey(rawCode);
+            keys[convertedCode] = State.ONRELEASED;
+        }
     }
 
     static void updateButton(int btn, InputCollector.MouseAction action) {

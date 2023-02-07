@@ -93,7 +93,7 @@ public class Batch3D {
     }
 
     public void render() {
-        win.getRender3D().retrieveVertexData(indices, data, vbo_id, ibo_id, shader, GL_TRIANGLE_FAN, vertCount);
+        win.getRender3D().retrieveVertexData(indices, data, vbo_id, ibo_id, shader, GL_TRIANGLE_STRIP, vertCount);
 
         forceClearBatch();
     }

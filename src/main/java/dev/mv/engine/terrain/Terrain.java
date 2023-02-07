@@ -10,11 +10,9 @@ import lombok.Setter;
 import org.joml.SimplexNoise;
 
 public class Terrain {
-    private final float islandScale = 20f;
-    private int w, h, x, y;
-    @Getter
-    @Setter
-    private int buffer = 10;
+    @Getter @Setter
+    private float islandScale = 20f;
+    private int w, h;
 
     @Getter
     @Setter
@@ -23,10 +21,9 @@ public class Terrain {
     private Noise noiseGen;
     private Noise randomTileGen;
 
-    private boolean v22, mqxf;
-
-    private float xRO, yRO, xTO, yTO;
-    private int width, height, tileSize;
+    private int width, height;
+    @Getter @Setter
+    private int tileSize;
 
     private Window window;
     private DrawContext3D renderer;
@@ -37,8 +34,6 @@ public class Terrain {
 
 
     public Terrain(DrawContext3D renderer, Window window, String seed) {
-        v22 = false;
-        mqxf = false;
 
         this.renderer = renderer;
         this.window = window;
@@ -48,16 +43,13 @@ public class Terrain {
         this.width = 100;
         this.height = 100;
 
-        tileSize = 5;
+        tileSize = 50;
 
         noiseGen = new Noise(seed.hashCode());
         randomTileGen = new Noise((int) (noiseGen.noise(1, 1, 1) * 1000));
 
-        if (seed.hashCode() == -1) v22 = true;
-        if (seed.hashCode() == -2) mqxf = true;
-
-        w = (width / tileSize) + buffer;
-        h = (height / tileSize) + buffer;
+        w = (width / tileSize);
+        h = (height / tileSize);
     }
 
     public void setDimensions(int w, int h) {
@@ -73,14 +65,6 @@ public class Terrain {
         updateDimensions();
         tiles = new int[w * h];
 
-        xRO = xVal % tileSize;
-        yRO = yVal % tileSize;
-        xTO = xVal / tileSize;
-        yTO = yVal / tileSize;
-
-        x = xVal;
-        y = yVal;
-
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < h; j++) {
                 tiles[i + j * w] = getTile(i, j);
@@ -91,10 +75,8 @@ public class Terrain {
     }
 
     private int getTile(int x, int y) {
-
-        float v = noiseGen.noise((xTO + x) * scl, (yTO + y) * scl, x);
+        float v = noiseGen.noise(x * scl, y * scl);
         //float t = randomTileGen.noise((xTO + x) * 0.7f, (yTO + y) * 0.7f, 0.0f);
-        //System.out.println(v);
         return (int) ((v + 1) * islandScale);
     }
 
@@ -104,23 +86,33 @@ public class Terrain {
                 try {
                     int x;
                     int z;
-                    x = (int) ((i - buffer / 2) * tileSize - xRO);
-                    z = (int) ((j - buffer / 2) * tileSize - yRO);
+                    x = i * tileSize;
+                    z = j * tileSize;
                     renderer.color(color.toRGB(Utils.overlap((int) (tiles[i + j * w] * islandScale), 0, 359), 1, 1));
                     renderer.point(x, tiles[i + j * w], z);
-                    x = (int) ((i - buffer / 2 + 1) * tileSize - xRO);
-                    z = (int) ((j - buffer / 2) * tileSize - yRO);
+                    x = (i + 1) * tileSize;
+                    z = j * tileSize;
                     renderer.color(color.toRGB(Utils.overlap((int) (tiles[i + 1 + j * w] * islandScale), 0, 359), 1, 1));
                     renderer.point(x, tiles[i + 1 + j * w], z);
+                    /*
+                    x = (int) (((i + 1) - buffer / 2) * tileSize - xRO);
+                    z = (int) (((j + 1) - buffer / 2) * tileSize - yRO);
+                    renderer.color(color.toRGB(Utils.overlap((int) (tiles[i + j * w] * islandScale), 0, 359), 1, 1));
+                    renderer.point(x, tiles[i + 1 + (j + 1) * w], z);
+                    x = (int) ((i - buffer / 2) * tileSize - xRO);
+                    z = (int) (((j + 1) - buffer / 2) * tileSize - yRO);
+                    renderer.color(color.toRGB(Utils.overlap((int) (tiles[i + 1 + j * w] * islandScale), 0, 359), 1, 1));
+                    renderer.point(x, tiles[i + (j + 1) * w], z);*/
                 } catch (IndexOutOfBoundsException e) {
 
                 }
             }
+            renderer.end();
         }
     }
 
     public void updateDimensions() {
-        w = (width / tileSize) + buffer;
-        h = (height / tileSize) + buffer;
+        w = (width / tileSize);
+        h = (height / tileSize);
     }
 }

@@ -40,4 +40,8 @@ public class DrawContext3D {
             v1.put(x, y, z, color.r, color.g, color.b, color.a)
         );
     }
+
+    public void end() {
+        window.getBatchController3D().end();
+    }
 }

@@ -32,7 +32,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class OpenGLWindow implements Window {
     private final float FOV = (float) Math.toRadians(60);
     private final float Z_NEAR = 0.01f;
-    private final float Z_FAR = 200f;
+    private final float Z_FAR = 2000f;
     private int currentFPS, currentUPS;
     private int width, height;
     private double deltaF;
@@ -196,9 +196,6 @@ public class OpenGLWindow implements Window {
             if (deltaF >= 1) {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                glfwImpl.newFrame();
-                ImGui.newFrame();
-
                 if (applicationLoop != null) {
                     applicationLoop.draw(this);
                 }
@@ -208,9 +205,6 @@ public class OpenGLWindow implements Window {
                 //batchController.finishAndRender();
                 batchController3D.finishAndRender();
                 render3D.render();
-
-                ImGui.render();
-                glImpl.renderDrawData(ImGui.getDrawData());
 
                 glfwSwapBuffers(window);
                 currentFrame++;
@@ -260,6 +254,8 @@ public class OpenGLWindow implements Window {
 
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
+
+        System.exit(0);
     }
 
     public void declareProjection() {

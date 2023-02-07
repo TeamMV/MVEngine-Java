@@ -46,6 +46,10 @@ public class BatchController3D{
         batches.get(currentBatch).addVertex(vertex);
     }
 
+    public void end() {
+        nextBatch();
+    }
+
     public int getNumberOfBatches() {
         return batches.size();
     }

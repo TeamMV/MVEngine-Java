@@ -1,22 +1,12 @@
 package dev.mv.engine.input;
 
-import dev.mv.engine.resources.R;
+public interface InputProcessor {
+    void mousePosUpdate(int x, int y);
+    void mouseScrollUpdate(int sx, int sy);
+    void mouseButtonUpdate(int btn, InputCollector.MouseAction action);
+    void keyUpdate(int key, InputCollector.KeyAction action);
 
-public class InputProcessor {
-    public void mousePosUpdate(int x, int y) {
-        Input.updateMouse(x, y);
-    }
-
-    public void mouseScrollUpdate(int sx, int sy) {
-        Input.updateMouseScroll(sx, sy);
-    }
-
-    public void mouseButtonUpdate(int btn, InputCollector.MouseAction action) {
-        Input.updateButton(btn, action);
-    }
-
-    public void keyUpdate(int key, InputCollector.KeyAction action) {
-        Input.updateKey(key, action);
-        R.sendInputKeyEvent(key, action);
+    static InputProcessor defaultProcessor() {
+        return DefaultInputProcessor.INSTANCE;
     }
 }
