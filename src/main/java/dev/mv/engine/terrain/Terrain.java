@@ -40,16 +40,8 @@ public class Terrain {
 
         color = new Color(0, 0, 0, 255);
 
-        this.width = 100;
-        this.height = 100;
-
-        tileSize = 50;
-
         noiseGen = new Noise(seed.hashCode());
         randomTileGen = new Noise((int) (noiseGen.noise(1, 1, 1) * 1000));
-
-        w = (width / tileSize);
-        h = (height / tileSize);
     }
 
     public void setDimensions(int w, int h) {
@@ -81,19 +73,21 @@ public class Terrain {
     }
 
     public void render(int[] tiles) {
+        System.out.println(w);
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < h; j++) {
                 try {
                     int x;
                     int z;
-                    x = i * tileSize;
-                    z = j * tileSize;
-                    renderer.color(color.toRGB(Utils.overlap((int) (tiles[i + j * w] * islandScale), 0, 359), 1, 1));
-                    renderer.point(x, tiles[i + j * w], z);
+
                     x = (i + 1) * tileSize;
                     z = j * tileSize;
-                    renderer.color(color.toRGB(Utils.overlap((int) (tiles[i + 1 + j * w] * islandScale), 0, 359), 1, 1));
+                    renderer.color(color.toRGB(Utils.overlap(132, 0, 359), tiles[i + 1 + j * w] / islandScale * 1.2f, 48));
                     renderer.point(x, tiles[i + 1 + j * w], z);
+                    x = i * tileSize;
+                    z = j * tileSize;
+                    renderer.color(color.toRGB(Utils.overlap(132, 0, 359), tiles[i + j * w] / islandScale * 1.2f, 48));
+                    renderer.point(x, tiles[i + j * w], z);
                     /*
                     x = (int) (((i + 1) - buffer / 2) * tileSize - xRO);
                     z = (int) (((j + 1) - buffer / 2) * tileSize - yRO);

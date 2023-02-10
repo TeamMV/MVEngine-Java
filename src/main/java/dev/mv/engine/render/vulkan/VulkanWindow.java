@@ -73,7 +73,11 @@ public class VulkanWindow implements Window {
         //camera = new Camera();
 
         if (applicationLoop != null) {
-            applicationLoop.start(this);
+            try {
+                applicationLoop.start(this);
+            } catch (Exception e) {
+                MVEngine.Exceptions.Throw(e);
+            }
         }
 
         loop();

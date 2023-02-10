@@ -13,10 +13,14 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.lwjgl.system.MemoryStack.stackGet;
 
 public class RenderUtils {
+    private static Map<String, AtomicInteger> counter = new HashMap<>();
 
     public static FloatBuffer store(float... data) {
         FloatBuffer buffer = MemoryUtil.memAllocFloat(data.length);
@@ -181,5 +185,14 @@ public class RenderUtils {
             return (T) out;
         }
         return null;
+    }
+
+    public static int nextId(String use) {
+        try {
+            return counter.get(use).getAndIncrement();
+        } catch (NullPointerException e) {
+            counter.put(use, new AtomicInteger(0));
+            return 0;
+        }
     }
 }

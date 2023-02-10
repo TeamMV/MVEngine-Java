@@ -2,6 +2,7 @@ package dev.mv.engine.render.shared.create;
 
 import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.render.opengl.OpenGLTextureMap;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.shared.Window;
@@ -9,6 +10,7 @@ import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.opengl.OpenGLShader;
 import dev.mv.engine.render.opengl.OpenGLTexture;
 import dev.mv.engine.render.opengl.OpenGLWindow;
+import dev.mv.engine.render.utils.RenderUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -44,6 +46,22 @@ public class RenderBuilder {
     public static Texture newTexture(BufferedImage image) throws IOException {
         if (MVEngine.getRenderingApi() == ApplicationConfig.RenderingAPI.OPENGL) {
             return new OpenGLTexture(image);
+        } else {
+            return null;
+        }
+    }
+
+    public static Texture newTextureMap(InputStream stream, OpenGLTextureMap.Quality quality) throws IOException {
+        return newTextureMap(ImageIO.read(stream), quality);
+    }
+
+    public static Texture newTextureMap(String path, OpenGLTextureMap.Quality quality) throws IOException {
+        return newTextureMap(ImageIO.read(RenderBuilder.class.getResourceAsStream(path)), quality);
+    }
+
+    public static Texture newTextureMap(BufferedImage image, OpenGLTextureMap.Quality quality) throws IOException {
+        if (MVEngine.getRenderingApi() == ApplicationConfig.RenderingAPI.OPENGL) {
+            return new OpenGLTextureMap(image, RenderUtils.nextId("textureMap"), quality);
         } else {
             return null;
         }

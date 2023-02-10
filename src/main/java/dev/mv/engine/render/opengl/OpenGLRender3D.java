@@ -1,9 +1,9 @@
 package dev.mv.engine.render.opengl;
 
+import dev.mv.engine.render.opengl.deferred.OpenGLGeometryPass;
 import dev.mv.engine.render.shared.Render3D;
 import dev.mv.engine.render.shared.Transformations3D;
 import dev.mv.engine.render.shared.Window;
-import dev.mv.engine.render.shared.batch.Batch;
 import dev.mv.engine.render.shared.batch.Batch3D;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.models.Entity;
@@ -13,13 +13,10 @@ import dev.mv.engine.render.shared.shader.Uniforms3D;
 import dev.mv.engine.render.shared.shader.light.DirectionalLight;
 import dev.mv.engine.render.shared.shader.light.PointLight;
 import dev.mv.engine.render.shared.shader.light.SpotLight;
-import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.utils.RenderConstansts;
 import dev.mv.utils.Utils;
 import lombok.Getter;
-import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
@@ -30,6 +27,7 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL30.*;
 
 public class OpenGLRender3D implements Render3D {
     private Window win;
@@ -40,67 +38,20 @@ public class OpenGLRender3D implements Render3D {
     private List<SpotLight> spotLights = new ArrayList<>();
 
     private DirectionalLight directionalLight;
-    @Getter
-    private Shader shader;
+    private OpenGLGeometryPass geometryPass;
 
     public OpenGLRender3D(Window window) {
         this.win = window;
-        this.shader = RenderBuilder.newShader("/shaders/3d/default.vert", "/shaders/3d/default.frag");
-
-        shader.make(window);
-        shader.bind();
-    }
-
-
-    private void bind(Model model) {
-        GL30.glBindVertexArray(model.getId());
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glEnableVertexAttribArray(1);
-        GL20.glEnableVertexAttribArray(2);
-        GL20.glEnableVertexAttribArray(3);
-        Utils.ifNotNull(model.getTexture()).then(t -> t.bind(0));
-        Uniforms3D.material(shader, model.getMaterial(), "uMaterial");
-    }
-
-    private void unbind() {
-        GL30.glBindVertexArray(0);
-        GL20.glDisableVertexAttribArray(0);
-        GL20.glDisableVertexAttribArray(1);
-        GL20.glDisableVertexAttribArray(2);
-        GL20.glDisableVertexAttribArray(3);
-        GL11.glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-    private void prepare(Entity entity) {
-        shader.uniform("uTexSampler", 0);
-        shader.uniform("uTransform", Transformations3D.getTransformationMatrix(entity));
-        shader.uniform("uProjection", win.getProjectionMatrix3D());
-        shader.uniform("uView", Transformations3D.getViewMatrix(win.getCamera()));
-    }
-
-    public void renderLights(List<PointLight> pointLights, List<SpotLight> spotLights) {
-        shader.uniform("uAmbient", RenderConstansts.AMBIENT_LIGHT_COLOR);
-        shader.uniform("uSpecularPower", RenderConstansts.SPECULAR_POWER);
-        //shader.setPointLights("uPointLights", pointLights);
-        //shader.setSpotLights("uSpotLights", spotLights);
-        //shader.setDirectionalLight("uDirectionalLight", directionalLight);
+        geometryPass = new OpenGLGeometryPass(window);
     }
 
     @Override
     public void render() {
-        shader.use();
+        geometryPass.render(modelUsages);
 
         //renderLights(pointLights, spotLights);
 
-        for (Model model : modelUsages.keySet()) {
-            bind(model);
-            List<Entity> entities = modelUsages.get(model);
-            for (Entity entity : entities) {
-                prepare(entity);
-                glDrawElements(GL_TRIANGLES, model.vertexCount(), GL_UNSIGNED_INT, 0);
-            }
-            unbind();
-        }
+
 
         modelUsages.clear();
         pointLights.clear();

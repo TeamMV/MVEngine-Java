@@ -19,10 +19,10 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 public class OpenGLTexture implements Texture {
-    int[] pixels;
-    private int id;
-    private int width;
-    private int height;
+    protected int[] pixels;
+    protected int id;
+    protected int width;
+    protected int height;
 
     public OpenGLTexture(String filename) throws IOException {
         ByteBuffer buffer;
@@ -40,15 +40,7 @@ public class OpenGLTexture implements Texture {
 
         }
 
-        this.id = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, this.id);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-        glGenerateMipmap(GL_TEXTURE_2D);
+        create(buffer);
     }
 
     public OpenGLTexture(InputStream stream) throws IOException {
@@ -69,6 +61,10 @@ public class OpenGLTexture implements Texture {
             pixelBuffer.put((byte) ((pixel >> 24) & 0xFF)); //a
         }
         pixelBuffer.flip();
+        create(pixelBuffer);
+    }
+
+    protected void create(ByteBuffer pixelBuffer) {
         this.id = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, this.id);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);

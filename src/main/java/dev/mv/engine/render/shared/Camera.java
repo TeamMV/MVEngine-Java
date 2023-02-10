@@ -6,6 +6,7 @@ import org.joml.Vector3f;
 public class Camera {
     private Vector3f location;
     private Vector3f rotation;
+    private float speed;
 
     public Camera() {
         location = new Vector3f(0, 0, 0);
@@ -18,6 +19,9 @@ public class Camera {
     }
 
     public void move(float x, float y, float z) {
+        x *= speed;
+        y *= speed;
+        z *= speed;
         if (z != 0) {
             location.x += Math.sin(Math.toRadians(rotation.y)) * -1.0f * z;
             location.z += Math.cos(Math.toRadians(rotation.y)) * z;
@@ -53,5 +57,9 @@ public class Camera {
 
     public Vector3f getRotation() {
         return rotation;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
     }
 }

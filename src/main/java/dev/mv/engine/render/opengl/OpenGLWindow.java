@@ -1,6 +1,7 @@
 package dev.mv.engine.render.opengl;
 
 import dev.mv.editor.ApplicationLoop;
+import dev.mv.engine.MVEngine;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.Camera;
 import dev.mv.engine.render.shared.Render2D;
@@ -74,13 +75,17 @@ public class OpenGLWindow implements Window {
         render3D = new OpenGLRender3D(this);
         camera = new Camera();
         camera.moveTo(0, 30, 0);
-        batchController3D = new BatchController3D(this, 1000);
-        batchController3D.start();
+        //batchController3D = new BatchController3D(this, 1000);
+        //batchController3D.start();
         //batchController = new BatchController(this, 1000);
         //batchController.start();
 
         if (applicationLoop != null) {
-            applicationLoop.start(this);
+            try {
+                applicationLoop.start(this);
+            } catch (Exception e) {
+                MVEngine.Exceptions.Throw(e);
+            }
         }
 
         loop();
@@ -137,8 +142,8 @@ public class OpenGLWindow implements Window {
 
         glfwShowWindow(window);
 
-        //glEnable(GL_CULL_FACE);
-        //glCullFace(GL_BACK);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
@@ -183,7 +188,11 @@ public class OpenGLWindow implements Window {
             this.deltaF = deltaF;
             if (deltaU >= 1) {
                 if (applicationLoop != null) {
-                    applicationLoop.update(this);
+                    try {
+                        applicationLoop.update(this);
+                    } catch (Exception e) {
+                        MVEngine.Exceptions.Throw(e);
+                    }
                 }
                 if (info.appendFpsToTitle) {
                     String fpsTitle = info.title + info.fpsAppendConfiguration.betweenTitleAndValue + getFPS() + info.fpsAppendConfiguration.afterValue;
@@ -197,13 +206,17 @@ public class OpenGLWindow implements Window {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 if (applicationLoop != null) {
-                    applicationLoop.draw(this);
+                    try {
+                        applicationLoop.draw(this);
+                    } catch (Exception e) {
+                        MVEngine.Exceptions.Throw(e);
+                    }
                 }
 
                 updateInputs();
 
                 //batchController.finishAndRender();
-                batchController3D.finishAndRender();
+                //batchController3D.finishAndRender();
                 render3D.render();
 
                 glfwSwapBuffers(window);
