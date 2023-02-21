@@ -7,7 +7,6 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.models.ObjectLoader;
 import dev.mv.engine.render.vulkan.VulkanWindow;
 import dev.mv.utils.misc.Version;
-import imgui.ImGui;
 import lombok.Getter;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
@@ -42,9 +41,6 @@ public class MVEngine {
             throw new RuntimeException("Could not initialise GLFW!");
         }
 
-        ImGui.createContext();
-        ImGui.styleColorsDark();
-
         if (config.getRenderingApi() == ApplicationConfig.RenderingAPI.VULKAN) {
             renderingApi = ApplicationConfig.RenderingAPI.VULKAN;
         } else {
@@ -53,7 +49,6 @@ public class MVEngine {
     }
 
     public static void terminate() {
-        ImGui.destroyContext();
         glfwTerminate();
     }
 

@@ -11,8 +11,6 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.utils.RenderUtils;
-import imgui.gl3.ImGuiImplGl3;
-import imgui.glfw.ImGuiImplGlfw;
 import lombok.SneakyThrows;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
@@ -28,7 +26,6 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class VulkanWindow implements Window {
     private WindowCreateInfo info;
-    private ImGuiImplGlfw glfwImpl;
     private int width, height;
     private int currentFPS, currentUPS;
     private long currentFrame = 0, currentTime = 0;
@@ -118,11 +115,6 @@ public class VulkanWindow implements Window {
                 (vidmode.height() - pHeight.get(0)) / 2
             );
         }
-
-        glfwImpl = new ImGuiImplGlfw();
-        glfwImpl.init(window, true);
-        //vulkanImpl = new ImGuiVulkanImpl();
-        //vulkanImpl.init("#version 450");
 
         glfwShowWindow(window);
         return true;
@@ -220,8 +212,6 @@ public class VulkanWindow implements Window {
     }
 
     private void terminate() {
-        glfwImpl.dispose();
-
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
     }
@@ -338,16 +328,6 @@ public class VulkanWindow implements Window {
     @Override
     public Camera getCamera() {
         return null;
-    }
-
-    @Override
-    public ImGuiImplGl3 getImGuiGlImpl() {
-        return null;
-    }
-
-    @Override
-    public ImGuiImplGlfw getImGuiGlfwImpl() {
-        return glfwImpl;
     }
 
     @Override

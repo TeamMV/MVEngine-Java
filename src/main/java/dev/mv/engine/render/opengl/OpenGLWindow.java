@@ -11,9 +11,6 @@ import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.utils.RenderUtils;
-import imgui.ImGui;
-import imgui.gl3.ImGuiImplGl3;
-import imgui.glfw.ImGuiImplGlfw;
 import lombok.Getter;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
@@ -43,8 +40,6 @@ public class OpenGLWindow implements Window {
     private OpenGLRender2D render2D = null;
     private OpenGLRender3D render3D = null;
     private Matrix4f projectionMatrix = null;
-    private ImGuiImplGlfw glfwImpl;
-    private ImGuiImplGl3 glImpl;
     BatchController batchController;
     BatchController3D batchController3D;
     @Getter
@@ -134,11 +129,6 @@ public class OpenGLWindow implements Window {
         glfwSwapInterval(1);
 
         GL.createCapabilities();
-
-        glfwImpl = new ImGuiImplGlfw();
-        glfwImpl.init(window, true);
-        glImpl = new ImGuiImplGl3();
-        glImpl.init("#version 450");
 
         glfwShowWindow(window);
 
@@ -262,9 +252,6 @@ public class OpenGLWindow implements Window {
     }
 
     private void terminate() {
-        glImpl.dispose();
-        glfwImpl.dispose();
-
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
 
@@ -392,16 +379,6 @@ public class OpenGLWindow implements Window {
     @Override
     public Camera getCamera() {
         return camera;
-    }
-
-    @Override
-    public ImGuiImplGl3 getImGuiGlImpl() {
-        return glImpl;
-    }
-
-    @Override
-    public ImGuiImplGlfw getImGuiGlfwImpl() {
-        return glfwImpl;
     }
 
     @Override
