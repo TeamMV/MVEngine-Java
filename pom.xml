@@ -53,7 +53,7 @@
 
     <profiles>
         <profile>
-            <id>lwjgl-natives-linux-amd64</id>
+            <id>Linux</id>
             <activation>
                 <os>
                     <family>unix</family>
@@ -62,9 +62,10 @@
             </activation>
             <properties>
                 <lwjgl.natives>natives-linux</lwjgl.natives>
+                <physx.natives>natives-linux</physx.natives>
             </properties>
         </profile>
-        <profile>
+        <!--profile>
             <id>lwjgl-natives-linux-aarch64</id>
             <activation>
                 <os>
@@ -99,9 +100,9 @@
             <properties>
                 <lwjgl.natives>natives-linux-arm32</lwjgl.natives>
             </properties>
-        </profile>
+        </profile-->
         <profile>
-            <id>lwjgl-natives-macos-x86_64</id>
+            <id>MacOS</id>
             <activation>
                 <os>
                     <family>mac</family>
@@ -110,10 +111,11 @@
             </activation>
             <properties>
                 <lwjgl.natives>natives-macos</lwjgl.natives>
+                <physx.natives>natives-macos</physx.natives>
             </properties>
         </profile>
         <profile>
-            <id>lwjgl-natives-macos-aarch64</id>
+            <id>MacOS M1+</id>
             <activation>
                 <os>
                     <family>mac</family>
@@ -122,10 +124,11 @@
             </activation>
             <properties>
                 <lwjgl.natives>natives-macos-arm64</lwjgl.natives>
+                <physx.natives>natives-macos-arm64</physx.natives>
             </properties>
         </profile>
         <profile>
-            <id>lwjgl-natives-windows-amd64</id>
+            <id>Windows</id>
             <activation>
                 <os>
                     <family>windows</family>
@@ -134,10 +137,11 @@
             </activation>
             <properties>
                 <lwjgl.natives>natives-windows</lwjgl.natives>
+                <physx.natives>natives-windows</physx.natives>
             </properties>
         </profile>
-        <profile>
-            <id>lwjgl-natives-windows-x86</id>
+        <!--profile>
+            <id>Windows x86</id>
             <activation>
                 <os>
                     <family>windows</family>
@@ -147,8 +151,8 @@
             <properties>
                 <lwjgl.natives>natives-windows-x86</lwjgl.natives>
             </properties>
-        </profile>
-        <profile>
+        </profile-->
+        <!--profile>
             <id>lwjgl-natives-windows-aarch64</id>
             <activation>
                 <os>
@@ -159,7 +163,7 @@
             <properties>
                 <lwjgl.natives>natives-windows-arm64</lwjgl.natives>
             </properties>
-        </profile>
+        </profile-->
     </profiles>
 
     <dependencyManagement>
@@ -337,6 +341,17 @@
             <classifier>${lwjgl.natives}</classifier>
         </dependency>
         <dependency>
+            <groupId>de.fabmax</groupId>
+            <artifactId>physx-jni</artifactId>
+            <version>2.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>de.fabmax</groupId>
+            <artifactId>physx-jni</artifactId>
+            <classifier>${physx.natives}</classifier>
+            <version>2.0.4</version>
+        </dependency>
+        <dependency>
             <groupId>org.joml</groupId>
             <artifactId>joml</artifactId>
             <version>1.10.4</version>
@@ -355,31 +370,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.24</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.spair</groupId>
-            <artifactId>imgui-java-binding</artifactId>
-            <version>1.86.4</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.spair</groupId>
-            <artifactId>imgui-java-lwjgl3</artifactId>
-            <version>1.86.4</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.spair</groupId>
-            <artifactId>imgui-java-natives-windows</artifactId>
-            <version>1.86.4</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.spair</groupId>
-            <artifactId>imgui-java-natives-macos</artifactId>
-            <version>1.86.4</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.spair</groupId>
-            <artifactId>imgui-java-natives-linux</artifactId>
-            <version>1.86.4</version>
         </dependency>
         <dependency>
             <groupId>com.1stleg</groupId>
