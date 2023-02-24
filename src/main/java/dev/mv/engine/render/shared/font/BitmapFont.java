@@ -127,7 +127,7 @@ public class BitmapFont {
         try {
             return chars.get(c + 0).getHeight();
         } catch (NullPointerException e) {
-            MVEngine.Exceptions.Throw(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
+            MVEngine.Exceptions.__throw__(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
             return -1;
         }
     }
@@ -136,7 +136,7 @@ public class BitmapFont {
         try {
             return (int) (chars.get(c + 0).getWidth());
         } catch (NullPointerException e) {
-            MVEngine.Exceptions.Throw(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
+            MVEngine.Exceptions.__throw__(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
             return -1;
         }
     }
@@ -185,7 +185,7 @@ public class BitmapFont {
         try {
             return chars.get(c + 0);
         } catch (NullPointerException e) {
-            MVEngine.Exceptions.Throw(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
+            MVEngine.Exceptions.__throw__(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
             return null;
         }
     }

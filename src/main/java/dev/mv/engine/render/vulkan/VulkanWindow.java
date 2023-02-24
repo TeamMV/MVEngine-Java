@@ -1,6 +1,6 @@
 package dev.mv.engine.render.vulkan;
 
-import dev.mv.editor.ApplicationLoop;
+import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.WindowCreateInfo;
@@ -35,12 +35,14 @@ public class VulkanWindow implements Window {
     private Window fallbackWindow = null;
     private int oW, oH, oX, oY;
     private double timeU, timeF;
+    private MVEngine engine;
 
 
     public VulkanWindow(WindowCreateInfo info) {
         this.info = info;
         width = info.width;
         height = info.height;
+        engine = MVEngine.instance();
     }
 
     @Override
@@ -54,8 +56,8 @@ public class VulkanWindow implements Window {
         if (!init()) {
             glfwFreeCallbacks(window);
             glfwDestroyWindow(window);
-            MVEngine.rollbackRenderingApi();
-            fallbackWindow = MVEngine.createWindow(info);
+            engine.rollbackRenderingApi();
+            fallbackWindow = engine.createWindow(info);
             fallbackWindow.run(applicationLoop);
             return;
         }
@@ -71,9 +73,9 @@ public class VulkanWindow implements Window {
 
         if (applicationLoop != null) {
             try {
-                applicationLoop.start(this);
+                applicationLoop.start(engine, this);
             } catch (Exception e) {
-                MVEngine.Exceptions.Throw(e);
+                MVEngine.Exceptions.__throw__(e);
             }
         }
 
@@ -144,7 +146,7 @@ public class VulkanWindow implements Window {
             this.deltaF = deltaF;
             if (deltaU >= 1) {
                 if (applicationLoop != null) {
-                    applicationLoop.update(this);
+                    applicationLoop.update(engine, this);
                 }
                 if (info.appendFpsToTitle) {
                     String fpsTitle = info.title + info.fpsAppendConfiguration.betweenTitleAndValue + getFPS() + info.fpsAppendConfiguration.afterValue;
@@ -159,7 +161,7 @@ public class VulkanWindow implements Window {
                 //ImGui.newFrame();
 
                 if (applicationLoop != null) {
-                    applicationLoop.draw(this);
+                    applicationLoop.draw(engine, this);
                 }
 
                 //updateInputs();

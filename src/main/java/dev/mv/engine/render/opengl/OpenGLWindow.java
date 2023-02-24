@@ -1,6 +1,6 @@
 package dev.mv.engine.render.opengl;
 
-import dev.mv.editor.ApplicationLoop;
+import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.Camera;
@@ -46,6 +46,7 @@ public class OpenGLWindow implements Window {
     private WindowCreateInfo info;
     private int oW, oH, oX, oY;
     private double timeU, timeF;
+    private MVEngine engine;
 
     private Camera camera;
 
@@ -55,6 +56,7 @@ public class OpenGLWindow implements Window {
         height = info.height;
         currentFPS = info.maxFPS;
         currentUPS = info.maxUPS;
+        this.engine = MVEngine.instance();
     }
 
     @Override
@@ -67,19 +69,18 @@ public class OpenGLWindow implements Window {
 
         declareProjection();
         render2D = new OpenGLRender2D(this);
-        render3D = new OpenGLRender3D(this);
+        //render3D = new OpenGLRender3D(this);
         camera = new Camera();
-        camera.moveTo(0, 30, 0);
         //batchController3D = new BatchController3D(this, 1000);
         //batchController3D.start();
-        //batchController = new BatchController(this, 1000);
-        //batchController.start();
+        batchController = new BatchController(this, 1000);
+        batchController.start();
 
         if (applicationLoop != null) {
             try {
-                applicationLoop.start(this);
+                applicationLoop.start(engine, this);
             } catch (Exception e) {
-                MVEngine.Exceptions.Throw(e);
+                MVEngine.Exceptions.__throw__(e);
             }
         }
 
@@ -179,9 +180,9 @@ public class OpenGLWindow implements Window {
             if (deltaU >= 1) {
                 if (applicationLoop != null) {
                     try {
-                        applicationLoop.update(this);
+                        applicationLoop.update(engine, this);
                     } catch (Exception e) {
-                        MVEngine.Exceptions.Throw(e);
+                        MVEngine.Exceptions.__throw__(e);
                     }
                 }
                 if (info.appendFpsToTitle) {
@@ -197,17 +198,17 @@ public class OpenGLWindow implements Window {
 
                 if (applicationLoop != null) {
                     try {
-                        applicationLoop.draw(this);
+                        applicationLoop.draw(engine, this);
                     } catch (Exception e) {
-                        MVEngine.Exceptions.Throw(e);
+                        MVEngine.Exceptions.__throw__(e);
                     }
                 }
 
                 updateInputs();
 
-                //batchController.finishAndRender();
+                batchController.finishAndRender();
                 //batchController3D.finishAndRender();
-                render3D.render();
+                //render3D.render();
 
                 glfwSwapBuffers(window);
                 currentFrame++;

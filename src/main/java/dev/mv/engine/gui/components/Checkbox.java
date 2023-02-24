@@ -62,6 +62,11 @@ public class Checkbox extends ImageButton implements Text {
                     draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
                 }
             } else {
+                draw.color(animationState.baseColor);
+                if(!enabled) {
+                    draw.color(theme.getDisabledBaseColor());
+                }
+                draw.roundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(0, 0, 0, 0);
                 if(useTextColor) {
                     draw.color(animationState.textColor);
@@ -91,6 +96,11 @@ public class Checkbox extends ImageButton implements Text {
                     draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
                 }
             } else {
+                draw.color(animationState.baseColor);
+                if(!enabled) {
+                    draw.color(theme.getDisabledBaseColor());
+                }
+                draw.triangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(0, 0, 0, 0);
                 if(useTextColor) {
                     draw.color(animationState.textColor);
@@ -120,6 +130,11 @@ public class Checkbox extends ImageButton implements Text {
                     draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
                 }
             } else {
+                draw.color(animationState.baseColor);
+                if(!enabled) {
+                    draw.color(theme.getDisabledBaseColor());
+                }
+                draw.rectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(0, 0, 0, 0);
                 if(useTextColor) {
                     draw.color(animationState.textColor);

@@ -76,30 +76,6 @@
             <properties>
                 <lwjgl.natives>natives-linux-arm64</lwjgl.natives>
             </properties>
-        </profile>
-        <profile>
-            <id>lwjgl-natives-linux-arm</id>
-            <activation>
-                <os>
-                    <family>unix</family>
-                    <arch>arm</arch>
-                </os>
-            </activation>
-            <properties>
-                <lwjgl.natives>natives-linux-arm32</lwjgl.natives>
-            </properties>
-        </profile>
-        <profile>
-            <id>lwjgl-natives-linux-arm32</id>
-            <activation>
-                <os>
-                    <family>unix</family>
-                    <arch>arm32</arch>
-                </os>
-            </activation>
-            <properties>
-                <lwjgl.natives>natives-linux-arm32</lwjgl.natives>
-            </properties>
         </profile-->
         <profile>
             <id>MacOS</id>
@@ -140,18 +116,6 @@
                 <physx.natives>natives-windows</physx.natives>
             </properties>
         </profile>
-        <!--profile>
-            <id>Windows x86</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                    <arch>x86</arch>
-                </os>
-            </activation>
-            <properties>
-                <lwjgl.natives>natives-windows-x86</lwjgl.natives>
-            </properties>
-        </profile-->
         <!--profile>
             <id>lwjgl-natives-windows-aarch64</id>
             <activation>

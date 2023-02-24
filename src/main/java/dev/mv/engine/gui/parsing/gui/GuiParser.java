@@ -13,7 +13,6 @@ import dev.mv.engine.gui.parsing.InvalidGuiFileException;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.resources.R;
-import dev.mv.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -64,7 +63,7 @@ public class GuiParser {
         this.window = window;
         File layoutDir = new File(layoutPath);
         if(!layoutDir.isDirectory()) {
-            MVEngine.Exceptions.Throw(new InvalidGuiFileException("Specified gui layout path is not a valid directory!"));
+            MVEngine.Exceptions.__throw__(new InvalidGuiFileException("Specified gui layout path is not a valid directory!"));
         }
 
         GuiRegistry returnRegistry = new GuiRegistry();
@@ -77,7 +76,7 @@ public class GuiParser {
                 document.getDocumentElement().normalize();
 
                 if (!document.getDocumentElement().getTagName().equals("gui")) {
-                    MVEngine.Exceptions.Throw(new InvalidGuiFileException("Root should be \"gui\""));
+                    MVEngine.Exceptions.__throw__(new InvalidGuiFileException("Root should be \"gui\""));
                 }
 
                 Gui gui = new Gui(drawContext2D, window, document.getDocumentElement().getAttribute("name"));
@@ -110,7 +109,7 @@ public class GuiParser {
 
                 returnRegistry.addGui(gui);
             } catch (Exception e) {
-                MVEngine.Exceptions.Throw(e);
+                MVEngine.Exceptions.__throw__(e);
             }
         }
 
@@ -182,13 +181,13 @@ public class GuiParser {
         try {
             references.put(ref.getAttribute("name"), new Reference(element, params));
         } catch (NullPointerException e) {
-            MVEngine.Exceptions.Throw(new InvalidGuiFileException("\"ref\" tag with name \"" + ref.getAttribute("name") + "\" contains an invalid gui element tag!"));
+            MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"ref\" tag with name \"" + ref.getAttribute("name") + "\" contains an invalid gui element tag!"));
         }
     }
 
     private dev.mv.engine.gui.components.Element parseElement(Element elementTag) {
         dev.mv.engine.gui.components.Element e = switch (elementTag.getNodeName()) {
-            default -> {MVEngine.Exceptions.Throw(new InvalidGuiFileException("\"" + elementTag.getNodeName() + "\" is not a valid gui element tag!")); yield null;}
+            default -> {MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"" + elementTag.getNodeName() + "\" is not a valid gui element tag!")); yield null;}
             case "textLine" ->          parseTextLine(elementTag);
             case "button" ->            parseButton(elementTag);
             case "imageButton" ->       parseImageButton(elementTag);
@@ -203,7 +202,7 @@ public class GuiParser {
             case "choiceGroup" ->       parseChoiceGroup(elementTag);
             case "ref" ->               resolveRef(elementTag);
             case "var" ->               {parseVariable(elementTag); yield null;}
-            case "choice" -> {MVEngine.Exceptions.Throw(new InvalidGuiFileException("\"choice\" tag can't stand outside of a \"choiceGroup\" tag!")); yield null;}
+            case "choice" -> {MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"choice\" tag can't stand outside of a \"choiceGroup\" tag!")); yield null;}
         };
 
         if(e == null) {
@@ -253,17 +252,17 @@ public class GuiParser {
         currentRefLookup.clear();
 
         if(!references.containsKey(tag.getAttribute("name"))) {
-            MVEngine.Exceptions.Throw(new InvalidGuiFileException("\"ref\" tag with the name \"" + tag.getAttribute("name") + "\" is not declared yet!"));
+            MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"ref\" tag with the name \"" + tag.getAttribute("name") + "\" is not declared yet!"));
             return null;
         }
 
         if(tag.hasAttribute("params") && references.get(tag.getAttribute("name")).getParams() == null) {
-            MVEngine.Exceptions.Throw(new InvalidGuiFileException("\"ref\" tag with the name \"" + tag.getAttribute("name") + "\" has params, but it's declaration not!"));
+            MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"ref\" tag with the name \"" + tag.getAttribute("name") + "\" has params, but it's declaration not!"));
             return null;
         }
 
         if(!tag.hasAttribute("params") && references.get(tag.getAttribute("name")).getParams() != null) {
-            MVEngine.Exceptions.Throw(new InvalidGuiFileException("\"ref\" tag with the name \"" + tag.getAttribute("name") + "\" has no params, but it's declaration does!"));
+            MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"ref\" tag with the name \"" + tag.getAttribute("name") + "\" has no params, but it's declaration does!"));
             return null;
         }
 
@@ -272,7 +271,7 @@ public class GuiParser {
             String[] params = references.get(tag.getAttribute("name")).getParams();
 
             if(args.length != params.length) {
-                MVEngine.Exceptions.Throw(new InvalidGuiFileException("\"ref\" tag with the name \"" + tag.getAttribute("name") + "\" has a different amount of params than it's declaration!"));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"ref\" tag with the name \"" + tag.getAttribute("name") + "\" has a different amount of params than it's declaration!"));
             }
 
             for (int i = 0; i < args.length; i++) {

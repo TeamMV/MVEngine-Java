@@ -2,7 +2,6 @@ package dev.mv.engine.gui.parsing.theme;
 
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.components.animations.ElementAnimation;
-import dev.mv.engine.gui.functions.GuiFunction;
 import dev.mv.engine.gui.parsing.InvalidGuiFileException;
 import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.theme.Theme;
@@ -42,7 +41,7 @@ public class ThemeParser {
             document.getDocumentElement().normalize();
 
             if (!document.getDocumentElement().getTagName().equals("theme")) {
-                MVEngine.Exceptions.Throw(new InvalidGuiFileException("Root should be \"theme\""));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("Root should be \"theme\""));
             }
 
             NodeList tags = document.getDocumentElement().getChildNodes();
@@ -62,7 +61,7 @@ public class ThemeParser {
                 }
             }
         } catch (Exception e) {
-            MVEngine.Exceptions.Throw(e);
+            MVEngine.Exceptions.__throw__(e);
         }
 
         return returnTheme;
@@ -353,11 +352,11 @@ public class ThemeParser {
         if (color.startsWith("#")) {
             color = color.replaceAll("#", "");
             if (!color.matches("-?[0-9a-fA-F]+")) {
-                MVEngine.Exceptions.Throw(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: # colors must be hexadecimal characters!"));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: # colors must be hexadecimal characters!"));
             }
             String[] colors = color.split("(?<=\\G.{2})");
             if (colors.length < 3 || colors.length > 4) {
-                MVEngine.Exceptions.Throw(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: # colors must contain 6 or 8 characters!"));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: # colors must contain 6 or 8 characters!"));
             }
             int r = Integer.parseInt(colors[0], 16);
             int g = Integer.parseInt(colors[1], 16);
@@ -370,11 +369,11 @@ public class ThemeParser {
         } else if (color.startsWith("0x")) {
             color = color.replaceAll("0x", "");
             if (!color.matches("-?[0-9a-fA-F]+")) {
-                MVEngine.Exceptions.Throw(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: 0x colors must be hexadecimal characters!"));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: 0x colors must be hexadecimal characters!"));
             }
             String[] colors = color.split("(?<=\\G.{2})");
             if (colors.length < 3 || colors.length > 4) {
-                MVEngine.Exceptions.Throw(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: 0x colors must contain 6 or 8 characters!"));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: 0x colors must contain 6 or 8 characters!"));
             }
             int r = Integer.parseInt(colors[0], 16);
             int g = Integer.parseInt(colors[1], 16);
@@ -393,7 +392,7 @@ public class ThemeParser {
             }
             String[] colors = color.replaceAll(" ", "").split(split);
             if (colors.length < 3 || colors.length > 4) {
-                MVEngine.Exceptions.Throw(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: colors must contain 3 or 4 sets of numbers!"));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: colors must contain 3 or 4 sets of numbers!"));
             }
             int r = Integer.parseInt(colors[0]);
             int g = Integer.parseInt(colors[1]);

@@ -2,7 +2,7 @@
 <theme>
     <colors>
         <enabled>
-            <base>125, 122, 100, 20</base>
+            <base>125, 122, 100, 200</base>
             <outline>200, 200, 200, 255</outline>
             <text>255, 255, 255, 255</text>
             <extra>255, 217, 0, 255</extra>
@@ -25,7 +25,7 @@
             <radius>10</radius>
         </edges>
         <outline>
-            <thickness>3</thickness>
+            <thickness>2</thickness>
             <use>true</use>
         </outline>
         <guiAssets>

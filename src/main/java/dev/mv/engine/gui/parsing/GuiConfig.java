@@ -1,19 +1,16 @@
 package dev.mv.engine.gui.parsing;
 
 import dev.mv.engine.MVEngine;
-import dev.mv.engine.gui.parsing.InvalidGuiFileException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.crypto.dsig.XMLSignatureException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 
 public class GuiConfig {
@@ -26,9 +23,9 @@ public class GuiConfig {
             configFile = new File(this.getClass().getResource(configFilePath).toURI());
             parse(configFile);
         } catch (URISyntaxException e) {
-            MVEngine.Exceptions.Throw(new IOException("Could not find file \"" + configFilePath + "\""));
+            MVEngine.Exceptions.__throw__(new IOException("Could not find file \"" + configFilePath + "\""));
         } catch (InvalidGuiFileException e) {
-            MVEngine.Exceptions.Throw(e);
+            MVEngine.Exceptions.__throw__(e);
         }
     }
 
@@ -40,10 +37,10 @@ public class GuiConfig {
             document.getDocumentElement().normalize();
 
             if (!document.getDocumentElement().getTagName().split(":")[0].equals("mvt")) {
-                MVEngine.Exceptions.Throw(new InvalidGuiFileException("Namespace should be \"mvt\""));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("Namespace should be \"mvt\""));
             }
             if (!document.getDocumentElement().getTagName().split(":")[1].equals("config")) {
-                MVEngine.Exceptions.Throw(new InvalidGuiFileException("Root should be \"config\""));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("Root should be \"config\""));
             }
 
             NodeList tags = document.getDocumentElement().getChildNodes();

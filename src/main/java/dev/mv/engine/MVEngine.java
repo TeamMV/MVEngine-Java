@@ -13,7 +13,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
-public class MVEngine {
+public class MVEngine implements AutoCloseable {
     public static String VERSION_STR = "v0.1.0";
     public static Version VERSION = Version.parse(VERSION_STR);
 
@@ -26,11 +26,22 @@ public class MVEngine {
         return renderingApi;
     }
 
-    public static void init() {
-        init(new ApplicationConfig());
+    private static MVEngine instance;
+
+    private MVEngine() {}
+
+    public static MVEngine instance() {
+        if (instance == null) {
+            throw new IllegalStateException("MVEngine not initialised");
+        }
+        return instance;
     }
 
-    public static void init(ApplicationConfig config) {
+    public static MVEngine init() {
+        return init(new ApplicationConfig());
+    }
+
+    public static MVEngine init(ApplicationConfig config) {
         applicationConfig = config;
         if (config == null) {
             config = new ApplicationConfig();
@@ -46,19 +57,17 @@ public class MVEngine {
         } else {
             renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
         }
+        instance = new MVEngine();
+        return instance;
     }
 
-    public static void terminate() {
-        glfwTerminate();
-    }
-
-    public static void rollbackRenderingApi() {
+    public void rollbackRenderingApi() {
         if (renderingApi != ApplicationConfig.RenderingAPI.OPENGL) {
             renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
         }
     }
 
-    public static Window createWindow(WindowCreateInfo info) {
+    public Window createWindow(WindowCreateInfo info) {
         if (info == null) {
             info = new WindowCreateInfo();
         }
@@ -71,7 +80,7 @@ public class MVEngine {
     }
 
 
-    public static ObjectLoader getObjectLoader() {
+    public ObjectLoader getObjectLoader() {
         if (renderingApi == ApplicationConfig.RenderingAPI.VULKAN) {
             return null;
         } else {
@@ -79,8 +88,14 @@ public class MVEngine {
         }
     }
 
+    @Override
+    public void close() {
+        glfwTerminate();
+        instance = null;
+    }
+
     public static class Exceptions {
-        public static void Throw(Throwable throwable) {
+        public static void __throw__(Throwable throwable) {
             throw new RuntimeException(throwable);
         }
     }

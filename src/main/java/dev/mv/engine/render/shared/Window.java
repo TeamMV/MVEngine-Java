@@ -1,6 +1,6 @@
 package dev.mv.engine.render.shared;
 
-import dev.mv.editor.ApplicationLoop;
+import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import org.joml.Matrix4f;

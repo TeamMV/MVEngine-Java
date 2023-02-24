@@ -9,7 +9,6 @@ import lombok.Setter;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 
@@ -37,7 +36,7 @@ public class OpenGLShader implements Shader {
         try {
             return new String(OpenGLShader.class.getResourceAsStream(fileStream).readAllBytes());
         } catch (IOException e) {
-            MVEngine.Exceptions.Throw(e);
+            MVEngine.Exceptions.__throw__(e);
         }
 
         return null;

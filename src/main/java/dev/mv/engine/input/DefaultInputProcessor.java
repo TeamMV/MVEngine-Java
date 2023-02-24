@@ -23,8 +23,8 @@ public final class DefaultInputProcessor implements InputProcessor {
     }
 
     @Override
-    public void keyUpdate(int key, InputCollector.KeyAction action) {
+    public void keyUpdate(int key, InputCollector.KeyAction action, int mods) {
         Input.updateKey(key, action);
-        R.sendInputKeyEvent(key, action);
+        R.sendInputKeyEvent(key, action, mods);
     }
 }

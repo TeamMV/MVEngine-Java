@@ -21,7 +21,7 @@ public class BatchController {
 
     public BatchController(Window window, int batchLimit) {
         if (batchLimit < 14) {
-            MVEngine.Exceptions.Throw(new IllegalArgumentException("Batch limit of " + batchLimit + " is too small, at least 14 is required!"));
+            MVEngine.Exceptions.__throw__(new IllegalArgumentException("Batch limit of " + batchLimit + " is too small, at least 14 is required!"));
         }
 
         defaultShader = RenderBuilder.newShader(VERTEX_PATH, FRAGMENT_PATH);

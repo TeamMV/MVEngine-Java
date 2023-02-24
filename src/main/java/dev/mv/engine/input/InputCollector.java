@@ -1,21 +1,25 @@
 package dev.mv.engine.input;
 
+import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.shared.Window;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
-import org.jnativehook.keyboard.NativeKeyEvent;
-import org.jnativehook.keyboard.NativeKeyListener;
-import org.lwjgl.glfw.GLFWCursorPosCallback;
-import org.lwjgl.glfw.GLFWMouseButtonCallback;
-import org.lwjgl.glfw.GLFWScrollCallbackI;
+import org.lwjgl.glfw.*;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class InputCollector implements NativeKeyListener {
+public class InputCollector {
     private InputProcessor inputProcessor;
     private Window window;
 
@@ -25,6 +29,8 @@ public class InputCollector implements NativeKeyListener {
     }
 
     public void start() {
+        glfwSetInputMode(window.getGlfwId(), GLFW_LOCK_KEY_MODS, GLFW_TRUE);
+
         glfwSetScrollCallback(window.getGlfwId(), new GLFWScrollCallbackI() {
             @Override
             public void invoke(long win, double xOffset, double yOffset) {
@@ -46,47 +52,27 @@ public class InputCollector implements NativeKeyListener {
             }
         });
 
-        //native hook
-
-        try {
-            GlobalScreen.registerNativeHook();
-        } catch (NativeHookException ex) {
-            System.err.println("There was a problem registering the native hook.");
-            System.err.println(ex.getMessage());
-
-            System.exit(1);
-        }
-
-        LogManager.getLogManager().reset();
-
-        Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-        logger.setLevel(Level.OFF);
-
-        GlobalScreen.addNativeKeyListener(this);
+        glfwSetKeyCallback(window.getGlfwId(), new GLFWKeyCallback() {
+            @Override
+            public void invoke(long window, int key, int scancode, int action, int mods) {
+                if (action == GLFW_PRESS) {
+                    inputProcessor.keyUpdate(key, KeyAction.TYPE, mods);
+                } else if (action == GLFW_RELEASE) {
+                    inputProcessor.keyUpdate(key, KeyAction.RELEASE, mods);
+                } else if (action == GLFW_REPEAT) {
+                    inputProcessor.keyUpdate(key, KeyAction.REPEAT, mods);
+                }
+            }
+        });
     }
 
-    @Override
-    public void nativeKeyTyped(NativeKeyEvent nativeKeyEvent) {
-        inputProcessor.keyUpdate(nativeKeyEvent.getRawCode(), KeyAction.TYPE);
-    }
-
-    @Override
-    public void nativeKeyPressed(NativeKeyEvent nativeKeyEvent) {
-        inputProcessor.keyUpdate(nativeKeyEvent.getRawCode(), KeyAction.PRESS);
-    }
-
-    @Override
-    public void nativeKeyReleased(NativeKeyEvent nativeKeyEvent) {
-        inputProcessor.keyUpdate(nativeKeyEvent.getRawCode(), KeyAction.RELEASE);
-    }
-
-    public enum KeyAction{
-        PRESS,
+    public enum KeyAction {
         TYPE,
+        REPEAT,
         RELEASE
     }
 
-    public enum MouseAction{
+    public enum MouseAction {
         PRESS(GLFW_PRESS),
         RELEASE(GLFW_RELEASE);
 

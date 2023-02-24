@@ -217,6 +217,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     @Override
     public void keyType(int key) {
         if(selected) {
+            System.out.println(key);
             if (Input.convertKey(key) == Input.KEY_BACKSPACE) {
                 pop();
                 return;

@@ -71,8 +71,6 @@ public class OpenGLLightingPass implements LightingPass {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_DYNAMIC_DRAW);
 
-        System.out.println(Arrays.toString(vertices));
-
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
         glEnableVertexAttribArray(0);
 
