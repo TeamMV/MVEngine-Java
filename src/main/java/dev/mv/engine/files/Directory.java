@@ -46,7 +46,15 @@ public abstract class Directory {
     }
 
     public <T> T getFileAsObject(String name, ObjectDirectorySaver<T> saver) {
-        return saver.load(getSubDirectory(name).folder);
+        return saver.load(getSubDirectory(name));
+    }
+
+    public ConfigFile getConfigFile(String name) {
+        try {
+            return new ConfigFile(name, this, getFileAsBytes(name));
+        } catch (IOException e) {
+            return new ConfigFile(name, this, new byte[0]);
+        }
     }
 
     public void saveFileBytes(String name, byte[] bytes) throws IOException {
@@ -58,7 +66,11 @@ public abstract class Directory {
     }
 
     public <T> void saveFileObject(String name, T object, ObjectDirectorySaver<T> saver) {
-        saver.save(getSubDirectory(name).folder, object);
+        saver.save(getSubDirectory(name), object);
+    }
+
+    public File asFile() {
+        return folder;
     }
 
 }

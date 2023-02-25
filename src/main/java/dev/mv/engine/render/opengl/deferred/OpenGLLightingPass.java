@@ -19,14 +19,14 @@ public class OpenGLLightingPass implements LightingPass {
     private int vboId, iboId;
 
     private int[] indices = new int[] {
-        0, 1, 2, 0, 2, 3
+        0, 1, 2, 0, 3, 2
     };
 
     private float[] vertices = new float[] {
-        0, 0, 0,
-        0, -1, 0,
         -1, -1, 0,
-        -1, 0, -0
+        -1, 1, 0,
+        1, 1, 0,
+        1, -1, 0
     };
 
     public OpenGLLightingPass(Window window) {
@@ -40,7 +40,6 @@ public class OpenGLLightingPass implements LightingPass {
 
     @Override
     public void render(int gPosition, int gNormal, int gAlbedoSpec) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gPosition);
         glActiveTexture(GL_TEXTURE1);
@@ -62,11 +61,6 @@ public class OpenGLLightingPass implements LightingPass {
     }
 
     private void renderQuad() {
-        vertices[4] = window.getHeight();
-        vertices[6] = window.getWidth();
-        vertices[7] = window.getHeight();
-        vertices[9] = window.getWidth();
-
         glBindBuffer(GL_ARRAY_BUFFER, vboId);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_DYNAMIC_DRAW);
 

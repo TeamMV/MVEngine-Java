@@ -20,6 +20,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class OpenGLGeometryPass implements GeometryPass {
     private int gBuffer;
     private int gPosition, gNormal, gAlbedoSpec;
+    private int[] attachments;
     private Shader shader;
     private Window window;
     private OpenGLLightingPass lightingPass;
@@ -55,8 +56,7 @@ public class OpenGLGeometryPass implements GeometryPass {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
 
-        int[] attachments = new int[]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-        glDrawBuffers(attachments);
+        attachments = new int[]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
     }
 
     private void bind(Model model) {
@@ -96,11 +96,12 @@ public class OpenGLGeometryPass implements GeometryPass {
             List<Entity> entityList = entities.get(model);
             for (Entity entity : entityList) {
                 prepare(entity);
-                glDrawBuffers(GL_FRAMEBUFFER);
-                lightingPass.render(gPosition, gNormal, gAlbedoSpec);
+                glDrawBuffers(attachments);
             }
             unbind();
         }
+
+        lightingPass.render(gPosition, gNormal, gAlbedoSpec);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

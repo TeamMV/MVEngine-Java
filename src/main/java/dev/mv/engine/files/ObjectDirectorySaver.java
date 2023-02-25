@@ -1,11 +1,9 @@
 package dev.mv.engine.files;
 
-import java.io.File;
-
 public interface ObjectDirectorySaver<T> {
 
-    T load(File directory);
+    T load(Directory directory);
 
-    void save(File directory, T object);
+    void save(Directory directory, T object);
 
 }
