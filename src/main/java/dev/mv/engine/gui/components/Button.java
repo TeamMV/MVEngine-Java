@@ -13,7 +13,7 @@ import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
 
-public class Button extends Element implements Text, Toggle, Clickable {
+public class Button extends AbstractClickable implements Text, Toggle, Clickable {
     private String text;
     private BitmapFont font;
     private boolean enabled = true;
@@ -57,12 +57,11 @@ public class Button extends Element implements Text, Toggle, Clickable {
         if(initialState.width < font.getWidth(text, initialState.height - textDistance()) + textDistance()) {
             setWidth(font.getWidth(text, initialState.height - textDistance()) + textDistance());
         }
-        System.out.println("text set");
     }
 
     @Override
     public String getText() {
-        return null;
+        return text;
     }
 
     @Override

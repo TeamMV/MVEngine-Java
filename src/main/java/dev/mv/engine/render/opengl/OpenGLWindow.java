@@ -68,13 +68,13 @@ public class OpenGLWindow implements Window {
         }
 
         declareProjection();
-        render2D = new OpenGLRender2D(this);
-        //render3D = new OpenGLRender3D(this);
+        //render2D = new OpenGLRender2D(this);
+        render3D = new OpenGLRender3D(this);
         camera = new Camera();
         //batchController3D = new BatchController3D(this, 1000);
         //batchController3D.start();
-        batchController = new BatchController(this, 1000);
-        batchController.start();
+        //batchController = new BatchController(this, 1000);
+        //batchController.start();
 
         if (applicationLoop != null) {
             try {
@@ -133,8 +133,8 @@ public class OpenGLWindow implements Window {
 
         glfwShowWindow(window);
 
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        //glEnable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
@@ -147,6 +147,7 @@ public class OpenGLWindow implements Window {
             height = h;
 
             glViewport(0, 0, w, h);
+            declareProjection();
         });
     }
 
@@ -206,9 +207,9 @@ public class OpenGLWindow implements Window {
 
                 updateInputs();
 
-                batchController.finishAndRender();
+                //batchController.finishAndRender();
                 //batchController3D.finishAndRender();
-                //render3D.render();
+                render3D.render();
 
                 glfwSwapBuffers(window);
                 currentFrame++;

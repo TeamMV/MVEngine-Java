@@ -1,5 +1,6 @@
 package dev.mv.engine;
 
+import dev.mv.engine.physics.Physics;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.opengl.OpenGLObjectLoader;
 import dev.mv.engine.render.opengl.OpenGLWindow;
@@ -42,6 +43,10 @@ public class MVEngine implements AutoCloseable {
     }
 
     public static MVEngine init(ApplicationConfig config) {
+        if (Physics.init()) {
+            throw new RuntimeException("Could not initialise NVIDIA Physx!");
+        }
+
         applicationConfig = config;
         if (config == null) {
             config = new ApplicationConfig();
@@ -90,8 +95,13 @@ public class MVEngine implements AutoCloseable {
 
     @Override
     public void close() {
+        Physics.terminate();
         glfwTerminate();
         instance = null;
+    }
+
+    public static void terminate() {
+        instance().close();
     }
 
     public static class Exceptions {

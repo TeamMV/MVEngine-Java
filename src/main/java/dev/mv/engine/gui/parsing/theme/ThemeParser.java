@@ -16,28 +16,32 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.function.IntUnaryOperator;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public class ThemeParser {
-    private File file;
+    private InputStream stream;
     private String themePath;
+    private String currentFile;
 
     public ThemeParser(GuiConfig guiConfig) {
         themePath = guiConfig.getThemePath();
     }
 
     public Theme parse(String name) throws IOException {
-        this.file = new File(themePath + name);
-        if(!file.exists()) {
-            throw new IOException("Could not find file \"" + name + "\" inside the given themePath!");
-        }
+        String[] s = name.split("/");
+        String[] s1 = s[s.length - 1].split("\\.");
+        currentFile = String.join("", Arrays.copyOf(s1, s1.length - 1));
+        stream = getClass().getResourceAsStream(themePath + name);
         Theme returnTheme = new Theme();
 
         try{
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(file);
+            Document document = builder.parse(stream);
             document.getDocumentElement().normalize();
 
             if (!document.getDocumentElement().getTagName().equals("theme")) {
@@ -352,11 +356,11 @@ public class ThemeParser {
         if (color.startsWith("#")) {
             color = color.replaceAll("#", "");
             if (!color.matches("-?[0-9a-fA-F]+")) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: # colors must be hexadecimal characters!"));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + currentFile + " Color parser: # colors must be hexadecimal characters!"));
             }
             String[] colors = color.split("(?<=\\G.{2})");
             if (colors.length < 3 || colors.length > 4) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: # colors must contain 6 or 8 characters!"));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + currentFile + " Color parser: # colors must contain 6 or 8 characters!"));
             }
             int r = Integer.parseInt(colors[0], 16);
             int g = Integer.parseInt(colors[1], 16);
@@ -369,11 +373,11 @@ public class ThemeParser {
         } else if (color.startsWith("0x")) {
             color = color.replaceAll("0x", "");
             if (!color.matches("-?[0-9a-fA-F]+")) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: 0x colors must be hexadecimal characters!"));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + currentFile + " Color parser: 0x colors must be hexadecimal characters!"));
             }
             String[] colors = color.split("(?<=\\G.{2})");
             if (colors.length < 3 || colors.length > 4) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: 0x colors must contain 6 or 8 characters!"));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + currentFile + " Color parser: 0x colors must contain 6 or 8 characters!"));
             }
             int r = Integer.parseInt(colors[0], 16);
             int g = Integer.parseInt(colors[1], 16);
@@ -392,7 +396,7 @@ public class ThemeParser {
             }
             String[] colors = color.replaceAll(" ", "").split(split);
             if (colors.length < 3 || colors.length > 4) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + this.file.getName().split(".xml")[0] + " Color parser: colors must contain 3 or 4 sets of numbers!"));
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + currentFile + " Color parser: colors must contain 3 or 4 sets of numbers!"));
             }
             int r = Integer.parseInt(colors[0]);
             int g = Integer.parseInt(colors[1]);

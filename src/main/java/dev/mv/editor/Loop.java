@@ -80,7 +80,7 @@ public class Loop implements ApplicationLoop {
         });
         guiRegistry.applyTheme(theme);
         guiRegistry.applyPager(pager);
-        guiRegistry.swap("", "myGui");
+        //guiRegistry.swap("", "myGui");
         R.GUIS = guiRegistry;
 
         R.GUIS.findGui("myGui").getRoot().findElementsByType(CollapseMenu.class).forEach(cm -> cm.setBaseColor(Color.BLACK));
@@ -99,12 +99,15 @@ public class Loop implements ApplicationLoop {
         terrain.render(terrainTiles);
          */
 
-        //drawContext3D.object(cruiser);
+        drawContext3D.object(cruiser);
 
-        drawContext2D.color(0, 0, 0, 0);
-        drawContext2D.image(0, 0, window.getWidth(), window.getHeight(), minecraftBG);
+        //drawContext2D.color(0, 0, 0, 0);
+        //drawContext2D.image(0, 0, window.getWidth(), window.getHeight(), minecraftBG);
 
-        R.GUIS.renderGuis();
+        //drawContext2D.color(255, 0, 0, 100);
+        //drawContext2D.rectangle(300, 200, 50, 400);
+        //drawContext2D.canvas(300, 200, 50, 400);
+        //R.GUIS.renderGuis();
 
         Camera camera = window.getCamera();
         if(Input.isKeyPressed(Input.KEY_W))              camera.move(0, 0, -1);

@@ -1,6 +1,7 @@
 package dev.mv.engine.gui.components.layouts;
 
 import dev.mv.engine.gui.Gui;
+import dev.mv.engine.gui.components.AbstractClickable;
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.input.Clickable;
@@ -59,7 +60,12 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         elements.add(e);
         measureMaxSize();
         e.setParent(this);
-        e.setGui(gui);
+        if (gui != null) {
+            e.setGui(gui);
+            if (e instanceof AbstractClickable c) {
+                c.findClickMethod();
+            }
+        }
     }
 
     public void addElements(Element[] e) {
@@ -67,7 +73,12 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         measureMaxSize();
         for(Element element : e) {
             element.setParent(this);
-            element.setGui(gui);
+            if (gui != null) {
+                element.setGui(gui);
+                if (element instanceof AbstractClickable c) {
+                    c.findClickMethod();
+                }
+            }
         }
     }
 
@@ -107,6 +118,9 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         this.gui = gui;
         for(Element element : this) {
             element.setGui(gui);
+            if (element instanceof AbstractClickable c) {
+                c.findClickMethod();
+            }
         }
     }
 

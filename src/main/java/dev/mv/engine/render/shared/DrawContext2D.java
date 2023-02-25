@@ -25,7 +25,7 @@ public class DrawContext2D {
     public DrawContext2D(Window window) {
         this.window = window;
         gradient = new Gradient();
-        canvas = new Vector4f(500, 0, window.getWidth(), window.getHeight());
+        canvas = new Vector4f(0, 0, window.getWidth(), window.getHeight());
     }
 
     public void color(float r, float g, float b, float a) {
@@ -33,6 +33,13 @@ public class DrawContext2D {
         this.gradient.topRight.set(r, g, b, a).normalize(1.0f);
         this.gradient.bottomLeft.set(r, g, b, a).normalize(1.0f);
         this.gradient.bottomRight.set(r, g, b, a).normalize(1.0f);
+    }
+
+    public void canvas(int x, int y, int width, int height) {
+        canvas.x = x;
+        canvas.y = y;
+        canvas.z = width;
+        canvas.w = height;
     }
 
     public void color(Color color) {
@@ -268,8 +275,8 @@ public class DrawContext2D {
 
     public void line(int x1, int y1, int x2, int y2, int thickness, float rotation, int originX, int originY) {
         float theta = (float) Math.atan2(x2 - x1, y2 - y1);
-        float thetaSin = (float) (Math.sin(theta) * (thickness / 2));
-        float thetaCos = (float) (Math.cos(theta) * (thickness / 2));
+        float thetaSin = (float) (Math.sin(theta) * ((float) thickness / 2f));
+        float thetaCos = (float) (Math.cos(theta) * ((float) thickness / 2f));
         float radRotation = (float) Math.toRadians(rotation);
 
         window.getBatchController().addVertices(verts.set(

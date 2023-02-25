@@ -1,21 +1,23 @@
 package dev.mv.engine.gui;
 
+import dev.mv.engine.gui.components.AbstractClickable;
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.gui.components.extras.IgnoreDraw;
 import dev.mv.engine.gui.components.layouts.AbstractLayout;
 import dev.mv.engine.gui.components.layouts.LayerSection;
 import dev.mv.engine.gui.components.layouts.UpdateSection;
+import dev.mv.engine.gui.functions.GuiMethod;
+import dev.mv.engine.gui.functions.GuiScript;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -25,6 +27,7 @@ public class Gui {
     private String name;
     private UpdateSection root;
     private List<List<LayerSection>> layers;
+    private List<GuiScript> scripts;
 
     public Gui(@NonNull DrawContext2D drawContext, Window window, String name) {
         this.drawContext = drawContext;
@@ -36,6 +39,7 @@ public class Gui {
         for(int i = 0; i < 10; i++) {
             layers.add(new ArrayList<>());
         }
+        scripts = new ArrayList<>();
     }
 
     public String getName() {
@@ -57,6 +61,9 @@ public class Gui {
     public void addElement(Element e) {
         root.addElement(e);
         e.setGui(this);
+        if (e instanceof AbstractClickable c) {
+            c.findClickMethod();
+        }
     }
 
     public void addElements(Element[] e) {
@@ -240,5 +247,23 @@ public class Gui {
         }
 
         return result.toString();
+    }
+
+    //scripts
+
+    @SneakyThrows
+    public void addScript(GuiScript script) {
+        scripts.add(script);
+    }
+
+    public GuiMethod findMethod(String name, Class<?>[] paramTypes, String id) {
+        GuiMethod method;
+        for (GuiScript script : scripts) {
+            method = script.findMethod(name, paramTypes, id);
+            if (method != null) {
+                return method;
+            }
+        }
+        return null;
     }
 }

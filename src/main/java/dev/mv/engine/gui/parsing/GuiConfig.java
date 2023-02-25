@@ -11,25 +11,29 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiConfig {
     private String layoutPath;
+    private String[] layouts;
     private String themePath;
-    File configFile;
+    private String configFilePath;
+    InputStream configFile;
 
     public GuiConfig(String configFilePath) throws IOException {
+        this.configFilePath = configFilePath;
         try {
-            configFile = new File(this.getClass().getResource(configFilePath).toURI());
+            configFile = this.getClass().getResourceAsStream(configFilePath);
             parse(configFile);
-        } catch (URISyntaxException e) {
-            MVEngine.Exceptions.__throw__(new IOException("Could not find file \"" + configFilePath + "\""));
         } catch (InvalidGuiFileException e) {
             MVEngine.Exceptions.__throw__(e);
         }
     }
 
-    private void parse(File inputStream) throws InvalidGuiFileException {
+    private void parse(InputStream inputStream) throws InvalidGuiFileException {
         try{
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -64,7 +68,7 @@ public class GuiConfig {
                                 System.err.println(relative.getNodeName());
                                 throw new InvalidGuiFileException("If \"themePath\" tag has child tags, it should be at most 1 \"relative\" tag!");
                             } else {
-                                themePath = configFile.getParent() + relative.getTextContent();
+                                themePath = getFileParent() + relative.getTextContent();
                             }
                         } else {
                             themePath = tag.getTextContent();
@@ -87,12 +91,25 @@ public class GuiConfig {
                             if(!relative.getNodeName().equals("relative")) {
                                 throw new InvalidGuiFileException("If \"layoutPath\" tag has child tags, it should be at most 1 \"relative\" tag!");
                             } else {
-                                layoutPath = configFile.getParent() + relative.getTextContent();
+                                layoutPath = getFileParent() + relative.getTextContent();
                             }
                         } else {
                             layoutPath = tag.getTextContent();
                         }
                         layoutPath = layoutPath.replaceAll("[\n *]", "");
+                    }
+                    if (tag.getNodeName().equals("layouts")) {
+                        if (tag.hasChildNodes()) {
+                            NodeList nodeList = tag.getChildNodes();
+                            List<String> layoutsArray = new ArrayList<>();
+                            for (int j = 0; j < nodeList.getLength(); j++) {
+                                Node node = nodeList.item(j);
+                                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                                    layoutsArray.add(node.getTextContent());
+                                }
+                            }
+                            layouts = layoutsArray.toArray(new String[0]);
+                        }
                     }
                 }
             }
@@ -104,11 +121,19 @@ public class GuiConfig {
         }
     }
 
+    private String getFileParent() {
+        return configFilePath.substring(0, configFilePath.lastIndexOf(File.separator));
+    }
+
     public String getLayoutPath() {
         return layoutPath;
     }
 
     public String getThemePath() {
         return themePath;
+    }
+
+    public String[] getLayouts() {
+        return layouts;
     }
 }

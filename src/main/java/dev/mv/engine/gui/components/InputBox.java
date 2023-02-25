@@ -27,7 +27,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     protected BitmapFont font;
     protected boolean enabled = true;
     protected boolean selected = false;
-    protected int limit = 10;
+    protected int limit = Integer.MAX_VALUE;
     protected List<Character> blacklist = new ArrayList<>();
     protected List<Character> allowedList = new ArrayList<>();
     protected boolean chroma;
@@ -46,6 +46,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
 
     public void setLimit(int limit) {
         this.limit = limit;
+        if (limit == -1) this.limit = Integer.MAX_VALUE;
     }
 
     public int getLimit() {

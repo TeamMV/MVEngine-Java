@@ -3,6 +3,8 @@ package dev.mv.engine;
 import dev.mv.utils.misc.Version;
 import lombok.Getter;
 
+import dev.mv.utils.logger.Logger;
+
 public class ApplicationConfig {
 
     @Getter

@@ -2,7 +2,7 @@
 <gui name="2ndGui">
     <elements>
         <verticalLayout x="200" y="100" spacing="5" showFrame="false" align="CENTER">
-            <button width="60" height="60" onclick="btnClick" id="btn">click me!</button>
+            <button width="60" height="60" id="btn">click me!</button>
         </verticalLayout>
     </elements>
 </gui>

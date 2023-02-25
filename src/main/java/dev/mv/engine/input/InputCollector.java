@@ -43,7 +43,6 @@ public class InputCollector {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 if (action == GLFW_PRESS) {
-                    System.out.println(key);
                     inputProcessor.keyUpdate(key, KeyAction.TYPE, mods);
                 } else if (action == GLFW_RELEASE) {
                     inputProcessor.keyUpdate(key, KeyAction.RELEASE, mods);

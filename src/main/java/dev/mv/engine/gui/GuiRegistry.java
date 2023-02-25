@@ -38,7 +38,7 @@ public class GuiRegistry implements Iterable<Gui> {
 
     public Gui findGui(String name) {
         if(!guiMap.containsKey(name)) {
-            throw new RuntimeException(new IllegalArgumentException("There is no GUI registered with that name!"));
+            throw new RuntimeException(new IllegalArgumentException("There is no GUI registered with the name " + name + "!"));
         } else {
             return guiMap.get(name);
         }

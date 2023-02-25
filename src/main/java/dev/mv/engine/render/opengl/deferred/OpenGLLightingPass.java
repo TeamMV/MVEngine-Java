@@ -26,12 +26,14 @@ public class OpenGLLightingPass implements LightingPass {
         0, 0, 0,
         0, -1, 0,
         -1, -1, 0,
-        -1, 0, 0
+        -1, 0, -0
     };
 
     public OpenGLLightingPass(Window window) {
         this.window = window;
         this.shader = RenderBuilder.newShader("/shaders/3d/lightingPass.vert", "/shaders/3d/lightingPass.frag");
+        shader.make(window);
+        shader.bind();
         vboId = glGenBuffers();
         iboId = glGenBuffers();
     }
@@ -74,7 +76,7 @@ public class OpenGLLightingPass implements LightingPass {
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
         glEnableVertexAttribArray(0);
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, vertices.length, GL_UNSIGNED_INT, 0);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
