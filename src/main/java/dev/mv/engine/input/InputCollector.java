@@ -1,21 +1,8 @@
 package dev.mv.engine.input;
 
-import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.shared.Window;
-import org.jnativehook.GlobalScreen;
-import org.jnativehook.NativeHookException;
 import org.lwjgl.glfw.*;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.AWTEventListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import org.lwjgl.system.Platform;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -56,12 +43,20 @@ public class InputCollector {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 if (action == GLFW_PRESS) {
+                    System.out.println(key);
                     inputProcessor.keyUpdate(key, KeyAction.TYPE, mods);
                 } else if (action == GLFW_RELEASE) {
                     inputProcessor.keyUpdate(key, KeyAction.RELEASE, mods);
                 } else if (action == GLFW_REPEAT) {
                     inputProcessor.keyUpdate(key, KeyAction.REPEAT, mods);
                 }
+            }
+        });
+
+        glfwSetCharCallback(window.getGlfwId(), new GLFWCharCallback() {
+            @Override
+            public void invoke(long window, int codepoint) {
+                inputProcessor.charTyped(codepoint);
             }
         });
     }

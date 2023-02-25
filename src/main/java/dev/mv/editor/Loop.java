@@ -3,6 +3,7 @@ package dev.mv.editor;
 import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.GuiRegistry;
+import dev.mv.engine.gui.components.Button;
 import dev.mv.engine.gui.components.layouts.CollapseMenu;
 import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.parsing.gui.GuiParser;
@@ -83,6 +84,7 @@ public class Loop implements ApplicationLoop {
         R.GUIS = guiRegistry;
 
         R.GUIS.findGui("myGui").getRoot().findElementsByType(CollapseMenu.class).forEach(cm -> cm.setBaseColor(Color.BLACK));
+        R.GUIS.findGui("myGui").getRoot().<Button>findElementById("chromaButton").setUseChroma(true);
     }
 
     @Override

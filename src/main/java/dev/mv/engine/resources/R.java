@@ -4,8 +4,9 @@ import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.input.InputCollector;
 import dev.mv.engine.render.shared.texture.TextureRegion;
+import dev.mv.utils.Utils;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static dev.mv.engine.input.Input.*;
 
 //Stop making rip off android classes we need to be original not a fucking copycat
 //dude
@@ -21,18 +22,17 @@ public class R {
 
     public static void sendInputKeyEvent(int keyCode, InputCollector.KeyAction action, int mods) {
         if(GUIS != null) {
-            if(action == InputCollector.KeyAction.TYPE || action == InputCollector.KeyAction.REPEAT) {
-                int key = keyCode;
-                System.out.println(mods);
-                if (Character.isAlphabetic(key) && (((mods & GLFW_MOD_SHIFT) != 0) ^ ((mods & GLFW_MOD_CAPS_LOCK) != 0))) {
-                    key = Character.toUpperCase(key);
-                }
-                else if (Character.isAlphabetic(key)) {
-                    key = Character.toLowerCase(key);
-                }
-                GUIS.typeKey(key);
-            }
+            if(action == InputCollector.KeyAction.TYPE) GUIS.pressKey(keyCode);
             if(action == InputCollector.KeyAction.RELEASE) GUIS.releaseKey(keyCode);
+            if (action == InputCollector.KeyAction.TYPE || action == InputCollector.KeyAction.REPEAT) {
+                if (Utils.isAnyOf(Input.convertKey(keyCode), KEY_BACKSPACE, KEY_ARROW_UP, KEY_ARROW_LEFT, KEY_ARROW_RIGHT, KEY_ARROW_DOWN, KEY_ARROW_UP, KEY_DELETE)) GUIS.typeKey(keyCode);
+            }
+        }
+    }
+
+    public static void sendCharTypedEvent(int charCode) {
+        if (GUIS != null) {
+            GUIS.typeKey(charCode);
         }
     }
 

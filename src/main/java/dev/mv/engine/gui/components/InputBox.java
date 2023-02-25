@@ -217,7 +217,6 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     @Override
     public void keyType(int key) {
         if(selected) {
-            System.out.println(key);
             if (Input.convertKey(key) == Input.KEY_BACKSPACE) {
                 pop();
                 return;
@@ -233,20 +232,15 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
                 return;
             }
 
-            if(Input.convertKey(key) == Input.KEY_DELETE) {
+            if(Input.convertKey(key) == Input.KEY_DELETE || Input.convertKey(key) == Input.KEY_BACKSPACE) {
                 moveCursor(1);
                 pop(1);
                 return;
             }
 
-            if(Input.convertKey(key) == Input.KEY_SPACE) {
-                push(' ');
+            /*if(!Utils.isCharAscii((char) key)) {
                 return;
-            }
-
-            if(!Utils.isCharAscii((char) key)) {
-                return;
-            }
+            }*/
 
             push((char) key);
         }

@@ -27,4 +27,10 @@ public final class DefaultInputProcessor implements InputProcessor {
         Input.updateKey(key, action);
         R.sendInputKeyEvent(key, action, mods);
     }
+
+    @Override
+    public void charTyped(int charCode) {
+        Input.charTyped(charCode);
+        R.sendCharTypedEvent(charCode);
+    }
 }

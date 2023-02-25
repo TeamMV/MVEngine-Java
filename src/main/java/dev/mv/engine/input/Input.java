@@ -93,6 +93,19 @@ public class Input {
     public static final int KEY_NUM_9 = 83;
     public static final int KEY_SPACE = 84;
     public static final int KEY_BACKSPACE = 85;
+    public static final int KEY_PERIOD = 86;
+    public static final int KEY_COMMA = 87;
+    public static final int KEY_SLASH = 88;
+    public static final int KEY_SEMICOLON = 89;
+    public static final int KEY_EQUALS = 90;
+    public static final int KEY_MINUS = 91;
+    public static final int KEY_APOSTROPHE = 92;
+    public static final int KEY_GRAVE = 93;
+    public static final int KEY_LEFT_BRACKET = 94;
+    public static final int KEY_RIGHT_BRACKET = 95;
+    public static final int KEY_BACKSLASH = 96;
+    public static final int KEY_EXTRA_1 = 97;
+    public static final int KEY_EXTRA_2 = 98;
     public static int KEY_LAST = -1;
 
     public static final int BUTTON_LEFT = 0;
@@ -110,7 +123,7 @@ public class Input {
     private Input() {}
 
     private static int totalNumKeys() {
-        return 85 + 1;
+        return 98 + 1;
     }
 
     private static int totalNumButtons() {
@@ -136,8 +149,20 @@ public class Input {
         return buttons[btn] == State.ONPRESSED || buttons[btn] == State.PRESSED;
     }
 
-    public static boolean shouldCharUpper() {
-        return (isKeyPressed(KEY_SHIFT_LEFT) || isKeyPressed(KEY_SHIFT_RIGHT)) ^ isKeyPressed(KEY_CAPS);
+    public static boolean isShift() {
+        return isKeyPressed(KEY_SHIFT_LEFT) || isKeyPressed(KEY_SHIFT_RIGHT);
+    }
+
+    public static boolean isControl() {
+        return isKeyPressed(KEY_CTRL_LEFT) || isKeyPressed(KEY_CTRL_RIGHT);
+    }
+
+    public static boolean isAlt() {
+        return isKeyPressed(KEY_ALT_GR) || isKeyPressed(KEY_ALT);
+    }
+
+    public static boolean isAltGr() {
+        return isKeyPressed(KEY_ALT_GR);
     }
 
     static void updateKey(int rawCode, InputCollector.KeyAction action) {
@@ -150,10 +175,11 @@ public class Input {
                 int convertedCode = convertKey(rawCode);
                 keys[convertedCode] = State.ONRELEASED;
             }
-        } catch (NullPointerException | IndexOutOfBoundsException ignore) {
-            int convertedCode = convertKey(rawCode);
-            keys[convertedCode] = State.ONRELEASED;
-        }
+        } catch (NullPointerException | IndexOutOfBoundsException ignore) {}
+    }
+
+    static void charTyped(int charCode) {
+
     }
 
     static void updateButton(int btn, InputCollector.MouseAction action) {
@@ -270,6 +296,19 @@ public class Input {
             case 329 -> KEY_NUM_9;
             case 32 -> KEY_SPACE;
             case 259 -> KEY_BACKSPACE;
+            case 46 -> KEY_PERIOD;
+            case 44 -> KEY_COMMA;
+            case 47 -> KEY_SLASH;
+            case 45 -> KEY_MINUS;
+            case 61 -> KEY_EQUALS;
+            case 59 -> KEY_SEMICOLON;
+            case 39 -> KEY_APOSTROPHE;
+            case 91 -> KEY_LEFT_BRACKET;
+            case 92 -> KEY_BACKSLASH;
+            case 93 -> KEY_RIGHT_BRACKET;
+            case 96 -> KEY_GRAVE;
+            case 161 -> KEY_EXTRA_1;
+            case 162 -> KEY_EXTRA_2;
         };
     }
 
@@ -326,6 +365,17 @@ public class Input {
             case KEY_RETURN -> "\n";
             case KEY_NUM_RETURN -> "\n";
             case KEY_SPACE -> " ";
+            case KEY_PERIOD -> ".";
+            case KEY_COMMA -> ",";
+            case KEY_SLASH -> "/";
+            case KEY_MINUS -> "-";
+            case KEY_EQUALS -> "=";
+            case KEY_SEMICOLON -> ";";
+            case KEY_APOSTROPHE -> "'";
+            case KEY_LEFT_BRACKET -> "[";
+            case KEY_BACKSLASH -> "\\";
+            case KEY_RIGHT_BRACKET -> "]";
+            case KEY_GRAVE -> "`";
         };
     }
 

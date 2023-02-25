@@ -5,6 +5,7 @@ public interface InputProcessor {
     void mouseScrollUpdate(int sx, int sy);
     void mouseButtonUpdate(int btn, InputCollector.MouseAction action);
     void keyUpdate(int key, InputCollector.KeyAction action, int mods);
+    void charTyped(int charCode);
 
     static InputProcessor defaultProcessor() {
         return DefaultInputProcessor.INSTANCE;
