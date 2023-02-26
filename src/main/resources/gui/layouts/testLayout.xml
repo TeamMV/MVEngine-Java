@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <gui name="myGui">
-    <script src="dev.mv.editor.GuiHandler"/>
+    <script src="dev.mv.test.GuiHandler"/>
 
     <variables>
         <var name="height">60</var>

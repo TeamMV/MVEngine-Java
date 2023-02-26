@@ -1,6 +1,5 @@
 package dev.mv.engine.render.shared;
 
-import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.shared.batch.Vertex;
 import dev.mv.engine.render.shared.batch.VertexGroup;
 import dev.mv.engine.render.shared.models.Entity;
@@ -19,7 +18,7 @@ public class DrawContext3D {
         color = new Color(0, 0, 0, 0);
     }
 
-    public void object(Entity entity) {
+    public void entity(Entity entity) {
         if (ctx3D == null) {
             return;
         } else {

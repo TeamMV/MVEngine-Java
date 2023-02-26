@@ -107,6 +107,7 @@ public class BatchController {
     }
 
     public void finishAndRender() {
+        defaultShader.use();
         for (int i = 0; i <= currentBatch; i++) {
             batches.get(i).finish();
             batches.get(i).render();

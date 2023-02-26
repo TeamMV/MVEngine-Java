@@ -1,4 +1,4 @@
-package dev.mv.engine.terrain;
+package dev.mv.test.terrain;
 
 import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext3D;
@@ -7,7 +7,6 @@ import dev.mv.utils.Utils;
 import dev.mv.utils.misc.Noise;
 import lombok.Getter;
 import lombok.Setter;
-import org.joml.SimplexNoise;
 
 public class Terrain {
     @Getter @Setter

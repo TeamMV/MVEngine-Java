@@ -62,7 +62,7 @@ public class Batch {
 
     private int vertCount = 0;
     private int objCount = 0;
-    private int nextFreeTexSlot = 1;
+    private int nextFreeTexSlot = 0;
     private boolean isFull = false;
     private boolean isFullTex = false;
 
@@ -98,7 +98,7 @@ public class Batch {
     public void clearBatch() {
         vertCount = 0;
         objCount = 0;
-        nextFreeTexSlot = 1;
+        nextFreeTexSlot = 0;
 
         isFull = false;
         isFullTex = false;
@@ -116,7 +116,7 @@ public class Batch {
         Arrays.fill(tex_ids, 0, nextFreeTexSlot, 0);
         vertCount = 0;
         objCount = 0;
-        nextFreeTexSlot = 1;
+        nextFreeTexSlot = 0;
 
         isFull = false;
         isFullTex = false;
@@ -179,17 +179,17 @@ public class Batch {
         for (int i = 0; i < textures.length; i++) {
             if (textures[i] == null) continue;
             if (textures[i].getId() == tex.getId()) {
-                return i;
+                return i + 1;
             }
         }
 
         textures[nextFreeTexSlot] = tex;
-        tex_ids[nextFreeTexSlot] = tex.getId();
+        tex_ids[nextFreeTexSlot] = nextFreeTexSlot + 1;
         nextFreeTexSlot++;
 
         if (nextFreeTexSlot >= textures.length) isFullTex = true;
 
-        return nextFreeTexSlot - 1;
+        return nextFreeTexSlot;
     }
 
     public void finish() {

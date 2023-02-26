@@ -1,4 +1,4 @@
-package dev.mv.editor;
+package dev.mv.test;
 
 import dev.mv.engine.gui.components.Button;
 import dev.mv.engine.gui.components.InputBox;

@@ -10,7 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
+import static dev.mv.utils.Utils.toObject;
+
 public class ConfigFile {
+
+    private static final String FILE_CODE = ".MVECONFIG";
 
     private String name;
     private Directory directory;
@@ -40,46 +44,22 @@ public class ConfigFile {
         DynamicByteBuffer buffer = new DynamicByteBuffer(bytes);
         buffer.flip();
 
-        String code = buffer.popStringRaw(9);
-        if (!code.equals(".MVCONFIG")) {
+        String code = buffer.popStringRaw(FILE_CODE.length());
+        if (!code.equals(FILE_CODE)) {
             clear();
             return this;
         }
 
         loadStrings(buffer);
-        loadValues(buffer, integers, (buf, len) -> {
-            Integer[] ret = new Integer[len];
-            for (int i = 0; i < len; i++) {
-                ret[i] = buf.popInt();
-            }
-            return ret;
-        });
-        loadValues(buffer, floats, (buf, len) -> {
-            Float[] ret = new Float[len];
-            for (int i = 0; i < len; i++) {
-                ret[i] = buf.popFloat();
-            }
-            return ret;
-        });
-        loadValues(buffer, longs, (buf, len) -> {
-            Long[] ret = new Long[len];
-            for (int i = 0; i < len; i++) {
-                ret[i] = buf.popLong();
-            }
-            return ret;
-        });
-        loadValues(buffer, doubles, (buf, len) -> {
-            Double[] ret = new Double[len];
-            for (int i = 0; i < len; i++) {
-                ret[i] = buf.popDouble();
-            }
-            return ret;
-        });
+        loadValues(buffer, integers, (buf, len) -> toObject(buf.popInts(len)));
+        loadValues(buffer, floats, (buf, len) -> toObject(buf.popFloats(len)));
+        loadValues(buffer, longs, (buf, len) -> toObject(buf.popLongs(len)));
+        loadValues(buffer, doubles, (buf, len) -> toObject(buf.popDoubles(len)));
         loadValues(buffer, booleans, (buf, len) -> {
             int byteAmount = (int) Math.ceil(len / 8f);
             Boolean[] ret = new Boolean[len + 8 - (len % 8)];
             for (int i = 0; i < byteAmount; i++) {
-                System.arraycopy(Utils.toObject(buf.popBooleans()), 0, ret, i * 8, 8);
+                System.arraycopy(toObject(buf.popBooleans()), 0, ret, i * 8, 8);
             }
             return ret;
         });
@@ -140,7 +120,7 @@ public class ConfigFile {
     public void save() {
         DynamicByteBuffer buffer = new DynamicByteBuffer();
 
-        buffer.pushRaw(".MVCONFIG");
+        buffer.pushRaw(FILE_CODE);
 
         saveStrings(buffer);
         saveNumbers(buffer, integers, new Integer[0]);

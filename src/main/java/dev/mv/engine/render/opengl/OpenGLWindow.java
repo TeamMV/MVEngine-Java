@@ -68,14 +68,14 @@ public class OpenGLWindow implements Window {
             setFullscreen(true);
         }
 
-        declareProjection();
-        //render2D = new OpenGLRender2D(this);
+        updateProjection2D();
+        render2D = new OpenGLRender2D(this);
         render3D = new OpenGLRender3D(this);
         camera = new Camera();
         //batchController3D = new BatchController3D(this, 1000);
         //batchController3D.start();
-        //batchController = new BatchController(this, 1000);
-        //batchController.start();
+        batchController = new BatchController(this, 1000);
+        batchController.start();
 
         if (applicationLoop != null) {
             try {
@@ -134,8 +134,8 @@ public class OpenGLWindow implements Window {
 
         glfwShowWindow(window);
 
-        //glEnable(GL_CULL_FACE);
-        //glCullFace(GL_BACK);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
@@ -148,7 +148,7 @@ public class OpenGLWindow implements Window {
             height = h;
 
             glViewport(0, 0, w, h);
-            declareProjection();
+            updateProjection2D();
         });
     }
 
@@ -211,9 +211,10 @@ public class OpenGLWindow implements Window {
 
                 updateInputs();
 
-                //batchController.finishAndRender();
                 //batchController3D.finishAndRender();
                 render3D.render();
+                updateProjection2D();
+                batchController.finishAndRender();
 
                 glfwSwapBuffers(window);
                 currentFrame++;
@@ -264,7 +265,7 @@ public class OpenGLWindow implements Window {
         System.exit(0);
     }
 
-    public void declareProjection() {
+    public void updateProjection2D() {
         if (projectionMatrix == null) {
             projectionMatrix = new Matrix4f();
         }

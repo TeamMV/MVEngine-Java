@@ -25,7 +25,7 @@ public class OpenGLGeometryPass implements GeometryPass {
 
     public OpenGLGeometryPass(Window window) {
         this.window = window;
-        shader = RenderBuilder.newShader("/shaders/3d/geometryPass.vert", "/shaders/3d/geometryPass.frag");
+        shader = RenderBuilder.newShader("/shaders/3d/default.vert", "/shaders/3d/default.frag");
         shader.make(window);
         shader.bind();
         lightingPass = new OpenGLLightingPass(window);
@@ -48,7 +48,6 @@ public class OpenGLGeometryPass implements GeometryPass {
         GL20.glDisableVertexAttribArray(2);
         GL20.glDisableVertexAttribArray(3);
         GL11.glBindTexture(GL_TEXTURE_2D, 0);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     private void prepare(Entity entity) {
@@ -61,7 +60,7 @@ public class OpenGLGeometryPass implements GeometryPass {
 
     @Override
     public void render(Map<Model, List<Entity>> entities) {
-        gBuffer.bind();
+        //gBuffer.bind();
         shader.use();
 
         for (Model model : entities.keySet()) {
@@ -74,8 +73,8 @@ public class OpenGLGeometryPass implements GeometryPass {
             unbind();
         }
 
-        gBuffer.unbind();
+        //gBuffer.unbind();
 
-        lightingPass.render(gBuffer.getPosition(), gBuffer.getNormal(), gBuffer.getAlbedoSpec());
+        //lightingPass.render(gBuffer.getPosition(), gBuffer.getNormal(), gBuffer.getAlbedoSpec());
     }
 }

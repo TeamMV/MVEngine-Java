@@ -1,10 +1,8 @@
-package dev.mv.editor;
+package dev.mv.test;
 
 import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
-import dev.mv.engine.files.ConfigFile;
 import dev.mv.engine.files.Directory;
-import dev.mv.engine.files.FileManager;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.components.Button;
 import dev.mv.engine.gui.components.layouts.CollapseMenu;
@@ -26,12 +24,14 @@ import dev.mv.engine.render.shared.models.Model;
 import dev.mv.engine.render.shared.models.ObjectLoader;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.resources.R;
-import dev.mv.engine.terrain.Terrain;
+import dev.mv.test.terrain.Terrain;
+import dev.mv.utils.async.PromiseNull;
 import dev.mv.utils.generic.Pair;
 import org.joml.Vector3f;
 
-import java.util.Arrays;
 import java.util.HashMap;
+
+import static dev.mv.utils.Utils.*;
 
 public class Loop implements ApplicationLoop {
     private DrawContext3D drawContext3D;
@@ -44,8 +44,8 @@ public class Loop implements ApplicationLoop {
 
     @Override
     public void start(MVEngine engine, Window window) throws Exception {
-        gameDir = FileManager.getDirectory("myGame");
-        ConfigFile config = gameDir.getConfigFile("config.cfg");
+        //gameDir = FileManager.getDirectory("myGame");
+        //ConfigFile config = gameDir.getConfigFile("config.cfg");
         //config.setBoolean("x", false);
         //config.setBoolean("y", true);
         //config.setString("z", "hello");
@@ -71,6 +71,8 @@ public class Loop implements ApplicationLoop {
         inputCollector.start();
         Input.init();
 
+        window.getCamera().setSpeed(0.25f);
+
         terrain = new Terrain(drawContext3D, window, "v22");
         terrain.setScl(0.1f);
         terrain.setTileSize(20);
@@ -84,6 +86,12 @@ public class Loop implements ApplicationLoop {
         cruiserModel.maps.setNormal(RenderBuilder.newTextureMap("/images/gold/gold paper_normal.jpeg", OpenGLTextureMap.Quality.HIGH));
         cruiserModel.maps.setSpecular(RenderBuilder.newTextureMap("/images/gold/gold paper_specular.jpeg", OpenGLTextureMap.Quality.LOW));
         cruiser = new Entity(cruiserModel, new Vector3f(0, 0, -5), new Vector3f(0, 0, 0), 1f);
+        new PromiseNull((res, rej) -> {
+            do {
+                cruiser.setScale((float) (Math.sin(window.getCurrentFrame() * 0.01f) + 2));
+                await(sleep(10));
+            } while (System.currentTimeMillis() != 0);
+        });
 
         font = new BitmapFont("/fonts/FreeSans/FreeSans.png", "/fonts/FreeSans/FreeSans.fnt");
 
@@ -105,7 +113,7 @@ public class Loop implements ApplicationLoop {
         });
         guiRegistry.applyTheme(theme);
         guiRegistry.applyPager(pager);
-        //guiRegistry.swap("", "myGui");
+        guiRegistry.swap("", "myGui");
         R.GUIS = guiRegistry;
 
         R.GUIS.findGui("myGui").getRoot().findElementsByType(CollapseMenu.class).forEach(cm -> cm.setBaseColor(Color.BLACK));
@@ -124,7 +132,7 @@ public class Loop implements ApplicationLoop {
         terrain.render(terrainTiles);
          */
 
-        drawContext3D.object(cruiser);
+        drawContext3D.entity(cruiser);
 
         //drawContext2D.color(0, 0, 0, 0);
         //drawContext2D.image(0, 0, window.getWidth(), window.getHeight(), minecraftBG);
@@ -132,7 +140,7 @@ public class Loop implements ApplicationLoop {
         //drawContext2D.color(255, 0, 0, 100);
         //drawContext2D.rectangle(300, 200, 50, 400);
         //drawContext2D.canvas(300, 200, 50, 400);
-        //R.GUIS.renderGuis();
+        R.GUIS.renderGuis();
 
         Camera camera = window.getCamera();
         if(Input.isKeyPressed(Input.KEY_W))              camera.move(0, 0, -1);
@@ -140,7 +148,7 @@ public class Loop implements ApplicationLoop {
         if(Input.isKeyPressed(Input.KEY_S))              camera.move(0, 0, 1);
         if(Input.isKeyPressed(Input.KEY_D))              camera.move(1, 0, 0);
         if(Input.isKeyPressed(Input.KEY_SPACE))          camera.move(0, 1, 0);
-        if(Input.isKeyPressed(Input.KEY_CTRL_LEFT))      camera.move(0, -1, 0);
+        if(Input.isKeyPressed(Input.KEY_SHIFT_LEFT))     camera.move(0, -1, 0);
         if(Input.isKeyPressed(Input.KEY_ARROW_UP))       camera.rotate(-2, 0, 0);
         if(Input.isKeyPressed(Input.KEY_ARROW_DOWN))     camera.rotate(2, 0, 0);
         if(Input.isKeyPressed(Input.KEY_ARROW_LEFT))     camera.rotate(0, -2, 0);

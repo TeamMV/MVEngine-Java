@@ -32,7 +32,7 @@ public class OpenGLRender2D implements Render2D {
         }
 
         if (textures != null) {
-            int i = 0;
+            int i = 1;
             for (Texture texture : textures) {
                 if (texture == null) continue;
                 texture.bind(i++);
