@@ -24,19 +24,18 @@ import dev.mv.engine.render.shared.models.Model;
 import dev.mv.engine.render.shared.models.ObjectLoader;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.resources.R;
-import dev.mv.test.terrain.Terrain;
 import dev.mv.utils.async.PromiseNull;
 import dev.mv.utils.generic.Pair;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
 
-import static dev.mv.utils.Utils.*;
+import static dev.mv.utils.Utils.await;
+import static dev.mv.utils.Utils.sleep;
 
 public class Loop implements ApplicationLoop {
     private DrawContext3D drawContext3D;
     private DrawContext2D drawContext2D;
-    private Terrain terrain;
     private Entity cruiser;
     private BitmapFont font;
     private Texture minecraftBG;
@@ -44,26 +43,6 @@ public class Loop implements ApplicationLoop {
 
     @Override
     public void start(MVEngine engine, Window window) throws Exception {
-        //gameDir = FileManager.getDirectory("myGame");
-        //ConfigFile config = gameDir.getConfigFile("config.cfg");
-        //config.setBoolean("x", false);
-        //config.setBoolean("y", true);
-        //config.setString("z", "hello");
-        //config.setString("thing", "world");
-        //config.setInt("a", 10);
-        //config.setFloat("b", 7.2345f);
-        //config.setBytes("c", new byte[]{(byte) 10, (byte) 23, (byte) 0, (byte) 0});
-        //config.save();
-
-        //boolean x = config.getBoolean("x");
-        //boolean y = config.getBoolean("y");
-        //String z = config.getString("z");
-        //String thing = config.getString("thing");
-        //int a = config.getInt("a");
-        //float b = config.getFloat("b");
-        //byte[] c = config.getBytes("c");
-        //System.out.println(String.join(" ", Boolean.toString(x), Boolean.toString(y), z, thing, Integer.toString(a), Float.toString(b), Arrays.toString(c)));
-
         drawContext3D = new DrawContext3D(window);
         drawContext2D = new DrawContext2D(window);
         InputProcessor inputProcessor = InputProcessor.defaultProcessor();
@@ -72,13 +51,6 @@ public class Loop implements ApplicationLoop {
         Input.init();
 
         window.getCamera().setSpeed(0.25f);
-
-        terrain = new Terrain(drawContext3D, window, "v22");
-        terrain.setScl(0.1f);
-        terrain.setTileSize(20);
-        terrain.setIslandScale(20);
-        terrain.setDimensions(500, 500);
-
 
         ObjectLoader loader = engine.getObjectLoader();
         Model cruiserModel = loader.loadExternalModel("/models/cruiser/cruiser.obj");
