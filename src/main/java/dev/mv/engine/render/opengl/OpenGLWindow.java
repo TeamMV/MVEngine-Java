@@ -77,6 +77,7 @@ public class OpenGLWindow implements Window {
         batchController = new BatchController(this, 1000);
         batchController.start();
 
+        MVEngine.instance().handleInputs(this);
         if (applicationLoop != null) {
             try {
                 applicationLoop.start(engine, this);

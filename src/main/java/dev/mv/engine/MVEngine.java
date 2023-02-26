@@ -1,5 +1,8 @@
 package dev.mv.engine;
 
+import dev.mv.engine.input.Input;
+import dev.mv.engine.input.InputCollector;
+import dev.mv.engine.input.InputProcessor;
 import dev.mv.engine.physics.Physics;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.opengl.OpenGLObjectLoader;
@@ -15,15 +18,17 @@ import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
 public class MVEngine implements AutoCloseable {
-    public static String VERSION_STR = "v0.1.0";
-    public static Version VERSION = Version.parse(VERSION_STR);
+    public String VERSION_STR = "v0.1.0";
+    public Version VERSION = Version.parse(VERSION_STR);
 
-    private static ApplicationConfig.RenderingAPI renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
+    private ApplicationConfig.RenderingAPI renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
 
     @Getter
-    private static ApplicationConfig applicationConfig;
+    private ApplicationConfig applicationConfig;
+    
+    private InputCollector inputCollector;
 
-    public static ApplicationConfig.RenderingAPI getRenderingApi() {
+    public ApplicationConfig.RenderingAPI getRenderingApi() {
         return renderingApi;
     }
 
@@ -43,11 +48,13 @@ public class MVEngine implements AutoCloseable {
     }
 
     public static MVEngine init(ApplicationConfig config) {
+        instance = new MVEngine();
+        Input.init();
         if (Physics.init()) {
             throw new RuntimeException("Could not initialise NVIDIA Physx!");
         }
 
-        applicationConfig = config;
+        instance.applicationConfig = config;
         if (config == null) {
             config = new ApplicationConfig();
         }
@@ -58,11 +65,10 @@ public class MVEngine implements AutoCloseable {
         }
 
         if (config.getRenderingApi() == ApplicationConfig.RenderingAPI.VULKAN) {
-            renderingApi = ApplicationConfig.RenderingAPI.VULKAN;
+            instance.renderingApi = ApplicationConfig.RenderingAPI.VULKAN;
         } else {
-            renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
+            instance.renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
         }
-        instance = new MVEngine();
         return instance;
     }
 
@@ -82,6 +88,17 @@ public class MVEngine implements AutoCloseable {
         } else {
             return new OpenGLWindow(info);
         }
+    }
+    
+    public void handleInputs(Window window) {
+        InputProcessor inputProcessor = InputProcessor.defaultProcessor();
+        inputCollector = new InputCollector(inputProcessor, window);
+        inputCollector.start();
+        Input.init();
+    }
+    
+    public void setInputProcessor(InputProcessor inputProcessor) {
+        inputCollector.setInputProcessor(inputProcessor);
     }
 
 

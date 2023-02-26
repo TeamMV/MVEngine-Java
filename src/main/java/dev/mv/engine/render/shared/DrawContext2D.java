@@ -13,6 +13,8 @@ import dev.mv.utils.Utils;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
+import java.io.IOException;
+
 public class DrawContext2D {
     private boolean useCamera;
     private Gradient gradient;
@@ -26,6 +28,9 @@ public class DrawContext2D {
         this.window = window;
         gradient = new Gradient();
         canvas = new Vector4f(0, 0, window.getWidth(), window.getHeight());
+        try {
+            font(new BitmapFont("/fonts/FreeSans/FreeSans.png", "/fonts/FreeSans/FreeSans.fnt"));
+        } catch (IOException ignore) {}
     }
 
     public void color(float r, float g, float b, float a) {

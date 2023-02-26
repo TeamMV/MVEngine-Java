@@ -20,7 +20,7 @@ import java.io.InputStream;
 
 public class RenderBuilder {
     public static Shader newShader(String vertexPath, String fragmentPath) {
-        if (MVEngine.getRenderingApi() == ApplicationConfig.RenderingAPI.OPENGL) {
+        if (MVEngine.instance().getRenderingApi() == ApplicationConfig.RenderingAPI.OPENGL) {
             return new OpenGLShader(vertexPath, fragmentPath);
         } else {
             return null;
@@ -28,7 +28,7 @@ public class RenderBuilder {
     }
 
     public static Window newWindow(WindowCreateInfo info) {
-        if (MVEngine.getRenderingApi() == ApplicationConfig.RenderingAPI.OPENGL) {
+        if (MVEngine.instance().getRenderingApi() == ApplicationConfig.RenderingAPI.OPENGL) {
             return new OpenGLWindow(info);
         } else {
             return null;
@@ -44,7 +44,7 @@ public class RenderBuilder {
     }
 
     public static Texture newTexture(BufferedImage image) throws IOException {
-        if (MVEngine.getRenderingApi() == ApplicationConfig.RenderingAPI.OPENGL) {
+        if (MVEngine.instance().getRenderingApi() == ApplicationConfig.RenderingAPI.OPENGL) {
             return new OpenGLTexture(image);
         } else {
             return null;
@@ -60,7 +60,7 @@ public class RenderBuilder {
     }
 
     public static Texture newTextureMap(BufferedImage image, OpenGLTextureMap.Quality quality) throws IOException {
-        if (MVEngine.getRenderingApi() == ApplicationConfig.RenderingAPI.OPENGL) {
+        if (MVEngine.instance().getRenderingApi() == ApplicationConfig.RenderingAPI.OPENGL) {
             return new OpenGLTextureMap(image, RenderUtils.nextId("textureMap"), quality);
         } else {
             return null;
