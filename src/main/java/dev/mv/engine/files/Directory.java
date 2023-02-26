@@ -2,7 +2,6 @@ package dev.mv.engine.files;
 
 import dev.mv.utils.Utils;
 import lombok.Getter;
-import lombok.SneakyThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,15 +49,13 @@ public abstract class Directory {
     }
 
     public ConfigFile getConfigFile(String name) {
-        try {
-            return new ConfigFile(name, this, getFileAsBytes(name));
-        } catch (IOException e) {
-            return new ConfigFile(name, this, new byte[0]);
-        }
+        return new ConfigFile(name, this).load();
     }
 
     public void saveFileBytes(String name, byte[] bytes) throws IOException {
-        Files.write(new File(Utils.getPath(path, name)).toPath(), bytes);
+        File file = new File(Utils.getPath(path, name));
+        if (!file.exists()) file.createNewFile();
+        Files.write(file.toPath(), bytes);
     }
 
     public <T> void saveFileObject(String name, T object, ObjectSaver<T> saver) throws IOException {
