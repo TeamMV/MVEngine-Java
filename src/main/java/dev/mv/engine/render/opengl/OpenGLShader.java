@@ -102,6 +102,8 @@ public class OpenGLShader implements Shader {
         int location = glGetUniformLocation(this.programID, name);
         if (location != -1) {
             glUniform1i(location, value);
+        } else {
+            System.err.println("Unform was not transfered! Name: " + name);
         }
     }
 

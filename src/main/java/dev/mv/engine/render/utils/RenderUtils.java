@@ -1,5 +1,6 @@
 package dev.mv.engine.render.utils;
 
+import it.unimi.dsi.fastutil.ints.IntBigListIterators;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -7,6 +8,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

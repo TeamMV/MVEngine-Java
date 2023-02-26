@@ -49,6 +49,7 @@ public class OpenGLWindow implements Window {
     private MVEngine engine;
 
     private Camera camera;
+    private String fpsStringBefore = "";
 
     public OpenGLWindow(WindowCreateInfo info) {
         this.info = info;
@@ -188,7 +189,10 @@ public class OpenGLWindow implements Window {
                 }
                 if (info.appendFpsToTitle) {
                     String fpsTitle = info.title + info.fpsAppendConfiguration.betweenTitleAndValue + getFPS() + info.fpsAppendConfiguration.afterValue;
-                    glfwSetWindowTitle(window, RenderUtils.store(fpsTitle));
+                    if (!fpsStringBefore.equals(fpsTitle)) {
+                        fpsStringBefore = fpsTitle;
+                        glfwSetWindowTitle(window, RenderUtils.store(fpsTitle));
+                    }
                 }
 
                 ticks++;

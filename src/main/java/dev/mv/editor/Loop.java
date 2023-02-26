@@ -2,6 +2,9 @@ package dev.mv.editor;
 
 import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.files.ConfigFile;
+import dev.mv.engine.files.Directory;
+import dev.mv.engine.files.FileManager;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.components.Button;
 import dev.mv.engine.gui.components.layouts.CollapseMenu;
@@ -27,6 +30,7 @@ import dev.mv.engine.terrain.Terrain;
 import dev.mv.utils.generic.Pair;
 import org.joml.Vector3f;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Loop implements ApplicationLoop {
@@ -36,9 +40,30 @@ public class Loop implements ApplicationLoop {
     private Entity cruiser;
     private BitmapFont font;
     private Texture minecraftBG;
+    private Directory gameDir;
 
     @Override
     public void start(MVEngine engine, Window window) throws Exception {
+        gameDir = FileManager.getDirectory("myGame");
+        ConfigFile config = gameDir.getConfigFile("config.cfg");
+        //config.setBoolean("x", false);
+        //config.setBoolean("y", true);
+        //config.setString("z", "hello");
+        //config.setString("thing", "world");
+        //config.setInt("a", 10);
+        //config.setFloat("b", 7.2345f);
+        //config.setBytes("c", new byte[]{(byte) 10, (byte) 23, (byte) 0, (byte) 0});
+        //config.save();
+
+        //boolean x = config.getBoolean("x");
+        //boolean y = config.getBoolean("y");
+        //String z = config.getString("z");
+        //String thing = config.getString("thing");
+        //int a = config.getInt("a");
+        //float b = config.getFloat("b");
+        //byte[] c = config.getBytes("c");
+        //System.out.println(String.join(" ", Boolean.toString(x), Boolean.toString(y), z, thing, Integer.toString(a), Float.toString(b), Arrays.toString(c)));
+
         drawContext3D = new DrawContext3D(window);
         drawContext2D = new DrawContext2D(window);
         InputProcessor inputProcessor = InputProcessor.defaultProcessor();

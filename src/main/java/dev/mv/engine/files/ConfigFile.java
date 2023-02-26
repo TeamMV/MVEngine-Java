@@ -1,5 +1,6 @@
 package dev.mv.engine.files;
 
+import dev.mv.utils.ByteUtils;
 import dev.mv.utils.Utils;
 import dev.mv.utils.buffer.DynamicByteBuffer;
 import lombok.SneakyThrows;
@@ -7,6 +8,7 @@ import lombok.SneakyThrows;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 public class ConfigFile {
 
@@ -35,7 +37,103 @@ public class ConfigFile {
             return this;
         }
 
+        DynamicByteBuffer buffer = new DynamicByteBuffer(bytes);
+        buffer.flip();
+
+        String code = buffer.popStringRaw(9);
+        if (!code.equals(".MVCONFIG")) {
+            clear();
+            return this;
+        }
+
+        loadStrings(buffer);
+        loadValues(buffer, integers, (buf, len) -> {
+            Integer[] ret = new Integer[len];
+            for (int i = 0; i < len; i++) {
+                ret[i] = buf.popInt();
+            }
+            return ret;
+        });
+        loadValues(buffer, floats, (buf, len) -> {
+            Float[] ret = new Float[len];
+            for (int i = 0; i < len; i++) {
+                ret[i] = buf.popFloat();
+            }
+            return ret;
+        });
+        loadValues(buffer, longs, (buf, len) -> {
+            Long[] ret = new Long[len];
+            for (int i = 0; i < len; i++) {
+                ret[i] = buf.popLong();
+            }
+            return ret;
+        });
+        loadValues(buffer, doubles, (buf, len) -> {
+            Double[] ret = new Double[len];
+            for (int i = 0; i < len; i++) {
+                ret[i] = buf.popDouble();
+            }
+            return ret;
+        });
+        loadValues(buffer, booleans, (buf, len) -> {
+            int byteAmount = (int) Math.ceil(len / 8f);
+            Boolean[] ret = new Boolean[len + 8 - (len % 8)];
+            for (int i = 0; i < byteAmount; i++) {
+                System.arraycopy(Utils.toObject(buf.popBooleans()), 0, ret, i * 8, 8);
+            }
+            return ret;
+        });
+        loadBytes(buffer);
+
         return this;
+    }
+
+    private void loadStrings(DynamicByteBuffer buffer) {
+        while (buffer.peek() != 0) {
+            int key = findString(buffer);
+            String keyStr = buffer.popString(key);
+            int value = findString(buffer);
+            String valueStr = buffer.popString(value);
+
+            strings.put(keyStr, valueStr);
+        }
+        buffer.pop();
+    }
+
+    private <T> void loadValues(DynamicByteBuffer buffer, Map<String, T> map, BiFunction<DynamicByteBuffer, Integer, T[]> finder) {
+        int len = buffer.popInt();
+        if (len == 0) return;
+        String[] keys = new String[len];
+        for (int i = 0; i < len; i++) {
+            int strLen = findString(buffer);
+            keys[i] = buffer.popString(strLen);
+        }
+        T[] values = finder.apply(buffer, len);
+        for (int i = 0; i < len; i++) {
+            map.put(keys[i], values[i]);
+        }
+    }
+
+    private void loadBytes(DynamicByteBuffer buffer) {
+        int len = buffer.popInt();
+        if (len == 0) return;
+        String[] keys = new String[len];
+        for (int i = 0; i < len; i++) {
+            int strLen = findString(buffer);
+            keys[i] = buffer.popString(strLen);
+        }
+        for (int i = 0; i < len; i++) {
+            int arrLen = buffer.popInt();
+            bytes.put(keys[i], buffer.pop(arrLen));
+        }
+    }
+
+    private int findString(DynamicByteBuffer buffer) {
+        int len = 0;
+        while (buffer.peek(len + 1)[len] != 0) {
+            len++;
+        }
+        return len;
     }
 
     @SneakyThrows
@@ -52,7 +150,7 @@ public class ConfigFile {
         saveBooleans(buffer);
         saveBytes(buffer);
 
-        directory.saveFileBytes(name, null);
+        directory.saveFileBytes(name, buffer.array());
     }
 
     private void saveStrings(DynamicByteBuffer buffer) {
@@ -72,13 +170,8 @@ public class ConfigFile {
         T[] values = numbers.values().toArray(inst);
 
         buffer.push(keys.length);
-
-        for (int i = 0; i < keys.length; i++) {
-            buffer.push(keys[i]);
-        }
-
+        buffer.push(keys);
         buffer.push(values);
-        buffer.push((byte) 0);
     }
 
     private void saveBooleans(DynamicByteBuffer buffer) {
@@ -86,13 +179,8 @@ public class ConfigFile {
         Boolean[] values = booleans.values().toArray(new Boolean[0]);
 
         buffer.push(keys.length);
-
-        for (int i = 0; i < keys.length; i++) {
-            buffer.push(keys[i]);
-        }
-
+        buffer.push(keys);
         buffer.push(Utils.toPrimitive(values));
-        buffer.push((byte) 0);
     }
 
     private void saveBytes(DynamicByteBuffer buffer) {
@@ -100,16 +188,12 @@ public class ConfigFile {
         byte[][] values = bytes.values().toArray(new byte[0][]);
 
         buffer.push(keys.length);
-
-        for (int i = 0; i < keys.length; i++) {
-            buffer.push(keys[i]);
-        }
+        buffer.push(keys);
 
         for (int i = 0; i < values.length; i++) {
+            buffer.push(values[i].length);
             buffer.push(values[i]);
-            buffer.push((byte) 0);
         }
-        buffer.push((byte) 0);
     }
 
     private void clear() {
@@ -122,4 +206,79 @@ public class ConfigFile {
         bytes.clear();
     }
 
+    public String getString(String name) {
+        return strings.get(name);
+    }
+
+    public int getInt(String name) {
+        try {
+            return integers.get(name);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public float getFloat(String name) {
+        try {
+            return floats.get(name);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public long getLong(String name) {
+        try {
+            return longs.get(name);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public double getDouble(String name) {
+        try {
+            return doubles.get(name);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public boolean getBoolean(String name) {
+        try {
+            return booleans.get(name);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public byte[] getBytes(String name) {
+        return bytes.get(name);
+    }
+
+    public void setString(String name, String value) {
+        strings.put(name, value);
+    }
+
+    public void setInt(String name, int value) {
+        integers.put(name, value);
+    }
+
+    public void setFloat(String name, float value) {
+        floats.put(name, value);
+    }
+
+    public void setLong(String name, long value) {
+        longs.put(name, value);
+    }
+
+    public void setDouble(String name, double value) {
+        doubles.put(name, value);
+    }
+
+    public void setBoolean(String name, boolean value) {
+        booleans.put(name, value);
+    }
+
+    public void setBytes(String name, byte[] value) {
+        bytes.put(name, value);
+    }
 }

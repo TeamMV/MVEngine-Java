@@ -40,16 +40,9 @@ public class OpenGLLightingPass implements LightingPass {
 
     @Override
     public void render(int gPosition, int gNormal, int gAlbedoSpec) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, gPosition);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, gNormal);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-
         shader.use();
         prepareUniforms();
-        renderQuad();
+        renderQuad(gPosition, gNormal, gAlbedoSpec);
     }
 
     private void prepareUniforms() {
@@ -60,12 +53,19 @@ public class OpenGLLightingPass implements LightingPass {
         shader.uniform("gAlbedoSpec", 2);
     }
 
-    private void renderQuad() {
+    private void renderQuad(int gPosition, int gNormal, int gAlbedoSpec) {
         glBindBuffer(GL_ARRAY_BUFFER, vboId);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_DYNAMIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_DYNAMIC_DRAW);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gPosition);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, gNormal);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
         glEnableVertexAttribArray(0);
