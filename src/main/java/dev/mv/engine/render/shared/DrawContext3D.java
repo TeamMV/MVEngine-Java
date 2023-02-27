@@ -7,7 +7,7 @@ import dev.mv.engine.render.shared.models.Entity;
 public class DrawContext3D {
     protected Window window;
     private Render3D ctx3D = null;
-    private Color color;
+    private NormalizedColor color;
     private VertexGroup verts = new VertexGroup();
     private Vertex v1 = new Vertex(), v2 = new Vertex(), v3 = new Vertex(), v4 = new Vertex();
     private boolean useCamera = true;
@@ -15,7 +15,7 @@ public class DrawContext3D {
     public DrawContext3D(Window window) {
         this.window = window;
         ctx3D = window.getRender3D();
-        color = new Color(0, 0, 0, 0);
+        color = new NormalizedColor(0, 0, 0, 0);
     }
 
     public void entity(Entity entity) {
