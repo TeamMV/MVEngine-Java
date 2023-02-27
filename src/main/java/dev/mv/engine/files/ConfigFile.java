@@ -67,10 +67,8 @@ public class ConfigFile {
 
     private void loadStrings(DynamicByteBuffer buffer) {
         while (buffer.peek() != 0) {
-            int key = findString(buffer);
-            String keyStr = buffer.popString(key);
-            int value = findString(buffer);
-            String valueStr = buffer.popString(value);
+            String keyStr = buffer.popEscapedString();
+            String valueStr = buffer.popEscapedString();
 
             strings.put(keyStr, valueStr);
         }
@@ -82,8 +80,7 @@ public class ConfigFile {
         if (len == 0) return;
         String[] keys = new String[len];
         for (int i = 0; i < len; i++) {
-            int strLen = findString(buffer);
-            keys[i] = buffer.popString(strLen);
+            keys[i] = buffer.popEscapedString();
         }
         T[] values = finder.apply(buffer, len);
         for (int i = 0; i < len; i++) {
@@ -96,21 +93,12 @@ public class ConfigFile {
         if (len == 0) return;
         String[] keys = new String[len];
         for (int i = 0; i < len; i++) {
-            int strLen = findString(buffer);
-            keys[i] = buffer.popString(strLen);
+            keys[i] = buffer.popEscapedString();
         }
         for (int i = 0; i < len; i++) {
             int arrLen = buffer.popInt();
             bytes.put(keys[i], buffer.pop(arrLen));
         }
-    }
-
-    private int findString(DynamicByteBuffer buffer) {
-        int len = 0;
-        while (buffer.peek(len + 1)[len] != 0) {
-            len++;
-        }
-        return len;
     }
 
     public void save() {
