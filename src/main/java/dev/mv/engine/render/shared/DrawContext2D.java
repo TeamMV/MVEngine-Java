@@ -29,7 +29,7 @@ public class DrawContext2D {
         gradient = new Gradient();
         canvas = new Vector4f(0, 0, window.getWidth(), window.getHeight());
         try {
-            font(new BitmapFont("/fonts/FreeSans/FreeSans.png", "/fonts/FreeSans/FreeSans.fnt"));
+            font(new BitmapFont("/assets/mvengine/defaultfont.png", "/assets/mvengine/defaultfont.fnt"));
         } catch (IOException ignore) {}
     }
 

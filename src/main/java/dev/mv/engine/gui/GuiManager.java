@@ -1,4 +1,4 @@
-package dev.mv.engine.resources;
+package dev.mv.engine.gui;
 
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.input.Input;
@@ -6,18 +6,22 @@ import dev.mv.engine.input.InputCollector;
 import dev.mv.engine.render.shared.texture.TextureRegion;
 import dev.mv.utils.Utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static dev.mv.engine.input.Input.*;
 
 //Stop making rip off android classes we need to be original not a fucking copycat
 //dude
 //its good like this
-public class R {
-    private R() {}
+public class GuiManager {
+    private GuiManager() {}
 
-    public static GuiRegistry GUIS = null;
+    private static GuiRegistry GUIS = null;
+    private static Map<String, TextureRegion> registeredTextures = new HashMap<>();
 
-    public static void initialize(ResourceBundle bundle) {
-        GUIS = bundle.getGuiRegistry();
+    public static void manage(GuiRegistry guiRegistry) {
+        GUIS = guiRegistry;
     }
 
     public static void sendInputKeyEvent(int keyCode, InputCollector.KeyAction action, int mods) {
@@ -36,7 +40,11 @@ public class R {
         }
     }
 
+    public static void registerTexture(String textId, TextureRegion texture) {
+        registeredTextures.put(textId, texture);
+    }
+
     public static TextureRegion getTexture(String textId) {
-        return null;
+        return registeredTextures.get(textId);
     }
 }

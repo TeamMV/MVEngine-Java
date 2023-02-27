@@ -15,7 +15,7 @@ import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.parsing.InvalidGuiFileException;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
-import dev.mv.engine.resources.R;
+import dev.mv.engine.gui.GuiManager;
 import lombok.SneakyThrows;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,8 +24,6 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -381,7 +379,7 @@ public class GuiParser {
             getIntAttrib(tag.getAttribute("width")),
             getIntAttrib(tag.getAttribute("height")));
         if(tag.hasAttribute("texture")) {
-            imageButton.setTexture(R.getTexture(getStringAttrib(tag.getAttribute("texture"))));
+            imageButton.setTexture(GuiManager.getTexture(getStringAttrib(tag.getAttribute("texture"))));
         }
         return imageButton;
     }

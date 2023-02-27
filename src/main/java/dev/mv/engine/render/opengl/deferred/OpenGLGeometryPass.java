@@ -25,7 +25,7 @@ public class OpenGLGeometryPass implements GeometryPass {
 
     public OpenGLGeometryPass(Window window) {
         this.window = window;
-        shader = RenderBuilder.newShader("/shaders/3d/default.vert", "/shaders/3d/default.frag");
+        shader = RenderBuilder.newShader("/assets/mvengine/shaders/3d/default.vert", "/assets/mvengine/shaders/3d/default.frag");
         shader.make(window);
         shader.bind();
         lightingPass = new OpenGLLightingPass(window);

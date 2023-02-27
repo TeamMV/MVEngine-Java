@@ -261,7 +261,7 @@ public class Theme {
 
     //assets
 
-    private String guiAssetPath;
+    private String guiAssetPath = "/assets/mvengine/guiassets.png";
     private int guiAssetsIconWidth;
     private int guiAssetsIconHeight;
 

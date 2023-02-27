@@ -1,6 +1,6 @@
 package dev.mv.engine.input;
 
-import dev.mv.engine.resources.R;
+import dev.mv.engine.gui.GuiManager;
 
 public final class DefaultInputProcessor implements InputProcessor {
     static DefaultInputProcessor INSTANCE = new DefaultInputProcessor();
@@ -25,12 +25,12 @@ public final class DefaultInputProcessor implements InputProcessor {
     @Override
     public void keyUpdate(int key, InputCollector.KeyAction action, int mods) {
         Input.updateKey(key, action);
-        R.sendInputKeyEvent(key, action, mods);
+        GuiManager.sendInputKeyEvent(key, action, mods);
     }
 
     @Override
     public void charTyped(int charCode) {
         Input.charTyped(charCode);
-        R.sendCharTypedEvent(charCode);
+        GuiManager.sendCharTypedEvent(charCode);
     }
 }

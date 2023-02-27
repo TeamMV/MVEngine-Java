@@ -17,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 public class RenderBuilder {
     public static Shader newShader(String vertexPath, String fragmentPath) {
@@ -27,20 +28,12 @@ public class RenderBuilder {
         }
     }
 
-    public static Window newWindow(WindowCreateInfo info) {
-        if (MVEngine.instance().getRenderingApi() == ApplicationConfig.RenderingAPI.OPENGL) {
-            return new OpenGLWindow(info);
-        } else {
-            return null;
-        }
-    }
-
     public static Texture newTexture(InputStream stream) throws IOException {
         return newTexture(ImageIO.read(stream));
     }
 
     public static Texture newTexture(String path) throws IOException {
-        return newTexture(ImageIO.read(RenderBuilder.class.getResourceAsStream(path)));
+        return newTexture(ImageIO.read(Objects.requireNonNull(RenderBuilder.class.getResourceAsStream(path))));
     }
 
     public static Texture newTexture(BufferedImage image) throws IOException {
@@ -56,7 +49,7 @@ public class RenderBuilder {
     }
 
     public static Texture newTextureMap(String path, OpenGLTextureMap.Quality quality) throws IOException {
-        return newTextureMap(ImageIO.read(RenderBuilder.class.getResourceAsStream(path)), quality);
+        return newTextureMap(ImageIO.read(Objects.requireNonNull(RenderBuilder.class.getResourceAsStream(path))), quality);
     }
 
     public static Texture newTextureMap(BufferedImage image, OpenGLTextureMap.Quality quality) throws IOException {
