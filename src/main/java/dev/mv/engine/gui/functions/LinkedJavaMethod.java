@@ -16,7 +16,7 @@ public class LinkedJavaMethod implements GuiMethod {
 
     @Override
     @SneakyThrows
-    public void invoke(Object[] params) {
+    public void invoke(Object... params) {
         method.invoke(instance, params);
     }
 }
