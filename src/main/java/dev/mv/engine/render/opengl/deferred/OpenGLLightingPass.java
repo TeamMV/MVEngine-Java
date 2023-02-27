@@ -31,7 +31,7 @@ public class OpenGLLightingPass implements LightingPass {
 
     public OpenGLLightingPass(Window window) {
         this.window = window;
-        this.shader = RenderBuilder.newShader("/shaders/3d/lightingPass.vert", "/shaders/3d/lightingPass.frag");
+        this.shader = RenderBuilder.newShader("/assets/mvengine/shaders/3d/lightingPass.vert", "/assets/mvengine/shaders/3d/lightingPass.frag");
         shader.make(window);
         shader.bind();
         vboId = glGenBuffers();
