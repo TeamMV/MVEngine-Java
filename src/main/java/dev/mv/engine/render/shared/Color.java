@@ -10,69 +10,97 @@ public class Color {
     public static Color MAGENTA = new Color(255, 0, 255, 255);
     public static Color CYAN = new Color(0, 255, 255, 255);
 
-    float r, g, b, a;
+    byte r, g, b, a;
 
-    public Color(float r, float g, float b, float a) {
+    public Color(byte r, byte g, byte b, byte a) {
         this.r = r;
         this.g = g;
         this.b = b;
         this.a = a;
+    }
+
+    public Color(int r, int g, int b, int a) {
+        this.r = (byte) r;
+        this.g = (byte) g;
+        this.b = (byte) b;
+        this.a = (byte) a;
+    }
+
+    public Color(int color) {
+        this(color >> 24 & 0xff, color >> 16 & 0xff, color >> 8 & 0xff, color & 0xff);
+    }
+
+    public Color set(byte r, byte g, byte b, byte a) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+        return this;
     }
 
     public Color set(int r, int g, int b, int a) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
+        this.r = (byte) r;
+        this.g = (byte) g;
+        this.b = (byte) b;
+        this.a = (byte) a;
         return this;
     }
 
-    public Color set(float r, float g, float b, float a) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
+    public Color set(int color) {
+        set(color >> 24 & 0xff, color >> 16 & 0xff, color >> 8 & 0xff, color & 0xff);
         return this;
     }
 
-    public float getRed() {
-        return r;
+    public int getRed() {
+        return r < 0 ? 256 - r : r;
     }
 
-    public void setRed(float r) {
+    public void setRed(byte r) {
         this.r = r;
     }
 
-    public float getGreen() {
-        return g;
+    public void setRed(int r) {
+        this.r = (byte) r;
     }
 
-    public void setGreen(float g) {
+    public int getGreen() {
+        return g < 0 ? 256 - g : g;
+    }
+
+    public void setGreen(byte g) {
         this.g = g;
     }
 
-    public float getBlue() {
-        return b;
+    public void setGreen(int g) {
+        this.g = (byte) g;
     }
 
-    public void setBlue(float b) {
+    public int getBlue() {
+        return b < 0 ? 256 - b : b;
+    }
+
+    public void setBlue(byte b) {
         this.b = b;
     }
 
-    public float getAlpha() {
-        return a;
+    public void setBlue(int b) {
+        this.b = (byte) b;
     }
 
-    public void setAlpha(float a) {
+    public int getAlpha() {
+        return a < 0 ? 256 - a : a;
+    }
+
+    public void setAlpha(byte a) {
         this.a = a;
     }
 
-    public Color normalize(float normalizeTreshold) {
-        r = r / (255.0f / normalizeTreshold);
-        g = g / (255.0f / normalizeTreshold);
-        b = b / (255.0f / normalizeTreshold);
-        a = a / (255.0f / normalizeTreshold);
-        return this;
+    public void setAlpha(int a) {
+        this.a = (byte) a;
+    }
+
+    public NormalizedColor normalize(float normalizeTreshold) {
+        return new NormalizedColor(r / (255.0f / normalizeTreshold), g / (255.0f / normalizeTreshold), b / (255.0f / normalizeTreshold), a / (255.0f / normalizeTreshold));
     }
 
     public Color copy() {
@@ -112,14 +140,17 @@ public class Color {
             case 5, 6 -> new float[]{value, p, q};
             default -> throw new IllegalStateException();
         };
-        rgb[0] = rgb[0] * 255;
-        rgb[1] = rgb[1] * 255;
-        rgb[2] = rgb[2] * 255;
-        return set(rgb[0], rgb[1], rgb[2], 255);
-
+        byte r = (byte) (rgb[0] * 255);
+        byte g = (byte) (rgb[1] * 255);
+        byte b = (byte) (rgb[2] * 255);
+        return set(r, g, b, 255);
     }
 
     public void copyFrom(Color other) {
         set(other.getRed(), other.getGreen(), other.getBlue(), other.getAlpha());
+    }
+
+    public int toInt() {
+        return (r << 24) | (g << 16) | (b << 8) | a;
     }
 }

@@ -34,11 +34,11 @@ public class DrawContext2D {
         }
     }
 
-    public void color(float r, float g, float b, float a) {
-        this.gradient.topLeft.set(r, g, b, a).normalize(1.0f);
-        this.gradient.topRight.set(r, g, b, a).normalize(1.0f);
-        this.gradient.bottomLeft.set(r, g, b, a).normalize(1.0f);
-        this.gradient.bottomRight.set(r, g, b, a).normalize(1.0f);
+    public void color(int r, int g, int b, int a) {
+        this.gradient.topLeft.set(r, g, b, a);
+        this.gradient.topRight.set(r, g, b, a);
+        this.gradient.bottomLeft.set(r, g, b, a);
+        this.gradient.bottomRight.set(r, g, b, a);
     }
 
     public void canvas(int x, int y, int width, int height) {
@@ -53,7 +53,7 @@ public class DrawContext2D {
     }
 
     public void color(Gradient gradient) {
-        this.gradient = gradient.copy().normalize(1.0f);
+        this.gradient = gradient.copy();
     }
 
     public void font(BitmapFont font) {
@@ -429,10 +429,9 @@ public class DrawContext2D {
             float ay2 = y + glyph.getHeight(height) - yOff;
 
             if (textChroma) {
-                gradient.resetTo(0, 0, 0, 255);
+                gradient.resetTo(0, 0, 0, 1);
                 gradient.setLeft(gradient.bottomLeft.toRGB(Utils.overlap(getHue((int) ax, (int) ay), 0, 359), 1, 1));
                 gradient.setRight(gradient.bottomRight.toRGB(Utils.overlap(getHue((int) ax2, (int) ay2), 0, 359), 1, 1));
-                gradient = gradient.normalize(1.0f);
             }
 
             charX += glyph.getXAdvance(height);
