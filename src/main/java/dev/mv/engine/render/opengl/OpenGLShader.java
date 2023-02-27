@@ -1,11 +1,9 @@
 package dev.mv.engine.render.opengl;
 
 import dev.mv.engine.MVEngine;
-import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.shared.Window;
+import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.utils.RenderUtils;
-import lombok.Getter;
-import lombok.Setter;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
 
@@ -17,14 +15,8 @@ import static org.lwjgl.opengl.GL20.*;
 public class OpenGLShader implements Shader {
     private String vertexCode;
     private String fragmentCode;
-    @Getter
-    @Setter
     private int vertexShader;
-    @Getter
-    @Setter
     private int fragmentShader;
-    @Getter
-    @Setter
     private int programID;
 
     public OpenGLShader(String vertexShader, String fragmentShader) {
@@ -87,6 +79,10 @@ public class OpenGLShader implements Shader {
 
     public int getProgramID() {
         return this.programID;
+    }
+
+    public void setProgramID(int programID) {
+        this.programID = programID;
     }
 
     @Override
@@ -174,4 +170,19 @@ public class OpenGLShader implements Shader {
         uniform(name, value ? 1 : 0);
     }
 
+    public int getVertexShader() {
+        return vertexShader;
+    }
+
+    public void setVertexShader(int vertexShader) {
+        this.vertexShader = vertexShader;
+    }
+
+    public int getFragmentShader() {
+        return fragmentShader;
+    }
+
+    public void setFragmentShader(int fragmentShader) {
+        this.fragmentShader = fragmentShader;
+    }
 }

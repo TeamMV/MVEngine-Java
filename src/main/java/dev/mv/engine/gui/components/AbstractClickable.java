@@ -28,7 +28,8 @@ public abstract class AbstractClickable extends Element implements Clickable {
         clickMethod = gui.findMethod(clickMethodName, clickMethodParamTypes, this.id);
         clickListeners.add(new ClickListener() {
             @Override
-            public void onCLick(Element element, int button) {}
+            public void onCLick(Element element, int button) {
+            }
 
             @Override
             public void onRelease(Element element, int button) {

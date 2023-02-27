@@ -129,7 +129,7 @@ void main() {
 
     fragColor = ambientC * vec4(uAmbient, 1.0) + lightResult;
     fragColor = texture(uTexSampler, oTextureCoord);
-    if(oColor.a != 0.0) {
+    if (oColor.a != 0.0) {
         fragColor = oColor;
     }
 }

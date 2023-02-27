@@ -5,8 +5,8 @@ import dev.mv.engine.render.shared.batch.VertexGroup;
 import dev.mv.engine.render.shared.models.Entity;
 
 public class DrawContext3D {
-    private Render3D ctx3D = null;
     protected Window window;
+    private Render3D ctx3D = null;
     private Color color;
     private VertexGroup verts = new VertexGroup();
     private Vertex v1 = new Vertex(), v2 = new Vertex(), v3 = new Vertex(), v4 = new Vertex();

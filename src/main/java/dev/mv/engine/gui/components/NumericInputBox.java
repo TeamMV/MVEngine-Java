@@ -5,7 +5,7 @@ import dev.mv.engine.render.shared.Window;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NumericInputBox extends InputBox{
+public class NumericInputBox extends InputBox {
     private List<Character> allowedList = new ArrayList<>();
 
     public NumericInputBox(Window window, Element parent, int width, int height) {

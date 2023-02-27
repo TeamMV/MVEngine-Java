@@ -1,36 +1,31 @@
 package dev.mv.engine.render.opengl;
 
 import dev.mv.engine.render.shared.models.Material;
-import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.shared.models.Model;
 import dev.mv.engine.render.shared.models.ObjectLoader;
+import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.utils.RenderUtils;
 import dev.mv.utils.Utils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
-import org.joml.Vector4f;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.lwjgl.opengl.GL30;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.security.cert.X509CRLSelector;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
+import static dev.mv.utils.Utils.toPrimitive;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
-import static dev.mv.utils.Utils.*;
 
 public class OpenGLObjectLoader implements ObjectLoader {
     private static OpenGLObjectLoader instance = new OpenGLObjectLoader();

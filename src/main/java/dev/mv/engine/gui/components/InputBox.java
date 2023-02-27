@@ -15,7 +15,6 @@ import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
-import dev.mv.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,17 +43,13 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
         super(window, x, y, width, height, null);
     }
 
-    public void setLimit(int limit) {
-        this.limit = limit;
-        if (limit == -1) this.limit = Integer.MAX_VALUE;
-    }
-
     public int getLimit() {
         return limit;
     }
 
-    public void setBlacklist(List<Character> blacklist) {
-        this.blacklist = blacklist;
+    public void setLimit(int limit) {
+        this.limit = limit;
+        if (limit == -1) this.limit = Integer.MAX_VALUE;
     }
 
     public void setAllowedlist(List<Character> allowedList) {
@@ -63,6 +58,10 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
 
     public List<Character> getBlacklist() {
         return blacklist;
+    }
+
+    public void setBlacklist(List<Character> blacklist) {
+        this.blacklist = blacklist;
     }
 
     public List<Character> getAllowedList() {
@@ -74,16 +73,16 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
         checkAnimations();
 
 
-        if(theme.getEdgeStyle() == Theme.EdgeStyle.ROUND) {
-            if(theme.hasOutline()) {
+        if (theme.getEdgeStyle() == Theme.EdgeStyle.ROUND) {
+            if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
                 draw.voidRoundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.roundedRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
@@ -91,16 +90,16 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
                 draw.color(animationState.baseColor);
                 draw.roundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
             }
-        } else if(theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
-            if(theme.hasOutline()) {
+        } else if (theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
+            if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
                 draw.voidTriangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.triangularRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
@@ -108,16 +107,16 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
                 draw.color(animationState.baseColor);
                 draw.triangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
             }
-        } else if(theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
-            if(theme.hasOutline()) {
+        } else if (theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
+            if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
                 draw.voidRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.rectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, animationState.rotation, animationState.originX, animationState.originY);
@@ -127,20 +126,20 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
             }
         }
 
-        if(theme.getText_base() != null) {
+        if (theme.getText_base() != null) {
             draw.color(theme.getText_base());
-        } else if(theme.getText_gradient() != null) {
+        } else if (theme.getText_gradient() != null) {
             draw.color(theme.getText_gradient());
         }
-        if(!enabled) {
+        if (!enabled) {
             draw.color(theme.getDisabledTextColor());
         }
-        if(displayText.isEmpty() && !selected) {
-            draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height -  textDistance() * 2)), font, animationState.rotation, animationState.originX, animationState.originY);
+        if (displayText.isEmpty() && !selected) {
+            draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height - textDistance() * 2)), font, animationState.rotation, animationState.originX, animationState.originY);
         } else {
             draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
         }
-        if(selected) {
+        if (selected) {
             draw.rectangle(animationState.posX + textDistance() + font.getWidth(displayText.substring(0, cursorOffset), getHeight() - textDistance() * 2), animationState.posY + textDistance(), 2, getHeight() - textDistance() * 2, animationState.rotation, animationState.originX, animationState.originY);
         }
     }
@@ -151,10 +150,10 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
 
     @Override
     public void attachListener(EventListener listener) {
-        if(listener instanceof TextChangeListener textChangeListener) {
+        if (listener instanceof TextChangeListener textChangeListener) {
             this.textChangeListeners.add(textChangeListener);
         }
-        if(listener instanceof ClickListener clickListener) {
+        if (listener instanceof ClickListener clickListener) {
             this.clickListeners.add(clickListener);
         }
 
@@ -182,30 +181,32 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
 
     @Override
     public void click(int x, int y, int btn) {
-        if(!enabled) return;
-        if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) return;
+        if (!enabled) return;
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height))
+            return;
         else {
             selected = false;
             animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
         }
-        if(!clickListeners.isEmpty()) {
+        if (!clickListeners.isEmpty()) {
             clickListeners.forEach(l -> l.onCLick(this, btn));
         }
-        if(!selected) {
+        if (!selected) {
             animator.animate(theme.getAnimationInTime(), theme.getAnimationFrames());
             selected = true;
-        }}
+        }
+    }
 
     @Override
     public void clickRelease(int x, int y, int btn) {
-        if(!enabled) return;
+        if (!enabled) return;
         selected = false;
         animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
-        if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) {
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) {
             return;
         }
         selected = true;
-        if(!clickListeners.isEmpty()) {
+        if (!clickListeners.isEmpty()) {
             clickListeners.forEach(l -> l.onRelease(this, btn));
         }
     }
@@ -217,7 +218,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
 
     @Override
     public void keyType(int key) {
-        if(selected) {
+        if (selected) {
             if (Input.convertKey(key) == Input.KEY_BACKSPACE) {
                 pop();
                 return;
@@ -233,7 +234,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
                 return;
             }
 
-            if(Input.convertKey(key) == Input.KEY_DELETE || Input.convertKey(key) == Input.KEY_BACKSPACE) {
+            if (Input.convertKey(key) == Input.KEY_DELETE || Input.convertKey(key) == Input.KEY_BACKSPACE) {
                 moveCursor(1);
                 pop(1);
                 return;
@@ -253,31 +254,31 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     }
 
     @Override
-    public void setFont(BitmapFont font) {
-        this.font = font;
-    }
-
-    @Override
     public BitmapFont getFont() {
         return font;
     }
 
     @Override
-    public void setText(String text) {
-        actualText = text;
-    }
-
-    public void setPlaceholderText(String placeholderText) {
-        this.placeholderText = placeholderText;
+    public void setFont(BitmapFont font) {
+        this.font = font;
     }
 
     public String getPlaceholderText() {
         return placeholderText;
     }
 
+    public void setPlaceholderText(String placeholderText) {
+        this.placeholderText = placeholderText;
+    }
+
     @Override
     public String getText() {
         return actualText;
+    }
+
+    @Override
+    public void setText(String text) {
+        actualText = text;
     }
 
     @Override
@@ -298,22 +299,22 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     protected void moveCursor(int amount) {
         cursorOffset += amount;
 
-        if(cursorOffset == 0) {
+        if (cursorOffset == 0) {
             return;
         }
 
-        if(cursorOffset < 0) {
+        if (cursorOffset < 0) {
             cursorOffset++;
-            if(textShift > 0) {
+            if (textShift > 0) {
                 shiftText(-1);
             }
             return;
         }
-        if(cursorOffset > displayText.length()) {
+        if (cursorOffset > displayText.length()) {
             cursorOffset--;
             return;
         }
-        if(textDistance() + font.getWidth(displayText.substring(0, cursorOffset), getHeight() - textDistance() * 2) > getWidth() - textDistance()) {
+        if (textDistance() + font.getWidth(displayText.substring(0, cursorOffset), getHeight() - textDistance() * 2) > getWidth() - textDistance()) {
             cursorOffset--;
             shiftText(1);
         }
@@ -325,16 +326,16 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     }
 
     private void push(String s) {
-        for(char c : s.toCharArray()) {
+        for (char c : s.toCharArray()) {
             push(c);
         }
     }
 
     private void push(char c) {
-        if(displayText.length() >= limit) return;
-        if(blacklist.contains(c)) return;
-        if(!allowedList.isEmpty()) if(!allowedList.contains(c)) return;
-        if(actualText.length() + 1 <= limit) {
+        if (displayText.length() >= limit) return;
+        if (blacklist.contains(c)) return;
+        if (!allowedList.isEmpty()) if (!allowedList.contains(c)) return;
+        if (actualText.length() + 1 <= limit) {
             StringBuilder sb = new StringBuilder(actualText);
             sb.insert(cursorOffset + textShift, c);
             actualText = sb.toString();
@@ -350,7 +351,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     }
 
     private void pop() {
-        if(actualText.length() > 0) {
+        if (actualText.length() > 0) {
             try {
                 StringBuilder sb = new StringBuilder(actualText);
                 sb.deleteCharAt(cursorOffset + textShift - 1);
@@ -361,7 +362,8 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
                     shiftText(0);
                     moveCursor(-1);
                 }
-            } catch (IndexOutOfBoundsException e) {}
+            } catch (IndexOutOfBoundsException e) {
+            }
         }
     }
 }

@@ -25,7 +25,7 @@ void main() {
     // then calculate lighting as usual
     vec3 lighting = Albedo * 0.1; // hard-coded ambient component
     vec3 viewDir = normalize(viewPos - FragPos);
-    for(int i = 0; i < NR_LIGHTS; ++i)
+    for (int i = 0; i < NR_LIGHTS; ++i)
     {
         // diffuse
         vec3 lightDir = normalize(lights[i].Position - FragPos);

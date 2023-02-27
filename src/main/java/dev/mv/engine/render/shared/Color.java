@@ -1,7 +1,5 @@
 package dev.mv.engine.render.shared;
 
-import java.util.Arrays;
-
 public class Color {
     public static Color WHITE = new Color(255, 255, 255, 255);
     public static Color BLACK = new Color(0, 0, 0, 255);
@@ -41,28 +39,28 @@ public class Color {
         return r;
     }
 
-    public float getGreen() {
-        return g;
-    }
-
-    public float getBlue() {
-        return b;
-    }
-
-    public float getAlpha() {
-        return a;
-    }
-
     public void setRed(float r) {
         this.r = r;
+    }
+
+    public float getGreen() {
+        return g;
     }
 
     public void setGreen(float g) {
         this.g = g;
     }
 
+    public float getBlue() {
+        return b;
+    }
+
     public void setBlue(float b) {
         this.b = b;
+    }
+
+    public float getAlpha() {
+        return a;
     }
 
     public void setAlpha(float a) {

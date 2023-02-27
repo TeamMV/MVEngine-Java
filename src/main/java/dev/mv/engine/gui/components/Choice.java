@@ -1,14 +1,12 @@
 package dev.mv.engine.gui.components;
 
 import dev.mv.engine.gui.components.assets.GuiAssets;
-import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.components.layouts.ChoiceGroup;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
-import dev.mv.engine.render.shared.font.BitmapFont;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.shared.texture.TextureRegion;
 
@@ -54,21 +52,24 @@ public class Choice extends Checkbox {
 
     @Override
     public void click(int x, int y, int btn) {
-        if(btn == Input.BUTTON_LEFT)
-            if(!enabled) return;
-        if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) return;
+        if (btn == Input.BUTTON_LEFT)
+            if (!enabled) return;
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height))
+            return;
         animator.animate(theme.getAnimationInTime(), theme.getAnimationFrames());
-        if(!clickListeners.isEmpty()) {
+        if (!clickListeners.isEmpty()) {
             clickListeners.forEach(l -> l.onCLick(this, btn));
         }
     }
+
     @Override
     public void clickRelease(int x, int y, int btn) {
-        if(!enabled) return;
+        if (!enabled) return;
         animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
-        if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) return;
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height))
+            return;
         check();
-        if(!clickListeners.isEmpty()) {
+        if (!clickListeners.isEmpty()) {
             clickListeners.forEach(l -> l.onRelease(this, btn));
         }
     }
@@ -84,7 +85,7 @@ public class Choice extends Checkbox {
     }
 
     public void check() {
-        if(!checked) {
+        if (!checked) {
             checked = true;
             ((ChoiceGroup) parent).setCurrentChoice(this);
         }
@@ -98,7 +99,7 @@ public class Choice extends Checkbox {
     }
 
     public void invertChecked() {
-        if(checked) {
+        if (checked) {
             uncheck();
         } else {
             check();

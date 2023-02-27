@@ -1,13 +1,8 @@
 package dev.mv.engine.gui.components.animations;
 
 import dev.mv.engine.render.shared.Color;
-import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.font.BitmapFont;
 import dev.mv.utils.async.PromiseNull;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class TextAnimator {
     private TextAnimation.TextState[] states;
@@ -57,11 +52,11 @@ public class TextAnimator {
         stop();
         cancel = false;
         new PromiseNull((res, rej) -> {
-            while(times <= iterationCount && !cancel) {
-                if(text == null) continue;
+            while (times <= iterationCount && !cancel) {
+                if (text == null) continue;
                 iterationCount++;
                 charIndex = 0;
-                for(int i = 0; i < text.length(); i++) {
+                for (int i = 0; i < text.length(); i++) {
                     states[charIndex] = animation.animateChar(text, text.charAt(charIndex), charIndex, iterationCount, states[charIndex]);
                     charIndex++;
                 }
@@ -101,22 +96,22 @@ public class TextAnimator {
         return height;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
     public void setHeight(int height) {
         this.height = height;
         updateStates();
     }
 
+    public int getX() {
+        return x;
+    }
+
     public void setX(int x) {
         this.x = x;
         updateStates();
+    }
+
+    public int getY() {
+        return y;
     }
 
     public void setY(int y) {
@@ -125,15 +120,15 @@ public class TextAnimator {
     }
 
     private void updateStates() {
-        for(int i = 0; i < states.length; i++) {
-            if(states[i] == null)
-            states[i] = new TextAnimation.TextState();
-            if(text != null)
-            states[i].height = height;
+        for (int i = 0; i < states.length; i++) {
+            if (states[i] == null)
+                states[i] = new TextAnimation.TextState();
+            if (text != null)
+                states[i].height = height;
             states[i].y = y;
             states[i].x = x + i;
-            if(states[i].color == null)
-            states[i].color = new Color(255, 255, 255, 255);
+            if (states[i].color == null)
+                states[i].color = new Color(255, 255, 255, 255);
         }
     }
 }

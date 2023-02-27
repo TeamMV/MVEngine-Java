@@ -12,16 +12,15 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GuiConfig {
+    InputStream configFile;
     private String layoutPath;
     private String[] layouts;
     private String themePath;
     private String configFilePath;
-    InputStream configFile;
 
     public GuiConfig(String configFilePath) throws IOException {
         this.configFilePath = configFilePath;
@@ -34,7 +33,7 @@ public class GuiConfig {
     }
 
     private void parse(InputStream inputStream) throws InvalidGuiFileException {
-        try{
+        try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(inputStream);
@@ -50,21 +49,21 @@ public class GuiConfig {
             NodeList tags = document.getDocumentElement().getChildNodes();
             for (int i = 0; i < tags.getLength(); i++) {
                 Node tag = tags.item(i);
-                if(tag.getNodeType() == Node.ELEMENT_NODE)  {
-                    if(tag.getNodeName().equals("themePath")) {
-                        if(tag.hasChildNodes()) {
+                if (tag.getNodeType() == Node.ELEMENT_NODE) {
+                    if (tag.getNodeName().equals("themePath")) {
+                        if (tag.hasChildNodes()) {
                             NodeList nodeList = tag.getChildNodes();
                             Node relative = null;
                             for (int j = 0; j < nodeList.getLength(); j++) {
                                 Node node = nodeList.item(j);
                                 if (node.getNodeType() == Node.ELEMENT_NODE) {
-                                    if(relative != null) {
+                                    if (relative != null) {
                                         throw new InvalidGuiFileException("If \"themePath\" tag has child tags, it should be at most 1 \"relative\" tag!");
                                     }
                                     relative = node;
                                 }
                             }
-                            if(!relative.getNodeName().equals("relative")) {
+                            if (!relative.getNodeName().equals("relative")) {
                                 System.err.println(relative.getNodeName());
                                 throw new InvalidGuiFileException("If \"themePath\" tag has child tags, it should be at most 1 \"relative\" tag!");
                             } else {
@@ -75,20 +74,20 @@ public class GuiConfig {
                         }
                         themePath = themePath.replaceAll("[\n *]", "");
                     }
-                    if(tag.getNodeName().equals("layoutPath")) {
-                        if(tag.hasChildNodes()) {
+                    if (tag.getNodeName().equals("layoutPath")) {
+                        if (tag.hasChildNodes()) {
                             NodeList nodeList = tag.getChildNodes();
                             Node relative = null;
                             for (int j = 0; j < nodeList.getLength(); j++) {
                                 Node node = nodeList.item(j);
                                 if (node.getNodeType() == Node.ELEMENT_NODE) {
-                                    if(relative != null) {
+                                    if (relative != null) {
                                         throw new InvalidGuiFileException("If \"layoutPath\" tag has child tags, it should be at most 1 \"relative\" tag!");
                                     }
                                     relative = node;
                                 }
                             }
-                            if(!relative.getNodeName().equals("relative")) {
+                            if (!relative.getNodeName().equals("relative")) {
                                 throw new InvalidGuiFileException("If \"layoutPath\" tag has child tags, it should be at most 1 \"relative\" tag!");
                             } else {
                                 layoutPath = getFileParent() + relative.getTextContent();
@@ -113,7 +112,6 @@ public class GuiConfig {
                     }
                 }
             }
-
 
 
         } catch (ParserConfigurationException | IOException | SAXException e) {

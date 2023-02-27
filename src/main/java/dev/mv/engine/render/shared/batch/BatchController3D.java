@@ -7,7 +7,7 @@ import dev.mv.engine.render.shared.shader.Shader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BatchController3D{
+public class BatchController3D {
     private final String VERTEX_PATH = "/assets/mvengine/shaders/3d/geometryPass.vert";
     private final String FRAGMENT_PATH = "/assets/mvengine/shaders/3d/default.frag";
     private final List<Batch3D> batches = new ArrayList<>();

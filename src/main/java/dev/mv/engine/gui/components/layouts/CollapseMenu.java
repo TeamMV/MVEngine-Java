@@ -17,9 +17,10 @@ import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
+
 import java.util.function.Predicate;
 
-public class CollapseMenu extends AbstractLayout implements Toggle, Text{
+public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     private boolean collapsed = true;
     private LayerSection layerSection;
     private boolean chroma;
@@ -68,7 +69,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
 
             @Override
             public void onRelease(Element element, int button) {
-                if(button == Input.BUTTON_LEFT) {
+                if (button == Input.BUTTON_LEFT) {
                     toggleCollapseState();
                     collapseButton.setTexture(isCollapsed() ? GuiAssets.ARROW_DOWN : GuiAssets.ARROW_UP);
                 }
@@ -138,23 +139,23 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
     }
 
     @Override
-    public void setFont(BitmapFont font) {
-        collapseButtonText.setFont(font);
-    }
-
-    @Override
     public BitmapFont getFont() {
         return collapseButtonText.getFont();
     }
 
     @Override
-    public void setText(String text) {
-        collapseButtonText.setText(text);
+    public void setFont(BitmapFont font) {
+        collapseButtonText.setFont(font);
     }
 
     @Override
     public String getText() {
         return collapseButtonText.getText();
+    }
+
+    @Override
+    public void setText(String text) {
+        collapseButtonText.setText(text);
     }
 
     @Override
@@ -212,7 +213,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
 
     public void toggleCollapseState() {
         collapsed = !collapsed;
-        if(collapsed) collapse();
+        if (collapsed) collapse();
         else inflate();
     }
 
@@ -236,7 +237,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
     @Override
     public void click(int x, int y, int btn) {
         super.click(x, y, btn);
-        if(GuiUtils.mouseNotInside(rootLayout.getX(), rootLayout.getY(), rootLayout.getWidth(), rootLayout.getHeight())) {
+        if (GuiUtils.mouseNotInside(rootLayout.getX(), rootLayout.getY(), rootLayout.getWidth(), rootLayout.getHeight())) {
             collapse();
         }
     }
@@ -253,7 +254,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
 
     @Override
     public int getY() {
-        return headerLayout != null ?  headerLayout.getY() : 0;
+        return headerLayout != null ? headerLayout.getY() : 0;
     }
 
     @Override
@@ -263,7 +264,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
 
     @Override
     public int getWidth() {
-        return headerLayout != null ?  headerLayout.getWidth() : 0;
+        return headerLayout != null ? headerLayout.getWidth() : 0;
     }
 
     @Override
@@ -275,7 +276,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text{
     @Override
     public int getHeight() {
         //for some weird reason, the root layout height works here even if it should'nt lol.
-        return rootLayout != null ?  rootLayout.getHeight() : 0;
+        return rootLayout != null ? rootLayout.getHeight() : 0;
     }
 
     @Override

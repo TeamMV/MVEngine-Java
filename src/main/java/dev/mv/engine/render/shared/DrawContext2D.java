@@ -2,12 +2,12 @@ package dev.mv.engine.render.shared;
 
 import dev.mv.engine.gui.components.animations.TextAnimation;
 import dev.mv.engine.gui.components.animations.TextAnimator;
+import dev.mv.engine.render.shared.batch.Vertex;
+import dev.mv.engine.render.shared.batch.VertexGroup;
 import dev.mv.engine.render.shared.font.BitmapFont;
 import dev.mv.engine.render.shared.font.Glyph;
 import dev.mv.engine.render.shared.texture.Animation;
 import dev.mv.engine.render.shared.texture.Texture;
-import dev.mv.engine.render.shared.batch.Vertex;
-import dev.mv.engine.render.shared.batch.VertexGroup;
 import dev.mv.engine.render.shared.texture.TextureRegion;
 import dev.mv.utils.Utils;
 import org.joml.Vector2f;
@@ -30,7 +30,8 @@ public class DrawContext2D {
         canvas = new Vector4f(0, 0, window.getWidth(), window.getHeight());
         try {
             font(new BitmapFont("/assets/mvengine/defaultfont.png", "/assets/mvengine/defaultfont.fnt"));
-        } catch (IOException ignore) {}
+        } catch (IOException ignore) {
+        }
     }
 
     public void color(float r, float g, float b, float a) {
@@ -205,7 +206,7 @@ public class DrawContext2D {
         double tau = Math.PI * 2.0;
         double step = tau / precision;
         float radRotation = (float) Math.toRadians(rotation);
-        for (double i = 0.0; i < tau; i += step)   {
+        for (double i = 0.0; i < tau; i += step) {
             window.getBatchController().addVertices(verts.set(
                 v1.put((float) (x + (radius * Math.cos(i))), (float) (y + (radius * Math.sin(i))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
                 v2.put((float) (x + (radius * Math.cos(i + step))), (float) (y + (radius * Math.sin(i + step))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -225,7 +226,7 @@ public class DrawContext2D {
     public void voidCircle(int x, int y, int radius, int thickness, float precision, float rotation, int originX, int originY) {
         double tau = Math.PI * 2.0;
         double step = tau / precision;
-        for (double i = 0.0; i < tau; i += step)   {
+        for (double i = 0.0; i < tau; i += step) {
             line((int) (x + (radius * Math.cos(i))), (int) (y + (radius * Math.sin(i))), (int) (x + (radius * Math.cos(i + step))), (int) (y + (radius * Math.sin(i + step))), thickness, rotation, originX, originY);
         }
     }
@@ -243,7 +244,7 @@ public class DrawContext2D {
         double rRange = Math.PI * 2.0 - Math.toRadians(range);
         double step = tau / precision;
         float radRotation = (float) Math.toRadians(rotation);
-        for (double i = Math.toRadians(start); i < tau - rRange + Math.toRadians(start); i += step)   {
+        for (double i = Math.toRadians(start); i < tau - rRange + Math.toRadians(start); i += step) {
             window.getBatchController().addVertices(verts.set(
                 v1.put((float) (x + (radius * Math.cos(i))), (float) (y + (radius * Math.sin(i))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
                 v2.put((float) (x + (radius * Math.cos(i + step))), (float) (y + (radius * Math.sin(i + step))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -265,7 +266,7 @@ public class DrawContext2D {
         double tau = Math.PI * 2.0;
         double rRange = Math.PI * 2.0 - Math.toRadians(range);
         double step = tau / precision;
-        for (double i = Math.toRadians(start); i < tau - rRange + Math.toRadians(start); i += step)   {
+        for (double i = Math.toRadians(start); i < tau - rRange + Math.toRadians(start); i += step) {
             line((int) (x + (rRadius * Math.cos(i))), (int) (y + (rRadius * Math.sin(i))), (int) (x + (rRadius * Math.cos(i + step))), (int) (y + (rRadius * Math.sin(i + step))), thickness + 1, rotation, originX, originY);
         }
     }
@@ -427,7 +428,7 @@ public class DrawContext2D {
             float ax2 = x + charX + glyph.getXOffset(height) + glyph.getWidth(height);
             float ay2 = y + glyph.getHeight(height) - yOff;
 
-            if(textChroma) {
+            if (textChroma) {
                 gradient.resetTo(0, 0, 0, 255);
                 gradient.setLeft(gradient.bottomLeft.toRGB(Utils.overlap(getHue((int) ax, (int) ay), 0, 359), 1, 1));
                 gradient.setRight(gradient.bottomRight.toRGB(Utils.overlap(getHue((int) ax2, (int) ay2), 0, 359), 1, 1));
@@ -484,7 +485,7 @@ public class DrawContext2D {
 
             Glyph glyph = font.getGlyph(c);
 
-            if(glyph == null) return;
+            if (glyph == null) return;
 
             int height = state.height;
             int x = state.x;

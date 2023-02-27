@@ -2,20 +2,14 @@ package dev.mv.engine.physics;
 
 import de.fabmax.physxjni.Loader;
 import dev.mv.utils.Utils;
-import physx.PxTopLevelFunctions;
+import dev.mv.utils.logger.Logger;
 import physx.common.*;
 import physx.cooking.*;
 import physx.geometry.PxConvexMesh;
 import physx.physics.PxPhysics;
-import physx.support.PxPvd;
-import physx.support.PxPvdInstrumentationFlagEnum;
-import physx.support.PxPvdInstrumentationFlags;
-import physx.support.PxPvdTransport;
 import physx.vehicle2.PxVehicleAxesEnum;
 import physx.vehicle2.PxVehicleFrame;
 import physx.vehicle2.PxVehicleTopLevelFunctions;
-
-import dev.mv.utils.logger.Logger;
 
 import static physx.PxTopLevelFunctions.*;
 

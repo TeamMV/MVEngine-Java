@@ -3,10 +3,6 @@ package dev.mv.engine.input;
 import java.util.Arrays;
 
 public class Input {
-    public static State[] keys;
-    public static State[] buttons;
-    public static int[] mouse;
-
     public static final int KEY_0 = 0;
     public static final int KEY_1 = 1;
     public static final int KEY_2 = 2;
@@ -106,21 +102,23 @@ public class Input {
     public static final int KEY_BACKSLASH = 96;
     public static final int KEY_EXTRA_1 = 97;
     public static final int KEY_EXTRA_2 = 98;
-    public static int KEY_LAST = -1;
-
     public static final int BUTTON_LEFT = 0;
     public static final int BUTTON_MIDDLE = 1;
     public static final int BUTTON_RIGHT = 2;
     public static final int BUTTON_4 = 3;
     public static final int BUTTON_5 = 4;
-    public static int BUTTON_LAST = -1;
-
     public static final int MOUSE_X = 0;
     public static final int MOUSE_Y = 1;
     public static final int MOUSE_SCROLL_X = 2;
     public static final int MOUSE_SCROLL_Y = 3;
+    public static State[] keys;
+    public static State[] buttons;
+    public static int[] mouse;
+    public static int KEY_LAST = -1;
+    public static int BUTTON_LAST = -1;
 
-    private Input() {}
+    private Input() {
+    }
 
     private static int totalNumKeys() {
         return 98 + 1;
@@ -175,7 +173,8 @@ public class Input {
                 int convertedCode = convertKey(rawCode);
                 keys[convertedCode] = State.ONRELEASED;
             }
-        } catch (NullPointerException | IndexOutOfBoundsException ignore) {}
+        } catch (NullPointerException | IndexOutOfBoundsException ignore) {
+        }
     }
 
     static void charTyped(int charCode) {
@@ -183,15 +182,15 @@ public class Input {
     }
 
     static void updateButton(int btn, InputCollector.MouseAction action) {
-        if(action == InputCollector.MouseAction.PRESS) {
+        if (action == InputCollector.MouseAction.PRESS) {
             int convertedCode = convertButton(btn);
-            if(!isButtonPressed(convertedCode)) {
+            if (!isButtonPressed(convertedCode)) {
                 buttons[convertedCode] = State.ONPRESSED;
             }
             BUTTON_LAST = convertedCode;
-        } else if(action == InputCollector.MouseAction.RELEASE) {
+        } else if (action == InputCollector.MouseAction.RELEASE) {
             int convertedCode = convertButton(btn);
-            if(isButtonPressed(convertedCode)) {
+            if (isButtonPressed(convertedCode)) {
                 buttons[convertedCode] = State.ONRELEASED;
             }
         }

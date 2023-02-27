@@ -1,10 +1,7 @@
 package dev.mv.engine.gui;
 
-import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.screens.Pager;
 import dev.mv.engine.gui.theme.Theme;
-import dev.mv.engine.render.shared.DrawContext2D;
-import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,7 +18,7 @@ public class GuiRegistry implements Iterable<Gui> {
     }
 
     public void addGui(Gui gui) {
-        if(guiMap.containsKey(gui.getName())) {
+        if (guiMap.containsKey(gui.getName())) {
             throw new RuntimeException(new IllegalArgumentException("There is already a GUI registered with that name!"));
         } else {
             guiMap.put(gui.getName(), gui);
@@ -29,7 +26,7 @@ public class GuiRegistry implements Iterable<Gui> {
     }
 
     public void removeGui(Gui gui) {
-        if(!guiMap.containsKey(gui.getName())) {
+        if (!guiMap.containsKey(gui.getName())) {
             throw new RuntimeException(new IllegalArgumentException("There is no GUI registered with that name!"));
         } else {
             guiMap.remove(gui.getName(), gui);
@@ -37,7 +34,7 @@ public class GuiRegistry implements Iterable<Gui> {
     }
 
     public Gui findGui(String name) {
-        if(!guiMap.containsKey(name)) {
+        if (!guiMap.containsKey(name)) {
             throw new RuntimeException(new IllegalArgumentException("There is no GUI registered with the name " + name + "!"));
         } else {
             return guiMap.get(name);
@@ -54,15 +51,14 @@ public class GuiRegistry implements Iterable<Gui> {
     }
 
     public void swap(String from, String to) {
-        if(!guiMap.containsKey(to)) return;
-        if(pager != null) {
+        if (!guiMap.containsKey(to)) return;
+        if (pager != null) {
             pager.swap(from, to);
         }
 
-        if(!toRender.contains(findGui(to)))
-        toRender.add(findGui(to));
+        if (!toRender.contains(findGui(to)))
+            toRender.add(findGui(to));
     }
-
 
 
     public void renderGuis() {
@@ -74,38 +70,8 @@ public class GuiRegistry implements Iterable<Gui> {
     }
 
     public void applyTheme(Theme theme) throws IOException {
-        for(Gui gui : this) {
+        for (Gui gui : this) {
             gui.applyTheme(theme);
-        }
-    }
-
-    private class GuiRegistryIterator implements Iterator<Gui> {
-        private boolean hasNext = true;
-        private int index = 0;
-        private List<Gui> collection;
-
-        public GuiRegistryIterator(Collection<Gui> list) {
-            collection = List.copyOf(list);
-        }
-
-        @Override
-        public boolean hasNext() {
-            return index != collection.size();
-        }
-
-        @Override
-        public Gui next() {
-            return collection.get(index++);
-        }
-
-        @Override
-        public void remove() {
-            collection.remove(index - 1);
-        }
-
-        @Override
-        public void forEachRemaining(Consumer<? super Gui> action) {
-            Iterator.super.forEachRemaining(action);
         }
     }
 
@@ -115,7 +81,7 @@ public class GuiRegistry implements Iterable<Gui> {
     }
 
     public Iterator<Gui> toRender() {
-        if(toRender.isEmpty()) {
+        if (toRender.isEmpty()) {
             return new GuiRegistryIterator(Collections.EMPTY_LIST);
         }
         return new GuiRegistryIterator(toRender);
@@ -153,6 +119,36 @@ public class GuiRegistry implements Iterable<Gui> {
         for (Iterator<Gui> it = toRender(); it.hasNext(); ) {
             Gui gui = it.next();
             gui.releaseKey(keyCode);
+        }
+    }
+
+    private class GuiRegistryIterator implements Iterator<Gui> {
+        private boolean hasNext = true;
+        private int index = 0;
+        private List<Gui> collection;
+
+        public GuiRegistryIterator(Collection<Gui> list) {
+            collection = List.copyOf(list);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index != collection.size();
+        }
+
+        @Override
+        public Gui next() {
+            return collection.get(index++);
+        }
+
+        @Override
+        public void remove() {
+            collection.remove(index - 1);
+        }
+
+        @Override
+        public void forEachRemaining(Consumer<? super Gui> action) {
+            Iterator.super.forEachRemaining(action);
         }
     }
 }

@@ -1,6 +1,5 @@
 package dev.mv.engine.gui.components.assets;
 
-import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.texture.Texture;

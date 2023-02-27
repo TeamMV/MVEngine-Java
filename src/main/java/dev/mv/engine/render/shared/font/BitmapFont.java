@@ -1,8 +1,8 @@
 package dev.mv.engine.render.shared.font;
 
 import dev.mv.engine.MVEngine;
-import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.shared.create.RenderBuilder;
+import dev.mv.engine.render.shared.texture.Texture;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -158,7 +158,7 @@ public class BitmapFont {
 
         for (int i = 0; i < s.length(); i++) {
             totalWidth += getWidth(s.charAt(i) + "", height);
-            if(totalWidth > limitWidth) {
+            if (totalWidth > limitWidth) {
                 return i;
             }
         }

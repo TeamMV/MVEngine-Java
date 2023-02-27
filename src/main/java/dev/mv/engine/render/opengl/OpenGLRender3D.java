@@ -5,29 +5,22 @@ import dev.mv.engine.render.shared.Render3D;
 import dev.mv.engine.render.shared.Transformations3D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.batch.Batch3D;
-import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.models.Entity;
 import dev.mv.engine.render.shared.models.Model;
 import dev.mv.engine.render.shared.shader.Shader;
-import dev.mv.engine.render.shared.shader.Uniforms3D;
 import dev.mv.engine.render.shared.shader.light.DirectionalLight;
 import dev.mv.engine.render.shared.shader.light.PointLight;
 import dev.mv.engine.render.shared.shader.light.SpotLight;
-import dev.mv.engine.render.utils.RenderConstansts;
-import dev.mv.utils.Utils;
-import lombok.Getter;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.*;
 
 public class OpenGLRender3D implements Render3D {
     private Window win;
@@ -50,7 +43,6 @@ public class OpenGLRender3D implements Render3D {
         geometryPass.render(modelUsages);
 
         //renderLights(pointLights, spotLights);
-
 
 
         modelUsages.clear();

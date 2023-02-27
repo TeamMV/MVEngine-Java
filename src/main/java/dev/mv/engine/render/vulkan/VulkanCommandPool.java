@@ -7,10 +7,7 @@ import org.lwjgl.vulkan.VkCommandPoolCreateInfo;
 import java.nio.LongBuffer;
 
 import static dev.mv.engine.render.vulkan.VulkanUtils.vkCheck;
-import static org.lwjgl.vulkan.VK13.vkCreateCommandPool;
-import static org.lwjgl.vulkan.VK13.vkDestroyCommandPool;
-import static org.lwjgl.vulkan.VK13.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-import static org.lwjgl.vulkan.VK13.VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+import static org.lwjgl.vulkan.VK13.*;
 
 public class VulkanCommandPool {
     private final VulkanDevice device;

@@ -9,6 +9,48 @@ public class Theme {
     //font
 
     private BitmapFont font;
+    private int outlineThickness;
+    private boolean outline = false;
+
+    //outline
+    private Color baseColor;
+    private Color outlineColor;
+    private Gradient baseGradient;
+    private Gradient outlineGradient;
+    private Color text_base;
+    private Gradient text_gradient;
+
+    //colors
+    private Color extraColor;
+    private Color disabledBaseColor;
+    private Color disabledOutlineColor;
+    private Color disabledTextColor;
+    private Color diabledExtraColor;
+    private Color indicatorColor;
+    private boolean shouldCheckboxUseTextColor = false;
+    private boolean shouldChoiceUseTextColor = false;
+    private boolean shouldPasswordInputBoxButtonUseTextColor = false;
+    private EdgeStyle edgeStyle;
+    //--round and triangle
+    private int edgeRadius;
+    //--buttons
+    private int animationInTime;
+    private int animationOutTime;
+    private int animationFrames;
+    private ElementAnimation buttonAnimator = new ElementAnimation() {
+        @Override
+        public ElementAnimation.AnimationState transform(int frame, int totalFrames, ElementAnimation.AnimationState lastState) {
+            return lastState;
+        }
+
+        @Override
+        public ElementAnimation.AnimationState transformBack(int frame, int totalFrames, ElementAnimation.AnimationState lastState) {
+            return lastState;
+        }
+    };
+    private String guiAssetPath = "/assets/mvengine/guiassets.png";
+    private int guiAssetsIconWidth;
+    private int guiAssetsIconHeight;
 
     public BitmapFont getFont() {
         return font;
@@ -17,11 +59,6 @@ public class Theme {
     public void setFont(BitmapFont font) {
         this.font = font;
     }
-
-    //outline
-
-    private int outlineThickness;
-    private boolean outline = false;
 
     public int getOutlineThickness() {
         return outlineThickness;
@@ -39,66 +76,48 @@ public class Theme {
         this.outline = outline;
     }
 
-    //colors
-
-    private Color baseColor;
-    private Color outlineColor;
-    private Gradient baseGradient;
-    private Gradient outlineGradient;
-    private Color text_base;
-    private Gradient text_gradient;
-    private Color extraColor;
-    private Color disabledBaseColor;
-    private Color disabledOutlineColor;
-    private Color disabledTextColor;
-    private Color diabledExtraColor;
-    private Color indicatorColor;
-    private boolean shouldCheckboxUseTextColor = false;
-    private boolean shouldChoiceUseTextColor = false;
-    private boolean shouldPasswordInputBoxButtonUseTextColor = false;
-
     public Color getBaseColor() {
         return baseColor;
-    }
-
-    public Color getOutlineColor() {
-        return outlineColor;
-    }
-
-    public Gradient getBaseGradient() {
-        return baseGradient;
-    }
-
-    public Gradient getOutlineGradient() {
-        return outlineGradient;
-    }
-
-    public Color getText_base() {
-        return text_base;
-    }
-
-    public Gradient getText_gradient() {
-        return text_gradient;
     }
 
     public void setBaseColor(Color baseColor) {
         this.baseColor = baseColor;
     }
 
+    public Color getOutlineColor() {
+        return outlineColor;
+    }
+
     public void setOutlineColor(Color outlineColor) {
         this.outlineColor = outlineColor;
+    }
+
+    public Gradient getBaseGradient() {
+        return baseGradient;
     }
 
     public void setBaseGradient(Gradient baseGradient) {
         this.baseGradient = baseGradient;
     }
 
+    public Gradient getOutlineGradient() {
+        return outlineGradient;
+    }
+
     public void setOutlineGradient(Gradient outlineGradient) {
         this.outlineGradient = outlineGradient;
     }
 
+    public Color getText_base() {
+        return text_base;
+    }
+
     public void setText_base(Color text_base) {
         this.text_base = text_base;
+    }
+
+    public Gradient getText_gradient() {
+        return text_gradient;
     }
 
     public void setText_gradient(Gradient text_gradient) {
@@ -141,6 +160,8 @@ public class Theme {
         return extraColor;
     }
 
+    //edges
+
     public void setExtraColor(Color extraColor) {
         this.extraColor = extraColor;
     }
@@ -169,6 +190,8 @@ public class Theme {
         this.shouldChoiceUseTextColor = shouldChoiceUseTextColor;
     }
 
+    //animations
+
     public boolean isShouldPasswordInputBoxButtonUseTextColor() {
         return shouldPasswordInputBoxButtonUseTextColor;
     }
@@ -176,10 +199,6 @@ public class Theme {
     public void setShouldPasswordInputBoxButtonUseTextColor(boolean shouldPasswordInputBoxButtonUseTextColor) {
         this.shouldPasswordInputBoxButtonUseTextColor = shouldPasswordInputBoxButtonUseTextColor;
     }
-
-    //edges
-
-    private EdgeStyle edgeStyle;
 
     public EdgeStyle getEdgeStyle() {
         return edgeStyle;
@@ -189,43 +208,13 @@ public class Theme {
         this.edgeStyle = edgeStyle;
     }
 
-    public enum EdgeStyle{
-        ROUND("round"),
-        TRIANGLE("triangle"),
-        SQUARE("square");
-
-        EdgeStyle(String s) {
-        }
-    }
-
-    //--round and triangle
-    private int edgeRadius;
-
-    public void setEdgeRadius(int edgeRadius) {
-        this.edgeRadius = edgeRadius;
-    }
-
     public int getEdgeRadius() {
         return edgeRadius;
     }
 
-    //animations
-
-    //--buttons
-    private int animationInTime;
-    private int animationOutTime;
-    private int animationFrames;
-    private ElementAnimation buttonAnimator = new ElementAnimation() {
-        @Override
-        public ElementAnimation.AnimationState transform(int frame, int totalFrames, ElementAnimation.AnimationState lastState) {
-            return lastState;
-        }
-
-        @Override
-        public ElementAnimation.AnimationState transformBack(int frame, int totalFrames, ElementAnimation.AnimationState lastState) {
-            return lastState;
-        }
-    };
+    public void setEdgeRadius(int edgeRadius) {
+        this.edgeRadius = edgeRadius;
+    }
 
     public ElementAnimation getButtonAnimator() {
         return buttonAnimator;
@@ -251,6 +240,8 @@ public class Theme {
         this.animationInTime = animationInTime;
     }
 
+    //assets
+
     public int getAnimationOutTime() {
         return animationOutTime;
     }
@@ -258,12 +249,6 @@ public class Theme {
     public void setAnimationOutTime(int animationOutTime) {
         this.animationOutTime = animationOutTime;
     }
-
-    //assets
-
-    private String guiAssetPath = "/assets/mvengine/guiassets.png";
-    private int guiAssetsIconWidth;
-    private int guiAssetsIconHeight;
 
     public String getGuiAssetPath() {
         return guiAssetPath;
@@ -287,5 +272,14 @@ public class Theme {
 
     public void setGuiAssetsIconHeight(int guiAssetsIconHeight) {
         this.guiAssetsIconHeight = guiAssetsIconHeight;
+    }
+
+    public enum EdgeStyle {
+        ROUND("round"),
+        TRIANGLE("triangle"),
+        SQUARE("square");
+
+        EdgeStyle(String s) {
+        }
     }
 }

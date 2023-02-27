@@ -1,14 +1,11 @@
 package dev.mv.engine.render.opengl;
 
-import dev.mv.engine.render.shared.texture.Texture;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL30.*;
 
 public class OpenGLTextureMap extends OpenGLTexture {

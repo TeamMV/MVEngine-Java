@@ -1,7 +1,5 @@
 package dev.mv.engine.files;
 
-import dev.mv.utils.Utils;
-
 import java.io.File;
 
 public class InnerDirectory extends Directory {

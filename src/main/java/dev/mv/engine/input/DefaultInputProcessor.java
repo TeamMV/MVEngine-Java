@@ -5,7 +5,8 @@ import dev.mv.engine.gui.GuiManager;
 public final class DefaultInputProcessor implements InputProcessor {
     static DefaultInputProcessor INSTANCE = new DefaultInputProcessor();
 
-    private DefaultInputProcessor() {}
+    private DefaultInputProcessor() {
+    }
 
     @Override
     public void mousePosUpdate(int x, int y) {

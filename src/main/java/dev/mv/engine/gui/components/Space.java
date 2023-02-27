@@ -4,7 +4,7 @@ import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
-public class Space extends Element{
+public class Space extends Element {
     public Space(Window window, int x, int y, int width, int height, Element parent) {
         super(window, x, y, width, height, parent);
     }

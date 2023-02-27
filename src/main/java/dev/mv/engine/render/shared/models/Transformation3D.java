@@ -1,7 +1,6 @@
 package dev.mv.engine.render.shared.models;
 
 import dev.mv.engine.render.shared.Camera;
-import dev.mv.engine.render.shared.models.Entity;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

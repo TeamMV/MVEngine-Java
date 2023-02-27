@@ -65,18 +65,6 @@
                 <physx.natives>natives-linux</physx.natives>
             </properties>
         </profile>
-        <!--profile>
-            <id>lwjgl-natives-linux-aarch64</id>
-            <activation>
-                <os>
-                    <family>unix</family>
-                    <arch>aarch64</arch>
-                </os>
-            </activation>
-            <properties>
-                <lwjgl.natives>natives-linux-arm64</lwjgl.natives>
-            </properties>
-        </profile-->
         <profile>
             <id>MacOS</id>
             <activation>
@@ -116,18 +104,6 @@
                 <physx.natives>natives-windows</physx.natives>
             </properties>
         </profile>
-        <!--profile>
-            <id>lwjgl-natives-windows-aarch64</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                    <arch>aarch64</arch>
-                </os>
-            </activation>
-            <properties>
-                <lwjgl.natives>natives-windows-arm64</lwjgl.natives>
-            </properties>
-        </profile-->
     </profiles>
 
     <dependencyManagement>
@@ -329,11 +305,6 @@
             <groupId>com.code-disaster.steamworks4j</groupId>
             <artifactId>steamworks4j-server</artifactId>
             <version>1.9.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
         </dependency>
         <dependency>
             <groupId>it.unimi.dsi</groupId>

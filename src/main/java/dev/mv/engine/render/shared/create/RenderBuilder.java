@@ -2,19 +2,15 @@ package dev.mv.engine.render.shared.create;
 
 import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.render.opengl.OpenGLShader;
+import dev.mv.engine.render.opengl.OpenGLTexture;
 import dev.mv.engine.render.opengl.OpenGLTextureMap;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.shared.texture.Texture;
-import dev.mv.engine.render.shared.Window;
-import dev.mv.engine.render.WindowCreateInfo;
-import dev.mv.engine.render.opengl.OpenGLShader;
-import dev.mv.engine.render.opengl.OpenGLTexture;
-import dev.mv.engine.render.opengl.OpenGLWindow;
 import dev.mv.engine.render.utils.RenderUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;

@@ -1,7 +1,6 @@
 package dev.mv.engine.gui.functions;
 
 import dev.mv.engine.MVEngine;
-import lombok.SneakyThrows;
 
 import javax.naming.ServiceUnavailableException;
 import java.lang.reflect.Method;
@@ -12,14 +11,18 @@ public class GuiScript {
     private Class<?> clazz;
     private Object instance;
 
-    @SneakyThrows
+
     public GuiScript(Language language, String src) {
-        this.language = language;
-        if (language == Language.JAVA) {
-            clazz = ClassLoader.getSystemClassLoader().loadClass(src);
-            instance = clazz.getDeclaredConstructor().newInstance();
-        } else {
-            MVEngine.Exceptions.__throw__(new ServiceUnavailableException("The script language " + language + " is not supported for the guis yet!"));
+        try {
+            this.language = language;
+            if (language == Language.JAVA) {
+                clazz = ClassLoader.getSystemClassLoader().loadClass(src);
+                instance = clazz.getDeclaredConstructor().newInstance();
+            } else {
+                MVEngine.Exceptions.__throw__(new ServiceUnavailableException("The script language " + language + " is not supported for the guis yet!"));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -29,8 +32,10 @@ public class GuiScript {
                 Method method = clazz.getDeclaredMethod(name, paramTypes);
                 if (!method.isAnnotationPresent(GuiFunction.class)) return null;
                 String restrict = method.getAnnotation(GuiFunction.class).restricted();
-                if (restrict.equals(id) || restrict.equals("any") || restrict.equals("none")) return new LinkedJavaMethod(method, instance);
-            } catch (NoSuchMethodException ignored) {}
+                if (restrict.equals(id) || restrict.equals("any") || restrict.equals("none"))
+                    return new LinkedJavaMethod(method, instance);
+            } catch (NoSuchMethodException ignored) {
+            }
         }
         return null;
     }

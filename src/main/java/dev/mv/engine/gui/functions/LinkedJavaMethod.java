@@ -1,7 +1,5 @@
 package dev.mv.engine.gui.functions;
 
-import lombok.SneakyThrows;
-
 import java.lang.reflect.Method;
 
 public class LinkedJavaMethod implements GuiMethod {
@@ -15,8 +13,11 @@ public class LinkedJavaMethod implements GuiMethod {
     }
 
     @Override
-    @SneakyThrows
     public void invoke(Object... params) {
-        method.invoke(instance, params);
+        try {
+            method.invoke(instance, params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

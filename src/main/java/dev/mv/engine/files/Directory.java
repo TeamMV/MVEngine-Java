@@ -1,7 +1,6 @@
 package dev.mv.engine.files;
 
 import dev.mv.utils.Utils;
-import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +8,6 @@ import java.nio.file.Files;
 
 public abstract class Directory {
 
-    @Getter
     private String name;
     private File folder;
     private String path;
@@ -70,4 +68,7 @@ public abstract class Directory {
         return folder;
     }
 
+    public String getName() {
+        return name;
+    }
 }

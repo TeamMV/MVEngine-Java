@@ -1,22 +1,24 @@
 package dev.mv.engine;
 
 import dev.mv.utils.misc.Version;
-import lombok.Getter;
-
-import dev.mv.utils.logger.Logger;
 
 public class ApplicationConfig {
 
-    @Getter
     private String name = "";
-    @Getter
     private Version version = new Version(1);
-    @Getter
     private RenderingAPI renderingApi = RenderingAPI.OPENGL;
+
+    public String getName() {
+        return name;
+    }
 
     public ApplicationConfig setName(String name) {
         this.name = name;
         return this;
+    }
+
+    public Version getVersion() {
+        return version;
     }
 
     public ApplicationConfig setVersion(Version version) {
@@ -24,12 +26,16 @@ public class ApplicationConfig {
         return this;
     }
 
+    public RenderingAPI getRenderingApi() {
+        return renderingApi;
+    }
+
     public ApplicationConfig setRenderingApi(RenderingAPI renderingApi) {
         this.renderingApi = renderingApi;
         return this;
     }
 
-    public static enum RenderingAPI {
+    public enum RenderingAPI {
         OPENGL,
         VULKAN
     }

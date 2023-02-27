@@ -14,12 +14,12 @@ Example code of how we plan this to work:
 
 ```java
 public class PlayerScript implements GameObjectScript {
-    
+
     @Override
     public void start(GameObject object) {
         object.setPosition(new Vector3f(0, 0, 0));
     }
-    
+
     @Override
     public void update(GameObject object) {
         if (Input.isKeyDown(Key.W)) {
@@ -57,6 +57,7 @@ public class Player extends GameObject {
 
 public interface GameObjectScript {
     void start(GameObject object);
+
     void update(GameObject object);
 }
 
@@ -66,7 +67,7 @@ public class GameObject {
 
 //On Game Launch
 public class GameLauncher {
-    
+
     public void launch() {
         //Get game objects from some data or code
         List<GameObject> gameObjects = new ArrayList<>();
@@ -75,7 +76,7 @@ public class GameLauncher {
             object.getGameObject().addScript(gameObjects.getScript());
         }
     }
-    
+
 }
 ```
 

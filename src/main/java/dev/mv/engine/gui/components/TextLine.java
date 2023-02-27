@@ -3,11 +3,8 @@ package dev.mv.engine.gui.components;
 import dev.mv.engine.gui.components.animations.TextAnimation;
 import dev.mv.engine.gui.components.animations.TextAnimator;
 import dev.mv.engine.gui.components.extras.Text;
-import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.event.TextChangeListener;
-import dev.mv.engine.gui.input.Clickable;
-import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
@@ -46,22 +43,22 @@ public class TextLine extends Element implements Text {
 
     @Override
     public void attachListener(EventListener listener) {
-        if(listener instanceof TextChangeListener textChangeListener) {
+        if (listener instanceof TextChangeListener textChangeListener) {
             this.textChangeListeners.add(textChangeListener);
         }
     }
 
     @Override
-    public void setText(String text) {
-        if(!textChangeListeners.isEmpty()) textChangeListeners.forEach(l -> l.onChange(this, this.text, text));
-        this.text = text;
-        if(font == null) return;
-        initialState.width = font.getWidth(text, getHeight());
+    public String getText() {
+        return null;
     }
 
     @Override
-    public String getText() {
-        return null;
+    public void setText(String text) {
+        if (!textChangeListeners.isEmpty()) textChangeListeners.forEach(l -> l.onChange(this, this.text, text));
+        this.text = text;
+        if (font == null) return;
+        initialState.width = font.getWidth(text, getHeight());
     }
 
     @Override
@@ -80,14 +77,14 @@ public class TextLine extends Element implements Text {
     }
 
     @Override
-    public void setFont(BitmapFont font) {
-        this.font = font;
-        if(font == null) return;
-        initialState.width = font.getWidth(text, getHeight());
+    public BitmapFont getFont() {
+        return font;
     }
 
     @Override
-    public BitmapFont getFont() {
-        return font;
+    public void setFont(BitmapFont font) {
+        this.font = font;
+        if (font == null) return;
+        initialState.width = font.getWidth(text, getHeight());
     }
 }

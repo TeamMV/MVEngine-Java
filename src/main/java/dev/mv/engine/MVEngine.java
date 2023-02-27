@@ -11,30 +11,21 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.models.ObjectLoader;
 import dev.mv.engine.render.vulkan.VulkanWindow;
 import dev.mv.utils.misc.Version;
-import lombok.Getter;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
 public class MVEngine implements AutoCloseable {
+    private static MVEngine instance;
     public String VERSION_STR = "v0.1.0";
     public Version VERSION = Version.parse(VERSION_STR);
-
     private ApplicationConfig.RenderingAPI renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
-
-    @Getter
     private ApplicationConfig applicationConfig;
-    
     private InputCollector inputCollector;
 
-    public ApplicationConfig.RenderingAPI getRenderingApi() {
-        return renderingApi;
+    private MVEngine() {
     }
-
-    private static MVEngine instance;
-
-    private MVEngine() {}
 
     public static MVEngine instance() {
         if (instance == null) {
@@ -72,6 +63,14 @@ public class MVEngine implements AutoCloseable {
         return instance;
     }
 
+    public static void terminate() {
+        instance().close();
+    }
+
+    public ApplicationConfig.RenderingAPI getRenderingApi() {
+        return renderingApi;
+    }
+
     public void rollbackRenderingApi() {
         if (renderingApi != ApplicationConfig.RenderingAPI.OPENGL) {
             renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
@@ -89,18 +88,17 @@ public class MVEngine implements AutoCloseable {
             return new OpenGLWindow(info);
         }
     }
-    
+
     public void handleInputs(Window window) {
         InputProcessor inputProcessor = InputProcessor.defaultProcessor();
         inputCollector = new InputCollector(inputProcessor, window);
         inputCollector.start();
         Input.init();
     }
-    
+
     public void setInputProcessor(InputProcessor inputProcessor) {
         inputCollector.setInputProcessor(inputProcessor);
     }
-
 
     public ObjectLoader getObjectLoader() {
         if (renderingApi == ApplicationConfig.RenderingAPI.VULKAN) {
@@ -117,8 +115,8 @@ public class MVEngine implements AutoCloseable {
         instance = null;
     }
 
-    public static void terminate() {
-        instance().close();
+    public ApplicationConfig getApplicationConfig() {
+        return applicationConfig;
     }
 
     public static class Exceptions {

@@ -1,9 +1,7 @@
 package dev.mv.engine.files;
 
-import dev.mv.utils.ByteUtils;
 import dev.mv.utils.Utils;
 import dev.mv.utils.buffer.DynamicByteBuffer;
-import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -116,21 +114,24 @@ public class ConfigFile {
         return len;
     }
 
-    @SneakyThrows
     public void save() {
-        DynamicByteBuffer buffer = new DynamicByteBuffer();
+        try {
+            DynamicByteBuffer buffer = new DynamicByteBuffer();
 
-        buffer.pushRaw(FILE_CODE);
+            buffer.pushRaw(FILE_CODE);
 
-        saveStrings(buffer);
-        saveNumbers(buffer, integers, new Integer[0]);
-        saveNumbers(buffer, floats, new Float[0]);
-        saveNumbers(buffer, longs, new Long[0]);
-        saveNumbers(buffer, doubles, new Double[0]);
-        saveBooleans(buffer);
-        saveBytes(buffer);
+            saveStrings(buffer);
+            saveNumbers(buffer, integers, new Integer[0]);
+            saveNumbers(buffer, floats, new Float[0]);
+            saveNumbers(buffer, longs, new Long[0]);
+            saveNumbers(buffer, doubles, new Double[0]);
+            saveBooleans(buffer);
+            saveBytes(buffer);
 
-        directory.saveFileBytes(name, buffer.array());
+            directory.saveFileBytes(name, buffer.array());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void saveStrings(DynamicByteBuffer buffer) {

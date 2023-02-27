@@ -54,16 +54,16 @@ public class ProgressBar extends Element implements Toggle, ValueChange {
     public void draw(DrawContext2D draw) {
         checkAnimations();
 
-        if(theme.getEdgeStyle() == Theme.EdgeStyle.ROUND) {
-            if(theme.hasOutline()) {
+        if (theme.getEdgeStyle() == Theme.EdgeStyle.ROUND) {
+            if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
                 draw.voidRoundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.roundedRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
@@ -77,17 +77,16 @@ public class ProgressBar extends Element implements Toggle, ValueChange {
                 draw.color(animationState.extraColor);
                 draw.roundedRectangle(animationState.posX, animationState.posY, Math.max(Utils.getValue(15, totalValue), Utils.getValue(Utils.getPercent(currentValue, totalValue), animationState.width)), animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
             }
-        }
-        else if(theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
-            if(theme.hasOutline()) {
+        } else if (theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
+            if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
                 draw.voidTriangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.triangularRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
@@ -100,16 +99,16 @@ public class ProgressBar extends Element implements Toggle, ValueChange {
                 draw.color(animationState.extraColor);
                 draw.triangularRectangle(animationState.posX, animationState.posY, Math.max(Utils.getValue(15, totalValue), Utils.getValue(Utils.getPercent(currentValue, totalValue), animationState.width)), animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
             }
-        } else if(theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
-            if(theme.hasOutline()) {
+        } else if (theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
+            if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
                 draw.voidRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.rectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, animationState.rotation, animationState.originX, animationState.originY);
@@ -128,7 +127,7 @@ public class ProgressBar extends Element implements Toggle, ValueChange {
 
     @Override
     public void attachListener(EventListener listener) {
-        if(listener instanceof ProgressListener progressListener) {
+        if (listener instanceof ProgressListener progressListener) {
             progressListeners.add(progressListener);
         }
     }
@@ -156,7 +155,7 @@ public class ProgressBar extends Element implements Toggle, ValueChange {
     @Override
     public void increment(int amount) {
         currentValue = Utils.clamp((int) (currentValue + amount), 0, totalValue);
-        if(!progressListeners.isEmpty()) {
+        if (!progressListeners.isEmpty()) {
             progressListeners.forEach(l -> l.onIncrement((Element) this, (int) currentValue, totalValue, (int) getPercentage()));
         }
     }
@@ -164,7 +163,7 @@ public class ProgressBar extends Element implements Toggle, ValueChange {
     @Override
     public void decrement(int amount) {
         currentValue = Utils.clamp((int) (currentValue - amount), 0, totalValue);
-        if(!progressListeners.isEmpty()) {
+        if (!progressListeners.isEmpty()) {
             progressListeners.forEach(l -> l.onDecrement(this, (int) currentValue, totalValue, (int) getPercentage()));
         }
     }

@@ -17,7 +17,7 @@ public class ChoiceGroup extends AbstractLayout implements IgnoreDraw {
 
     @Override
     public void draw(DrawContext2D draw) {
-        for(Element element : elements) {
+        for (Element element : elements) {
             element.draw(draw);
         }
     }
@@ -69,21 +69,21 @@ public class ChoiceGroup extends AbstractLayout implements IgnoreDraw {
     }
 
     public void setCurrentChoice(Choice choice) {
-        if(elements.contains(choice)) {
+        if (elements.contains(choice)) {
             setCurrentChoice(elements.indexOf(choice));
         }
     }
 
     public void uncheckAll() {
-        for(Element element : elements) {
+        for (Element element : elements) {
             ((Choice) element).uncheck();
         }
     }
 
     public void uncheckAllExcept(int index) {
-        int i= 0;
-        for(Element element : elements) {
-            if(index == i++) continue;
+        int i = 0;
+        for (Element element : elements) {
+            if (index == i++) continue;
             ((Choice) element).uncheck();
         }
     }

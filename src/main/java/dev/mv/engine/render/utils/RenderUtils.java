@@ -1,6 +1,5 @@
 package dev.mv.engine.render.utils;
 
-import it.unimi.dsi.fastutil.ints.IntBigListIterators;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -8,7 +7,6 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -44,7 +42,7 @@ public class RenderUtils {
 
     public static ByteBuffer storeAsByte(float... data) {
         ByteBuffer buffer = MemoryUtil.memAlloc(data.length * Float.BYTES);
-        for(float f : data) {
+        for (float f : data) {
             buffer.putFloat(f);
         }
         buffer.flip();
@@ -53,7 +51,7 @@ public class RenderUtils {
 
     public static ByteBuffer storeAsByte(int... data) {
         ByteBuffer buffer = MemoryUtil.memAlloc(data.length * Integer.BYTES);
-        for(int i : data) {
+        for (int i : data) {
             buffer.putInt(i);
         }
         buffer.flip();
@@ -62,7 +60,7 @@ public class RenderUtils {
 
     public static ByteBuffer storeAsByte(long... data) {
         ByteBuffer buffer = MemoryUtil.memAlloc(data.length * Long.BYTES);
-        for(long l : data) {
+        for (long l : data) {
             buffer.putLong(l);
         }
         buffer.flip();
@@ -71,7 +69,7 @@ public class RenderUtils {
 
     public static ByteBuffer storeAsByteTerminated(float... data) {
         ByteBuffer buffer = MemoryUtil.memAlloc(data.length * Float.BYTES + 1);
-        for(float f : data) {
+        for (float f : data) {
             buffer.putFloat(f);
         }
         buffer.put((byte) 0b0);
@@ -81,7 +79,7 @@ public class RenderUtils {
 
     public static ByteBuffer storeAsByteTerminated(int... data) {
         ByteBuffer buffer = MemoryUtil.memAlloc(data.length * Integer.BYTES + 1);
-        for(int i : data) {
+        for (int i : data) {
             buffer.putInt(i);
         }
         buffer.put((byte) 0b0);
@@ -91,7 +89,7 @@ public class RenderUtils {
 
     public static ByteBuffer storeAsByteTerminated(long... data) {
         ByteBuffer buffer = MemoryUtil.memAlloc(data.length * Long.BYTES + 1);
-        for(long l : data) {
+        for (long l : data) {
             buffer.putLong(l);
         }
         buffer.put((byte) 0b0);

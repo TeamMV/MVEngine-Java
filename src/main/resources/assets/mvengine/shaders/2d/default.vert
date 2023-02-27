@@ -33,14 +33,14 @@ void main() {
 
     if (aRotation != 0) {
         mat2 rot;
-        rot[0] = vec2(cos(aRotation), -sin(aRotation));
+        rot[0] = vec2(cos(aRotation), - sin(aRotation));
         rot[1] = vec2(sin(aRotation), cos(aRotation));
         pos -= aRotationOrigin;
         pos = rot * pos;
         pos += aRotationOrigin;
     }
 
-    if(aUseCam == 1) {
+    if (aUseCam == 1) {
         gl_Position = uProjection * uView * vec4(pos, aVertPos.z, 1.0);
     } else {
         gl_Position = uProjection * vec4(pos, aVertPos.z, 1.0);

@@ -8,17 +8,10 @@ public class VulkanRender {
     private final VulkanQueue.GraphicsQueue graphQueue;
     private final VulkanPhysicalDevice physicalDevice;
     private final VulkanSurface surface;
-    private VulkanSwapChain swapChain;
     private final VulkanCommandPool commandPool;
     private final VulkanQueue.PresentQueue presentQueue;
     private final ForwardRenderActivity fwdRenderActivity;
-
-    public static class VulkanRenderInfo {
-        public String physicalDeviceName;
-        public boolean shouldValidate;
-        public boolean vsync;
-        public int requestedImages;
-    }
+    private VulkanSwapChain swapChain;
 
     public VulkanRender(VulkanWindow window, VulkanRenderInfo info) throws UnknownServiceException {
         instance = new VulkanInstance(info.shouldValidate);
@@ -44,5 +37,12 @@ public class VulkanRender {
         instance.cleanup();
         fwdRenderActivity.cleanup();
         commandPool.cleanup();
+    }
+
+    public static class VulkanRenderInfo {
+        public String physicalDeviceName;
+        public boolean shouldValidate;
+        public boolean vsync;
+        public int requestedImages;
     }
 }

@@ -2,6 +2,7 @@ package dev.mv.engine.gui.parsing.gui;
 
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.Gui;
+import dev.mv.engine.gui.GuiManager;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.components.*;
 import dev.mv.engine.gui.components.layouts.ChoiceGroup;
@@ -15,8 +16,6 @@ import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.parsing.InvalidGuiFileException;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
-import dev.mv.engine.gui.GuiManager;
-import lombok.SneakyThrows;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -37,24 +36,6 @@ public class GuiParser {
 
     private Map<String, String> currentRefLookup;
 
-    private class Reference{
-        private Element pointer;
-        private String[] params;
-
-        private Reference(Element pointer, String[] params) {
-            this.pointer = pointer;
-            this.params = params;
-        }
-
-        public Element getPointer() {
-            return pointer;
-        }
-
-        public String[] getParams() {
-            return params;
-        }
-    }
-
     public GuiParser(GuiConfig guiConfig) {
         layoutPath = guiConfig.getLayoutPath();
         layouts = guiConfig.getLayouts();
@@ -67,7 +48,7 @@ public class GuiParser {
         this.window = window;
 
         GuiRegistry returnRegistry = new GuiRegistry();
-        for(String layout : layouts) {
+        for (String layout : layouts) {
             returnRegistry.addGui(parse(layout, drawContext2D));
         }
 
@@ -77,7 +58,7 @@ public class GuiParser {
     }
 
     public Gui parse(String path, DrawContext2D drawContext2D) {
-        try{
+        try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(getClass().getResourceAsStream(layoutPath + path));
@@ -91,25 +72,25 @@ public class GuiParser {
 
             NodeList tags = document.getDocumentElement().getChildNodes();
 
-            for(int i = 0; i < tags.getLength(); i++) {
+            for (int i = 0; i < tags.getLength(); i++) {
                 Node tag = tags.item(i);
-                if(tag.getNodeType() == Node.ELEMENT_NODE) {
+                if (tag.getNodeType() == Node.ELEMENT_NODE) {
                     if (tag.getNodeName().equals("script")) {
                         gui.addScript(parseScript(tag));
                     }
-                    if(tag.getNodeName().equals("variables")) {
+                    if (tag.getNodeName().equals("variables")) {
                         parseVariables(tag);
                     }
-                    if(tag.getNodeName().equals("references")) {
+                    if (tag.getNodeName().equals("references")) {
                         parseReferences(tag);
                     }
-                    if(tag.getNodeName().equals("elements")) {
+                    if (tag.getNodeName().equals("elements")) {
                         NodeList elementList = tag.getChildNodes();
                         for (int j = 0; j < elementList.getLength(); j++) {
                             Node element = elementList.item(j);
-                            if(element.getNodeType() == Node.ELEMENT_NODE) {
+                            if (element.getNodeType() == Node.ELEMENT_NODE) {
                                 dev.mv.engine.gui.components.Element e = parseElement((Element) element);
-                                if(e != null) {
+                                if (e != null) {
                                     gui.addElement(e);
                                 }
                             }
@@ -125,7 +106,6 @@ public class GuiParser {
         }
     }
 
-    @SneakyThrows
     public GuiScript parseScript(Node scriptTag) {
         Element script = (Element) scriptTag;
         return new GuiScript(Language.fromString(script.getAttribute("lang")), script.getAttribute("src"));
@@ -135,8 +115,8 @@ public class GuiParser {
         NodeList variables = variablesTag.getChildNodes();
         for (int i = 0; i < variables.getLength(); i++) {
             Node variableTag = variables.item(i);
-            if(variableTag.getNodeType() == Node.ELEMENT_NODE) {
-                if(variableTag.getNodeName().equals("var")) {
+            if (variableTag.getNodeType() == Node.ELEMENT_NODE) {
+                if (variableTag.getNodeName().equals("var")) {
                     parseVariable((Element) variableTag);
                 }
             }
@@ -148,8 +128,8 @@ public class GuiParser {
     }
 
     private String getVariable(String query) {
-        if(query == null) return "";
-        if(query.startsWith("$VAR(") && query.endsWith(")")) {
+        if (query == null) return "";
+        if (query.startsWith("$VAR(") && query.endsWith(")")) {
             return variables.get(query.substring(5, query.length() - 1));
         }
 
@@ -157,8 +137,8 @@ public class GuiParser {
     }
 
     private String getParam(String query) {
-        if(query == null) return "";
-        if(query.startsWith("$PARAM(") && query.endsWith(")")) {
+        if (query == null) return "";
+        if (query.startsWith("$PARAM(") && query.endsWith(")")) {
             return currentRefLookup.get(query.substring(7, query.length() - 1));
         }
 
@@ -169,8 +149,8 @@ public class GuiParser {
         NodeList references = referencesTag.getChildNodes();
         for (int i = 0; i < references.getLength(); i++) {
             Node referenceTag = references.item(i);
-            if(referenceTag.getNodeType() == Node.ELEMENT_NODE) {
-                if(referenceTag.getNodeName().equals("ref")) {
+            if (referenceTag.getNodeType() == Node.ELEMENT_NODE) {
+                if (referenceTag.getNodeName().equals("ref")) {
                     parseReference((Element) referenceTag);
                 }
             }
@@ -179,14 +159,14 @@ public class GuiParser {
 
     private void parseReference(Element ref) {
         String[] params = null;
-        if(ref.hasAttribute("params")) {
+        if (ref.hasAttribute("params")) {
             params = Arrays.stream(getStringAttrib(ref.getAttribute("params")).replace("[", "").replace("]", "").split(",")).map(this::getStringAttrib).toList().toArray(new String[0]);
         }
         NodeList tags = ref.getChildNodes();
         Element element = null;
         for (int i = 0; i < tags.getLength(); i++) {
             Node tag = tags.item(i);
-            if(tag.getNodeType() == Node.ELEMENT_NODE) {
+            if (tag.getNodeType() == Node.ELEMENT_NODE) {
                 element = (Element) tag;
                 break;
             }
@@ -220,17 +200,13 @@ public class GuiParser {
             method.types[i] = type;
             if (type == String.class) {
                 method.params[i] = param.substring(1, param.length() - 1);
-            }
-            else if (type == int.class) {
+            } else if (type == int.class) {
                 method.params[i] = Integer.parseInt(param);
-            }
-            else if (type == long.class) {
+            } else if (type == long.class) {
                 method.params[i] = Long.parseLong(param.replaceAll("L", ""));
-            }
-            else if (type == float.class) {
+            } else if (type == float.class) {
                 method.params[i] = Float.parseFloat(param.replaceAll("f", ""));
-            }
-            else if (type == double.class) {
+            } else if (type == double.class) {
                 method.params[i] = Double.parseDouble(param);
             }
         }
@@ -249,40 +225,49 @@ public class GuiParser {
 
     private dev.mv.engine.gui.components.Element parseElement(Element elementTag) {
         dev.mv.engine.gui.components.Element e = switch (elementTag.getNodeName()) {
-            default -> {MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"" + elementTag.getNodeName() + "\" is not a valid gui element tag!")); yield null;}
-            case "textLine" ->          parseTextLine(elementTag);
-            case "button" ->            parseButton(elementTag);
-            case "imageButton" ->       parseImageButton(elementTag);
-            case "checkbox" ->          parseCheckbox(elementTag);
-            case "progressBar" ->       parseProgressBar(elementTag);
-            case "input" ->             parseInput(elementTag);
-            case "separator" ->         parseSeparator(elementTag);
-            case "space" ->             parseSpace(elementTag);
-            case "verticalLayout" ->    parseVerticalLayout(elementTag);
-            case "horizontalLayout" ->  parseHorizontalLayout(elementTag);
-            case "collapseMenu" ->      parseCollapseMenu(elementTag);
-            case "choiceGroup" ->       parseChoiceGroup(elementTag);
-            case "ref" ->               resolveRef(elementTag);
-            case "var" ->               {parseVariable(elementTag); yield null;}
-            case "choice" -> {MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"choice\" tag can't stand outside of a \"choiceGroup\" tag!")); yield null;}
+            default -> {
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"" + elementTag.getNodeName() + "\" is not a valid gui element tag!"));
+                yield null;
+            }
+            case "textLine" -> parseTextLine(elementTag);
+            case "button" -> parseButton(elementTag);
+            case "imageButton" -> parseImageButton(elementTag);
+            case "checkbox" -> parseCheckbox(elementTag);
+            case "progressBar" -> parseProgressBar(elementTag);
+            case "input" -> parseInput(elementTag);
+            case "separator" -> parseSeparator(elementTag);
+            case "space" -> parseSpace(elementTag);
+            case "verticalLayout" -> parseVerticalLayout(elementTag);
+            case "horizontalLayout" -> parseHorizontalLayout(elementTag);
+            case "collapseMenu" -> parseCollapseMenu(elementTag);
+            case "choiceGroup" -> parseChoiceGroup(elementTag);
+            case "ref" -> resolveRef(elementTag);
+            case "var" -> {
+                parseVariable(elementTag);
+                yield null;
+            }
+            case "choice" -> {
+                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"choice\" tag can't stand outside of a \"choiceGroup\" tag!"));
+                yield null;
+            }
         };
 
-        if(e == null) {
+        if (e == null) {
             return null;
         }
 
         e.setId(elementTag.getAttribute("id"));
-        if(elementTag.hasAttribute("tags")) {
+        if (elementTag.hasAttribute("tags")) {
             Arrays.asList(getStringAttrib(elementTag.getAttribute("tags")).replace("[", "").replace("]", "").split(",")).stream().map(this::getStringAttrib).forEach(e::addTag);
         }
         return e;
     }
 
     private int getIntAttrib(String attrib) {
-        if(attrib.isBlank()) return 0;
-        if(attrib.startsWith("$VAR(") && attrib.endsWith(")")) {
+        if (attrib.isBlank()) return 0;
+        if (attrib.startsWith("$VAR(") && attrib.endsWith(")")) {
             return Integer.parseInt(getVariable(attrib));
-        } else if(attrib.startsWith("$PARAM(") && attrib.endsWith(")")) {
+        } else if (attrib.startsWith("$PARAM(") && attrib.endsWith(")")) {
             return Integer.parseInt(getParam(attrib));
         } else {
             return Integer.parseInt(attrib);
@@ -290,9 +275,9 @@ public class GuiParser {
     }
 
     private String getStringAttrib(String attrib) {
-        if(attrib.startsWith("$VAR(") && attrib.endsWith(")")) {
+        if (attrib.startsWith("$VAR(") && attrib.endsWith(")")) {
             return getVariable(attrib);
-        } else if(attrib.startsWith("$PARAM(") && attrib.endsWith(")")) {
+        } else if (attrib.startsWith("$PARAM(") && attrib.endsWith(")")) {
             return getParam(attrib);
         } else {
             return attrib;
@@ -300,10 +285,10 @@ public class GuiParser {
     }
 
     private boolean getBooleanAttrib(String attrib) {
-        if(attrib.isBlank()) return false;
-        if(attrib.startsWith("$VAR(") && attrib.endsWith(")")) {
+        if (attrib.isBlank()) return false;
+        if (attrib.startsWith("$VAR(") && attrib.endsWith(")")) {
             return Boolean.parseBoolean(getVariable(attrib));
-        } else if(attrib.startsWith("$PARAM(") && attrib.endsWith(")")) {
+        } else if (attrib.startsWith("$PARAM(") && attrib.endsWith(")")) {
             return Boolean.parseBoolean(getParam(attrib));
         } else {
             return Boolean.parseBoolean(attrib);
@@ -313,26 +298,26 @@ public class GuiParser {
     private dev.mv.engine.gui.components.Element resolveRef(Element tag) {
         currentRefLookup.clear();
 
-        if(!references.containsKey(tag.getAttribute("name"))) {
+        if (!references.containsKey(tag.getAttribute("name"))) {
             MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"ref\" tag with the name \"" + tag.getAttribute("name") + "\" is not declared yet!"));
             return null;
         }
 
-        if(tag.hasAttribute("params") && references.get(tag.getAttribute("name")).getParams() == null) {
+        if (tag.hasAttribute("params") && references.get(tag.getAttribute("name")).getParams() == null) {
             MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"ref\" tag with the name \"" + tag.getAttribute("name") + "\" has params, but it's declaration not!"));
             return null;
         }
 
-        if(!tag.hasAttribute("params") && references.get(tag.getAttribute("name")).getParams() != null) {
+        if (!tag.hasAttribute("params") && references.get(tag.getAttribute("name")).getParams() != null) {
             MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"ref\" tag with the name \"" + tag.getAttribute("name") + "\" has no params, but it's declaration does!"));
             return null;
         }
 
-        if(tag.hasAttribute("params")) {
+        if (tag.hasAttribute("params")) {
             String[] args = Arrays.stream(getStringAttrib(tag.getAttribute("params")).replace("[", "").replace("]", "").split(",")).map(this::getStringAttrib).toList().toArray(new String[0]);
             String[] params = references.get(tag.getAttribute("name")).getParams();
 
-            if(args.length != params.length) {
+            if (args.length != params.length) {
                 MVEngine.Exceptions.__throw__(new InvalidGuiFileException("\"ref\" tag with the name \"" + tag.getAttribute("name") + "\" has a different amount of params than it's declaration!"));
             }
 
@@ -378,7 +363,7 @@ public class GuiParser {
             tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
             getIntAttrib(tag.getAttribute("width")),
             getIntAttrib(tag.getAttribute("height")));
-        if(tag.hasAttribute("texture")) {
+        if (tag.hasAttribute("texture")) {
             imageButton.setTexture(GuiManager.getTexture(getStringAttrib(tag.getAttribute("texture"))));
         }
         return imageButton;
@@ -400,10 +385,10 @@ public class GuiParser {
             tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
             getIntAttrib(tag.getAttribute("width")),
             getIntAttrib(tag.getAttribute("height")));
-        if(tag.hasAttribute("maxValue")) {
+        if (tag.hasAttribute("maxValue")) {
             progressBar.setTotalValue(getIntAttrib(tag.getAttribute("maxValue")));
         }
-        if(tag.hasAttribute("currentValue")) {
+        if (tag.hasAttribute("currentValue")) {
             progressBar.setCurrentValue(getIntAttrib(tag.getAttribute("currentValue")));
         }
 
@@ -417,7 +402,7 @@ public class GuiParser {
             getIntAttrib(tag.getAttribute("width")),
             getIntAttrib(tag.getAttribute("height")));
         inputBox.setPlaceholderText(getStringAttrib(tag.getTextContent()));
-        if(tag.hasAttribute("limit")) {
+        if (tag.hasAttribute("limit")) {
             inputBox.setLimit(getIntAttrib(tag.getAttribute("limit")));
         }
         return inputBox;
@@ -430,7 +415,7 @@ public class GuiParser {
             getIntAttrib(tag.getAttribute("width")),
             getIntAttrib(tag.getAttribute("height")));
         numericInputBox.setPlaceholderText(getStringAttrib(tag.getTextContent()));
-        if(tag.hasAttribute("limit")) {
+        if (tag.hasAttribute("limit")) {
             numericInputBox.setLimit(getIntAttrib(tag.getAttribute("limit")));
         }
         return numericInputBox;
@@ -443,7 +428,7 @@ public class GuiParser {
             getIntAttrib(tag.getAttribute("width")),
             getIntAttrib(tag.getAttribute("height")));
         passwordInputBox.setPlaceholderText(getStringAttrib(tag.getTextContent()));
-        if(tag.hasAttribute("limit")) {
+        if (tag.hasAttribute("limit")) {
             passwordInputBox.setLimit(getIntAttrib(tag.getAttribute("limit")));
         }
         return passwordInputBox;
@@ -482,25 +467,25 @@ public class GuiParser {
             tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
             tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0);
 
-        if(tag.hasAttribute("spacing")) {
+        if (tag.hasAttribute("spacing")) {
             layout.setSpacing(getIntAttrib(tag.getAttribute("spacing")));
         }
-        if(tag.hasAttribute("align")) {
+        if (tag.hasAttribute("align")) {
             layout.alignContent(VerticalLayout.Align.valueOf(getStringAttrib(tag.getAttribute("align"))));
         }
-        if(tag.hasAttribute("showFrame")) {
-            if(getBooleanAttrib(tag.getAttribute("showFrame"))) {
+        if (tag.hasAttribute("showFrame")) {
+            if (getBooleanAttrib(tag.getAttribute("showFrame"))) {
                 layout.showFrame();
             }
         }
-        if(tag.hasAttribute("padding")) {
+        if (tag.hasAttribute("padding")) {
             String padding = getStringAttrib(tag.getAttribute("padding"));
-            if(padding.startsWith("[") && padding.endsWith("]")) {
+            if (padding.startsWith("[") && padding.endsWith("]")) {
                 int[] values = Arrays.stream(padding.replace("[", "").replace("]", "").split(",")).mapToInt(this::getIntAttrib).toArray();
-                if(values.length == 1) {
-                    values = new int[] {values[0], values[0], values[0], values[0]};
+                if (values.length == 1) {
+                    values = new int[]{values[0], values[0], values[0], values[0]};
                 }
-                if(values.length == 2) {
+                if (values.length == 2) {
                     int h = values[0];
                     int v = values[1];
                     values = new int[4];
@@ -516,11 +501,11 @@ public class GuiParser {
             }
         }
 
-        if(tag.hasChildNodes()) {
+        if (tag.hasChildNodes()) {
             NodeList nodeList = tag.getChildNodes();
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node element = nodeList.item(i);
-                if(element.getNodeType() == Node.ELEMENT_NODE) {
+                if (element.getNodeType() == Node.ELEMENT_NODE) {
                     layout.addElement(parseElement((Element) element));
                 }
             }
@@ -534,25 +519,25 @@ public class GuiParser {
             tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
             tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0);
 
-        if(tag.hasAttribute("spacing")) {
+        if (tag.hasAttribute("spacing")) {
             layout.setSpacing(getIntAttrib(tag.getAttribute("spacing")));
         }
-        if(tag.hasAttribute("align")) {
+        if (tag.hasAttribute("align")) {
             layout.alignContent(HorizontalLayout.Align.valueOf(getStringAttrib(tag.getAttribute("align"))));
         }
-        if(tag.hasAttribute("showFrame")) {
-            if(getBooleanAttrib(tag.getAttribute("showFrame"))) {
+        if (tag.hasAttribute("showFrame")) {
+            if (getBooleanAttrib(tag.getAttribute("showFrame"))) {
                 layout.showFrame();
             }
         }
-        if(tag.hasAttribute("padding")) {
+        if (tag.hasAttribute("padding")) {
             String padding = getStringAttrib(tag.getAttribute("padding"));
-            if(padding.startsWith("[") && padding.endsWith("]")) {
+            if (padding.startsWith("[") && padding.endsWith("]")) {
                 int[] values = Arrays.stream(padding.replace("[", "").replace("]", "").split(",")).mapToInt(this::getIntAttrib).toArray();
-                if(values.length == 1) {
-                    values = new int[] {values[0], values[0], values[0], values[0]};
+                if (values.length == 1) {
+                    values = new int[]{values[0], values[0], values[0], values[0]};
                 }
-                if(values.length == 2) {
+                if (values.length == 2) {
                     int h = values[0];
                     int v = values[1];
                     values = new int[4];
@@ -568,11 +553,11 @@ public class GuiParser {
             }
         }
 
-        if(tag.hasChildNodes()) {
+        if (tag.hasChildNodes()) {
             NodeList nodeList = tag.getChildNodes();
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node element = nodeList.item(i);
-                if(element.getNodeType() == Node.ELEMENT_NODE) {
+                if (element.getNodeType() == Node.ELEMENT_NODE) {
                     layout.addElement(parseElement((Element) element));
                 }
             }
@@ -590,11 +575,11 @@ public class GuiParser {
 
         layout.setText(getStringAttrib(tag.getAttribute("title")));
 
-        if(tag.hasChildNodes()) {
+        if (tag.hasChildNodes()) {
             NodeList nodeList = tag.getChildNodes();
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node element = nodeList.item(i);
-                if(element.getNodeType() == Node.ELEMENT_NODE) {
+                if (element.getNodeType() == Node.ELEMENT_NODE) {
                     layout.addElement(parseElement((Element) element));
                 }
             }
@@ -616,12 +601,12 @@ public class GuiParser {
     private ChoiceGroup parseChoiceGroup(Element tag) {
         ChoiceGroup choiceGroup = new ChoiceGroup(window, null);
 
-        if(tag.hasChildNodes()) {
+        if (tag.hasChildNodes()) {
             NodeList nodeList = tag.getChildNodes();
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node element = nodeList.item(i);
-                if(element.getNodeType() == Node.ELEMENT_NODE) {
-                    if(element.getNodeName().equals("choice")) {
+                if (element.getNodeType() == Node.ELEMENT_NODE) {
+                    if (element.getNodeName().equals("choice")) {
                         choiceGroup.addChoice(parseChoice((Element) element));
                     }
                 }
@@ -629,5 +614,23 @@ public class GuiParser {
         }
 
         return choiceGroup;
+    }
+
+    private class Reference {
+        private Element pointer;
+        private String[] params;
+
+        private Reference(Element pointer, String[] params) {
+            this.pointer = pointer;
+            this.params = params;
+        }
+
+        public Element getPointer() {
+            return pointer;
+        }
+
+        public String[] getParams() {
+            return params;
+        }
     }
 }

@@ -24,20 +24,20 @@ public class LayerSection extends AbstractLayout implements IgnoreDraw {
 
     @Override
     public void draw(DrawContext2D draw) {
-        for(Element element : this) {
+        for (Element element : this) {
             element.draw(draw);
         }
     }
 
     public void prioritize() {
-        if(gui == null) return;
-        if(gui.getLayers().get(layerToRenderOn).contains(this)) return;
+        if (gui == null) return;
+        if (gui.getLayers().get(layerToRenderOn).contains(this)) return;
         gui.getLayers().get(layerToRenderOn).add(this);
     }
 
     public void dismiss() {
-        if(gui == null) return;
-        if(!gui.getLayers().get(layerToRenderOn).contains(this)) return;
+        if (gui == null) return;
+        if (!gui.getLayers().get(layerToRenderOn).contains(this)) return;
         gui.getLayers().get(layerToRenderOn).remove(this);
     }
 
@@ -50,7 +50,7 @@ public class LayerSection extends AbstractLayout implements IgnoreDraw {
         return layerToRenderOn;
     }
 
-    public void setLayerToRenderOn(@Range(from=0, to=10) int layerToRenderOn) {
+    public void setLayerToRenderOn(@Range(from = 0, to = 10) int layerToRenderOn) {
         this.layerToRenderOn = Utils.clamp(layerToRenderOn, 0, 10);
     }
 }

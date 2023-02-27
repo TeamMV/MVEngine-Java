@@ -2,8 +2,8 @@ package dev.mv.engine.gui.components;
 
 import dev.mv.engine.gui.components.animations.TextAnimation;
 import dev.mv.engine.gui.components.animations.TextAnimator;
-import dev.mv.engine.gui.components.extras.Toggle;
 import dev.mv.engine.gui.components.extras.Text;
+import dev.mv.engine.gui.components.extras.Toggle;
 import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.input.Clickable;
@@ -36,25 +36,15 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
     }
 
     @Override
-    public void setFont(BitmapFont font) {
-        this.font = font;
-        if(font == null) return;
-        if(initialState.width < font.getWidth(text, initialState.height - textDistance()) + textDistance()) {
-            setWidth(font.getWidth(text, initialState.height - textDistance()) + textDistance());
-        }
-    }
-
-    @Override
     public BitmapFont getFont() {
         return null;
     }
 
     @Override
-    public void setText(String text) {
-        this.text = text;
-        textAnimator.apply(text);
-        if(font == null) return;
-        if(initialState.width < font.getWidth(text, initialState.height - textDistance()) + textDistance()) {
+    public void setFont(BitmapFont font) {
+        this.font = font;
+        if (font == null) return;
+        if (initialState.width < font.getWidth(text, initialState.height - textDistance()) + textDistance()) {
             setWidth(font.getWidth(text, initialState.height - textDistance()) + textDistance());
         }
     }
@@ -62,6 +52,16 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
     @Override
     public String getText() {
         return text;
+    }
+
+    @Override
+    public void setText(String text) {
+        this.text = text;
+        textAnimator.apply(text);
+        if (font == null) return;
+        if (initialState.width < font.getWidth(text, initialState.height - textDistance()) + textDistance()) {
+            setWidth(font.getWidth(text, initialState.height - textDistance()) + textDistance());
+        }
     }
 
     @Override
@@ -86,16 +86,16 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
         textAnimator.setY(animationState.posY + textDistance());
         textAnimator.setHeight(animationState.height - textDistance() * 2);
 
-        if(theme.getEdgeStyle() == Theme.EdgeStyle.ROUND) {
-            if(theme.hasOutline()) {
+        if (theme.getEdgeStyle() == Theme.EdgeStyle.ROUND) {
+            if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
                 draw.voidRoundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.roundedRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
@@ -103,16 +103,16 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
                 draw.color(animationState.baseColor);
                 draw.roundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
             }
-        } else if(theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
-            if(theme.hasOutline()) {
+        } else if (theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
+            if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
                 draw.voidTriangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.triangularRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
@@ -120,16 +120,16 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
                 draw.color(animationState.baseColor);
                 draw.triangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
             }
-        } else if(theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
-            if(theme.hasOutline()) {
+        } else if (theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
+            if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
                 draw.voidRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.rectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, animationState.rotation, animationState.originX, animationState.originY);
@@ -139,15 +139,15 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
             }
         }
 
-        if(theme.getText_base() != null) {
+        if (theme.getText_base() != null) {
             draw.color(theme.getText_base());
-        } else if(theme.getText_gradient() != null) {
+        } else if (theme.getText_gradient() != null) {
             draw.color(theme.getText_gradient());
         }
-        if(!enabled) {
+        if (!enabled) {
             draw.color(theme.getDisabledTextColor());
         }
-        if(textAnimator.isAnimationsSet() && textAnimator.isAnimating()) {
+        if (textAnimator.isAnimationsSet() && textAnimator.isAnimating()) {
             draw.animatedText(textAnimator, font, animationState.rotation, animationState.originX, animationState.originY);
         } else {
             draw.text(chroma, animationState.posX + animationState.width / 2 - font.getWidth(text, animationState.height - textDistance() * 2) / 2, animationState.posY + textDistance(), animationState.height - textDistance() * 2, text, font, animationState.rotation, animationState.originX, animationState.originY);
@@ -160,27 +160,29 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
 
     @Override
     public void attachListener(EventListener listener) {
-        if(listener instanceof ClickListener clickListener) {
+        if (listener instanceof ClickListener clickListener) {
             clickListeners.add(clickListener);
         }
     }
 
     @Override
     public void click(int x, int y, int btn) {
-        if(!enabled) return;
-        if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) return;
+        if (!enabled) return;
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height))
+            return;
         animator.animate(theme.getAnimationInTime(), theme.getAnimationFrames());
-        if(!clickListeners.isEmpty()) {
+        if (!clickListeners.isEmpty()) {
             clickListeners.forEach(l -> l.onCLick(this, btn));
         }
     }
 
     @Override
     public void clickRelease(int x, int y, int btn) {
-        if(!enabled) return;
+        if (!enabled) return;
         animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
-        if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) return;
-        if(!clickListeners.isEmpty()) {
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height))
+            return;
+        if (!clickListeners.isEmpty()) {
             clickListeners.forEach(l -> l.onRelease(this, btn));
         }
     }

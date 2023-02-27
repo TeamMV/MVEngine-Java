@@ -4,10 +4,8 @@ import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.components.animations.ElementAnimation;
 import dev.mv.engine.gui.components.animations.ElementAnimator;
 import dev.mv.engine.gui.components.extras.Text;
-import dev.mv.engine.gui.components.layouts.UpdateSection;
 import dev.mv.engine.gui.event.*;
 import dev.mv.engine.gui.theme.Theme;
-import dev.mv.engine.gui.utils.GuiUtils;
 import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
@@ -74,7 +72,7 @@ public abstract class Element {
     public abstract void draw(DrawContext2D draw);
 
     public void checkAnimations() {
-        if(!animator.isAnimating()) {
+        if (!animator.isAnimating()) {
             initialState.copyValuesTo(animationState);
         }
         animator.setState(animationState);
@@ -83,31 +81,31 @@ public abstract class Element {
     }
 
     public abstract void attachListener(EventListener listener);
-    
+
     public void addTag(String tag) {
-        if(tags == null) tags = new ArrayList<>();
-        if(tags.contains(tag)) return;
+        if (tags == null) tags = new ArrayList<>();
+        if (tags.contains(tag)) return;
         tags.add(tag);
     }
-    
+
     public void removeTag(String tag) {
         tags.remove(tag);
     }
-    
+
     public boolean hasTag(String tag) {
         return tags.contains(tag);
     }
-    
+
     public String[] getTags() {
         return tags != null ? tags.toArray(new String[0]) : null;
     }
-    
-    public void setId(String id) {
-        this.id = id;
-    }
-    
+
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     //-----getters-----
@@ -174,14 +172,14 @@ public abstract class Element {
 
         theme.getBaseColor().copyValuesTo(initialState.baseColor);
         theme.getText_base().copyValuesTo(initialState.textColor);
-        if(theme.hasOutline()) {
+        if (theme.hasOutline()) {
             theme.getOutlineColor().copyValuesTo(initialState.outlineColor);
         }
         theme.getExtraColor().copyValuesTo(initialState.extraColor);
 
         initialState.copyValuesTo(animationState);
 
-        if(this instanceof Text textInstance) {
+        if (this instanceof Text textInstance) {
             textInstance.setFont(theme.getFont());
         }
     }
@@ -194,9 +192,17 @@ public abstract class Element {
         this.animator = animator;
     }
 
+    public Color getBaseColor() {
+        return initialState.baseColor;
+    }
+
     public void setBaseColor(Color color) {
         initialState.baseColor = color;
         animationState.baseColor = color;
+    }
+
+    public Color getOutlineColor() {
+        return initialState.outlineColor;
     }
 
     public void setOutlineColor(Color color) {
@@ -204,30 +210,22 @@ public abstract class Element {
         animationState.outlineColor = color;
     }
 
+    public Color getTextColor() {
+        return initialState.textColor;
+    }
+
     public void setTextColor(Color color) {
         initialState.textColor = color;
         animationState.textColor = color;
     }
 
+    public Color getExtraColor() {
+        return initialState.extraColor;
+    }
+
     public void setExtraColor(Color color) {
         initialState.extraColor = color;
         animationState.extraColor = color;
-    }
-
-    public Color getBaseColor() {
-        return initialState.baseColor;
-    }
-
-    public Color getOutlineColor() {
-        return initialState.outlineColor;
-    }
-
-    public Color getTextColor() {
-        return initialState.textColor;
-    }
-
-    public Color getExtraColor() {
-        return initialState.extraColor;
     }
 
     public Gui getGui() {

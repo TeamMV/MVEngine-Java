@@ -37,6 +37,27 @@ public class VulkanQueue {
         vkQueueWaitIdle(vkQueue);
     }
 
+    public void submit(PointerBuffer commandBuffers, LongBuffer waitSemaphores, IntBuffer dstStageMasks,
+                       LongBuffer signalSemaphores, VulkanFence fence) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            VkSubmitInfo submitInfo = VkSubmitInfo.calloc(stack)
+                .sType(VK_STRUCTURE_TYPE_SUBMIT_INFO)
+                .pCommandBuffers(commandBuffers)
+                .pSignalSemaphores(signalSemaphores);
+            if (waitSemaphores != null) {
+                submitInfo.waitSemaphoreCount(waitSemaphores.capacity())
+                    .pWaitSemaphores(waitSemaphores)
+                    .pWaitDstStageMask(dstStageMasks);
+            } else {
+                submitInfo.waitSemaphoreCount(0);
+            }
+            long fenceHandle = fence != null ? fence.getVkFence() : VK_NULL_HANDLE;
+
+            vkCheck(vkQueueSubmit(vkQueue, submitInfo, fenceHandle),
+                "Failed to submit command to queue");
+        }
+    }
+
     public static class GraphicsQueue extends VulkanQueue {
         private static int index = -1;
 
@@ -96,27 +117,6 @@ public class VulkanQueue {
                 throw new RuntimeException("Failed to get Presentation Queue family index");
             }
             return index;
-        }
-    }
-
-    public void submit(PointerBuffer commandBuffers, LongBuffer waitSemaphores, IntBuffer dstStageMasks,
-                       LongBuffer signalSemaphores, VulkanFence fence) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            VkSubmitInfo submitInfo = VkSubmitInfo.calloc(stack)
-                .sType(VK_STRUCTURE_TYPE_SUBMIT_INFO)
-                .pCommandBuffers(commandBuffers)
-                .pSignalSemaphores(signalSemaphores);
-            if (waitSemaphores != null) {
-                submitInfo.waitSemaphoreCount(waitSemaphores.capacity())
-                    .pWaitSemaphores(waitSemaphores)
-                    .pWaitDstStageMask(dstStageMasks);
-            } else {
-                submitInfo.waitSemaphoreCount(0);
-            }
-            long fenceHandle = fence != null ? fence.getVkFence() : VK_NULL_HANDLE;
-
-            vkCheck(vkQueueSubmit(vkQueue, submitInfo, fenceHandle),
-                "Failed to submit command to queue");
         }
     }
 }

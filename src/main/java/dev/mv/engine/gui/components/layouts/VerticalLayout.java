@@ -5,33 +5,8 @@ import dev.mv.engine.gui.components.extras.IgnoreDraw;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
-public class VerticalLayout extends FramedLayout{
-    public enum Align{
-        LEFT,
-        CENTER,
-        RIGHT
-    }
-
+public class VerticalLayout extends FramedLayout {
     private Align currentAlign = Align.LEFT;
-
-    @Override
-    protected int getElementWidth() {
-        return maxWidth;
-    }
-
-    @Override
-    protected int getElementHeight() {
-        int res = 0;
-        for(Element e : elements) {
-            if(e instanceof IgnoreDraw ignoreDraw) {
-                for(Element element : ignoreDraw.toRender()) {
-                    res += element.getHeight() + spacing;
-                }
-                continue;
-            }
-            res += e.getHeight() + spacing;
-        } return res;
-    }
 
     public VerticalLayout(Window window, Element parent) {
         super(window, parent);
@@ -43,6 +18,26 @@ public class VerticalLayout extends FramedLayout{
 
     public VerticalLayout(Window window, int x, int y) {
         super(window, x, y, -1, -1, null);
+    }
+
+    @Override
+    protected int getElementWidth() {
+        return maxWidth;
+    }
+
+    @Override
+    protected int getElementHeight() {
+        int res = 0;
+        for (Element e : elements) {
+            if (e instanceof IgnoreDraw ignoreDraw) {
+                for (Element element : ignoreDraw.toRender()) {
+                    res += element.getHeight() + spacing;
+                }
+                continue;
+            }
+            res += e.getHeight() + spacing;
+        }
+        return res;
     }
 
     public void alignContent(Align align) {
@@ -58,8 +53,8 @@ public class VerticalLayout extends FramedLayout{
 
         if (currentAlign == Align.LEFT) {
             for (Element e : elements) {
-                if(e instanceof IgnoreDraw ignoreDraw) {
-                    for(Element element : ignoreDraw.toRender()) {
+                if (e instanceof IgnoreDraw ignoreDraw) {
+                    for (Element element : ignoreDraw.toRender()) {
                         element.setX(xStart);
                         element.setY(yStart - element.getHeight());
                         element.draw(draw);
@@ -76,8 +71,8 @@ public class VerticalLayout extends FramedLayout{
             }
         } else if (currentAlign == Align.CENTER) {
             for (Element e : elements) {
-                if(e instanceof IgnoreDraw ignoreDraw) {
-                    for(Element element : ignoreDraw.toRender()) {
+                if (e instanceof IgnoreDraw ignoreDraw) {
+                    for (Element element : ignoreDraw.toRender()) {
                         element.setX(xStart + ((maxWidth / 2) - (element.getWidth() / 2)));
                         element.setY(yStart - element.getHeight());
                         element.draw(draw);
@@ -94,8 +89,8 @@ public class VerticalLayout extends FramedLayout{
             }
         } else if (currentAlign == Align.RIGHT) {
             for (Element e : elements) {
-                if(e instanceof IgnoreDraw ignoreDraw) {
-                    for(Element element : ignoreDraw.toRender()) {
+                if (e instanceof IgnoreDraw ignoreDraw) {
+                    for (Element element : ignoreDraw.toRender()) {
                         element.setX(xStart + (maxWidth - element.getWidth()));
                         element.setY(yStart - element.getHeight());
                         element.draw(draw);
@@ -111,5 +106,11 @@ public class VerticalLayout extends FramedLayout{
                 yStart -= spacing;
             }
         }
+    }
+
+    public enum Align {
+        LEFT,
+        CENTER,
+        RIGHT
     }
 }

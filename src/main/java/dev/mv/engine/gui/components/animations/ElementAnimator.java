@@ -1,7 +1,6 @@
 package dev.mv.engine.gui.components.animations;
 
 import dev.mv.engine.gui.components.Element;
-import dev.mv.engine.render.shared.Color;
 import dev.mv.utils.async.PromiseNull;
 
 public class ElementAnimator {
@@ -31,23 +30,19 @@ public class ElementAnimator {
         this.onFinish = onFinish;
     }
 
-    public void setState(ElementAnimation.AnimationState state) {
-        this.state = state;
-    }
-
     public void animate(int milliseconds, int frameCount) {
         shouldAnimate = true;
         shouldAnimateBack = false;
         isWorking = true;
         new PromiseNull((res, rej) -> {
-           while(currentFrame <= frameCount && shouldAnimate) {
-               currentFrame++;
-               try {
-                   Thread.sleep(milliseconds / frameCount);
-               } catch (InterruptedException e) {
-                   rej.reject(e);
-               }
-           }
+            while (currentFrame <= frameCount && shouldAnimate) {
+                currentFrame++;
+                try {
+                    Thread.sleep(milliseconds / frameCount);
+                } catch (InterruptedException e) {
+                    rej.reject(e);
+                }
+            }
         });
     }
 
@@ -57,7 +52,7 @@ public class ElementAnimator {
         shouldAnimate = false;
 
         new PromiseNull((res, rej) -> {
-            while(currentFrame >= 0 && shouldAnimateBack) {
+            while (currentFrame >= 0 && shouldAnimateBack) {
                 currentFrame--;
                 try {
                     Thread.sleep(milliseconds / frameCount);
@@ -69,22 +64,22 @@ public class ElementAnimator {
     }
 
     public void loop(int frameCount) {
-        if(shouldAnimate) {
-            if(animation != null) {
+        if (shouldAnimate) {
+            if (animation != null) {
                 state = animation.transform(currentFrame, frameCount, state);
             }
-            if(currentFrame >= frameCount) {
+            if (currentFrame >= frameCount) {
                 shouldAnimate = false;
             }
         }
-        if(shouldAnimateBack) {
-            if(animation != null) {
+        if (shouldAnimateBack) {
+            if (animation != null) {
                 state = animation.transformBack(currentFrame, frameCount, state);
             }
-            if(currentFrame <= 0) {
+            if (currentFrame <= 0) {
                 shouldAnimateBack = false;
                 isWorking = false;
-                if(onFinish != null) {
+                if (onFinish != null) {
                     onFinish.run();
                 }
             }
@@ -93,6 +88,10 @@ public class ElementAnimator {
 
     public ElementAnimation.AnimationState getState() {
         return state;
+    }
+
+    public void setState(ElementAnimation.AnimationState state) {
+        this.state = state;
     }
 
     public boolean isAnimating() {

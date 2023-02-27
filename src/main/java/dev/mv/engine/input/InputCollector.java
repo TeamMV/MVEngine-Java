@@ -1,14 +1,11 @@
 package dev.mv.engine.input;
 
 import dev.mv.engine.render.shared.Window;
-import lombok.Setter;
 import org.lwjgl.glfw.*;
-import org.lwjgl.system.Platform;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class InputCollector {
-    @Setter
     private InputProcessor inputProcessor;
     private Window window;
 
@@ -60,6 +57,10 @@ public class InputCollector {
                 inputProcessor.charTyped(codepoint);
             }
         });
+    }
+
+    public void setInputProcessor(InputProcessor inputProcessor) {
+        this.inputProcessor = inputProcessor;
     }
 
     public enum KeyAction {

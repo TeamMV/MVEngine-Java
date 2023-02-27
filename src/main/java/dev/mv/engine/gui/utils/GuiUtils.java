@@ -8,7 +8,7 @@ public class GuiUtils {
         int my = Input.mouse[Input.MOUSE_Y];
         return !(
             mx >= x && mx <= x + width &&
-            my >= y && my <= y + height);
+                my >= y && my <= y + height);
     }
 
     public static boolean mouseInside(int x, int y, int width, int height) {

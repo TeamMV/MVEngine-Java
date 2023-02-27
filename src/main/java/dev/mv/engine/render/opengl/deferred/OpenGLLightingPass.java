@@ -5,8 +5,6 @@ import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.deferred.LightingPass;
 import dev.mv.engine.render.shared.shader.Shader;
 
-import java.util.Arrays;
-
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -18,11 +16,11 @@ public class OpenGLLightingPass implements LightingPass {
     private Window window;
     private int vboId, iboId;
 
-    private int[] indices = new int[] {
+    private int[] indices = new int[]{
         0, 1, 2, 0, 3, 2
     };
 
-    private float[] vertices = new float[] {
+    private float[] vertices = new float[]{
         -1, -1, 0,
         -1, 1, 0,
         1, 1, 0,

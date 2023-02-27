@@ -11,7 +11,6 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.utils.RenderUtils;
-import lombok.SneakyThrows;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -20,7 +19,7 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.IntBuffer;
 
 import static java.sql.Types.NULL;
-import static org.lwjgl.glfw.Callbacks.*;
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
@@ -122,92 +121,95 @@ public class VulkanWindow implements Window {
         return true;
     }
 
-    @SneakyThrows
     private void loop() {
-        long initialTime = System.nanoTime();
-        long currentTime = initialTime;
-        timeU = 1000000000f / info.maxUPS;
-        timeF = 1000000000f / info.maxFPS;
-        double deltaU = 0, deltaF = 0;
-        int frames = 0, ticks = 0;
-        long timer = System.currentTimeMillis();
-        VulkanRender.VulkanRenderInfo renderInfo = new VulkanRender.VulkanRenderInfo();
-        renderInfo.physicalDeviceName = "";
-        renderInfo.requestedImages = 3;
-        renderInfo.vsync = true;
-        renderInfo.shouldValidate = true;
-        VulkanRender vulkanRender = new VulkanRender(this, renderInfo);
-        while (!glfwWindowShouldClose(window)) {
-            currentTime = System.nanoTime();
-            deltaU += (currentTime - initialTime) / timeU;
-            deltaF += (currentTime - initialTime) / timeF;
-            initialTime = currentTime;
-            glfwPollEvents();
-            this.deltaF = deltaF;
-            if (deltaU >= 1) {
-                if (applicationLoop != null) {
-                    applicationLoop.update(engine, this);
-                }
-                if (info.appendFpsToTitle) {
-                    String fpsTitle = info.title + info.fpsAppendConfiguration.betweenTitleAndValue + getFPS() + info.fpsAppendConfiguration.afterValue;
-                    glfwSetWindowTitle(window, RenderUtils.store(fpsTitle));
-                }
+        try {
+            long initialTime = System.nanoTime();
+            long currentTime = initialTime;
+            timeU = 1000000000f / info.maxUPS;
+            timeF = 1000000000f / info.maxFPS;
+            double deltaU = 0, deltaF = 0;
+            int frames = 0, ticks = 0;
+            long timer = System.currentTimeMillis();
+            VulkanRender.VulkanRenderInfo renderInfo = new VulkanRender.VulkanRenderInfo();
+            renderInfo.physicalDeviceName = "";
+            renderInfo.requestedImages = 3;
+            renderInfo.vsync = true;
+            renderInfo.shouldValidate = true;
+            VulkanRender vulkanRender = new VulkanRender(this, renderInfo);
+            while (!glfwWindowShouldClose(window)) {
+                currentTime = System.nanoTime();
+                deltaU += (currentTime - initialTime) / timeU;
+                deltaF += (currentTime - initialTime) / timeF;
+                initialTime = currentTime;
+                glfwPollEvents();
+                this.deltaF = deltaF;
+                if (deltaU >= 1) {
+                    if (applicationLoop != null) {
+                        applicationLoop.update(engine, this);
+                    }
+                    if (info.appendFpsToTitle) {
+                        String fpsTitle = info.title + info.fpsAppendConfiguration.betweenTitleAndValue + getFPS() + info.fpsAppendConfiguration.afterValue;
+                        glfwSetWindowTitle(window, RenderUtils.store(fpsTitle));
+                    }
 
-                ticks++;
-                deltaU--;
+                    ticks++;
+                    deltaU--;
+                }
+                if (deltaF >= 1) {
+                    //glfwImpl.newFrame();
+                    //ImGui.newFrame();
+
+                    if (applicationLoop != null) {
+                        applicationLoop.draw(engine, this);
+                    }
+
+                    //updateInputs();
+
+                    //ImGui.render();
+                    //vulkanImpl.renderDrawData(ImGui.getDrawData());
+
+                    //glfwSwapBuffers(window);
+                    currentFrame++;
+                    frames++;
+                    deltaF--;
+                }
+                if (System.currentTimeMillis() - timer > 1000) {
+                    if (true) {
+                        currentUPS = ticks;
+                        currentFPS = frames;
+                    }
+                    frames = 0;
+                    ticks = 0;
+                    timer += 1000;
+                }
             }
-            if (deltaF >= 1) {
-                //glfwImpl.newFrame();
-                //ImGui.newFrame();
-
-                if (applicationLoop != null) {
-                    applicationLoop.draw(engine, this);
-                }
-
-                //updateInputs();
-
-                //ImGui.render();
-                //vulkanImpl.renderDrawData(ImGui.getDrawData());
-
-                //glfwSwapBuffers(window);
-                currentFrame++;
-                frames++;
-                deltaF--;
-            }
-            if (System.currentTimeMillis() - timer > 1000) {
-                if (true) {
-                    currentUPS = ticks;
-                    currentFPS = frames;
-                }
-                frames = 0;
-                ticks = 0;
-                timer += 1000;
-            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
     private void updateInputs() {
-        if(Input.mouse[Input.MOUSE_SCROLL_X] == 1.0 || Input.mouse[Input.MOUSE_SCROLL_X] == -1.0) {
+        if (Input.mouse[Input.MOUSE_SCROLL_X] == 1.0 || Input.mouse[Input.MOUSE_SCROLL_X] == -1.0) {
             Input.mouse[Input.MOUSE_SCROLL_X] = 0;
         }
-        if(Input.mouse[Input.MOUSE_SCROLL_Y] == 1.0 || Input.mouse[Input.MOUSE_SCROLL_Y] == -1.0) {
+        if (Input.mouse[Input.MOUSE_SCROLL_Y] == 1.0 || Input.mouse[Input.MOUSE_SCROLL_Y] == -1.0) {
             Input.mouse[Input.MOUSE_SCROLL_Y] = 0;
         }
 
         for (int i = 0; i < Input.keys.length; i++) {
-            if(Input.keys[i] == Input.State.ONPRESSED) {
+            if (Input.keys[i] == Input.State.ONPRESSED) {
                 Input.keys[i] = Input.State.PRESSED;
             }
-            if(Input.keys[i] == Input.State.ONRELEASED) {
+            if (Input.keys[i] == Input.State.ONRELEASED) {
                 Input.keys[i] = Input.State.RELEASED;
             }
         }
 
         for (int i = 0; i < Input.buttons.length; i++) {
-            if(Input.buttons[i] == Input.State.ONPRESSED) {
+            if (Input.buttons[i] == Input.State.ONPRESSED) {
                 Input.buttons[i] = Input.State.PRESSED;
             }
-            if(Input.buttons[i] == Input.State.ONRELEASED) {
+            if (Input.buttons[i] == Input.State.ONRELEASED) {
                 Input.buttons[i] = Input.State.RELEASED;
             }
         }

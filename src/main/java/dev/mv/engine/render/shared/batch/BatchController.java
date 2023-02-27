@@ -10,14 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BatchController {
+    protected final List<Batch> batches = new ArrayList<>();
+    private final String VERTEX_PATH = "/assets/mvengine/shaders/2d/default.vert";
+    private final String FRAGMENT_PATH = "/assets/mvengine/shaders/2d/default.frag";
     protected Window win;
     protected int maxBatchSize;
     protected Shader defaultShader, prebuildDefaultShader;
     protected int currentBatch;
-    protected final List<Batch> batches = new ArrayList<>();
-
-    private final String VERTEX_PATH = "/assets/mvengine/shaders/2d/default.vert";
-    private final String FRAGMENT_PATH = "/assets/mvengine/shaders/2d/default.frag";
 
     public BatchController(Window window, int batchLimit) {
         if (batchLimit < 14) {

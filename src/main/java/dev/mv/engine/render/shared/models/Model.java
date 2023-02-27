@@ -3,10 +3,10 @@ package dev.mv.engine.render.shared.models;
 import dev.mv.engine.render.shared.texture.Texture;
 
 public class Model {
+    public Maps maps = new Maps();
     private int voaID;
     private int vertexCount;
     private Material material = new Material();
-    public Maps maps = new Maps();
 
     public Model(int voaID, int vertexCount) {
         this.voaID = voaID;

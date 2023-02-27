@@ -13,12 +13,10 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import static dev.mv.engine.render.vulkan.VulkanUtils.vkCheck;
 import static org.lwjgl.vulkan.EXTDebugUtils.*;
 import static org.lwjgl.vulkan.VK13.*;
-import static org.lwjgl.vulkan.VK11.VK_API_VERSION_1_1;
 
 public class VulkanInstance {
 
@@ -36,7 +34,7 @@ public class VulkanInstance {
 
     public VulkanInstance(boolean validate) throws UnknownServiceException {
         Logger.debug("Creating Vulkan instance");
-        try(MemoryStack stack = MemoryStack.stackPush()) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
             ByteBuffer appShortName = stack.UTF8("MVEngine");
             VkApplicationInfo appInfo = VkApplicationInfo.calloc(stack)
                 .sType(VK_STRUCTURE_TYPE_APPLICATION_INFO)

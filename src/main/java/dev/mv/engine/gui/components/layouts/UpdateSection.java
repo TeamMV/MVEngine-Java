@@ -10,8 +10,6 @@ import dev.mv.engine.gui.input.Scrollable;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
-import java.util.Arrays;
-
 public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw {
     private boolean enabled = true;
 
@@ -54,16 +52,16 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
 
     @Override
     public void click(int x, int y, int btn) {
-        if(!enabled) {
-            for(Element element : allElementsDeep()) {
-                if(element instanceof UpdateSection updateSection) {
+        if (!enabled) {
+            for (Element element : allElementsDeep()) {
+                if (element instanceof UpdateSection updateSection) {
                     updateSection.click(x, y, btn);
                 }
             }
             return;
         }
-        for(Element element : elements) {
-            if(element instanceof Clickable clickable) {
+        for (Element element : elements) {
+            if (element instanceof Clickable clickable) {
                 clickable.click(x, y, btn);
             }
         }
@@ -71,16 +69,16 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
 
     @Override
     public void clickRelease(int x, int y, int btn) {
-        if(!enabled) {
-            for(Element element : allElementsDeep()) {
-                if(element instanceof UpdateSection updateSection) {
+        if (!enabled) {
+            for (Element element : allElementsDeep()) {
+                if (element instanceof UpdateSection updateSection) {
                     updateSection.clickRelease(x, y, btn);
                 }
             }
             return;
         }
-        for(Element element : elements) {
-            if(element instanceof Clickable clickable) {
+        for (Element element : elements) {
+            if (element instanceof Clickable clickable) {
                 clickable.clickRelease(x, y, btn);
             }
         }
@@ -88,16 +86,16 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
 
     @Override
     public void dragBegin(int x, int y, int btn) {
-        if(!enabled) {
-            for(Element element : allElementsDeep()) {
-                if(element instanceof UpdateSection updateSection) {
+        if (!enabled) {
+            for (Element element : allElementsDeep()) {
+                if (element instanceof UpdateSection updateSection) {
                     updateSection.dragBegin(x, y, btn);
                 }
             }
             return;
         }
-        for(Element element : elements) {
-            if(element instanceof Draggable draggable) {
+        for (Element element : elements) {
+            if (element instanceof Draggable draggable) {
                 draggable.dragBegin(x, y, btn);
             }
         }
@@ -105,16 +103,16 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
 
     @Override
     public void drag(int x, int y, int btn) {
-        if(!enabled) {
-            for(Element element : allElementsDeep()) {
-                if(element instanceof UpdateSection updateSection) {
+        if (!enabled) {
+            for (Element element : allElementsDeep()) {
+                if (element instanceof UpdateSection updateSection) {
                     updateSection.drag(x, y, btn);
                 }
             }
             return;
         }
-        for(Element element : elements) {
-            if(element instanceof Draggable draggable) {
+        for (Element element : elements) {
+            if (element instanceof Draggable draggable) {
                 draggable.drag(x, y, btn);
             }
         }
@@ -122,16 +120,16 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
 
     @Override
     public void dragLeave(int x, int y, int btn) {
-        if(!enabled) {
-            for(Element element : allElementsDeep()) {
-                if(element instanceof UpdateSection updateSection) {
+        if (!enabled) {
+            for (Element element : allElementsDeep()) {
+                if (element instanceof UpdateSection updateSection) {
                     updateSection.dragLeave(x, y, btn);
                 }
             }
             return;
         }
-        for(Element element : elements) {
-            if(element instanceof Draggable draggable) {
+        for (Element element : elements) {
+            if (element instanceof Draggable draggable) {
                 draggable.dragLeave(x, y, btn);
             }
         }
@@ -139,16 +137,16 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
 
     @Override
     public void keyPress(int key) {
-        if(!enabled) {
-            for(Element element : allElementsDeep()) {
-                if(element instanceof UpdateSection updateSection) {
+        if (!enabled) {
+            for (Element element : allElementsDeep()) {
+                if (element instanceof UpdateSection updateSection) {
                     updateSection.keyPress(key);
                 }
             }
             return;
         }
-        for(Element element : elements) {
-            if(element instanceof Keyboard keyboard) {
+        for (Element element : elements) {
+            if (element instanceof Keyboard keyboard) {
                 keyboard.keyPress(key);
             }
         }
@@ -156,16 +154,16 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
 
     @Override
     public void keyType(int key) {
-        if(!enabled) {
-            for(Element element : allElementsDeep()) {
-                if(element instanceof UpdateSection updateSection) {
+        if (!enabled) {
+            for (Element element : allElementsDeep()) {
+                if (element instanceof UpdateSection updateSection) {
                     updateSection.keyType(key);
                 }
             }
             return;
         }
-        for(Element element : elements) {
-            if(element instanceof Keyboard keyboard) {
+        for (Element element : elements) {
+            if (element instanceof Keyboard keyboard) {
                 keyboard.keyType(key);
             }
         }
@@ -173,16 +171,16 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
 
     @Override
     public void keyRelease(int key) {
-        if(!enabled) {
-            for(Element element : allElementsDeep()) {
-                if(element instanceof UpdateSection updateSection) {
+        if (!enabled) {
+            for (Element element : allElementsDeep()) {
+                if (element instanceof UpdateSection updateSection) {
                     updateSection.keyRelease(key);
                 }
             }
             return;
         }
-        for(Element element : elements) {
-            if(element instanceof Keyboard keyboard) {
+        for (Element element : elements) {
+            if (element instanceof Keyboard keyboard) {
                 keyboard.keyRelease(key);
             }
         }
@@ -190,16 +188,16 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
 
     @Override
     public void scrollX(int amount) {
-        if(!enabled) {
-            for(Element element : allElementsDeep()) {
-                if(element instanceof UpdateSection updateSection) {
+        if (!enabled) {
+            for (Element element : allElementsDeep()) {
+                if (element instanceof UpdateSection updateSection) {
                     updateSection.scrollX(amount);
                 }
             }
             return;
         }
-        for(Element element : elements) {
-            if(element instanceof Scrollable scrollable) {
+        for (Element element : elements) {
+            if (element instanceof Scrollable scrollable) {
                 scrollable.scrollX(amount);
             }
         }
@@ -207,16 +205,16 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
 
     @Override
     public void scrollY(int amount) {
-        if(!enabled) {
-            for(Element element : allElementsDeep()) {
-                if(element instanceof UpdateSection updateSection) {
+        if (!enabled) {
+            for (Element element : allElementsDeep()) {
+                if (element instanceof UpdateSection updateSection) {
                     updateSection.scrollY(amount);
                 }
             }
             return;
         }
-        for(Element element : elements) {
-            if(element instanceof Scrollable scrollable) {
+        for (Element element : elements) {
+            if (element instanceof Scrollable scrollable) {
                 scrollable.scrollY(amount);
             }
         }

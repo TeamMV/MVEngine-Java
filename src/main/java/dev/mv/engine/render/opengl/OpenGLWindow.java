@@ -3,15 +3,14 @@ package dev.mv.engine.render.opengl;
 import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.input.Input;
+import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.Camera;
 import dev.mv.engine.render.shared.Render2D;
 import dev.mv.engine.render.shared.Render3D;
 import dev.mv.engine.render.shared.Window;
-import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.utils.RenderUtils;
-import lombok.Getter;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -22,7 +21,6 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -31,6 +29,8 @@ public class OpenGLWindow implements Window {
     private final float FOV = (float) Math.toRadians(60);
     private final float Z_NEAR = 0.01f;
     private final float Z_FAR = 2000f;
+    BatchController batchController;
+    BatchController3D batchController3D;
     private int currentFPS, currentUPS;
     private int width, height;
     private double deltaF;
@@ -40,9 +40,6 @@ public class OpenGLWindow implements Window {
     private OpenGLRender2D render2D = null;
     private OpenGLRender3D render3D = null;
     private Matrix4f projectionMatrix = null;
-    BatchController batchController;
-    BatchController3D batchController3D;
-    @Getter
     private WindowCreateInfo info;
     private int oW, oH, oX, oY;
     private double timeU, timeF;
@@ -233,27 +230,27 @@ public class OpenGLWindow implements Window {
     }
 
     private void updateInputs() {
-        if(Input.mouse[Input.MOUSE_SCROLL_X] == 1.0 || Input.mouse[Input.MOUSE_SCROLL_X] == -1.0) {
+        if (Input.mouse[Input.MOUSE_SCROLL_X] == 1.0 || Input.mouse[Input.MOUSE_SCROLL_X] == -1.0) {
             Input.mouse[Input.MOUSE_SCROLL_X] = 0;
         }
-        if(Input.mouse[Input.MOUSE_SCROLL_Y] == 1.0 || Input.mouse[Input.MOUSE_SCROLL_Y] == -1.0) {
+        if (Input.mouse[Input.MOUSE_SCROLL_Y] == 1.0 || Input.mouse[Input.MOUSE_SCROLL_Y] == -1.0) {
             Input.mouse[Input.MOUSE_SCROLL_Y] = 0;
         }
 
         for (int i = 0; i < Input.keys.length; i++) {
-            if(Input.keys[i] == Input.State.ONPRESSED) {
+            if (Input.keys[i] == Input.State.ONPRESSED) {
                 Input.keys[i] = Input.State.PRESSED;
             }
-            if(Input.keys[i] == Input.State.ONRELEASED) {
+            if (Input.keys[i] == Input.State.ONRELEASED) {
                 Input.keys[i] = Input.State.RELEASED;
             }
         }
 
         for (int i = 0; i < Input.buttons.length; i++) {
-            if(Input.buttons[i] == Input.State.ONPRESSED) {
+            if (Input.buttons[i] == Input.State.ONPRESSED) {
                 Input.buttons[i] = Input.State.PRESSED;
             }
-            if(Input.buttons[i] == Input.State.ONRELEASED) {
+            if (Input.buttons[i] == Input.State.ONRELEASED) {
                 Input.buttons[i] = Input.State.RELEASED;
             }
         }
@@ -397,5 +394,9 @@ public class OpenGLWindow implements Window {
     @Override
     public BatchController3D getBatchController3D() {
         return batchController3D;
+    }
+
+    public WindowCreateInfo getWindowCreateInfo() {
+        return info;
     }
 }

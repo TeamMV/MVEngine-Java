@@ -1,7 +1,6 @@
 package dev.mv.engine.gui.components;
 
 import dev.mv.engine.gui.components.assets.GuiAssets;
-import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
@@ -9,7 +8,7 @@ import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
-public class PasswordInputBox extends InputBox{
+public class PasswordInputBox extends InputBox {
     private boolean isHidden = false;
     private ImageButton visibilityButton;
 
@@ -38,7 +37,7 @@ public class PasswordInputBox extends InputBox{
 
             @Override
             public void onRelease(Element element, int button) {
-                if(button == Input.BUTTON_LEFT) {
+                if (button == Input.BUTTON_LEFT) {
                     toggleVisibility();
                 }
             }
@@ -57,7 +56,7 @@ public class PasswordInputBox extends InputBox{
 
     public void toggleVisibility() {
         isHidden = !isHidden;
-        if(isHidden) hide();
+        if (isHidden) hide();
         else show();
     }
 
@@ -94,13 +93,6 @@ public class PasswordInputBox extends InputBox{
     }
 
     @Override
-    public void setWidth(int width) {
-        initialState.width = width;
-        initialState.originX = initialState.posX + width / 2;
-        visibilityButton.setX(getX() + width - getHeight() + 5);
-    }
-
-    @Override
     public void setHeight(int height) {
         initialState.height = height;
         initialState.originY = initialState.posY + height / 2;
@@ -114,20 +106,27 @@ public class PasswordInputBox extends InputBox{
     }
 
     @Override
+    public void setWidth(int width) {
+        initialState.width = width;
+        initialState.originX = initialState.posX + width / 2;
+        visibilityButton.setX(getX() + width - getHeight() + 5);
+    }
+
+    @Override
     public void draw(DrawContext2D draw) {
         checkAnimations();
 
 
-        if(theme.getEdgeStyle() == Theme.EdgeStyle.ROUND) {
-            if(theme.hasOutline()) {
+        if (theme.getEdgeStyle() == Theme.EdgeStyle.ROUND) {
+            if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
                 draw.voidRoundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.roundedRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
@@ -135,16 +134,16 @@ public class PasswordInputBox extends InputBox{
                 draw.color(animationState.baseColor);
                 draw.roundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
             }
-        } else if(theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
-            if(theme.hasOutline()) {
+        } else if (theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
+            if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
                 draw.voidTriangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.triangularRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
@@ -152,16 +151,16 @@ public class PasswordInputBox extends InputBox{
                 draw.color(animationState.baseColor);
                 draw.triangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
             }
-        } else if(theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
-            if(theme.hasOutline()) {
+        } else if (theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
+            if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(animationState.outlineColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
                 draw.voidRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
-                if(!enabled) {
+                if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.rectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, animationState.rotation, animationState.originX, animationState.originY);
@@ -171,25 +170,26 @@ public class PasswordInputBox extends InputBox{
             }
         }
 
-        if(theme.getText_base() != null) {
+        if (theme.getText_base() != null) {
             draw.color(theme.getText_base());
-        } else if(theme.getText_gradient() != null) {
+        } else if (theme.getText_gradient() != null) {
             draw.color(theme.getText_gradient());
         }
-        if(!enabled) {
+        if (!enabled) {
             draw.color(theme.getDisabledTextColor());
         }
-        if(!isHidden) {
-            if(displayText.isEmpty() && !selected) {
-                draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height -  textDistance() * 2)), font, animationState.rotation, animationState.originX, animationState.originY);
+        if (!isHidden) {
+            if (displayText.isEmpty() && !selected) {
+                draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height - textDistance() * 2)), font, animationState.rotation, animationState.originX, animationState.originY);
             } else {
                 draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
-            }        } else {
+            }
+        } else {
             draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, "*".repeat(displayText.length()), font, animationState.rotation, animationState.originX, animationState.originY);
         }
 
-        if(selected) {
-            if(!isHidden) {
+        if (selected) {
+            if (!isHidden) {
                 draw.rectangle(animationState.posX + textDistance() + font.getWidth(displayText.substring(0, cursorOffset), getHeight() - textDistance() * 2), animationState.posY + textDistance(), 2, getHeight() - textDistance() * 2, animationState.rotation, animationState.originX, animationState.originY);
             } else {
                 draw.rectangle(animationState.posX + textDistance() + font.getWidth("*".repeat(cursorOffset), getHeight() - textDistance() * 2), animationState.posY + textDistance(), 2, getHeight() - textDistance() * 2, animationState.rotation, animationState.originX, animationState.originY);
@@ -212,17 +212,18 @@ public class PasswordInputBox extends InputBox{
 
     @Override
     public void click(int x, int y, int btn) {
-        if(!enabled) return;
+        if (!enabled) return;
         visibilityButton.click(x, y, btn);
-        if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) return;
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height))
+            return;
         else {
             selected = false;
             animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
         }
-        if(!clickListeners.isEmpty()) {
+        if (!clickListeners.isEmpty()) {
             clickListeners.forEach(l -> l.onCLick(this, btn));
         }
-        if(!selected) {
+        if (!selected) {
             animator.animate(theme.getAnimationInTime(), theme.getAnimationFrames());
             selected = true;
         }
@@ -230,15 +231,15 @@ public class PasswordInputBox extends InputBox{
 
     @Override
     public void clickRelease(int x, int y, int btn) {
-        if(!enabled) return;
+        if (!enabled) return;
         selected = false;
         visibilityButton.clickRelease(x, y, btn);
         animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
-        if(GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) {
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) {
             return;
         }
         selected = true;
-        if(!clickListeners.isEmpty()) {
+        if (!clickListeners.isEmpty()) {
             clickListeners.forEach(l -> l.onRelease(this, btn));
         }
     }
@@ -247,22 +248,22 @@ public class PasswordInputBox extends InputBox{
     protected void moveCursor(int amount) {
         cursorOffset += amount;
 
-        if(cursorOffset == 0) {
+        if (cursorOffset == 0) {
             return;
         }
 
-        if(cursorOffset < 0) {
+        if (cursorOffset < 0) {
             cursorOffset++;
-            if(textShift > 0) {
+            if (textShift > 0) {
                 shiftText(-1);
             }
             return;
         }
-        if(cursorOffset > displayText.length()) {
+        if (cursorOffset > displayText.length()) {
             cursorOffset--;
             return;
         }
-        if(textDistance() + font.getWidth(displayText.substring(0, cursorOffset), getHeight() - textDistance() * 2) > getWidth() - getHeight() - 5 - textDistance()) {
+        if (textDistance() + font.getWidth(displayText.substring(0, cursorOffset), getHeight() - textDistance() * 2) > getWidth() - getHeight() - 5 - textDistance()) {
             cursorOffset--;
             shiftText(1);
         }

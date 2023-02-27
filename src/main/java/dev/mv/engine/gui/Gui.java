@@ -13,11 +13,12 @@ import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
-import lombok.NonNull;
-import lombok.SneakyThrows;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -29,14 +30,14 @@ public class Gui {
     private List<List<LayerSection>> layers;
     private List<GuiScript> scripts;
 
-    public Gui(@NonNull DrawContext2D drawContext, Window window, String name) {
+    public Gui(@NotNull DrawContext2D drawContext, Window window, String name) {
         this.drawContext = drawContext;
         this.name = name;
         root = new UpdateSection(window, null);
         root.setGui(this);
         root.setId("root");
         layers = new ArrayList<>(10);
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             layers.add(new ArrayList<>());
         }
         scripts = new ArrayList<>();
@@ -51,8 +52,8 @@ public class Gui {
     }
 
     private void drawLayers(DrawContext2D draw) {
-        for(List<LayerSection> layer : layers) {
-            for(LayerSection section : layer) {
+        for (List<LayerSection> layer : layers) {
+            for (LayerSection section : layer) {
                 section.draw(drawContext);
             }
         }
@@ -68,7 +69,7 @@ public class Gui {
 
     public void addElements(Element[] e) {
         root.addElements(e);
-        for(Element element : e) {
+        for (Element element : e) {
             element.setGui(this);
         }
     }
@@ -80,7 +81,7 @@ public class Gui {
 
     public void removeElements(Element[] e) {
         root.removeElements(e);
-        for(Element element : e) {
+        for (Element element : e) {
             element.setGui(null);
         }
     }
@@ -107,8 +108,8 @@ public class Gui {
 
     public void disableAllUpdates() {
         root.disable();
-        for(Element element : elementsDeep()) {
-            if(element instanceof UpdateSection updateSection) {
+        for (Element element : elementsDeep()) {
+            if (element instanceof UpdateSection updateSection) {
                 updateSection.disable();
             }
         }
@@ -116,8 +117,8 @@ public class Gui {
 
     public void enableAllUpdates() {
         root.enable();
-        for(Element element : elementsDeep()) {
-            if(element instanceof UpdateSection updateSection) {
+        for (Element element : elementsDeep()) {
+            if (element instanceof UpdateSection updateSection) {
                 updateSection.enable();
             }
         }
@@ -130,7 +131,7 @@ public class Gui {
     public void applyTheme(Theme theme) throws IOException {
         GuiAssets.init(theme);
         this.theme = theme;
-        for(Element element : root) {
+        for (Element element : root) {
             element.setTheme(theme);
         }
     }
@@ -138,13 +139,13 @@ public class Gui {
     //----- draw -----
 
     void draw() {
-        for(Element element : root) {
-            if(element instanceof IgnoreDraw ignoreDraw) {
-                if(ignoreDraw instanceof LayerSection layerSection) {
+        for (Element element : root) {
+            if (element instanceof IgnoreDraw ignoreDraw) {
+                if (ignoreDraw instanceof LayerSection layerSection) {
                     getLayers().get(layerSection.getLayerToRenderOn()).add(layerSection);
                     continue;
                 }
-                for(Element e : ignoreDraw.toRender()) {
+                for (Element e : ignoreDraw.toRender()) {
                     e.draw(drawContext);
                 }
                 continue;
@@ -159,23 +160,23 @@ public class Gui {
     public void loop() {
 
         //mouseButtons
-        for(int i = 0; i < Input.buttons.length; i++) {
-            if(Input.buttons[i] == Input.State.ONPRESSED) {
+        for (int i = 0; i < Input.buttons.length; i++) {
+            if (Input.buttons[i] == Input.State.ONPRESSED) {
                 click(Input.mouse[Input.MOUSE_X], Input.mouse[Input.MOUSE_Y], i);
                 dragBegin(Input.mouse[Input.MOUSE_X], Input.mouse[Input.MOUSE_Y], i);
-            } else if(Input.buttons[i] == Input.State.ONRELEASED) {
+            } else if (Input.buttons[i] == Input.State.ONRELEASED) {
                 release(Input.mouse[Input.MOUSE_X], Input.mouse[Input.MOUSE_Y], i);
                 dragEnd(Input.mouse[Input.MOUSE_X], Input.mouse[Input.MOUSE_Y], i);
-            } else if(Input.buttons[i] == Input.State.PRESSED) {
+            } else if (Input.buttons[i] == Input.State.PRESSED) {
                 drag(Input.mouse[Input.MOUSE_X], Input.mouse[Input.MOUSE_Y], i);
             }
         }
 
         //scroll
-        if(Input.mouse[Input.MOUSE_SCROLL_X] != 0.0) {
+        if (Input.mouse[Input.MOUSE_SCROLL_X] != 0.0) {
             scrollX(Input.mouse[Input.MOUSE_SCROLL_X]);
         }
-        if(Input.mouse[Input.MOUSE_SCROLL_Y] != 0.0) {
+        if (Input.mouse[Input.MOUSE_SCROLL_Y] != 0.0) {
             scrollY(Input.mouse[Input.MOUSE_SCROLL_Y]);
         }
     }
@@ -238,8 +239,8 @@ public class Gui {
         StringBuilder result = new StringBuilder("Root").append(System.lineSeparator());
         indent += 1;
 
-        for(Element element : elements()) {
-            if(element instanceof AbstractLayout layout) {
+        for (Element element : elements()) {
+            if (element instanceof AbstractLayout layout) {
                 result.append(layout.toString(indent));
             } else {
                 result.append("| ".repeat(indent)).append(element.getClass().getSimpleName()).append(": ").append(element.getId()).append(" ").append(element.getTags() != null ? Arrays.toString(element.getTags()) : "[]").append(System.lineSeparator());
@@ -251,7 +252,6 @@ public class Gui {
 
     //scripts
 
-    @SneakyThrows
     public void addScript(GuiScript script) {
         scripts.add(script);
     }
