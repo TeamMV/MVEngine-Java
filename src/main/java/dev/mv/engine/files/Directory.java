@@ -8,9 +8,9 @@ import java.nio.file.Files;
 
 public abstract class Directory {
 
-    private String name;
-    private File folder;
-    private String path;
+    protected String name;
+    protected File folder;
+    protected String path;
 
     protected Directory(String name) {
         this.name = name;
@@ -31,11 +31,19 @@ public abstract class Directory {
     }
 
     public File getFile(String name) {
-        return new File(Utils.getPath(path, name));
+        File file = new File(Utils.getPath(path, name));
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return file;
     }
 
     public byte[] getFileAsBytes(String name) throws IOException {
-        return Files.readAllBytes(new File(Utils.getPath(path, name)).toPath());
+        return Files.readAllBytes(getFile(name).toPath());
     }
 
     public <T> T getFileAsObject(String name, ObjectSaver<T> saver) throws IOException {
