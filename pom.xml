@@ -30,8 +30,7 @@
                     <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>dev.mv.test.Main</mainClass>
+                            <addClasspath>false</addClasspath>
                         </manifest>
                     </archive>
                     <descriptorRefs>
