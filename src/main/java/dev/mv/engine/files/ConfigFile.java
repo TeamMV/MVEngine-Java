@@ -39,7 +39,7 @@ public class ConfigFile {
             return this;
         }
 
-        DynamicByteBuffer buffer = new DynamicByteBuffer(bytes).flip().flipComponents();
+        DynamicByteBuffer buffer = new DynamicByteBuffer(bytes).flip();
 
         String code = buffer.popStringRaw(FILE_CODE.length());
         if (!code.equals(FILE_CODE)) {

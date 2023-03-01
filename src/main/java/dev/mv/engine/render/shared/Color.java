@@ -1,5 +1,7 @@
 package dev.mv.engine.render.shared;
 
+import dev.mv.utils.ByteUtils;
+
 public class Color {
     public static Color WHITE = new Color(255, 255, 255, 255);
     public static Color BLACK = new Color(0, 0, 0, 255);
@@ -27,7 +29,11 @@ public class Color {
     }
 
     public Color(int color) {
-        this(color >> 24 & 0xff, color >> 16 & 0xff, color >> 8 & 0xff, color & 0xff);
+        byte[] col = ByteUtils.toBytes(color);
+        this.r = col[0];
+        this.g = col[1];
+        this.b = col[2];
+        this.a = col[3];
     }
 
     public Color set(byte r, byte g, byte b, byte a) {
@@ -52,7 +58,7 @@ public class Color {
     }
 
     public int getRed() {
-        return r < 0 ? 256 - r : r;
+        return ByteUtils.unsign(r);
     }
 
     public void setRed(byte r) {
@@ -64,7 +70,7 @@ public class Color {
     }
 
     public int getGreen() {
-        return g < 0 ? 256 - g : g;
+        return ByteUtils.unsign(g);
     }
 
     public void setGreen(byte g) {
@@ -76,7 +82,7 @@ public class Color {
     }
 
     public int getBlue() {
-        return b < 0 ? 256 - b : b;
+        return ByteUtils.unsign(b);
     }
 
     public void setBlue(byte b) {
@@ -88,7 +94,7 @@ public class Color {
     }
 
     public int getAlpha() {
-        return a < 0 ? 256 - a : a;
+        return ByteUtils.unsign(a);
     }
 
     public void setAlpha(byte a) {
@@ -151,6 +157,6 @@ public class Color {
     }
 
     public int toInt() {
-        return (r << 24) | (g << 16) | (b << 8) | a;
+        return ByteUtils.intFromBytes(r, g, b, a);
     }
 }
