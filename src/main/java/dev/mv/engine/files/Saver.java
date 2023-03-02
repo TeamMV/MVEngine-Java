@@ -1,6 +1,6 @@
 package dev.mv.engine.files;
 
-public interface ObjectSaver<T> {
+public interface Saver<T> {
 
     T load(byte[] data);
 

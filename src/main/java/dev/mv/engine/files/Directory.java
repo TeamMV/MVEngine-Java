@@ -46,11 +46,11 @@ public abstract class Directory {
         return Files.readAllBytes(getFile(name).toPath());
     }
 
-    public <T> T getFileAsObject(String name, ObjectSaver<T> saver) throws IOException {
+    public <T> T getFileAsObject(String name, Saver<T> saver) throws IOException {
         return saver.load(getFileAsBytes(name));
     }
 
-    public <T> T getFileAsObject(String name, ObjectDirectorySaver<T> saver) {
+    public <T> T getFileAsObject(String name, DirectorySaver<T> saver) {
         return saver.load(getSubDirectory(name));
     }
 
@@ -64,11 +64,11 @@ public abstract class Directory {
         Files.write(file.toPath(), bytes);
     }
 
-    public <T> void saveFileObject(String name, T object, ObjectSaver<T> saver) throws IOException {
+    public <T> void saveFileObject(String name, T object, Saver<T> saver) throws IOException {
         saveFileBytes(name, saver.save(object));
     }
 
-    public <T> void saveFileObject(String name, T object, ObjectDirectorySaver<T> saver) {
+    public <T> void saveFileObject(String name, T object, DirectorySaver<T> saver) {
         saver.save(getSubDirectory(name), object);
     }
 

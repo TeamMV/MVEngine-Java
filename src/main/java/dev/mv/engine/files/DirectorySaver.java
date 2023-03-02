@@ -1,6 +1,6 @@
 package dev.mv.engine.files;
 
-public interface ObjectDirectorySaver<T> {
+public interface DirectorySaver<T> {
 
     T load(Directory directory);
 
