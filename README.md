@@ -2,7 +2,7 @@
 
 Game engine/framework made in Java.
 
-Editor will be added in a different version.
+Editor will be added in a different project, this is just the rendering, gui and physics framework.
 
 This is a graphical game engine (aka with editor) that can be used to create 2D and 3D games in java. We will make it,
 so you don't need to know java to code in it. Kotlin support will be added as well. But you will also be able to create
