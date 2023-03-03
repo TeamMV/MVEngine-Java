@@ -1,5 +1,6 @@
 package dev.mv.engine.render.shared.font;
 
+import dev.mv.engine.resources.ResourceAdapter;
 import org.joml.Vector2f;
 
 public class Glyph {

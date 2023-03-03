@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<gui name="myGui">
+    <script src="dev.mv.editor.GuiHandler"/>
+
+    <variables>
+        <var name="height">60</var>
+    </variables>
+
+    <references>
+        <ref name="defaultSeparator">
+            <separator width="400" height="3"/>
+        </ref>
+        <ref name="defaultSpace">
+            <space height="10"/>
+        </ref>
+        <ref name="collapseCheckbox" params="[text]">
+            <checkbox width="$VAR(height)" height="$VAR(height)">$PARAM(text)</checkbox>
+        </ref>
+        <ref name="checkbox" params="[text]">
+            <checkbox width="$VAR(height)" height="$VAR(height)">$PARAM(text)</checkbox>
+        </ref>
+    </references>
+
+    <elements>
+        <verticalLayout x="200" y="100" spacing="5" showFrame="false" align="CENTER">
+            <imageButton width="120" height="$VAR(height)" id="myButton" tags="[tag1,tag2,tag3]"/>
+            <checkbox width="$VAR(height)" height="$VAR(height)">Toggle</checkbox>
+            <button width="60" height="$VAR(height)" onclick="chromaButtonClick(this)" id="chromaButton">click me!</button>
+            <ref name="defaultSpace"/>
+            <ref name="defaultSeparator"/>
+            <input type="string" width="400" height="$VAR(height)" id="email">E-Mail address</input>
+            <input type="password" width="400" height="$VAR(height)">Password</input>
+            <collapseMenu width="$VAR(height)" height="$VAR(height)" title="Options">
+                <ref name="collapseCheckbox" params="[checkbox]"/>
+                <button width="60" height="$VAR(height)" id="button2" tags="[1,2,3]">click</button>
+            </collapseMenu>
+            <ref name="defaultSeparator"/>
+            <ref name="defaultSpace"/>
+            <horizontalLayout showFrame="true" spacing="5" padding="[5]">
+                <ref name="checkbox" params="[check1]"/>
+                <ref name="checkbox" params="[check2]"/>
+                <ref name="checkbox" params="[check3]"/>
+                <ref name="checkbox" params="[check4]"/>
+            </horizontalLayout>
+            <progressBar width="300" height="$VAR(height)" maxValue="100" currentValue="30" id="prgbar1"/>
+            <choiceGroup>
+                <choice width="$VAR(height)" height="$VAR(height)">Choice1</choice>
+                <choice width="$VAR(height)" height="$VAR(height)">Choice2</choice>
+                <choice width="$VAR(height)" height="$VAR(height)">Choice3</choice>
+            </choiceGroup>
+        </verticalLayout>
+    </elements>
+</gui>

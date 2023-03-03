@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<theme>
+    <colors>
+        <enabled>
+            <base>125, 122, 100, 200</base>
+            <outline>200, 200, 200, 255</outline>
+            <text>255, 255, 255, 255</text>
+            <extra>255, 217, 0, 255</extra>
+        </enabled>
+        <disabled>
+            <base>82, 81, 81, 20</base>
+            <outline>100, 100, 100, 255</outline>
+            <text>59, 59, 57, 255</text>
+            <extra>100, 50, 0, 255</extra>
+        </disabled>
+        <shouldUseTextColor>
+            <checkbox>true</checkbox>
+            <choice>true</choice>
+            <inputBox>true</inputBox>
+        </shouldUseTextColor>
+    </colors>
+    <general>
+        <edges>
+            <style>SQUARE</style>
+            <radius>10</radius>
+        </edges>
+        <outline>
+            <thickness>2</thickness>
+            <use>true</use>
+        </outline>
+        <guiAssets>
+            <path>/gui/assets/guiassets.png</path>
+            <icons>
+                <width>32</width>
+                <height>32</height>
+            </icons>
+        </guiAssets>
+    </general>
+    <animations>
+        <frameCount>10</frameCount>
+        <times>
+            <in>50</in>
+            <out>50</out>
+        </times>
+        <animation>
+            <in>
+                <substract value="20">
+                    <color name="base" value="alpha"/>
+                    <color name="outline" value="alpha"/>
+                </substract>
+                <substract value="4">
+                    <property name="width"/>
+                </substract>
+                <substract value="2">
+                    <property name="height"/>
+                </substract>
+                <add value="2">
+                    <property name="x"/>
+                </add>
+                <add value="1">
+                    <property name="y"/>
+                </add>
+            </in>
+            <out>
+                <add value="20">
+                    <color name="base" value="alpha"/>
+                    <color name="outline" value="alpha"/>
+                </add>
+                <add value="4">
+                    <property name="width"/>
+                </add>
+                <add value="2">
+                    <property name="height"/>
+                </add>
+                <substract value="2">
+                    <property name="x"/>
+                </substract>
+                <substract value="1">
+                    <property name="y"/>
+                </substract>
+            </out>
+        </animation>
+    </animations>
+</theme>
