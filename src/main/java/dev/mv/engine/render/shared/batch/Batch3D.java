@@ -61,7 +61,10 @@ public class Batch3D {
     }
 
     public void forceClearBatch() {
-        Arrays.fill(data, 0, (vertCount * VERTEX_SIZE_FLOATS) + 1, 0);
+        Arrays.fill(data, 0, vertCount * VERTEX_SIZE_FLOATS, 0);
+        Arrays.fill(indices, 0, maxSize * 6, 0);
+        vbo.clear();
+        ibo.clear();
         vertCount = 0;
         objCount = 0;
 

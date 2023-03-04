@@ -79,4 +79,8 @@ public abstract class Directory {
     public String getName() {
         return name;
     }
+    
+    public String getPath() {
+        
+    }
 }

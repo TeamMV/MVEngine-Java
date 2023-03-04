@@ -209,7 +209,7 @@ public class OpenGLWindow implements Window {
 
                 updateInputs();
 
-                //batchController3D.finishAndRender();
+                batchController3D.finishAndRender();
                 render3D.render();
                 updateProjection2D();
                 batchController.finishAndRender();

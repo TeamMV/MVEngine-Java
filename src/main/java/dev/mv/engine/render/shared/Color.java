@@ -1,8 +1,9 @@
 package dev.mv.engine.render.shared;
 
+import dev.mv.engine.resources.Resource;
 import dev.mv.utils.ByteUtils;
 
-public class Color {
+public class Color implements Resource {
     public static Color WHITE = new Color(255, 255, 255, 255);
     public static Color BLACK = new Color(0, 0, 0, 255);
     public static Color RED = new Color(255, 0, 0, 255);
