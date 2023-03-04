@@ -11,6 +11,7 @@ public abstract class Directory {
     protected String name;
     protected File folder;
     protected String path;
+    protected String relativePath = "/";
 
     protected Directory(String name) {
         this.name = name;
@@ -27,7 +28,7 @@ public abstract class Directory {
     protected abstract File getFolder();
 
     public Directory getSubDirectory(String name) {
-        return new InnerDirectory(name, new File(Utils.getPath(path, name)));
+        return new InnerDirectory(name, relativePath + name + "/", new File(Utils.getPath(path, name)));
     }
 
     public File getFile(String name) {
@@ -80,7 +81,7 @@ public abstract class Directory {
         return name;
     }
     
-    public String getPath() {
-        
+    public String getRelativePath() {
+        return relativePath;
     }
 }

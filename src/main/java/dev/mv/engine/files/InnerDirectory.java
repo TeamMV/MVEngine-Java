@@ -4,8 +4,9 @@ import java.io.File;
 
 public class InnerDirectory extends Directory {
 
-    InnerDirectory(String name, File folder) {
+    InnerDirectory(String name, String relativePath, File folder) {
         super(name, folder);
+        this.relativePath = relativePath;
         if (!folder.exists()) {
             folder.mkdirs();
         }
