@@ -81,7 +81,7 @@ public class ResourceLoader {
         GuiParser guiParser = new GuiParser(config);
         ThemeParser themeParser = new ThemeParser(config);
         int totalRefs = refs.size() + dependentRefs.size();
-        int current = 0;
+        final int[] current = {0};
 
         while (!refs.isEmpty()) {
             ResourceReference ref = refs.poll();
@@ -92,7 +92,7 @@ public class ResourceLoader {
                 case MESH -> register(ref.getId(), engine.getObjectLoader().loadExternalModel(ref.getPath()));
                 case FONT -> register(ref.getId(), new BitmapFont(ref.getPath().split(":")[0], ref.getPath().split(":")[1]));
             }
-            progressAction.update(totalRefs, current, (int) Utils.getPercent(current++, totalRefs));
+            Utils.ifNotNull(progressAction).then(p -> p.update(totalRefs, current[0], (int) Utils.getPercent(current[0]++, totalRefs)));
         }
 
         while (!dependentRefs.isEmpty()) {
@@ -101,7 +101,7 @@ public class ResourceLoader {
                 case GUI_LAYOUT -> register(ref.getId(), guiParser.parse(ref.getPath()));
                 case GUI_THEME -> register(ref.getId(), themeParser.parse(ref.getPath()));
             }
-            progressAction.update(totalRefs, current, (int) Utils.getPercent(current++, totalRefs));
+            Utils.ifNotNull(progressAction).then(p -> p.update(totalRefs, current[0], (int) Utils.getPercent(current[0]++, totalRefs)));
         }
 
         register("guiRegistry", guiParser.parse());
