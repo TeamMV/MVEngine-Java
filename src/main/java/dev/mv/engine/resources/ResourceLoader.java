@@ -74,7 +74,7 @@ public class ResourceLoader {
     }
 
     public static void load(MVEngine engine, GuiConfig config) throws IOException {
-        load(engine, config, null);
+        load(engine, config, (t, c, p) -> {});
     }
 
     public static void load(MVEngine engine, GuiConfig config, ProgressAction progressAction) throws IOException {

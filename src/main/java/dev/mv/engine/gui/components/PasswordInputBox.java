@@ -17,7 +17,7 @@ public class PasswordInputBox extends InputBox {
         prepareButton(window, parent, -1, -1, width, height);
     }
 
-    public PasswordInputBox(Window window, int x, int y, Element parent, int width, int height) {
+    public PasswordInputBox(Window window, Element parent, int x, int y, int width, int height) {
         super(window, x, y, parent, width - height - 5, height);
         prepareButton(window, parent, x, y, width, height);
     }

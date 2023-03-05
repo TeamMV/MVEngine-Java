@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BatchController3D {
-    private final String VERTEX_PATH = "/assets/mvengine/shaders/3d/geometryPass.vert";
+    private final String VERTEX_PATH = "/assets/mvengine/shaders/3d/default.vert";
     private final String FRAGMENT_PATH = "/assets/mvengine/shaders/3d/default.frag";
     private final List<Batch3D> batches = new ArrayList<>();
     private Shader defaultShader, prebuildDefaultShader;
@@ -70,6 +70,7 @@ public class BatchController3D {
     }
 
     public void finishAndRender() {
+        defaultShader.use();
         for (int i = 0; i <= currentBatch; i++) {
             batches.get(i).finish();
             batches.get(i).render();

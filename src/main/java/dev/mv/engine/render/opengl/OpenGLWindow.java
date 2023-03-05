@@ -2,6 +2,7 @@ package dev.mv.engine.render.opengl;
 
 import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.gui.GuiManager;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.Camera;
@@ -69,8 +70,8 @@ public class OpenGLWindow implements Window {
         render2D = new OpenGLRender2D(this);
         render3D = new OpenGLRender3D(this);
         camera = new Camera();
-        //batchController3D = new BatchController3D(this, 1000);
-        //batchController3D.start();
+        batchController3D = new BatchController3D(this, 1000);
+        batchController3D.start();
         batchController = new BatchController(this, 1000);
         batchController.start();
 
@@ -132,8 +133,8 @@ public class OpenGLWindow implements Window {
 
         glfwShowWindow(window);
 
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        //glEnable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
@@ -147,6 +148,8 @@ public class OpenGLWindow implements Window {
 
             glViewport(0, 0, w, h);
             updateProjection2D();
+
+            GuiManager.sendResizeEvent(w, h);
         });
     }
 

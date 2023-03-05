@@ -6,6 +6,7 @@ import dev.mv.engine.gui.components.animations.ElementAnimator;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.event.*;
 import dev.mv.engine.gui.theme.Theme;
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
@@ -18,6 +19,7 @@ public abstract class Element {
     protected Window window;
     protected List<String> tags;
     protected String id = "";
+    protected VariablePosition position;
     protected ElementAnimation.AnimationState animationState;
     protected ElementAnimation.AnimationState initialState;
     protected ElementAnimator animator;
@@ -33,6 +35,7 @@ public abstract class Element {
 
     protected Element(Window window, int x, int y, int width, int height, Element parent) {
         this.window = window;
+        this.parent = parent;
         animationState = new ElementAnimation.AnimationState();
         animationState.baseColor = new Color(0, 0, 0, 0);
         animationState.outlineColor = new Color(0, 0, 0, 0);
@@ -46,6 +49,41 @@ public abstract class Element {
         initialState.rotation = 0;
         initialState.originX = x + width / 2;
         initialState.originY = y + height / 2;
+        initialState.baseColor = new Color(0, 0, 0, 0);
+        initialState.outlineColor = new Color(0, 0, 0, 0);
+        initialState.textColor = new Color(0, 0, 0, 0);
+        initialState.extraColor = new Color(0, 0, 0, 0);
+        initialState.copyValuesTo(animationState);
+
+        animator = new ElementAnimator(this);
+        animator.setOnFinish(() -> {
+            initialState.copyValuesTo(animationState);
+        });
+
+        clickListeners = new ArrayList<>();
+        keyListeners = new ArrayList<>();
+        textChangeListeners = new ArrayList<>();
+        hoverListeners = new ArrayList<>();
+        scrollListeners = new ArrayList<>();
+        progressListeners = new ArrayList<>();
+    }
+
+    protected Element(Window window, VariablePosition position, Element parent) {
+        this.position = position;
+        this.window = window;
+        animationState = new ElementAnimation.AnimationState();
+        animationState.baseColor = new Color(0, 0, 0, 0);
+        animationState.outlineColor = new Color(0, 0, 0, 0);
+        animationState.textColor = new Color(0, 0, 0, 0);
+        animationState.extraColor = new Color(0, 0, 0, 0);
+        initialState = new ElementAnimation.AnimationState();
+        initialState.posX = position.getX();
+        initialState.posY = position.getY();
+        initialState.width = position.getWidth();
+        initialState.height = position.getHeight();
+        initialState.rotation = 0;
+        initialState.originX = position.getX() + position.getWidth() / 2;
+        initialState.originY = position.getY() + position.getHeight() / 2;
         initialState.baseColor = new Color(0, 0, 0, 0);
         initialState.outlineColor = new Color(0, 0, 0, 0);
         initialState.textColor = new Color(0, 0, 0, 0);
@@ -144,6 +182,16 @@ public abstract class Element {
     public void setHeight(int height) {
         initialState.height = height;
         initialState.originY = initialState.posY + height / 2;
+    }
+
+    public void resize(int width, int height) {
+        if (position != null) {
+            position.resize(width, height);
+            initialState.posX = position.getX();
+            initialState.posY = position.getY();
+            initialState.width = position.getWidth();
+            initialState.height = position.getHeight();
+        }
     }
 
     public Element getParent() {

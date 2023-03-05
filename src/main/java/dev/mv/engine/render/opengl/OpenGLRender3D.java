@@ -12,10 +12,7 @@ import dev.mv.engine.render.shared.shader.light.DirectionalLight;
 import dev.mv.engine.render.shared.shader.light.PointLight;
 import dev.mv.engine.render.shared.shader.light.SpotLight;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -52,6 +49,7 @@ public class OpenGLRender3D implements Render3D {
 
     @Override
     public void retrieveVertexData(int[] indices, float[] data, int vboId, int iboId, Shader shader, int renderMode, int amount) {
+
         if (win == null) {
             throw new IllegalStateException("Window is not set!");
         }

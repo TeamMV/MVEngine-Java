@@ -184,6 +184,12 @@ public class Gui implements Resource {
         }
     }
 
+    public void resize(int width, int height) {
+        for (Element e : elementsDeep()) {
+            e.resize(width, height);
+        }
+    }
+
     public void pressKey(int keyCode) {
         keyPress(keyCode);
     }

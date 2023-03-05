@@ -107,6 +107,13 @@ public class GuiRegistry implements Iterable<Gui>, Resource {
         return Iterable.super.spliterator();
     }
 
+    public void resize(int width, int height) {
+        for (Iterator<Gui> it = toRender(); it.hasNext(); ) {
+            Gui gui = it.next();
+            gui.resize(width, height);
+        }
+    }
+
     public void pressKey(int keyCode) {
         for (Iterator<Gui> it = toRender(); it.hasNext(); ) {
             Gui gui = it.next();

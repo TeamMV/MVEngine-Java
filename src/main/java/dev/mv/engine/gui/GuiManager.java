@@ -22,6 +22,12 @@ public class GuiManager {
         GUIS = guiRegistry;
     }
 
+    public static void sendResizeEvent(int width, int height) {
+        if (GUIS != null) {
+
+        }
+    }
+
     public static void sendInputKeyEvent(int keyCode, InputCollector.KeyAction action, int mods) {
         if (GUIS != null) {
             if (action == InputCollector.KeyAction.TYPE) GUIS.pressKey(keyCode);

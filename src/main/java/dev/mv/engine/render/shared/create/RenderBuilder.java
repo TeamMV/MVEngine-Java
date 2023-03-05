@@ -8,6 +8,7 @@ import dev.mv.engine.render.opengl.OpenGLTextureMap;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.utils.RenderUtils;
+import dev.mv.utils.Utils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -50,7 +51,7 @@ public class RenderBuilder {
 
     public static Texture newTextureMap(BufferedImage image, OpenGLTextureMap.Quality quality) throws IOException {
         if (MVEngine.instance().getRenderingApi() == ApplicationConfig.RenderingAPI.OPENGL) {
-            return new OpenGLTextureMap(image, RenderUtils.nextId("textureMap"), quality);
+            return new OpenGLTextureMap(image, Utils.nextId("textureMap"), quality);
         } else {
             return null;
         }

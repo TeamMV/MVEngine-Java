@@ -1,6 +1,8 @@
 package dev.mv.engine.render.utils;
 
 import dev.mv.engine.render.shared.Color;
+import dev.mv.engine.resources.AssetFileParser;
+import dev.mv.engine.resources.ResourceLoader;
 import dev.mv.utils.Utils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -133,6 +135,7 @@ public class RenderUtils {
         byte[] strBytes = data.getBytes(StandardCharsets.UTF_8);
         System.arraycopy(strBytes, 0, arr, 0, strBytes.length);
         arr[arr.length - 1] = 0b0;
+
         return store(arr);
     }
 
