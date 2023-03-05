@@ -1,5 +1,6 @@
 package dev.mv.engine.gui.components;
 
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.Window;
 
 import java.util.ArrayList;
@@ -22,6 +23,12 @@ public class NumericInputBox extends InputBox {
 
     public NumericInputBox(Window window, int x, int y, int width, int height) {
         super(window, x, y, width, height);
+        prepareList();
+        setAllowedlist(allowedList);
+    }
+
+    public NumericInputBox(Window window, VariablePosition position, Element parent) {
+        super(window, position, parent);
         prepareList();
         setAllowedlist(allowedList);
     }

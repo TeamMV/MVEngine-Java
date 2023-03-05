@@ -2,6 +2,7 @@ package dev.mv.engine.gui.components.layouts;
 
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.extras.IgnoreDraw;
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
@@ -18,6 +19,10 @@ public class VerticalLayout extends FramedLayout {
 
     public VerticalLayout(Window window, int x, int y) {
         super(window, x, y, -1, -1, null);
+    }
+
+    public VerticalLayout(Window window, VariablePosition variablePosition, Element parent) {
+        super(window, variablePosition, parent);
     }
 
     @Override

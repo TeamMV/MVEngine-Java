@@ -1,12 +1,15 @@
 package dev.mv.engine.gui.components.animations;
 
 import dev.mv.engine.gui.components.Element;
+import dev.mv.utils.Utils;
 import dev.mv.utils.async.PromiseNull;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ElementAnimator {
 
     private boolean shouldAnimate;
-    private volatile int currentFrame = 0;
+    private final AtomicInteger currentFrame = new AtomicInteger();
     private boolean shouldAnimateBack;
     private ElementAnimation.AnimationState state;
     private ElementAnimation animation;
@@ -35,13 +38,9 @@ public class ElementAnimator {
         shouldAnimateBack = false;
         isWorking = true;
         new PromiseNull((res, rej) -> {
-            while (currentFrame <= frameCount && shouldAnimate) {
-                currentFrame++;
-                try {
-                    Thread.sleep(milliseconds / frameCount);
-                } catch (InterruptedException e) {
-                    rej.reject(e);
-                }
+            while (currentFrame.get() <= frameCount && shouldAnimate) {
+                currentFrame.getAndIncrement();
+                Utils.await(Utils.sleep(milliseconds / frameCount));
             }
         });
     }
@@ -52,13 +51,9 @@ public class ElementAnimator {
         shouldAnimate = false;
 
         new PromiseNull((res, rej) -> {
-            while (currentFrame >= 0 && shouldAnimateBack) {
-                currentFrame--;
-                try {
-                    Thread.sleep(milliseconds / frameCount);
-                } catch (InterruptedException e) {
-                    rej.reject(e);
-                }
+            while (currentFrame.get() >= 0 && shouldAnimateBack) {
+                currentFrame.getAndDecrement();
+                Utils.await(Utils.sleep(milliseconds / frameCount));
             }
         });
     }
@@ -66,17 +61,17 @@ public class ElementAnimator {
     public void loop(int frameCount) {
         if (shouldAnimate) {
             if (animation != null) {
-                state = animation.transform(currentFrame, frameCount, state);
+                state = animation.transform(currentFrame.get(), frameCount, state);
             }
-            if (currentFrame >= frameCount) {
+            if (currentFrame.get() >= frameCount) {
                 shouldAnimate = false;
             }
         }
         if (shouldAnimateBack) {
             if (animation != null) {
-                state = animation.transformBack(currentFrame, frameCount, state);
+                state = animation.transformBack(currentFrame.get(), frameCount, state);
             }
-            if (currentFrame <= 0) {
+            if (currentFrame.get() <= 0) {
                 shouldAnimateBack = false;
                 isWorking = false;
                 if (onFinish != null) {

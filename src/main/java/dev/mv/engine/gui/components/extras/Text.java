@@ -13,9 +13,5 @@ public interface Text {
 
     void setText(String text);
 
-    void applyAnimation(TextAnimation animation);
-
-    TextAnimator getTextAnimator();
-
     void setUseChroma(boolean chroma);
 }

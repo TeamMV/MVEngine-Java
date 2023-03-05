@@ -4,6 +4,8 @@ import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.parsing.InvalidUnitException;
 import dev.mv.utils.Utils;
 
+import java.awt.*;
+
 public class VariablePosition {
     private int x, y, width, height;
     private PositionCalculator pos;
@@ -85,15 +87,23 @@ public class VariablePosition {
         boolean invert = false;
         int result = 0;
 
+        if (value == null || value.isEmpty()) return 0;
+
         if (value.startsWith("-")) {
             value = value.split("-")[1];
             invert = true;
         }
 
-        if (value.endsWith("px")) {
+        if (value.endsWith("px") || value.matches("[0-9]+")) {
             result = Integer.parseInt(value.replaceAll("px", ""));
         } else if (value.endsWith("%")) {
             result = (int) ((Float.parseFloat(value.replaceAll("%", "")) / 100f) * max);
+        } else if (value.endsWith("in")) {
+            result = (int) (Toolkit.getDefaultToolkit().getScreenResolution() * (float) Integer.parseInt(value.replaceAll("in", "")));
+        } else if (value.endsWith("mm")) {
+            result = (int) (Toolkit.getDefaultToolkit().getScreenResolution() * 25.4f * (float) Integer.parseInt(value.replaceAll("mm", "")));
+        } else if (value.endsWith("cm")) {
+            result = (int) (Toolkit.getDefaultToolkit().getScreenResolution() * 2.54f * (float) Integer.parseInt(value.replaceAll("cm", "")));
         } else {
             MVEngine.Exceptions.__throw__(new InvalidUnitException("Position numbers must either end with \"%\" or \"px\"!"));
         }
@@ -101,6 +111,8 @@ public class VariablePosition {
         if (invert) {
             result = max - result;
         }
+
+        Toolkit.getDefaultToolkit().getScreenResolution();
 
         return result;
     }

@@ -34,7 +34,12 @@ public class Pager {
     private void prepare() {
         if (registry == null) return;
         for (Gui gui : registry) {
-            Transition transition = transitions.get(gui.getName()).a;
+            Transition transition = null;
+            Pair<Transition, Float> transitionPair = transitions.get(gui.getName());
+            if(transitionPair != null) {
+                transition = transitionPair.a;
+            }
+            if(transition == null) return;
             for (Element element : gui.elements()) {
                 for (int i = 0; i < FRAMES; i++) {
                     if (transition.isLinear()) {
@@ -88,6 +93,8 @@ public class Pager {
             Transition transitionTo = transitionToPair.a;
 
             float time = transitionToPair.b;
+
+            if(transitionFrom == null || transitionTo == null) return;
 
             for (int i = 0; i < FRAMES; i++) {
                 if (transitionFrom != null && current != null)

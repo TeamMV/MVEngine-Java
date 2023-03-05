@@ -3,6 +3,7 @@ package dev.mv.engine.gui.components;
 import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.functions.GuiMethod;
 import dev.mv.engine.gui.input.Clickable;
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.utils.Utils;
 
@@ -14,6 +15,10 @@ public abstract class AbstractClickable extends Element implements Clickable {
 
     protected AbstractClickable(Window window, int x, int y, int width, int height, Element parent) {
         super(window, x, y, width, height, parent);
+    }
+
+    protected AbstractClickable(Window window, VariablePosition position, Element parent) {
+        super(window, position, parent);
     }
 
     public void setClickMethod(String name, Class<?>[] paramTypes, Object[] params) {

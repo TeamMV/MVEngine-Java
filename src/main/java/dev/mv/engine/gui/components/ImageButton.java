@@ -1,5 +1,6 @@
 package dev.mv.engine.gui.components;
 
+import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.gui.components.extras.Image;
 import dev.mv.engine.gui.components.extras.Toggle;
 import dev.mv.engine.gui.event.ClickListener;
@@ -7,6 +8,7 @@ import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.input.Clickable;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.texture.Texture;
@@ -26,6 +28,10 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
 
     public ImageButton(Window window, int x, int y, int width, int height) {
         super(window, x, y, width, height, null);
+    }
+
+    public ImageButton(Window window, VariablePosition position, Element parent) {
+        super(window, position, parent);
     }
 
     @Override

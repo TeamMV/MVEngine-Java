@@ -2,6 +2,7 @@ package dev.mv.engine.gui.components.layouts;
 
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.theme.Theme;
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
@@ -19,6 +20,10 @@ public abstract class FramedLayout extends AbstractLayout {
 
     protected FramedLayout(Window window, int x, int y, int width, int height, Element parent) {
         super(window, x, y, width, height, parent);
+    }
+
+    protected FramedLayout(Window window, VariablePosition position, Element parent) {
+        super(window, position, parent);
     }
 
     protected abstract int getElementWidth();

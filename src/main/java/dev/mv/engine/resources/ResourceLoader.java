@@ -2,6 +2,7 @@ package dev.mv.engine.resources;
 
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.Gui;
+import dev.mv.engine.gui.GuiManager;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.parsing.gui.GuiParser;
@@ -98,15 +99,17 @@ public class ResourceLoader {
         while (!dependentRefs.isEmpty()) {
             ResourceReference ref = dependentRefs.poll();
             switch (ref.getType()) {
-                case GUI_LAYOUT -> register(ref.getId(), guiParser.parse(ref.getPath()));
+                case GUI_LAYOUT -> register(ref.getId(), guiParser.parse(null)); //TODO: provide InputStream
                 case GUI_THEME -> register(ref.getId(), themeParser.parse(ref.getPath()));
             }
             Utils.ifNotNull(progressAction).then(p -> p.update(totalRefs, current[0], (int) Utils.getPercent(current[0]++, totalRefs)));
         }
 
-        register("guiRegistry", guiParser.parse());
+        register("default", guiParser.parse());
 
         R.setIsReady(true);
+
+        GuiManager.manage(R.guis.get("default"));
     }
 
     private static void register(String id, Resource resource) {

@@ -29,7 +29,6 @@ public abstract class Element {
     protected List<ClickListener> clickListeners;
     protected List<KeyListener> keyListeners;
     protected List<TextChangeListener> textChangeListeners;
-    protected List<HoverListener> hoverListeners;
     protected List<ScrollListener> scrollListeners;
     protected List<ProgressListener> progressListeners;
 
@@ -63,7 +62,6 @@ public abstract class Element {
         clickListeners = new ArrayList<>();
         keyListeners = new ArrayList<>();
         textChangeListeners = new ArrayList<>();
-        hoverListeners = new ArrayList<>();
         scrollListeners = new ArrayList<>();
         progressListeners = new ArrayList<>();
     }
@@ -98,7 +96,6 @@ public abstract class Element {
         clickListeners = new ArrayList<>();
         keyListeners = new ArrayList<>();
         textChangeListeners = new ArrayList<>();
-        hoverListeners = new ArrayList<>();
         scrollListeners = new ArrayList<>();
         progressListeners = new ArrayList<>();
     }
@@ -187,10 +184,10 @@ public abstract class Element {
     public void resize(int width, int height) {
         if (position != null) {
             position.resize(width, height);
-            initialState.posX = position.getX();
-            initialState.posY = position.getY();
-            initialState.width = position.getWidth();
-            initialState.height = position.getHeight();
+            setX(position.getX());
+            setY(position.getY());
+            setWidth(position.getWidth());
+            setHeight(position.getHeight());
         }
     }
 

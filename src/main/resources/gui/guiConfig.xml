@@ -1,0 +1,15 @@
+<mvt:config xmlns:mvt="">
+    <themePath>
+        <relative>
+            /themes/
+        </relative>
+    </themePath>
+    <layoutPath>
+        <relative>
+            /layouts/
+        </relative>
+    </layoutPath>
+    <layouts>
+        <layout>testLayout.xml</layout>
+    </layouts>
+</mvt:config>

@@ -14,9 +14,11 @@ import dev.mv.engine.gui.functions.Language;
 import dev.mv.engine.gui.input.Clickable;
 import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.parsing.InvalidGuiFileException;
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.resources.R;
+import dev.mv.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,6 +26,7 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +51,8 @@ public class GuiParser {
     public GuiRegistry parse() {
         GuiRegistry returnRegistry = new GuiRegistry();
         for (String layout : layouts) {
-            returnRegistry.addGui(parse(layout));
+            returnRegistry.addGui(parse(getClass().getResourceAsStream(layoutPath + layout)));
+            System.out.println(layoutPath + layout);
         }
 
         currentRefLookup.clear();
@@ -56,11 +60,11 @@ public class GuiParser {
         return returnRegistry;
     }
 
-    public Gui parse(String path) {
+    public Gui parse(InputStream stream) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(getClass().getResourceAsStream(layoutPath + path));
+            Document document = builder.parse(stream);
             document.getDocumentElement().normalize();
 
             if (!document.getDocumentElement().getTagName().equals("gui")) {
@@ -180,34 +184,40 @@ public class GuiParser {
     private ParsedClickMethod parseClickMethod(String query, Class<? extends Clickable> clazz) {
         ParsedClickMethod method = new ParsedClickMethod();
         method.name = query.split("\\(")[0];
-        String[] params = query.split("\\(")[1].split("\\)")[0].replaceAll("//s+", "").split(",");
-        method.types = new Class<?>[params.length];
-        method.params = new Object[params.length];
-        for (int i = 0; i < params.length; i++) {
-            String param = params[i];
-            if (param.equals("this")) {
-                method.addSelf = true;
-                method.types[i] = clazz;
-                method.params[i] = null;
-                method.selfPos = i;
-                continue;
+        if (query.split("\\(")[1].length() > 1) {
+            String[] params = query.split("\\(")[1].split("\\)")[0].replaceAll("//s+", "").split(",");
+            method.types = new Class<?>[params.length];
+            method.params = new Object[params.length];
+            for (int i = 0; i < params.length; i++) {
+                String param = params[i];
+                if (param.equals("this")) {
+                    method.addSelf = true;
+                    method.types[i] = clazz;
+                    method.params[i] = null;
+                    method.selfPos = i;
+                    continue;
+                }
+                if (param.matches("\\$VAR\\([a-zA-Z0-9 ]+\\)")) {
+                    param = getVariable(param);
+                }
+                Class<?> type = inferType(param);
+                method.types[i] = type;
+                if (type == String.class) {
+                    method.params[i] = param.substring(1, param.length() - 1);
+                } else if (type == int.class) {
+                    method.params[i] = Integer.parseInt(param);
+                } else if (type == long.class) {
+                    method.params[i] = Long.parseLong(param.replaceAll("L", ""));
+                } else if (type == float.class) {
+                    method.params[i] = Float.parseFloat(param.replaceAll("f", ""));
+                } else if (type == double.class) {
+                    method.params[i] = Double.parseDouble(param);
+                }
             }
-            if (param.matches("\\$VAR\\([a-zA-Z0-9 ]+\\)")) {
-                param = getVariable(param);
-            }
-            Class<?> type = inferType(param);
-            method.types[i] = type;
-            if (type == String.class) {
-                method.params[i] = param.substring(1, param.length() - 1);
-            } else if (type == int.class) {
-                method.params[i] = Integer.parseInt(param);
-            } else if (type == long.class) {
-                method.params[i] = Long.parseLong(param.replaceAll("L", ""));
-            } else if (type == float.class) {
-                method.params[i] = Float.parseFloat(param.replaceAll("f", ""));
-            } else if (type == double.class) {
-                method.params[i] = Double.parseDouble(param);
-            }
+        }
+        else {
+            method.types = new Class<?>[0];
+            method.params = new Object[0];
         }
         return method;
     }
@@ -240,6 +250,8 @@ public class GuiParser {
             case "horizontalLayout" -> parseHorizontalLayout(elementTag);
             case "collapseMenu" -> parseCollapseMenu(elementTag);
             case "choiceGroup" -> parseChoiceGroup(elementTag);
+            case "aligner" -> parseAligner(elementTag);
+            case "picture" -> parsePicture(elementTag);
             case "ref" -> resolveRef(elementTag);
             case "var" -> {
                 parseVariable(elementTag);
@@ -332,20 +344,20 @@ public class GuiParser {
 
     //elements
     private TextLine parseTextLine(Element tag) {
-        TextLine line = new TextLine(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
-            getIntAttrib(tag.getAttribute("height")));
+        TextLine line = new TextLine(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            null, getStringAttrib(tag.getAttribute("height"))), null);
         line.setText(tag.getTextContent());
         return line;
     }
 
     private Button parseButton(Element tag) {
-        Button button = new Button(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
-            getIntAttrib(tag.getAttribute("width")),
-            getIntAttrib(tag.getAttribute("height")));
+        Button button = new Button(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
         button.setText(tag.getTextContent());
         if (tag.hasAttribute("onclick") || tag.hasAttribute("onClick")) {
             String methodStr = tag.hasAttribute("onclick") ? tag.getAttribute("onclick") : tag.getAttribute("onClick");
@@ -357,11 +369,11 @@ public class GuiParser {
     }
 
     private ImageButton parseImageButton(Element tag) {
-        ImageButton imageButton = new ImageButton(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
-            getIntAttrib(tag.getAttribute("width")),
-            getIntAttrib(tag.getAttribute("height")));
+        ImageButton imageButton = new ImageButton(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
         if (tag.hasAttribute("texture")) {
             imageButton.setTexture(R.textures.get(getStringAttrib(tag.getAttribute("texture"))));
         }
@@ -369,21 +381,21 @@ public class GuiParser {
     }
 
     private Checkbox parseCheckbox(Element tag) {
-        Checkbox checkbox = new Checkbox(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
-            getIntAttrib(tag.getAttribute("width")),
-            getIntAttrib(tag.getAttribute("height")));
+        Checkbox checkbox = new Checkbox(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
         checkbox.setText(getStringAttrib(tag.getTextContent()));
         return checkbox;
     }
 
     private ProgressBar parseProgressBar(Element tag) {
-        ProgressBar progressBar = new ProgressBar(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
-            getIntAttrib(tag.getAttribute("width")),
-            getIntAttrib(tag.getAttribute("height")));
+        ProgressBar progressBar = new ProgressBar(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
         if (tag.hasAttribute("maxValue")) {
             progressBar.setTotalValue(getIntAttrib(tag.getAttribute("maxValue")));
         }
@@ -395,11 +407,11 @@ public class GuiParser {
     }
 
     private InputBox parseInputBox(Element tag) {
-        InputBox inputBox = new InputBox(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
-            getIntAttrib(tag.getAttribute("width")),
-            getIntAttrib(tag.getAttribute("height")));
+        InputBox inputBox = new InputBox(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
         inputBox.setPlaceholderText(getStringAttrib(tag.getTextContent()));
         if (tag.hasAttribute("limit")) {
             inputBox.setLimit(getIntAttrib(tag.getAttribute("limit")));
@@ -408,11 +420,11 @@ public class GuiParser {
     }
 
     private NumericInputBox parseNumericInputBox(Element tag) {
-        NumericInputBox numericInputBox = new NumericInputBox(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
-            getIntAttrib(tag.getAttribute("width")),
-            getIntAttrib(tag.getAttribute("height")));
+        NumericInputBox numericInputBox = new NumericInputBox(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
         numericInputBox.setPlaceholderText(getStringAttrib(tag.getTextContent()));
         if (tag.hasAttribute("limit")) {
             numericInputBox.setLimit(getIntAttrib(tag.getAttribute("limit")));
@@ -421,11 +433,11 @@ public class GuiParser {
     }
 
     private PasswordInputBox parsePasswordInputBox(Element tag) {
-        PasswordInputBox passwordInputBox = new PasswordInputBox(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
-            getIntAttrib(tag.getAttribute("width")),
-            getIntAttrib(tag.getAttribute("height")));
+        PasswordInputBox passwordInputBox = new PasswordInputBox(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
         passwordInputBox.setPlaceholderText(getStringAttrib(tag.getTextContent()));
         if (tag.hasAttribute("limit")) {
             passwordInputBox.setLimit(getIntAttrib(tag.getAttribute("limit")));
@@ -433,7 +445,7 @@ public class GuiParser {
         return passwordInputBox;
     }
 
-    private dev.mv.engine.gui.components.Element parseInput(Element tag) {
+    private InputBox parseInput(Element tag) {
         return switch (tag.getAttribute("type")) {
             default -> null;
             case "string" -> parseInputBox(tag);
@@ -443,28 +455,28 @@ public class GuiParser {
     }
 
     private Separator parseSeparator(Element tag) {
-        Separator separator = new Separator(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
-            getIntAttrib(tag.getAttribute("width")),
-            getIntAttrib(tag.getAttribute("height")));
+        Separator separator = new Separator(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
         return separator;
     }
 
     private Space parseSpace(Element tag) {
-        Space separator = new Space(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
-            getIntAttrib(tag.getAttribute("width")),
-            getIntAttrib(tag.getAttribute("height")));
+        Space separator = new Space(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
         return separator;
     }
 
     //layouts
     private VerticalLayout parseVerticalLayout(Element tag) {
-        VerticalLayout layout = new VerticalLayout(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0);
+        VerticalLayout layout = new VerticalLayout(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")), null, null), null);
 
         if (tag.hasAttribute("spacing")) {
             layout.setSpacing(getIntAttrib(tag.getAttribute("spacing")));
@@ -514,9 +526,10 @@ public class GuiParser {
     }
 
     private HorizontalLayout parseHorizontalLayout(Element tag) {
-        HorizontalLayout layout = new HorizontalLayout(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0);
+        HorizontalLayout layout = new HorizontalLayout(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            null, null), null);
 
         if (tag.hasAttribute("spacing")) {
             layout.setSpacing(getIntAttrib(tag.getAttribute("spacing")));
@@ -567,10 +580,11 @@ public class GuiParser {
 
     private CollapseMenu parseCollapseMenu(Element tag) {
         CollapseMenu layout = new CollapseMenu(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
-            getIntAttrib(tag.getAttribute("width")),
-            getIntAttrib(tag.getAttribute("height")), null);
+            VariablePosition.getPosition(
+                getStringAttrib(tag.getAttribute("x")),
+                getStringAttrib(tag.getAttribute("y")),
+                getStringAttrib(tag.getAttribute("width")),
+                getStringAttrib(tag.getAttribute("height"))), null);
 
         layout.setText(getStringAttrib(tag.getAttribute("title")));
 
@@ -588,11 +602,11 @@ public class GuiParser {
     }
 
     private Choice parseChoice(Element tag) {
-        Choice choice = new Choice(window,
-            tag.hasAttribute("x") ? getIntAttrib(tag.getAttribute("x")) : 0,
-            tag.hasAttribute("y") ? getIntAttrib(tag.getAttribute("y")) : 0,
-            getIntAttrib(tag.getAttribute("width")),
-            getIntAttrib(tag.getAttribute("height")));
+        Choice choice = new Choice(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
         choice.setText(getStringAttrib(tag.getTextContent()));
         return choice;
     }
@@ -613,6 +627,47 @@ public class GuiParser {
         }
 
         return choiceGroup;
+    }
+
+    private Aligner parseAligner(Element tag) {
+        Aligner aligner = new Aligner(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
+
+        if (tag.hasAttribute("alignX")) {
+            aligner.setAlignX(Aligner.AlignX.valueOf(getStringAttrib(tag.getAttribute("alignX"))));
+        }
+        if (tag.hasAttribute("alignY")) {
+            aligner.setAlignY(Aligner.AlignY.valueOf(getStringAttrib(tag.getAttribute("alignY"))));
+        }
+
+        if (tag.hasChildNodes()) {
+            NodeList nodeList = tag.getChildNodes();
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node element = nodeList.item(i);
+                if (element.getNodeType() == Node.ELEMENT_NODE) {
+                    aligner.addElement(parseElement((Element) element));
+                }
+            }
+        }
+
+        return aligner;
+    }
+
+    private Picture parsePicture(Element tag) {
+        Picture picture = new Picture(window, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
+
+        if(tag.hasAttribute("texture")) {
+            picture.setTexture(R.textures.get(getStringAttrib(tag.getAttribute("texture"))));
+        }
+
+        return picture;
     }
 
     private class Reference {

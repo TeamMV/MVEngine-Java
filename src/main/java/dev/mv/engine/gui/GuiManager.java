@@ -24,7 +24,7 @@ public class GuiManager {
 
     public static void sendResizeEvent(int width, int height) {
         if (GUIS != null) {
-
+            GUIS.resize(width, height);
         }
     }
 

@@ -4,6 +4,7 @@ import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.gui.components.layouts.ChoiceGroup;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
@@ -27,6 +28,10 @@ public class Choice extends Checkbox {
     public Choice(Window window, int x, int y, int width, int height) {
         super(window, x, y, width, height);
         setTexture(GuiAssets.DOT);
+    }
+
+    public Choice(Window window, VariablePosition position, Element parent) {
+        super(window, position, parent);
     }
 
     @Override

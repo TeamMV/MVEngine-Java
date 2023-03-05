@@ -5,6 +5,7 @@ import dev.mv.engine.gui.components.animations.TextAnimator;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.event.TextChangeListener;
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
@@ -34,6 +35,10 @@ public class TextLine extends Element implements Text {
         super(window, x, y, width, height, parent);
     }
 
+    public TextLine(Window window, VariablePosition position, Element parent) {
+        super(window, position, parent);
+    }
+
     @Override
     public void draw(DrawContext2D draw) {
         draw.color(animationState.textColor);
@@ -59,16 +64,6 @@ public class TextLine extends Element implements Text {
         this.text = text;
         if (font == null) return;
         initialState.width = font.getWidth(text, getHeight());
-    }
-
-    @Override
-    public void applyAnimation(TextAnimation animation) {
-
-    }
-
-    @Override
-    public TextAnimator getTextAnimator() {
-        return null;
     }
 
     @Override

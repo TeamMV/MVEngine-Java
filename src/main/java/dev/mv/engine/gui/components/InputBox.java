@@ -11,6 +11,7 @@ import dev.mv.engine.gui.input.Clickable;
 import dev.mv.engine.gui.input.Keyboard;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
@@ -41,6 +42,10 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
 
     public InputBox(Window window, int x, int y, int width, int height) {
         super(window, x, y, width, height, null);
+    }
+
+    public InputBox(Window window, VariablePosition position, Element parent) {
+        super(window, position, parent);
     }
 
     public int getLimit() {
@@ -279,16 +284,6 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     @Override
     public void setText(String text) {
         actualText = text;
-    }
-
-    @Override
-    public void applyAnimation(TextAnimation animation) {
-
-    }
-
-    @Override
-    public TextAnimator getTextAnimator() {
-        return null;
     }
 
     @Override

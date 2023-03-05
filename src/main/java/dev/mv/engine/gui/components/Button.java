@@ -9,6 +9,7 @@ import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.input.Clickable;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
@@ -17,22 +18,22 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
     private String text;
     private BitmapFont font;
     private boolean enabled = true;
-    private TextAnimator textAnimator;
     private boolean chroma;
 
     public Button(Window window, Element parent, int width, int height) {
         super(window, -1, -1, width, height, parent);
-        textAnimator = new TextAnimator(height - textDistance() * 2, parent.getX(), parent.getY());
     }
 
     public Button(Window window, int x, int y, Element parent, int width, int height) {
         super(window, x, y, width, height, parent);
-        textAnimator = new TextAnimator(height - textDistance() * 2, x, y);
     }
 
     public Button(Window window, int x, int y, int width, int height) {
         super(window, x, y, width, height, null);
-        textAnimator = new TextAnimator(height - textDistance() * 2, x, y);
+    }
+
+    public Button(Window window, VariablePosition position, Element parent) {
+        super(window, position, parent);
     }
 
     @Override
@@ -57,21 +58,10 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
     @Override
     public void setText(String text) {
         this.text = text;
-        textAnimator.apply(text);
         if (font == null) return;
         if (initialState.width < font.getWidth(text, initialState.height - textDistance()) + textDistance()) {
             setWidth(font.getWidth(text, initialState.height - textDistance()) + textDistance());
         }
-    }
-
-    @Override
-    public void applyAnimation(TextAnimation animation) {
-        this.textAnimator.setAnimation(animation);
-    }
-
-    @Override
-    public TextAnimator getTextAnimator() {
-        return textAnimator;
     }
 
     @Override
@@ -82,9 +72,6 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
     @Override
     public void draw(DrawContext2D draw) {
         checkAnimations();
-        textAnimator.setX(animationState.posX + textDistance());
-        textAnimator.setY(animationState.posY + textDistance());
-        textAnimator.setHeight(animationState.height - textDistance() * 2);
 
         if (theme.getEdgeStyle() == Theme.EdgeStyle.ROUND) {
             if (theme.hasOutline()) {
@@ -146,9 +133,6 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
         }
         if (!enabled) {
             draw.color(theme.getDisabledTextColor());
-        }
-        if (textAnimator.isAnimationsSet() && textAnimator.isAnimating()) {
-            draw.animatedText(textAnimator, font, animationState.rotation, animationState.originX, animationState.originY);
         } else {
             draw.text(chroma, animationState.posX + animationState.width / 2 - font.getWidth(text, animationState.height - textDistance() * 2) / 2, animationState.posY + textDistance(), animationState.height - textDistance() * 2, text, font, animationState.rotation, animationState.originX, animationState.originY);
         }

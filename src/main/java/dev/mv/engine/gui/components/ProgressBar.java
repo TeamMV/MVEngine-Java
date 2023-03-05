@@ -5,6 +5,7 @@ import dev.mv.engine.gui.components.extras.ValueChange;
 import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.event.ProgressListener;
 import dev.mv.engine.gui.theme.Theme;
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.utils.Utils;
@@ -24,6 +25,10 @@ public class ProgressBar extends Element implements Toggle, ValueChange {
 
     public ProgressBar(Window window, int x, int y, int width, int height) {
         super(window, x, y, width, height, null);
+    }
+
+    public ProgressBar(Window window, VariablePosition position, Element parent) {
+        super(window, position, parent);
     }
 
     public float getCurrentValue() {

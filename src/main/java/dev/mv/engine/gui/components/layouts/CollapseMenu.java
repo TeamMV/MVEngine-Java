@@ -12,6 +12,7 @@ import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.GuiUtils;
+import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
@@ -44,11 +45,16 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
         prepareElements();
     }
 
+    public CollapseMenu(Window window, VariablePosition position, Element parent) {
+        super(window, position, parent);
+        prepareElements();
+    }
+
     private void prepareElements() {
         layerSection = new LayerSection(window, null);
         layerSection.setLayerToRenderOn(1);
         updateSection = new UpdateSection(window, layerSection);
-        rootLayout = new HorizontalLayout(window, getX(), getY());
+        rootLayout = new HorizontalLayout(window, this);
         rootLayout.alignContent(HorizontalLayout.Align.TOP);
         stackLayout = new VerticalLayout(window, rootLayout);
         stackLayout.setSpacing(5);
@@ -156,16 +162,6 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     @Override
     public void setText(String text) {
         collapseButtonText.setText(text);
-    }
-
-    @Override
-    public void applyAnimation(TextAnimation animation) {
-
-    }
-
-    @Override
-    public TextAnimator getTextAnimator() {
-        return null;
     }
 
     @Override

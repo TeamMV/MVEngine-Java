@@ -4,8 +4,22 @@ import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.files.Directory;
 import dev.mv.engine.files.FileManager;
+import dev.mv.engine.gui.GuiRegistry;
+import dev.mv.engine.gui.components.Aligner;
+import dev.mv.engine.gui.components.Button;
+import dev.mv.engine.gui.components.ImageButton;
+import dev.mv.engine.gui.parsing.GuiConfig;
+import dev.mv.engine.gui.screens.Pager;
+import dev.mv.engine.gui.screens.transitions.LinearShiftTransition;
+import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.*;
 import dev.mv.engine.render.shared.models.ObjectLoader;
+import dev.mv.engine.resources.R;
+import dev.mv.engine.resources.ResourceLoader;
+import dev.mv.utils.generic.Pair;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 public class Test implements ApplicationLoop {
 
@@ -29,6 +43,29 @@ public class Test implements ApplicationLoop {
         camera.setSpeed(0.2f);
         cameraController = new DefaultCameraController(camera);
         objectLoader = engine.getObjectLoader();
+
+        try {
+            ResourceLoader.markTheme("defaultTheme", "testTheme.xml");
+            ResourceLoader.markFont("defaultFont", "/assets/mvengine/defaultfont.png", "/assets/mvengine/defaultfont.fnt");
+            ResourceLoader.load(engine, new GuiConfig("/gui/guiConfig.xml"));
+            GuiRegistry registry = R.guis.get("default");
+            registry.applyRenderer(ctx2D);
+            Pager pager = new Pager(window);
+            pager.map(new HashMap<>(){
+                {
+                    put("myGui", new Pair<>(new LinearShiftTransition(0, 0), 0.5f));
+                }
+            });
+            registry.applyPager(pager);
+            registry.swap("", "myGui");
+            Theme theme = R.themes.get("defaultTheme");
+            theme.setFont(R.fonts.get("defaultFont"));
+            System.out.println(theme.getBaseColor());
+            registry.applyTheme(theme);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        R.guis.get("default").findGui("myGui").getRoot().<Button>findElementById("chromaButton").setUseChroma(true);
     }
 
     @Override
@@ -38,14 +75,7 @@ public class Test implements ApplicationLoop {
 
     @Override
     public void draw(MVEngine engine, Window window) {
-        ctx3D.color(Color.RED);
-        ctx3D.point(0, -3, 0);
-        ctx3D.point(0, -3, -50);
-        ctx3D.point(50, -3, -50);
-
-        ctx2D.color(255, 255, 0, 100);
-        ctx2D.rectangle(100, 100, 100, 100);
-
+        R.guis.get("default").renderGuis();
         cameraController.update();
     }
 

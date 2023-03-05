@@ -44,6 +44,7 @@ public class Gui implements Resource {
     public void applyRenderer(DrawContext2D drawContext2D) {
         this.drawContext = drawContext2D;
         root.setWindow(drawContext.getWindow());
+        this.resize(drawContext2D.getWindow().getWidth(), drawContext2D.getWindow().getHeight());
     }
 
     public String getName() {
