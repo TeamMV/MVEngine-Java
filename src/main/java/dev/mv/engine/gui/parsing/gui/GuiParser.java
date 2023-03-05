@@ -16,6 +16,7 @@ import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.parsing.InvalidGuiFileException;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
+import dev.mv.engine.resources.R;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -44,12 +45,10 @@ public class GuiParser {
         currentRefLookup = new HashMap<>();
     }
 
-    public GuiRegistry parse(Window window, DrawContext2D drawContext2D) {
-        this.window = window;
-
+    public GuiRegistry parse() {
         GuiRegistry returnRegistry = new GuiRegistry();
         for (String layout : layouts) {
-            returnRegistry.addGui(parse(layout, drawContext2D));
+            returnRegistry.addGui(parse(layout));
         }
 
         currentRefLookup.clear();
@@ -57,7 +56,7 @@ public class GuiParser {
         return returnRegistry;
     }
 
-    public Gui parse(String path, DrawContext2D drawContext2D) {
+    public Gui parse(String path) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -68,7 +67,7 @@ public class GuiParser {
                 MVEngine.Exceptions.__throw__(new InvalidGuiFileException("Root should be \"gui\""));
             }
 
-            Gui gui = new Gui(drawContext2D, window, document.getDocumentElement().getAttribute("name"));
+            Gui gui = new Gui(document.getDocumentElement().getAttribute("name"));
 
             NodeList tags = document.getDocumentElement().getChildNodes();
 
@@ -364,7 +363,7 @@ public class GuiParser {
             getIntAttrib(tag.getAttribute("width")),
             getIntAttrib(tag.getAttribute("height")));
         if (tag.hasAttribute("texture")) {
-            imageButton.setTexture(GuiManager.getTexture(getStringAttrib(tag.getAttribute("texture"))));
+            imageButton.setTexture(R.textures.get(getStringAttrib(tag.getAttribute("texture"))));
         }
         return imageButton;
     }

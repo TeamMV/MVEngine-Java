@@ -3,6 +3,7 @@ package dev.mv.engine.render.shared.font;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.texture.Texture;
+import dev.mv.engine.resources.Resource;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -14,7 +15,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BitmapFont {
+public class BitmapFont implements Resource {
     private Map<Integer, Glyph> chars;
     private Texture bitmap;
     private int maxWidth = 0, maxHeight = 0, maxXOff = 0, maxYOff = 0;

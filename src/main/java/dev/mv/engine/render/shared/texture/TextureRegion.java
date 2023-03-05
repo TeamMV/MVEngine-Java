@@ -1,6 +1,8 @@
 package dev.mv.engine.render.shared.texture;
 
-public class TextureRegion {
+import dev.mv.engine.resources.Resource;
+
+public class TextureRegion implements Resource {
     Texture tex;
     private int id;
     private int width;

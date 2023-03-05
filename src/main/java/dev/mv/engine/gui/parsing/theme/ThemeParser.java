@@ -6,6 +6,7 @@ import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.parsing.InvalidGuiFileException;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.Color;
+import dev.mv.engine.resources.ResourceLoader;
 import dev.mv.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -378,59 +379,6 @@ public class ThemeParser {
     }
 
     private Color parseColor(String color) {
-        if (color.startsWith("#")) {
-            color = color.replaceAll("#", "");
-            if (!color.matches("-?[0-9a-fA-F]+")) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + currentFile + " Color parser: # colors must be hexadecimal characters!"));
-            }
-            String[] colors = color.split("(?<=\\G.{2})");
-            if (colors.length < 3 || colors.length > 4) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + currentFile + " Color parser: # colors must contain 6 or 8 characters!"));
-            }
-            int r = Integer.parseInt(colors[0], 16);
-            int g = Integer.parseInt(colors[1], 16);
-            int b = Integer.parseInt(colors[2], 16);
-            int a = 255;
-            if (colors.length == 4) {
-                a = Integer.parseInt(colors[3], 16);
-            }
-            return new Color(r, g, b, a);
-        } else if (color.startsWith("0x")) {
-            color = color.replaceAll("0x", "");
-            if (!color.matches("-?[0-9a-fA-F]+")) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + currentFile + " Color parser: 0x colors must be hexadecimal characters!"));
-            }
-            String[] colors = color.split("(?<=\\G.{2})");
-            if (colors.length < 3 || colors.length > 4) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + currentFile + " Color parser: 0x colors must contain 6 or 8 characters!"));
-            }
-            int r = Integer.parseInt(colors[0], 16);
-            int g = Integer.parseInt(colors[1], 16);
-            int b = Integer.parseInt(colors[2], 16);
-            int a = 255;
-            if (colors.length == 4) {
-                a = Integer.parseInt(colors[3], 16);
-            }
-            return new Color(r, g, b, a);
-        } else {
-            String split = ",";
-            if (color.contains(" ") && color.contains(",")) {
-                color = color.replaceAll(" ", "");
-            } else if (color.contains(" ")) {
-                split = " ";
-            }
-            String[] colors = color.replaceAll(" ", "").split(split);
-            if (colors.length < 3 || colors.length > 4) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("GUI | " + currentFile + " Color parser: colors must contain 3 or 4 sets of numbers!"));
-            }
-            int r = Integer.parseInt(colors[0]);
-            int g = Integer.parseInt(colors[1]);
-            int b = Integer.parseInt(colors[2]);
-            int a = 255;
-            if (colors.length == 4) {
-                a = Integer.parseInt(colors[3]);
-            }
-            return new Color(r, g, b, a);
-        }
+        return Color.parse(color);
     }
 }

@@ -1,4 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <assets>
+    <files>
+        <file name="terrainSheet" src="/images/terrainSheet.png"/>
+        <file name="FreeSansFNT" src="/fonts/FreeSans.fnt"/>
+        <file name="FreeSansPNG" src="/fonts/FreeSans.png"/>
+        <file name="CharacterFile" src="/models/character/character.obj"/>
+        <file name="layout_MainMenu" src="/gui/layouts/mainmenu.xml"/>
+        <file name="FIGuiTheme" src="/gui/themes/fi.xml"/>
+    </files>
 
+    <textures>
+        <texture resId="sheet" file="terrainSheet"/>
+        <texture resId="grass" texture="sheet" x="0" y="0" width="32" height="32"/>
+    </textures>
+
+    <colors>
+        <color resId="red">255, 0, 0, 255</color>
+    </colors>
+
+    <fonts>
+        <font resId="FreeSans" pngFile="FreeSansPNG" fntFile="FreeSansFNT"/>
+    </fonts>
+
+    <models>
+        <model resId="character" file="CharacterFile"/>
+    </models>
+
+    <gui>
+        <layouts>
+            <layout resId="MainMenu" file="layout_MainMenu"/>
+        </layouts>
+        <themes>
+            <theme resId="FITheme" file="FIGuiTheme"/>
+        </themes>
+    </gui>
 </assets>

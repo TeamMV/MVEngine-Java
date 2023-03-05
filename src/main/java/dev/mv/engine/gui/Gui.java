@@ -12,8 +12,7 @@ import dev.mv.engine.gui.functions.GuiScript;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
-import dev.mv.engine.render.shared.Window;
-import org.jetbrains.annotations.NotNull;
+import dev.mv.engine.resources.Resource;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class Gui {
+public class Gui implements Resource {
     private DrawContext2D drawContext;
     private Theme theme = null;
     private String name;
@@ -30,10 +29,9 @@ public class Gui {
     private List<List<LayerSection>> layers;
     private List<GuiScript> scripts;
 
-    public Gui(@NotNull DrawContext2D drawContext, Window window, String name) {
-        this.drawContext = drawContext;
+    public Gui(String name) {
         this.name = name;
-        root = new UpdateSection(window, null);
+        root = new UpdateSection(null, null);
         root.setGui(this);
         root.setId("root");
         layers = new ArrayList<>(10);
@@ -41,6 +39,11 @@ public class Gui {
             layers.add(new ArrayList<>());
         }
         scripts = new ArrayList<>();
+    }
+
+    public void applyRenderer(DrawContext2D drawContext2D) {
+        this.drawContext = drawContext2D;
+        root.setWindow(drawContext.getWindow());
     }
 
     public String getName() {

@@ -1,5 +1,7 @@
 package dev.mv.engine.render.utils;
 
+import dev.mv.engine.render.shared.Color;
+import dev.mv.utils.Utils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -20,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.lwjgl.system.MemoryStack.stackGet;
 
 public class RenderUtils {
-    private static Map<String, AtomicInteger> counter = new HashMap<>();
 
     public static FloatBuffer store(float... data) {
         FloatBuffer buffer = MemoryUtil.memAllocFloat(data.length);
@@ -185,14 +186,5 @@ public class RenderUtils {
             return (T) out;
         }
         return null;
-    }
-
-    public static int nextId(String use) {
-        try {
-            return counter.get(use).getAndIncrement();
-        } catch (NullPointerException e) {
-            counter.put(use, new AtomicInteger(0));
-            return 0;
-        }
     }
 }

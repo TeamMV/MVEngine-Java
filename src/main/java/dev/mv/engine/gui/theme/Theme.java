@@ -4,8 +4,9 @@ import dev.mv.engine.gui.components.animations.ElementAnimation;
 import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.Gradient;
 import dev.mv.engine.render.shared.font.BitmapFont;
+import dev.mv.engine.resources.Resource;
 
-public class Theme {
+public class Theme implements Resource {
     //font
 
     private BitmapFont font;

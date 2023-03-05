@@ -2,12 +2,14 @@ package dev.mv.engine.gui;
 
 import dev.mv.engine.gui.screens.Pager;
 import dev.mv.engine.gui.theme.Theme;
+import dev.mv.engine.render.shared.DrawContext2D;
+import dev.mv.engine.resources.Resource;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class GuiRegistry implements Iterable<Gui> {
+public class GuiRegistry implements Iterable<Gui>, Resource {
     private Map<String, Gui> guiMap;
     private Pager pager;
     private List<Gui> toRender;
@@ -43,6 +45,10 @@ public class GuiRegistry implements Iterable<Gui> {
 
     public Gui[] getGuis() {
         return guiMap.values().toArray(new Gui[0]);
+    }
+
+    public void applyRenderer(DrawContext2D drawContext2D) {
+        forEach(gui -> gui.applyRenderer(drawContext2D));
     }
 
     public void applyPager(Pager pager) {

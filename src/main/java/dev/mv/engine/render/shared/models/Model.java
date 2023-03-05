@@ -1,8 +1,9 @@
 package dev.mv.engine.render.shared.models;
 
 import dev.mv.engine.render.shared.texture.Texture;
+import dev.mv.engine.resources.Resource;
 
-public class Model {
+public class Model implements Resource {
     public Maps maps = new Maps();
     private int voaID;
     private int vertexCount;

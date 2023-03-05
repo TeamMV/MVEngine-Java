@@ -15,7 +15,6 @@ import static dev.mv.engine.input.Input.*;
 //its good like this
 public class GuiManager {
     private static GuiRegistry GUIS = null;
-    private static Map<String, TextureRegion> registeredTextures = new HashMap<>();
     private GuiManager() {
     }
 
@@ -38,13 +37,5 @@ public class GuiManager {
         if (GUIS != null) {
             GUIS.typeKey(charCode);
         }
-    }
-
-    public static void registerTexture(String textId, TextureRegion texture) {
-        registeredTextures.put(textId, texture);
-    }
-
-    public static TextureRegion getTexture(String textId) {
-        return registeredTextures.get(textId);
     }
 }

@@ -24,6 +24,10 @@ public class DrawContext2D {
     private Vector4f canvas;
     private Window window;
 
+    public Window getWindow() {
+        return window;
+    }
+
     public DrawContext2D(Window window) {
         this.window = window;
         gradient = new Gradient();
