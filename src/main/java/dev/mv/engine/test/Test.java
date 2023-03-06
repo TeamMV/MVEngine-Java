@@ -65,12 +65,11 @@ public class Test implements ApplicationLoop {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        R.guis.get("default").findGui("myGui").getRoot().<Button>findElementById("chromaButton").setUseChroma(true);
     }
 
     @Override
     public void update(MVEngine engine, Window window) {
-
+        //System.out.println(R.guis.get("default").findGui("myGui").getRoot().<Aligner>findElementById("aligner").getWidth());
     }
 
     @Override

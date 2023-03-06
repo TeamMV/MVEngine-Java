@@ -276,4 +276,12 @@ public class Gui implements Resource {
         }
         return null;
     }
+
+    public GuiScript[] getScripts() {
+        return scripts.toArray(new GuiScript[0]);
+    }
+
+    public List<GuiScript> getScriptsList() {
+        return scripts;
+    }
 }

@@ -1,5 +1,11 @@
 package dev.mv.engine.render.shared;
 
+import dev.mv.engine.resources.R;
+import dev.mv.utils.Utils;
+
+import java.util.Arrays;
+import java.util.Random;
+
 public class NormalizedColor {
 
     float r, g, b, a;
@@ -48,10 +54,22 @@ public class NormalizedColor {
     }
     
     public NormalizedColor set(float r, float g, float b, float a) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
+        if(r < 1f)
+            this.r = r;
+        else
+            this.r = r / 255f;
+        if(g < 1f)
+            this.g = g;
+        else
+            this.g = g / 255f;
+        if(b < 1f)
+            this.b = b;
+        else
+            this.b = b / 255f;
+        if(a < 1f)
+            this.a = a;
+        else
+            this.a = a / 255f;
         return this;
     }
 
@@ -75,5 +93,15 @@ public class NormalizedColor {
         float g = rgb[1] * 255;
         float b = rgb[2] * 255;
         return set(r, g, b, 1f);
+    }
+
+    @Override
+    public String toString() {
+        return "NormalizedColor{" +
+            "r=" + r +
+            ", g=" + g +
+            ", b=" + b +
+            ", a=" + a +
+            '}';
     }
 }

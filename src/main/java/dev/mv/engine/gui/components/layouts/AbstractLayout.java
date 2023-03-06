@@ -390,7 +390,16 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
     }
 
     @Override
+    public void setWindow(Window window) {
+        super.setWindow(window);
+        for (Element element : this) {
+            element.setWindow(window);
+        }
+    }
+
+    @Override
     public void setWidth(int width) {
+        super.setWidth(width);
         //for(Element e : allElementsDeep()) {
         //    if (!(e instanceof AbstractLayout)) {
         //        e.setWidth(e.getWidth() + width);
@@ -400,6 +409,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void setHeight(int height) {
+        super.setHeight(height);
         //for(Element e : allElementsDeep()) {
         //    if (!(e instanceof AbstractLayout)) {
         //        e.setHeight(e.getHeight() + height);

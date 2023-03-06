@@ -103,6 +103,7 @@ public class PasswordInputBox extends InputBox {
         initialState.height = height;
         initialState.originY = initialState.posY + height / 2;
         visibilityButton.setHeight(height);
+        visibilityButton.setWidth(height);
         visibilityButton.setX(getX() + getWidth() - height + 5);
     }
 

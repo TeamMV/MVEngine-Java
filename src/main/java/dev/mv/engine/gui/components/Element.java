@@ -188,6 +188,7 @@ public abstract class Element {
             setY(position.getY());
             setWidth(position.getWidth());
             setHeight(position.getHeight());
+            System.out.println(this.getClass() + ":" + getWidth());
         }
     }
 
@@ -205,6 +206,7 @@ public abstract class Element {
 
     public void setWindow(Window window) {
         this.window = window;
+        resize(window.getWidth(), window.getHeight());
     }
 
     public Theme getTheme() {

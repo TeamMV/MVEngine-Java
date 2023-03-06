@@ -3,7 +3,7 @@
     <script src="dev.mv.engine.test.Manager"/>
 
     <variables>
-        <var name="height">60</var>
+        <var name="height">5%</var>
     </variables>
 
     <references>
@@ -22,9 +22,9 @@
     </references>
 
     <elements>
-        <aligner x="0" y="0" width="100%" height="100%" alignX="CENTER" alignY="CENTER">
+        <aligner x="0" y="0" width="100%" height="100%" alignX="CENTER" alignY="CENTER" id="aligner">
             <verticalLayout x="200" y="100" spacing="5" showFrame="false" align="CENTER">
-                <imageButton width="120" height="$VAR(height)" id="myButton" tags="[tag1,tag2,tag3]"/>
+                <imageButton width="120" height="$VAR(height)" id="quitButton" tags="[tag1,tag2,tag3]"/>
                 <checkbox width="$VAR(height)" height="$VAR(height)">Toggle</checkbox>
                 <button width="60" height="$VAR(height)" onclick="hello()" id="chromaButton">click me!</button>
                 <ref name="defaultSpace"/>

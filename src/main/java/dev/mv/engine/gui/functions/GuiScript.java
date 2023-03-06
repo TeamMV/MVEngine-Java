@@ -26,16 +26,13 @@ public class GuiScript {
         }
     }
 
-    public GuiMethod findMethod(String name, Class<?>[] paramTypes, String id) {
+    public GuiMethod findMethod(String name, Class<?>[] paramTypes, String id) throws NoSuchMethodException {
         if (language == Language.JAVA) {
-            try {
-                Method method = clazz.getDeclaredMethod(name, paramTypes);
-                if (!method.isAnnotationPresent(GuiFunction.class)) return null;
-                String restrict = method.getAnnotation(GuiFunction.class).restricted();
-                if (restrict.equals(id) || restrict.equals("any") || restrict.equals("none"))
-                    return new LinkedJavaMethod(method, instance);
-            } catch (NoSuchMethodException ignored) {
-            }
+            Method method = clazz.getDeclaredMethod(name, paramTypes);
+            if (!method.isAnnotationPresent(GuiFunction.class)) return null;
+            String restrict = method.getAnnotation(GuiFunction.class).restricted();
+            if (restrict.equals(id) || restrict.equals("any") || restrict.equals("none"))
+                return new LinkedJavaMethod(method, instance);
         }
         return null;
     }

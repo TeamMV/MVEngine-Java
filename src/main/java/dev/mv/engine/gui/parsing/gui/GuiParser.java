@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GuiParser {
-    private Window window;
     private String layoutPath;
     private String[] layouts;
     private Map<String, String> variables;
@@ -344,7 +343,7 @@ public class GuiParser {
 
     //elements
     private TextLine parseTextLine(Element tag) {
-        TextLine line = new TextLine(window, VariablePosition.getPosition(
+        TextLine line = new TextLine(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             null, getStringAttrib(tag.getAttribute("height"))), null);
@@ -353,7 +352,7 @@ public class GuiParser {
     }
 
     private Button parseButton(Element tag) {
-        Button button = new Button(window, VariablePosition.getPosition(
+        Button button = new Button(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),
@@ -369,7 +368,7 @@ public class GuiParser {
     }
 
     private ImageButton parseImageButton(Element tag) {
-        ImageButton imageButton = new ImageButton(window, VariablePosition.getPosition(
+        ImageButton imageButton = new ImageButton(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),
@@ -381,7 +380,7 @@ public class GuiParser {
     }
 
     private Checkbox parseCheckbox(Element tag) {
-        Checkbox checkbox = new Checkbox(window, VariablePosition.getPosition(
+        Checkbox checkbox = new Checkbox(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),
@@ -391,7 +390,7 @@ public class GuiParser {
     }
 
     private ProgressBar parseProgressBar(Element tag) {
-        ProgressBar progressBar = new ProgressBar(window, VariablePosition.getPosition(
+        ProgressBar progressBar = new ProgressBar(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),
@@ -407,7 +406,7 @@ public class GuiParser {
     }
 
     private InputBox parseInputBox(Element tag) {
-        InputBox inputBox = new InputBox(window, VariablePosition.getPosition(
+        InputBox inputBox = new InputBox(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),
@@ -420,7 +419,7 @@ public class GuiParser {
     }
 
     private NumericInputBox parseNumericInputBox(Element tag) {
-        NumericInputBox numericInputBox = new NumericInputBox(window, VariablePosition.getPosition(
+        NumericInputBox numericInputBox = new NumericInputBox(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),
@@ -433,7 +432,7 @@ public class GuiParser {
     }
 
     private PasswordInputBox parsePasswordInputBox(Element tag) {
-        PasswordInputBox passwordInputBox = new PasswordInputBox(window, VariablePosition.getPosition(
+        PasswordInputBox passwordInputBox = new PasswordInputBox(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),
@@ -455,7 +454,7 @@ public class GuiParser {
     }
 
     private Separator parseSeparator(Element tag) {
-        Separator separator = new Separator(window, VariablePosition.getPosition(
+        Separator separator = new Separator(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),
@@ -464,7 +463,7 @@ public class GuiParser {
     }
 
     private Space parseSpace(Element tag) {
-        Space separator = new Space(window, VariablePosition.getPosition(
+        Space separator = new Space(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),
@@ -474,7 +473,7 @@ public class GuiParser {
 
     //layouts
     private VerticalLayout parseVerticalLayout(Element tag) {
-        VerticalLayout layout = new VerticalLayout(window, VariablePosition.getPosition(
+        VerticalLayout layout = new VerticalLayout(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")), null, null), null);
 
@@ -526,7 +525,7 @@ public class GuiParser {
     }
 
     private HorizontalLayout parseHorizontalLayout(Element tag) {
-        HorizontalLayout layout = new HorizontalLayout(window, VariablePosition.getPosition(
+        HorizontalLayout layout = new HorizontalLayout(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             null, null), null);
@@ -579,7 +578,7 @@ public class GuiParser {
     }
 
     private CollapseMenu parseCollapseMenu(Element tag) {
-        CollapseMenu layout = new CollapseMenu(window,
+        CollapseMenu layout = new CollapseMenu(null,
             VariablePosition.getPosition(
                 getStringAttrib(tag.getAttribute("x")),
                 getStringAttrib(tag.getAttribute("y")),
@@ -602,7 +601,7 @@ public class GuiParser {
     }
 
     private Choice parseChoice(Element tag) {
-        Choice choice = new Choice(window, VariablePosition.getPosition(
+        Choice choice = new Choice(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),
@@ -612,7 +611,7 @@ public class GuiParser {
     }
 
     private ChoiceGroup parseChoiceGroup(Element tag) {
-        ChoiceGroup choiceGroup = new ChoiceGroup(window, null);
+        ChoiceGroup choiceGroup = new ChoiceGroup(null, null);
 
         if (tag.hasChildNodes()) {
             NodeList nodeList = tag.getChildNodes();
@@ -630,7 +629,7 @@ public class GuiParser {
     }
 
     private Aligner parseAligner(Element tag) {
-        Aligner aligner = new Aligner(window, VariablePosition.getPosition(
+        Aligner aligner = new Aligner(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),
@@ -657,7 +656,7 @@ public class GuiParser {
     }
 
     private Picture parsePicture(Element tag) {
-        Picture picture = new Picture(window, VariablePosition.getPosition(
+        Picture picture = new Picture(null, VariablePosition.getPosition(
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),

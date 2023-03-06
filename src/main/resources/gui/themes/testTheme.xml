@@ -3,7 +3,7 @@
     <colors>
         <enabled>
             <base>125, 122, 100, 200</base>
-            <outline>200, 200, 200, 255</outline>
+            <outline>255, 255, 255, 255</outline>
             <text>255, 255, 255, 255</text>
             <extra>255, 217, 0, 255</extra>
         </enabled>

@@ -3,8 +3,10 @@ package dev.mv.engine.gui.components;
 import dev.mv.engine.gui.components.layouts.AbstractLayout;
 import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.utils.VariablePosition;
+import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
+import dev.mv.utils.Utils;
 
 public class Aligner extends AbstractLayout {
     private AlignX alignX = AlignX.CENTER;
@@ -25,7 +27,11 @@ public class Aligner extends AbstractLayout {
         }
 
         if(alignX == AlignX.CENTER) {
-            elements.get(0).setX(getX() + getWidth() / 2 - elements.get(0).getWidth() / 2);
+            elements.get(0).setX(getX() + (getWidth() / 2 - elements.get(0).getWidth() / 2));
+            //System.out.println(Utils.concat(", ", getX(), getY(), getWidth(), getHeight(), elements.get(0).getWidth()));
+            //System.out.println(getWidth());
+            draw.color(Color.RED);
+            draw.rectangle(getX() + getWidth() / 2 - elements.get(0).getWidth() / 2, 100, elements.get(0).getWidth(), 100);
         }
 
         if(alignX == AlignX.RIGHT) {

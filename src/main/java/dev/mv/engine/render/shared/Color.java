@@ -4,6 +4,7 @@ import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.parsing.InvalidGuiFileException;
 import dev.mv.engine.resources.Resource;
 import dev.mv.utils.ByteUtils;
+import jdk.jfr.Unsigned;
 
 public class Color implements Resource {
     public static Color WHITE = new Color(255, 255, 255, 255);
@@ -109,7 +110,7 @@ public class Color implements Resource {
     }
 
     public NormalizedColor normalize(float normalizeTreshold) {
-        return new NormalizedColor(r / (255.0f / normalizeTreshold), g / (255.0f / normalizeTreshold), b / (255.0f / normalizeTreshold), a / (255.0f / normalizeTreshold));
+        return new NormalizedColor(getRed() / (255.0f / normalizeTreshold), getGreen() / (255.0f / normalizeTreshold), getBlue() / (255.0f / normalizeTreshold), getAlpha() / (255.0f / normalizeTreshold));
     }
 
     public Color copy() {
@@ -117,19 +118,19 @@ public class Color implements Resource {
     }
 
     public void copyValuesTo(Color dest) {
-        dest.setRed(r);
-        dest.setGreen(g);
-        dest.setBlue(b);
-        dest.setAlpha(a);
+        dest.setRed(getRed());
+        dest.setGreen(getGreen());
+        dest.setBlue(getBlue());
+        dest.setAlpha(getAlpha());
     }
 
     @Override
     public String toString() {
         return "Color{" +
-            "r=" + r +
-            ", g=" + g +
-            ", b=" + b +
-            ", a=" + a +
+            "r=" + ByteUtils.unsign(r) +
+            ", g=" + ByteUtils.unsign(g) +
+            ", b=" + ByteUtils.unsign(b) +
+            ", a=" + ByteUtils.unsign(a) +
             '}';
     }
 

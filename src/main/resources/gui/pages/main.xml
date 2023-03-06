@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<page name="main">
+    <layouts>
+        <layout name="myGui"/>
+        <layout name="quit"/>
+    </layouts>
+    <actions>
+        <trigger name="quit" listen="myGui.quitButton@onclick[release]">
+            <open name="quit">
+                <focus leave="quit.no@onclick[release]"/>
+            </open>
+        </trigger>
+        <trigger name="quitGame" listen="quit.yes@onclick">
+            <call handler="$myGui.exit"/>
+        </trigger>
+    </actions>
+</page>
