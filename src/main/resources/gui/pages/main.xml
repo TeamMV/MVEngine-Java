@@ -10,8 +10,8 @@
                 <focus leave="quit.no@onclick[release]"/>
             </open>
         </trigger>
-        <trigger name="quitGame" listen="quit.yes@onclick">
-            <call handler="$myGui.exit"/>
+        <trigger name="quitGame" listen="quit.yes@onclick[release]">
+            <call handler="myGui.exit"/>
         </trigger>
     </actions>
 </page>
