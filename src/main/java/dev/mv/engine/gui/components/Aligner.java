@@ -28,10 +28,6 @@ public class Aligner extends AbstractLayout {
 
         if(alignX == AlignX.CENTER) {
             elements.get(0).setX(getX() + (getWidth() / 2 - elements.get(0).getWidth() / 2));
-            //System.out.println(Utils.concat(", ", getX(), getY(), getWidth(), getHeight(), elements.get(0).getWidth()));
-            //System.out.println(getWidth());
-            draw.color(Color.RED);
-            draw.rectangle(getX() + getWidth() / 2 - elements.get(0).getWidth() / 2, 100, elements.get(0).getWidth(), 100);
         }
 
         if(alignX == AlignX.RIGHT) {

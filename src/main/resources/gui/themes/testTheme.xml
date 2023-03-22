@@ -2,10 +2,10 @@
 <theme>
     <colors>
         <enabled>
-            <base>125, 122, 100, 200</base>
+            <base>68, 195, 227, 255</base>
             <outline>255, 255, 255, 255</outline>
             <text>255, 255, 255, 255</text>
-            <extra>255, 217, 0, 255</extra>
+            <extra>255, 255, 255, 255</extra>
         </enabled>
         <disabled>
             <base>82, 81, 81, 20</base>
@@ -21,7 +21,7 @@
     </colors>
     <general>
         <edges>
-            <style>SQUARE</style>
+            <style>ROUND</style>
             <radius>10</radius>
         </edges>
         <outline>

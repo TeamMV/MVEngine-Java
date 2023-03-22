@@ -70,6 +70,7 @@ public class AssetFileParser {
                                 }
                             }
                         }
+                        
                     }
                     if(tag.getNodeName().equals("fonts")) {
                         NodeList fonts = tag.getChildNodes();

@@ -9,6 +9,7 @@ public interface Resource {
         GUI_LAYOUT,
         GUI_REGISTRY,
         GUI_THEME,
-        FONT;
+        FONT,
+        GUI_PAGE;
     }
 }

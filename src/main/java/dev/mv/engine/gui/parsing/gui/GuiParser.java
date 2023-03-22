@@ -32,31 +32,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GuiParser {
-    private String layoutPath;
-    private String[] layouts;
     private Map<String, String> variables;
     private Map<String, Reference> references;
 
     private Map<String, String> currentRefLookup;
 
-    public GuiParser(GuiConfig guiConfig) {
-        layoutPath = guiConfig.getLayoutPath();
-        layouts = guiConfig.getLayouts();
+    public GuiParser() {
         variables = new HashMap<>();
         references = new HashMap<>();
         currentRefLookup = new HashMap<>();
-    }
-
-    public GuiRegistry parse() {
-        GuiRegistry returnRegistry = new GuiRegistry();
-        for (String layout : layouts) {
-            returnRegistry.addGui(parse(getClass().getResourceAsStream(layoutPath + layout)));
-            System.out.println(layoutPath + layout);
-        }
-
-        currentRefLookup.clear();
-
-        return returnRegistry;
     }
 
     public Gui parse(InputStream stream) {
@@ -101,6 +85,7 @@ public class GuiParser {
                 }
             }
 
+            R.guis.get("default").addGui(gui);
             return gui;
         } catch (Exception e) {
             MVEngine.Exceptions.__throw__(e);

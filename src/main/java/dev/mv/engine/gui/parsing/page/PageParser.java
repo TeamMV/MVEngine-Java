@@ -15,6 +15,7 @@ import dev.mv.engine.gui.pages.Trigger;
 import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.parsing.InvalidGuiFileException;
 import dev.mv.engine.resources.R;
+import dev.mv.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -25,25 +26,22 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.IntStream;
 
 public class PageParser {
-    private String pagePath;
-    private String[] pages;
     private GuiRegistry registry;
 
-    public PageParser(GuiConfig guiConfig) {
-        pagePath = guiConfig.getPagePath();
-        pages = guiConfig.getPages();
+    public PageParser() {
     }
 
-    public Page parse(InputStream inputStream) {
+    public Page parse(InputStream stream) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(inputStream);
+            Document document = builder.parse(stream);
             document.getDocumentElement().normalize();
 
-            if (!document.getDocumentElement().getTagName().equals("gui")) {
+            if (!document.getDocumentElement().getTagName().equals("page")) {
                 MVEngine.Exceptions.__throw__(new InvalidGuiFileException("Root should be \"page\""));
             }
 
@@ -67,6 +65,7 @@ public class PageParser {
             return page;
         } catch (Exception e) {
             MVEngine.Exceptions.__throw__(e);
+
             return null;
         }
     }
@@ -141,11 +140,12 @@ public class PageParser {
                                         AtomicReference<List<Gui>> beforeOpen = new AtomicReference<>();
                                         leaveTrigger.setAction(() -> {
                                             beforeOpen.get().forEach(Gui::enableAllUpdates);
+                                            current.getPager().close(guiName);
                                         });
                                         trigger.setAction(() -> {
                                             current.getPager().open(guiName);
-                                            beforeOpen.set(registry.toRenderList());
-                                            registry.toRenderList().forEach(Gui::disableAllUpdates);
+                                            beforeOpen.set(registry.getGuiList());
+                                            registry.getGuiList().forEach(Gui::disableAllUpdates);
                                             gui.enableAllUpdates();
                                         });
                                     }
@@ -158,10 +158,10 @@ public class PageParser {
                         String gui = handler.split("\\.")[0];
                         String method = handler.split("\\.")[1];
                         GuiScript[] scripts = registry.findGui(gui).getScripts();
-                        String[] raws = method.substring(method.indexOf('('), method.indexOf(')')).split(",");
+                        String[] raws = Utils.iter(method.substring(method.indexOf('(') + 1, method.indexOf(')')).split(",")).filter(s -> !s.isBlank()).toArray();
                         Class<?>[] paramTypes = new Class<?>[raws.length];
                         for (int j = 0; j < raws.length; j++) {
-                            paramTypes[i] = inferType(raws[i]);
+                            paramTypes[j] = inferType(raws[j]);
                         }
                         for (GuiScript script : scripts) {
                             GuiMethod guiMethod;
@@ -173,15 +173,15 @@ public class PageParser {
                             Object[] params = new Object[paramTypes.length];
                             for (int j = 0; j < paramTypes.length; j++) {
                                 if (paramTypes[j] == String.class) {
-                                    params[i] = raws[i].substring(1, raws[i].length() - 1);
+                                    params[j] = raws[j].substring(1, raws[j].length() - 1);
                                 } else if (paramTypes[j] == int.class) {
-                                   params[i] = Integer.parseInt(raws[i]);
+                                   params[j] = Integer.parseInt(raws[j]);
                                 } else if (paramTypes[j] == long.class) {
-                                    params[i] = Long.parseLong(raws[i].replaceAll("L", ""));
+                                    params[j] = Long.parseLong(raws[j].replaceAll("L", ""));
                                 } else if (paramTypes[j] == float.class) {
-                                    params[i] = Float.parseFloat(raws[i].replaceAll("f", ""));
+                                    params[j] = Float.parseFloat(raws[j].replaceAll("f", ""));
                                 } else if (paramTypes[j] == double.class) {
-                                    params[i] = Double.parseDouble(raws[i]);
+                                    params[j] = Double.parseDouble(raws[j]);
                                 }
                             }
                             trigger.setAction(() -> guiMethod.invoke(params));
@@ -207,15 +207,16 @@ public class PageParser {
     private void parseEventQuery(String query, Trigger trigger) {
         int partIdx = query.indexOf('.');
         String layoutName = query.substring(0, partIdx);
-        String elementId = query.substring(partIdx, query.indexOf('@'));
-        String event = query.split("@")[1];
-        String specs = query.substring(query.lastIndexOf('['), query.lastIndexOf(']'));
+        String elementId = query.substring(partIdx + 1, query.indexOf('@'));
+        String event = query.split("@")[1].split("\\[")[0];
+        String specs = query.substring(query.lastIndexOf('[') + 1, query.lastIndexOf(']'));
         dev.mv.engine.gui.components.Element target = registry.findGui(layoutName).getRoot().findElementById(elementId);
         EventListener listener = switch (event.toLowerCase()) {
             case "onclick":     if(target instanceof Clickable) yield new ClickListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
             case "onkey":       if(target instanceof Keyboard) yield new KeyListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
             case "onscroll":    if(target instanceof Scrollable) yield new ScrollListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
             case "onprogress":  if(target instanceof ValueChange) yield new ProgressListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
+            default: yield null;
         };
         target.attachListener(listener);
     }

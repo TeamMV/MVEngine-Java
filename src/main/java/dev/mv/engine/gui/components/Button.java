@@ -190,4 +190,13 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
     public boolean isEnabled() {
         return enabled;
     }
+
+    @Override
+    public void setHeight(int height) {
+        super.setHeight(height);
+        if (font == null) return;
+        if (initialState.width < font.getWidth(text, initialState.height - textDistance()) + textDistance()) {
+            setWidth(font.getWidth(text, initialState.height - textDistance()) + textDistance());
+        }
+    }
 }

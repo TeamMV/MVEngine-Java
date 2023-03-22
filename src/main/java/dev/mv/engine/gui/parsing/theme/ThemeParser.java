@@ -20,21 +20,14 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.function.IntUnaryOperator;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 public class ThemeParser {
-    private InputStream stream;
-    private String themePath;
-    private String currentFile;
 
-    public ThemeParser(GuiConfig guiConfig) {
-        themePath = guiConfig.getThemePath();
+    public ThemeParser() {
     }
 
-    public Theme parse(String name) throws IOException {
-        String[] s = name.split("/");
-        String[] s1 = s[s.length - 1].split("\\.");
-        currentFile = String.join("", Arrays.copyOf(s1, s1.length - 1));
-        stream = getClass().getResourceAsStream(themePath + name);
+    public Theme parse(InputStream stream) throws IOException {
         Theme returnTheme = new Theme();
 
         try {

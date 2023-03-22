@@ -9,4 +9,9 @@ public class Manager {
         System.out.println("Hello World!");
     }
 
+    @GuiFunction
+    public void exit(int code) {
+        System.exit(code);
+    }
+
 }

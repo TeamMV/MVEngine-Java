@@ -18,10 +18,8 @@ import java.util.List;
 public class GuiConfig {
     InputStream configFile;
     private String layoutPath;
-    private String[] layouts;
     private String themePath;
     private String pagePath;
-    private String[] pages;
     private String configFilePath;
 
     public GuiConfig(String configFilePath) throws IOException {
@@ -118,36 +116,9 @@ public class GuiConfig {
                                 pagePath = getFileParent() + relative.getTextContent();
                             }
                         } else {
-                            layoutPath = tag.getTextContent();
+                            pagePath = tag.getTextContent();
                         }
-                        layoutPath = layoutPath.replaceAll("[\n *]", "");
-                    }
-                    if (tag.getNodeName().equals("layouts")) {
-                        if (tag.hasChildNodes()) {
-                            NodeList nodeList = tag.getChildNodes();
-                            List<String> layoutsArray = new ArrayList<>();
-                            for (int j = 0; j < nodeList.getLength(); j++) {
-                                Node node = nodeList.item(j);
-                                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                                    layoutsArray.add(node.getTextContent());
-                                }
-                            }
-                            layouts = layoutsArray.toArray(new String[0]);
-                        }
-                    }
-
-                    if (tag.getNodeName().equals("pages")) {
-                        if (tag.hasChildNodes()) {
-                            NodeList nodeList = tag.getChildNodes();
-                            List<String> pagesArray = new ArrayList<>();
-                            for (int j = 0; j < nodeList.getLength(); j++) {
-                                Node node = nodeList.item(j);
-                                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                                    pagesArray.add(node.getTextContent());
-                                }
-                            }
-                            pages = pagesArray.toArray(new String[0]);
-                        }
+                        pagePath = pagePath.replaceAll("[\n *]", "");
                     }
                 }
             }
@@ -170,15 +141,7 @@ public class GuiConfig {
         return themePath;
     }
 
-    public String[] getLayouts() {
-        return layouts;
-    }
-
     public String getPagePath() {
         return pagePath;
-    }
-
-    public String[] getPages() {
-        return pages;
     }
 }

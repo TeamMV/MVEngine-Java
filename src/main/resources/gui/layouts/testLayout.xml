@@ -26,7 +26,7 @@
             <verticalLayout x="200" y="100" spacing="5" showFrame="false" align="CENTER">
                 <imageButton width="120" height="$VAR(height)" id="quitButton" tags="[tag1,tag2,tag3]"/>
                 <checkbox width="$VAR(height)" height="$VAR(height)">Toggle</checkbox>
-                <button width="60" height="$VAR(height)" onclick="hello()" id="chromaButton">click me!</button>
+                <button width="100" height="$VAR(height)" id="chromaButton">click me!</button>
                 <ref name="defaultSpace"/>
                 <ref name="defaultSeparator"/>
                 <input type="string" width="400" height="$VAR(height)" id="email">E-Mail address</input>

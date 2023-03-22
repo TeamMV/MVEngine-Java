@@ -12,6 +12,7 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.utils.RenderUtils;
+import dev.mv.utils.Utils;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -133,7 +134,7 @@ public class OpenGLWindow implements Window {
 
         glfwShowWindow(window);
 
-        glEnable(GL_CULL_FACE);
+        //glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

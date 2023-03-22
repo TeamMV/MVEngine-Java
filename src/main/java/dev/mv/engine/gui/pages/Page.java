@@ -4,10 +4,12 @@ import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.screens.Pager;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
+import dev.mv.engine.resources.Resource;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class Page {
+public class Page implements Resource {
     private Pager pager;
     private GuiRegistry registry;
     private DrawContext2D drawContext2D;
@@ -17,6 +19,7 @@ public class Page {
     public Page(String name) {
         this.name = name;
         pager = new Pager();
+        triggers = new ArrayList<>();
     }
 
     public Pager getPager() {

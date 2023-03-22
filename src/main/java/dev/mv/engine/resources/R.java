@@ -3,6 +3,7 @@ package dev.mv.engine.resources;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.GuiRegistry;
+import dev.mv.engine.gui.pages.Page;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.font.BitmapFont;
@@ -43,6 +44,11 @@ public class R {
     public static Res<GuiRegistry> guis = new Res<>();
     public static Res<Theme> themes = new Res<>();
     public static Res<BitmapFont> fonts = new Res<>();
+    public static Res<Page> pages = new Res<>();
+
+    static {
+        guis.register("default", new GuiRegistry());
+    }
 
     private static boolean isReady = false;
 

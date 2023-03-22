@@ -10,11 +10,12 @@ public abstract class ParticleSystem {
         TRIANGLE
     }
 
-    private int maxNum = 1;
-    private Shape shape;
-    private Vec<Particle> particles;
+    protected int maxNum = 1;
+    protected Shape shape;
+    protected Vec<Particle> particles;
+    protected int x, y;
 
-    public ParticleSystem(int maxNum, Shape shape) {
+    public ParticleSystem(int x, int y, int maxNum, Shape shape) {
         this.maxNum = maxNum;
         this.shape = shape;
         particles = new Vec<Particle>(maxNum);

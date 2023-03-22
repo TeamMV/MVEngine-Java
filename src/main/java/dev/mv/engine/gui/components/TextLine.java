@@ -82,4 +82,10 @@ public class TextLine extends Element implements Text {
         if (font == null) return;
         initialState.width = font.getWidth(text, getHeight());
     }
+
+    @Override
+    public int getWidth() {
+        if (font == null) return 0;
+        return font.getWidth(text, getHeight());
+    }
 }

@@ -135,6 +135,10 @@ public class GuiRegistry implements Iterable<Gui>, Resource {
         }
     }
 
+    public List<Gui> getGuiList() {
+        return guiMap.values().stream().toList();
+    }
+
     private class GuiRegistryIterator implements Iterator<Gui> {
         private boolean hasNext = true;
         private int index = 0;

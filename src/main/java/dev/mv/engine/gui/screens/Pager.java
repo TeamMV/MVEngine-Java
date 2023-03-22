@@ -6,8 +6,9 @@ import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.layouts.AbstractLayout;
 import dev.mv.engine.gui.screens.transitions.Transition;
 import dev.mv.engine.render.shared.Window;
+import dev.mv.engine.resources.R;
 import dev.mv.utils.async.PromiseNull;
-import dev.mv.utils.generic.Pair;
+import dev.mv.utils.generic.pair.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ public class Pager {
 
     public void setRegistry(GuiRegistry registry) {
         this.registry = registry;
+        transitions = new HashMap<>();
         prepare();
     }
 
@@ -48,13 +50,6 @@ public class Pager {
                     if (transition.isLinear()) {
                         element.setX(element.getX() + transition.getXChange());
                         element.setY(element.getY() + transition.getYChange());
-                        if (element instanceof AbstractLayout) {
-                            element.setWidth(transition.getScaleChange());
-                            element.setHeight(transition.getScaleChange());
-                        } else {
-                            element.setWidth(element.getWidth() + transition.getScaleChange());
-                            element.setHeight(element.getHeight() + transition.getScaleChange());
-                        }
                         element.getInitialState().originX = window.getWidth() / 2;
                         element.getInitialState().originY = window.getHeight() / 2;
                         element.getInitialState().rotation += transition.getRotationChange();
@@ -65,14 +60,6 @@ public class Pager {
                     } else {
                         element.setX(element.getX() * transition.getXChange());
                         element.setY(element.getY() * transition.getYChange());
-                        if (element instanceof AbstractLayout) {
-                            element.setWidth(transition.getScaleChange());
-                            element.setHeight(transition.getScaleChange());
-                        } else {
-
-                            element.setWidth(element.getWidth() * transition.getScaleChange());
-                            element.setHeight(element.getHeight() * transition.getScaleChange());
-                        }
                         element.getInitialState().originX = window.getWidth() / 2;
                         element.getInitialState().originY = window.getHeight() / 2;
                         element.getInitialState().rotation *= transition.getRotationChange();
@@ -88,19 +75,19 @@ public class Pager {
 
     public void open(String name) {
         open.put(name, registry.findGui(name));
-        registry.findGui(name).enableAllUpdates();
+        R.guis.get("default").findGui(name).enableAllUpdates();
 
         new PromiseNull((resolverNull, rejector) -> {
             Pair<Transition, Float> transitionToPair = transitions.get(name);
             if (transitionToPair == null) {
-                registry.toRenderList().add(registry.findGui(name));
+                R.guis.get("default").toRenderList().add(registry.findGui(name));
                 return;
             }
 
             Transition transitionTo = transitionToPair.a;
 
             if(transitionTo == null) {
-                registry.toRenderList().add(registry.findGui(name));
+                R.guis.get("default").toRenderList().add(registry.findGui(name));
                 return;
             }
 
@@ -115,14 +102,6 @@ public class Pager {
                         if (transitionTo.isLinear()) {
                             element.setX(element.getX() - transitionTo.getXChange());
                             element.setY(element.getY() - transitionTo.getYChange());
-                            if (element instanceof AbstractLayout) {
-                                element.setWidth(-transitionTo.getScaleChange());
-                                element.setHeight(-transitionTo.getScaleChange());
-                            } else {
-
-                                element.setWidth(element.getWidth() - transitionTo.getScaleChange());
-                                element.setHeight(element.getHeight() - transitionTo.getScaleChange());
-                            }
                             element.getInitialState().originX = window.getWidth() / 2;
                             element.getInitialState().originY = window.getHeight() / 2;
                             element.getInitialState().rotation -= transitionTo.getRotationChange();
@@ -133,14 +112,6 @@ public class Pager {
                         } else {
                             element.setX(element.getX() / transitionTo.getXChange());
                             element.setY(element.getY() / transitionTo.getYChange());
-                            if (element instanceof AbstractLayout) {
-                                element.setWidth(-transitionTo.getScaleChange());
-                                element.setHeight(-transitionTo.getScaleChange());
-                            } else {
-
-                                element.setWidth(element.getWidth() / transitionTo.getScaleChange());
-                                element.setHeight(element.getHeight() / transitionTo.getScaleChange());
-                            }
                             element.getInitialState().originX = window.getWidth() / 2;
                             element.getInitialState().originY = window.getHeight() / 2;
                             element.getInitialState().rotation /= transitionTo.getRotationChange();
@@ -153,25 +124,25 @@ public class Pager {
                 }
             }
 
-            registry.toRenderList().add(registry.findGui(name));
+            R.guis.get("default").toRenderList().add(registry.findGui(name));
         });
     }
 
     public void close(String name) {
         open.remove(name);
-        registry.findGui(name).disableAllUpdates();
+        R.guis.get("default").findGui(name).disableAllUpdates();
         new PromiseNull((resolverNull, rejector) -> {
             Transition transition = null;
             Pair<Transition, Float> transitionPair = transitions.get(name);
             if (transitionPair != null)
                 transition = transitionPair.a;
             else {
-                registry.toRenderList().remove(registry.findGui(name));
+                R.guis.get("default").toRenderList().remove(registry.findGui(name));
                 return;
             }
 
             if (transition == null) {
-                registry.toRenderList().remove(registry.findGui(name));
+                R.guis.get("default").toRenderList().remove(registry.findGui(name));
                 return;
             }
 
@@ -210,7 +181,7 @@ public class Pager {
                 }
             }
 
-            registry.toRenderList().remove(registry.findGui(name));
+            R.guis.get("default").toRenderList().remove(registry.findGui(name));
         });
     }
 

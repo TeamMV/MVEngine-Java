@@ -188,7 +188,6 @@ public abstract class Element {
             setY(position.getY());
             setWidth(position.getWidth());
             setHeight(position.getHeight());
-            System.out.println(this.getClass() + ":" + getWidth());
         }
     }
 

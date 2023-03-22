@@ -304,4 +304,11 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
         headerLayout.setExtraColor(color);
         contentLayout.setExtraColor(color);
     }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        headerLayout.resize(width, height);
+        contentLayout.resize(width, height);
+    }
 }

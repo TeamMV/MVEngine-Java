@@ -25,6 +25,7 @@ public class GuiManager {
     public static void sendResizeEvent(int width, int height) {
         if (GUIS != null) {
             GUIS.resize(width, height);
+            GUIS.resize(width, height); //Otherwise there would be bugs if the windows gets maximised... Idk how to solve it differently lmao
         }
     }
 

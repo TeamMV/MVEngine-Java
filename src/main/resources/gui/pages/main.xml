@@ -11,7 +11,13 @@
             </open>
         </trigger>
         <trigger name="quitGame" listen="quit.yes@onclick[release]">
-            <call handler="myGui.exit"/>
+            <call handler="myGui.exit(1)"/>
+        </trigger>
+        <trigger name="cancelQuit" listen="quit.no@onclick[release]">
+            <call handler="myGui.open()"/>
+        </trigger>
+        <trigger name="hello" listen="myGui.chromaButton@onclick[release]">
+            <call handler="myGui.hello()"/>
         </trigger>
     </actions>
 </page>

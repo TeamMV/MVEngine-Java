@@ -266,7 +266,7 @@ public class Gui implements Resource {
         scripts.add(script);
     }
 
-    public GuiMethod findMethod(String name, Class<?>[] paramTypes, String id) {
+    public GuiMethod findMethod(String name, Class<?>[] paramTypes, String id) throws NoSuchMethodException {
         GuiMethod method;
         for (GuiScript script : scripts) {
             method = script.findMethod(name, paramTypes, id);

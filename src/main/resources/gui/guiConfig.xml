@@ -14,11 +14,4 @@
             /pages/
         </relative>
     </pagePath>
-    <layouts>
-        <layout>testLayout.xml</layout>
-        <layout>quit.xml</layout>
-    </layouts>
-    <pages>
-        <page>main.xml</page>
-    </pages>
 </mvt:config>

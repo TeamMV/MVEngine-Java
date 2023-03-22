@@ -5,18 +5,21 @@ import dev.mv.engine.MVEngine;
 import dev.mv.engine.files.Directory;
 import dev.mv.engine.files.FileManager;
 import dev.mv.engine.gui.GuiRegistry;
-import dev.mv.engine.gui.components.Aligner;
-import dev.mv.engine.gui.components.Button;
-import dev.mv.engine.gui.components.ImageButton;
+import dev.mv.engine.gui.pages.Page;
 import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.screens.Pager;
 import dev.mv.engine.gui.screens.transitions.LinearShiftTransition;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.*;
+import dev.mv.engine.render.shared.graphics.CircularParticleSystem;
+import dev.mv.engine.render.shared.graphics.ParticleSystem;
+import dev.mv.engine.render.shared.models.Entity;
+import dev.mv.engine.render.shared.models.Model;
 import dev.mv.engine.render.shared.models.ObjectLoader;
 import dev.mv.engine.resources.R;
 import dev.mv.engine.resources.ResourceLoader;
-import dev.mv.utils.generic.Pair;
+import dev.mv.utils.generic.pair.Pair;
+import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,6 +34,7 @@ public class Test implements ApplicationLoop {
     private DefaultCameraController cameraController;
     private ObjectLoader objectLoader;
     private Directory gameDirectory;
+    private CircularParticleSystem particleSystem;
 
     private Test() {}
 
@@ -47,21 +51,25 @@ public class Test implements ApplicationLoop {
         try {
             ResourceLoader.markTheme("defaultTheme", "testTheme.xml");
             ResourceLoader.markFont("defaultFont", "/assets/mvengine/defaultfont.png", "/assets/mvengine/defaultfont.fnt");
+            ResourceLoader.markPage("main", "main.xml");
+            ResourceLoader.markLayout("test", "testLayout.xml");
+            ResourceLoader.markLayout("quit", "quit.xml");
             ResourceLoader.load(engine, new GuiConfig("/gui/guiConfig.xml"));
-            GuiRegistry registry = R.guis.get("default");
+            Page main = R.pages.get("main");
+            GuiRegistry registry = main.getRegistry();
             registry.applyRenderer(ctx2D);
-            Pager pager = new Pager(window);
+            Pager pager = main.getPager();
             pager.map(new HashMap<>(){
                 {
                     put("myGui", new Pair<>(new LinearShiftTransition(0, 0), 0.5f));
                 }
             });
-            registry.applyPager(pager);
-            registry.swap("", "myGui");
+            pager.open("myGui");
             Theme theme = R.themes.get("defaultTheme");
             theme.setFont(R.fonts.get("defaultFont"));
-            System.out.println(theme.getBaseColor());
             registry.applyTheme(theme);
+
+            particleSystem = new CircularParticleSystem(500, 500, 10, ParticleSystem.Shape.TRIANGLE, -30, 45);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -69,13 +77,13 @@ public class Test implements ApplicationLoop {
 
     @Override
     public void update(MVEngine engine, Window window) {
-        //System.out.println(R.guis.get("default").findGui("myGui").getRoot().<Aligner>findElementById("aligner").getWidth());
+
     }
 
     @Override
     public void draw(MVEngine engine, Window window) {
         R.guis.get("default").renderGuis();
-        cameraController.update();
+        particleSystem.draw(ctx2D);
     }
 
     public Directory getGameDirectory() {

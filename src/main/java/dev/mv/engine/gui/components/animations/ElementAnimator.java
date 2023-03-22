@@ -19,6 +19,7 @@ public class ElementAnimator {
 
     public ElementAnimator(Element target) {
         this.target = target;
+        this.state = new ElementAnimation.AnimationState();
     }
 
     public ElementAnimation getAnimation() {
