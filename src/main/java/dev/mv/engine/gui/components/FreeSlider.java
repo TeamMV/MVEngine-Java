@@ -56,11 +56,17 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
     @Override
     public void increment(float amount) {
         value = Utils.clamp(value + amount, start, end);
+        progressListeners.forEach(l -> {
+            l.onIncrement(this, (int) value, (int) end, (int) Utils.getPercent(value, (int) (end - start)));
+        });
     }
 
     @Override
     public void decrement(float amount) {
         value = Utils.clamp(value - amount, start, end);
+        progressListeners.forEach(l -> {
+            l.onDecrement(this, (int) value, (int) end, (int) Utils.getPercent(value, (int) (end - start)));
+        });
     }
 
     @Override
@@ -106,7 +112,7 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
     public void drag(int x, int y, int btn) {
         if(btn == Input.BUTTON_LEFT) {
             if(GuiUtils.mouseInside(getX(), getY(), getWidth(), getHeight())) {
-                setValue(Utils.getValue(Utils.getPercent(x - getX(), getX() + getWidth() - getX()), (int) (end - start)));
+                setValue(Utils.getValue(Utils.getPercent(x - getX(), getX() + getWidth()), (int) (end - start)));
             }
         }
     }

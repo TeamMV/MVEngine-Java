@@ -16,8 +16,10 @@ import org.joml.Vector4f;
 import java.io.IOException;
 
 public class DrawContext2D {
+
     private boolean useCamera;
     private Gradient gradient;
+    private float chromaTilt = -0.5f, chromaCompress = 1.0f;
     private BitmapFont font;
     private VertexGroup verts = new VertexGroup();
     private Vertex v1 = new Vertex(), v2 = new Vertex(), v3 = new Vertex(), v4 = new Vertex();
@@ -66,6 +68,18 @@ public class DrawContext2D {
 
     public void useCamera(boolean useCamera) {
         this.useCamera = useCamera;
+    }
+
+    public void chromaTilt(float tilt) {
+        chromaTilt = tilt;
+    }
+
+    public void chromaCompress(float compress) {
+        chromaCompress = compress;
+    }
+
+    public void chromaStretch(float stretch) {
+        chromaCompress = 1.0f / stretch;
     }
 
     public void triangle(int x1, int y1, int x2, int y2, int x3, int y3) {
@@ -460,7 +474,7 @@ public class DrawContext2D {
     }
 
     private int getHue(int x, int y) {
-        return (int) (((x * 180 / window.getWidth()) + ((y * 180 / window.getHeight()) * -0.5) + (window.getCurrentFrame())) * 5.0);
+        return (int) (((x * 180 / window.getWidth()) + ((y * 180 / window.getHeight()) * chromaTilt) + (window.getCurrentFrame())) * 5 * chromaCompress);
     }
 
     public void animatedText(TextAnimator animator) {

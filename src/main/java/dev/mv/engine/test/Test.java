@@ -6,9 +6,11 @@ import dev.mv.engine.files.Directory;
 import dev.mv.engine.files.FileManager;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.components.Button;
+import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.FreeSlider;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.components.layouts.VerticalLayout;
+import dev.mv.engine.gui.event.ProgressListener;
 import dev.mv.engine.gui.pages.Page;
 import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.screens.Pager;
@@ -77,6 +79,17 @@ public class Test implements ApplicationLoop {
             slider.setStart(0);
             slider.setEnd(100);
             slider.setTheme(theme);
+            slider.attachListener(new ProgressListener() {
+                @Override
+                public void onIncrement(Element e, int currentValue, int totalValue, int percentage) {
+                    System.out.println(currentValue);
+                }
+
+                @Override
+                public void onDecrement(Element e, int currentValue, int totalValue, int percentage) {
+                    System.out.println(currentValue);
+                }
+            });
 
             registry.findGui("myGui").getRoot().<VerticalLayout>findElementById("main").addElement(slider);
 
