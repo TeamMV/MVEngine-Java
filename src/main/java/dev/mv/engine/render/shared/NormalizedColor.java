@@ -1,10 +1,6 @@
 package dev.mv.engine.render.shared;
 
-import dev.mv.engine.resources.R;
-import dev.mv.utils.Utils;
-
 import java.util.Arrays;
-import java.util.Random;
 
 public class NormalizedColor {
 
@@ -54,45 +50,45 @@ public class NormalizedColor {
     }
     
     public NormalizedColor set(float r, float g, float b, float a) {
-        if(r < 1f)
+        if(r <= 1f)
             this.r = r;
         else
             this.r = r / 255f;
-        if(g < 1f)
+        if(g <= 1f)
             this.g = g;
         else
             this.g = g / 255f;
-        if(b < 1f)
+        if(b <= 1f)
             this.b = b;
         else
             this.b = b / 255f;
-        if(a < 1f)
+        if(a <= 1f)
             this.a = a;
         else
             this.a = a / 255f;
         return this;
     }
 
-    public NormalizedColor toRGB(float hue, float saturation, float value) {
-        final int h = (int) hue / 60;
-        final float f = hue / 60 - h;
-        final float p = value * (1 - saturation);
-        final float q = value * (1 - f * saturation);
-        final float t = value * (1 - (1 - f) * saturation);
+    public NormalizedColor fromHue(float hue) {
+        return fromHsv(hue, 1, 1);
+    }
 
-        float[] rgb = switch (h) {
-            case 0 -> new float[]{value, t, p};
-            case 1 -> new float[]{q, value, p};
-            case 2 -> new float[]{p, value, t};
-            case 3 -> new float[]{p, q, value};
-            case 4 -> new float[]{t, p, value};
-            case 5, 6 -> new float[]{value, p, q};
+    public NormalizedColor fromHsv(float hue, float saturation, float value) {
+        final float c = saturation * value;
+        final float h = hue / 60;
+        final float x = c * (1 - Math.abs(h % 2 - 1));
+        final float m = value - saturation;
+
+        float[] rgb = switch ((int) Math.floor(h)) {
+            case 0 -> new float[]{c, x, 0};
+            case 1 -> new float[]{x, c, 0};
+            case 2 -> new float[]{0, c, x};
+            case 3 -> new float[]{0, x, c};
+            case 4 -> new float[]{x, 0, c};
+            case 5, 6 -> new float[]{c, 0, x};
             default -> throw new IllegalStateException();
         };
-        float r = rgb[0] * 255;
-        float g = rgb[1] * 255;
-        float b = rgb[2] * 255;
-        return set(r, g, b, 1f);
+        return set(rgb[0] + m, rgb[1] + m, rgb[2] + m, 1f);
     }
 
     @Override

@@ -433,9 +433,11 @@ public class DrawContext2D {
             float ay2 = y + glyph.getHeight(height) - yOff;
 
             if (textChroma) {
-                gradient.resetTo(0, 0, 0, 1);
-                gradient.setLeft(gradient.bottomLeft.toRGB(Utils.overlap(getHue((int) ax, (int) ay), 0, 359), 1, 1));
-                gradient.setRight(gradient.bottomRight.toRGB(Utils.overlap(getHue((int) ax2, (int) ay2), 0, 359), 1, 1));
+                gradient.resetTo(0, 0, 0, 255);
+                gradient.bottomLeft.fromHue(Utils.overlap(getHue((int) ax, (int) ay), 0, 359));
+                gradient.bottomRight.fromHue(Utils.overlap(getHue((int) ax2, (int) ay), 0, 359));
+                gradient.topLeft.fromHue(Utils.overlap(getHue((int) ax, (int) ay2), 0, 359));
+                gradient.topRight.fromHue(Utils.overlap(getHue((int) ax2, (int) ay2), 0, 359));
             }
 
             charX += glyph.getXAdvance(height);

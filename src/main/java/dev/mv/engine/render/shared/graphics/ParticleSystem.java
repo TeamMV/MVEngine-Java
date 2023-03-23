@@ -14,10 +14,13 @@ public abstract class ParticleSystem {
     protected Shape shape;
     protected Vec<Particle> particles;
     protected int x, y;
+    protected float speed = 1;
 
     public ParticleSystem(int x, int y, int maxNum, Shape shape) {
         this.maxNum = maxNum;
         this.shape = shape;
+        this.x = x;
+        this.y = y;
         particles = new Vec<Particle>(maxNum);
     }
 
@@ -38,4 +41,12 @@ public abstract class ParticleSystem {
     }
 
     public abstract void draw(DrawContext2D ctx2D);
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
 }

@@ -1,9 +1,9 @@
 package dev.mv.engine.gui.components.extras;
 
 public interface ValueChange {
-    void increment(int amount);
+    void increment(float amount);
 
-    void decrement(int amount);
+    void decrement(float amount);
 
     void incrementByPercentage(int amount);
 

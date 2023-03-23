@@ -109,8 +109,8 @@ public class Color implements Resource {
         this.a = (byte) a;
     }
 
-    public NormalizedColor normalize(float normalizeTreshold) {
-        return new NormalizedColor(getRed() / (255.0f / normalizeTreshold), getGreen() / (255.0f / normalizeTreshold), getBlue() / (255.0f / normalizeTreshold), getAlpha() / (255.0f / normalizeTreshold));
+    public NormalizedColor normalize() {
+        return new NormalizedColor(getRed() / 255.0f, getGreen() / 255.0f, getBlue() / 255.0f, getAlpha() / 255.0f);
     }
 
     public Color copy() {

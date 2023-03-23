@@ -13,6 +13,10 @@ public class Particle {
     private int x, y;
     private Color color;
 
+    public Particle() {
+        color = new Color(0, 0, 0, 0);
+    }
+
     public ParticleSystem.Shape getShape() {
         return shape;
     }
@@ -89,23 +93,27 @@ public class Particle {
         return color;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
+    public void setColor(int r, int g, int b, int a) {
+        color.set(r, g, b, a);
     }
 
     void update() {
         x += xVel;
         y += yVel;
 
-        xVel -= xVel / speed;
-        yVel -= yVel / speed;
+        xVel *= 0.9;
+        yVel *= 0.9;
+
+        if(Math.abs(xVel) <= 0.01) xVel = 0;
+        if(Math.abs(yVel) <= 0.01) yVel = 0;
 
         rotation += speed * 3;
 
-        scale -= speed / 3;
+        scale -= 1 / speed;
 
-        color.setAlpha((int) (color.getAlpha() - speed * 2));
-        if(isDone()) System.out.println(x);
+        if(scale <= 0) scale = 0;
+
+        color.setAlpha((int) (color.getAlpha() - speed));
     }
 
     boolean isDone() {
@@ -115,7 +123,7 @@ public class Particle {
     void draw(DrawContext2D ctx2D) {
         ctx2D.color(color);
         if(shape == ParticleSystem.Shape.CIRCLE) {
-            ctx2D.circle(x, y, (int) scale, 5f);
+            ctx2D.circle(x, y, (int) scale, 5f, rotation);
         }
         if(shape == ParticleSystem.Shape.SQUARE) {
             ctx2D.rectangle((int) (x - scale / 2f), (int) (y - scale / 2f), (int) scale, (int) scale, rotation);

@@ -158,7 +158,7 @@ public class ProgressBar extends Element implements Toggle, ValueChange {
     }
 
     @Override
-    public void increment(int amount) {
+    public void increment(float amount) {
         currentValue = Utils.clamp((int) (currentValue + amount), 0, totalValue);
         if (!progressListeners.isEmpty()) {
             progressListeners.forEach(l -> l.onIncrement((Element) this, (int) currentValue, totalValue, (int) getPercentage()));
@@ -166,7 +166,7 @@ public class ProgressBar extends Element implements Toggle, ValueChange {
     }
 
     @Override
-    public void decrement(int amount) {
+    public void decrement(float amount) {
         currentValue = Utils.clamp((int) (currentValue - amount), 0, totalValue);
         if (!progressListeners.isEmpty()) {
             progressListeners.forEach(l -> l.onDecrement(this, (int) currentValue, totalValue, (int) getPercentage()));
