@@ -3,6 +3,7 @@
     <layouts>
         <layout name="myGui"/>
         <layout name="quit"/>
+        <layout name="particle"/>
     </layouts>
     <actions>
         <trigger name="quit" listen="myGui.quitButton@onclick[release]">

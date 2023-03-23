@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<gui name="particle">
+    <references>
+        <ref name="slider" params="[max,name]">
+            <horizontalLayout align="CENTER" spacing="5">
+                <slider style="free" start="1" end="$PARAM(max)" width="200" height="30" id="$PARAM(name)"/>
+                <textLine height="30">$PARAM(name)</textLine>
+            </horizontalLayout>
+        </ref>
+    </references>
+
+    <elements>
+        <aligner x="0" y="0" width="100%" height="100%" alignX="RIGHT" alignY="TOP">
+            <verticalLayout showFrame="true" spacing="5" padding="[5]" align="LEFT">
+                <ref name="slider" params="[360,direction]"/>
+                <ref name="slider" params="[360,range]"/>
+                <ref name="slider" params="[50,speed]"/>
+                <ref name="slider" params="[359,hue]"/>
+            </verticalLayout>
+        </aligner>
+    </elements>
+</gui>

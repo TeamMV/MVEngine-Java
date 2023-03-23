@@ -236,6 +236,7 @@ public class GuiParser {
             case "choiceGroup" -> parseChoiceGroup(elementTag);
             case "aligner" -> parseAligner(elementTag);
             case "picture" -> parsePicture(elementTag);
+            case "slider" -> parseSlider(elementTag);
             case "ref" -> resolveRef(elementTag);
             case "var" -> {
                 parseVariable(elementTag);
@@ -251,7 +252,7 @@ public class GuiParser {
             return null;
         }
 
-        e.setId(elementTag.getAttribute("id"));
+        e.setId(getStringAttrib(elementTag.getAttribute("id")));
         if (elementTag.hasAttribute("tags")) {
             Arrays.asList(getStringAttrib(elementTag.getAttribute("tags")).replace("[", "").replace("]", "").split(",")).stream().map(this::getStringAttrib).forEach(e::addTag);
         }
@@ -266,6 +267,17 @@ public class GuiParser {
             return Integer.parseInt(getParam(attrib));
         } else {
             return Integer.parseInt(attrib);
+        }
+    }
+
+    private float getFloatAttrib(String attrib) {
+        if (attrib.isBlank()) return 0;
+        if (attrib.startsWith("$VAR(") && attrib.endsWith(")")) {
+            return Float.parseFloat(getVariable(attrib));
+        } else if (attrib.startsWith("$PARAM(") && attrib.endsWith(")")) {
+            return Float.parseFloat(getParam(attrib));
+        } else {
+            return Float.parseFloat(attrib);
         }
     }
 
@@ -332,7 +344,7 @@ public class GuiParser {
             getStringAttrib(tag.getAttribute("x")),
             getStringAttrib(tag.getAttribute("y")),
             null, getStringAttrib(tag.getAttribute("height"))), null);
-        line.setText(tag.getTextContent());
+        line.setText(getStringAttrib(tag.getTextContent()));
         return line;
     }
 
@@ -652,6 +664,24 @@ public class GuiParser {
         }
 
         return picture;
+    }
+
+    private dev.mv.engine.gui.components.Element parseSlider(Element tag) {
+        if(tag.getAttribute("style").equals("free")) return parseFreeSlider(tag);
+        return null;
+    }
+
+    private FreeSlider parseFreeSlider(Element tag) {
+        FreeSlider slider = new FreeSlider(null, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
+
+        if(tag.hasAttribute("start")) slider.setStart(getFloatAttrib(tag.getAttribute("start")));
+        if(tag.hasAttribute("end")) slider.setEnd(getFloatAttrib(tag.getAttribute("end")));
+
+        return slider;
     }
 
     private class Reference {

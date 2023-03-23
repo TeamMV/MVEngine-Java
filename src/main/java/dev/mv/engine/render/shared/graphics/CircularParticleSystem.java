@@ -38,7 +38,7 @@ public class CircularParticleSystem extends ParticleSystem{
             particle.update();
             if(particle.isDone()) {
                 particle.setShape(shape);
-                particle.setSpeed((float) (Math.random() * 3 + 2));
+                particle.setSpeed((float) (Math.random() * 3 + 2)); //TODO: include speed var
                 particle.setDirection((float) (Math.random() * range + direction));
                 particle.setScale((float) (Math.random() * 10 + 5));
                 particle.setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
