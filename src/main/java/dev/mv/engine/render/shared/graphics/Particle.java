@@ -103,7 +103,6 @@ public class Particle {
 
         xVel *= 0.9;// * (1 / speed * 2);
         yVel *= 0.9;// * (1 / speed * 2);
-        System.out.println(speed);
 
         if(Math.abs(xVel) <= 0.01) xVel = 0;
         if(Math.abs(yVel) <= 0.01) yVel = 0;

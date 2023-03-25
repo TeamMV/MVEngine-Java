@@ -471,8 +471,10 @@ public class GuiParser {
     //layouts
     private VerticalLayout parseVerticalLayout(Element tag) {
         VerticalLayout layout = new VerticalLayout(null, VariablePosition.getPosition(
-            getStringAttrib(tag.getAttribute("x")),
-            getStringAttrib(tag.getAttribute("y")), null, null), null);
+                getStringAttrib(tag.getAttribute("x")),
+                getStringAttrib(tag.getAttribute("y")),
+                getStringAttrib(tag.getAttribute("width")),
+                getStringAttrib(tag.getAttribute("height"))), null);
 
         if (tag.hasAttribute("spacing")) {
             layout.setSpacing(getIntAttrib(tag.getAttribute("spacing")));
@@ -523,9 +525,10 @@ public class GuiParser {
 
     private HorizontalLayout parseHorizontalLayout(Element tag) {
         HorizontalLayout layout = new HorizontalLayout(null, VariablePosition.getPosition(
-            getStringAttrib(tag.getAttribute("x")),
-            getStringAttrib(tag.getAttribute("y")),
-            null, null), null);
+                getStringAttrib(tag.getAttribute("x")),
+                getStringAttrib(tag.getAttribute("y")),
+                getStringAttrib(tag.getAttribute("width")),
+                getStringAttrib(tag.getAttribute("height"))), null);
 
         if (tag.hasAttribute("spacing")) {
             layout.setSpacing(getIntAttrib(tag.getAttribute("spacing")));
@@ -620,6 +623,11 @@ public class GuiParser {
                     }
                 }
             }
+        }
+
+        if(tag.hasAttribute("default")) {
+            int index = getIntAttrib(tag.getAttribute("default"));
+            choiceGroup.setCurrentChoice(index);
         }
 
         return choiceGroup;

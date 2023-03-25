@@ -59,6 +59,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         maxHeight = 0;
         maxWidth = 0;
         for (Element e : elements) {
+            if(e.isSizeRelative()) continue;
             maxWidth = Math.max(maxWidth, e.getWidth());
             maxHeight = Math.max(maxHeight, e.getHeight());
         }

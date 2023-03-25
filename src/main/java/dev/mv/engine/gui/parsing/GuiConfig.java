@@ -130,7 +130,7 @@ public class GuiConfig {
     }
 
     private String getFileParent() {
-        return configFilePath.substring(0, configFilePath.lastIndexOf(File.separator));
+        return configFilePath.substring(0, configFilePath.lastIndexOf("/"));
     }
 
     public String getLayoutPath() {

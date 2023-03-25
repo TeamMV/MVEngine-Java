@@ -13,6 +13,7 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.utils.Utils;
 
 public class FreeSlider extends Element implements ValueChange, Draggable {
+    private boolean isDrag = false;
     private float start, end, value;
 
     public FreeSlider(Window window, int x, int y, int width, int height, Element parent) {
@@ -39,10 +40,10 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
 
             draw.color(animationState.outlineColor);
             if(theme.hasOutline()) {
-                draw.voidCircle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width), animationState.posY + animationState.height / 2 - 3, animationState.height + 6, thickness, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidCircle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width - (animationState.height + 6)), animationState.posY + animationState.height / 2 - 3, animationState.height + 6, thickness, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
             }
             draw.color(animationState.baseColor);
-            draw.circle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width), animationState.posY + animationState.height / 2 - 3, animationState.height + 6 - thickness, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
+            draw.circle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width - (animationState.height + 6)), animationState.posY + animationState.height / 2 - 3, animationState.height + 6 - thickness, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
         }
         if(theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
             int thickness = theme.getOutlineThickness();
@@ -56,10 +57,10 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
 
             draw.color(animationState.outlineColor);
             if(theme.hasOutline()) {
-                draw.voidRectangle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width), animationState.posY - 3, animationState.height + 6, animationState.height + 6, thickness, animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRectangle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width - (animationState.height + 6)), animationState.posY - 3, animationState.height + 6, animationState.height + 6, thickness, animationState.rotation, animationState.originX, animationState.originY);
             }
             draw.color(animationState.baseColor);
-            draw.rectangle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)) + thickness, animationState.width), animationState.posY - 3 + thickness, animationState.height + 6 - thickness * 2, animationState.height + 6 - thickness * 2, animationState.rotation, animationState.originX, animationState.originY);
+            draw.rectangle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)) + thickness, animationState.width - (animationState.height + 6)), animationState.posY - 3 + thickness, animationState.height + 6 - thickness * 2, animationState.height + 6 - thickness * 2, animationState.rotation, animationState.originX, animationState.originY);
         }
         if(theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
             int thickness = theme.getOutlineThickness();
@@ -73,10 +74,10 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
 
             draw.color(animationState.outlineColor);
             if(theme.hasOutline()) {
-                draw.voidRectangle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width), animationState.posY - 3, animationState.height + 6, animationState.height + 6, thickness, animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRectangle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width - (animationState.height + 6)), animationState.posY - 3, animationState.height + 6, animationState.height + 6, thickness, animationState.rotation, animationState.originX, animationState.originY);
             }
             draw.color(animationState.baseColor);
-            draw.rectangle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width) + thickness, animationState.posY - 3 + thickness, animationState.height + 6 - thickness * 2, animationState.height + 6 - thickness * 2, animationState.rotation, animationState.originX, animationState.originY);
+            draw.rectangle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width - (animationState.height + 6)) + thickness, animationState.posY - 3 + thickness, animationState.height + 6 - thickness * 2, animationState.height + 6 - thickness * 2, animationState.rotation, animationState.originX, animationState.originY);
         }
     }
 
@@ -143,21 +144,25 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
 
     @Override
     public void dragBegin(int x, int y, int btn) {
-
+        if(btn == Input.BUTTON_LEFT) {
+            if(GuiUtils.mouseInside(getX(), getY() - 3, getWidth(), getHeight() + 6)) {
+                isDrag = true;
+            }
+        }
     }
 
     @Override
     public void drag(int x, int y, int btn) {
         if(btn == Input.BUTTON_LEFT) {
-            if(GuiUtils.mouseInside(getX(), getY() - 3, getWidth(), getHeight() + 6)) {
-                setValue(Utils.getValue(Utils.getPercent(x - getX(), getWidth() + (getHeight() + 6)), (int) (end - start)));
+            if (isDrag) {
+                setValue(Utils.getValue(Utils.getPercent(x - getX(), getWidth()), (int) (end - start)));
             }
         }
     }
 
     @Override
     public void dragLeave(int x, int y, int btn) {
-
+        isDrag = false;
     }
 
     @Override

@@ -22,6 +22,7 @@ public class Aligner extends AbstractLayout {
 
     @Override
     public void draw(DrawContext2D draw) {
+        if(elements.isEmpty()) return;
         if(alignX == AlignX.LEFT) {
             elements.get(0).setX(getX());
         }

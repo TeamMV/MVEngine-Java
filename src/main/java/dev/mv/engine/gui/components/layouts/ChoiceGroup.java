@@ -59,18 +59,19 @@ public class ChoiceGroup extends AbstractLayout implements IgnoreDraw {
     }
 
     public int getCurrentChoice() {
-        return currentChoice;
+        return currentChoice + 1;
     }
 
     public void setCurrentChoice(int currentChoice) {
-        this.currentChoice = currentChoice;
-        uncheckAllExcept(currentChoice);
-        ((Choice) elements.get(currentChoice)).check();
+        this.currentChoice = currentChoice - 1;
+        uncheckAllExcept(this.currentChoice);
+        Choice target = (Choice) elements.get(this.currentChoice);
+        if(!target.isChecked()) target.check();
     }
 
     public void setCurrentChoice(Choice choice) {
         if (elements.contains(choice)) {
-            setCurrentChoice(elements.indexOf(choice));
+            setCurrentChoice(elements.indexOf(choice) + 1);
         }
     }
 

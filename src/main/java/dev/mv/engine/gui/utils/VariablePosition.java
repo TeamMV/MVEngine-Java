@@ -8,26 +8,28 @@ import java.awt.*;
 
 public class VariablePosition {
     private int x, y, width, height;
+    private boolean sizeRelative;
     private PositionCalculator pos;
 
-    public VariablePosition(int width, int height, PositionCalculator pos) {
+    public VariablePosition(int width, int height, PositionCalculator pos, boolean sizeRelative) {
         this.pos = pos;
-        resize(width, height);
+        resize(width, height, 0, 0);
+        this.sizeRelative = sizeRelative;
     }
 
-    public static VariablePosition fromScreenPosition(int x, int y, int width, int height, int sWidth, int sHeight) {
-        return new VariablePosition(sWidth, sHeight, (w, h) ->
+    public static VariablePosition fromScreenPosition(int x, int y, int width, int height, int sWidth, int sHeight, boolean sizeRelative) {
+        return new VariablePosition(sWidth, sHeight, (w, h, sw, sh) ->
             new int[] {
                 (int) (((float) x / (float) sWidth) * w),
                 (int) (((float) y / (float) sHeight) * h),
                 (int) (((float) width / (float) sWidth) * w),
                 (int) (((float) height / (float) sHeight) * h)
-            }
+            }, sizeRelative
         );
     }
 
-    public void resize(int width, int height) {
-        int[] size = pos.resize(width, height);
+    public void resize(int width, int height, int windowWidth, int windowHeight) {
+        int[] size = pos.resize(width, height, windowWidth, windowHeight);
         x = size[0];
         y = size[1];
         this.width = size[2];
@@ -74,16 +76,16 @@ public class VariablePosition {
     }
 
     public static VariablePosition getPosition(String fx, String fy, String fwidth, String fheight) {
-        return new VariablePosition(w, h, (width, height) -> {
-            int x = Utils.ifNotNull(fx).thenReturn(xStr -> parse(xStr, width)).otherwiseReturn(() -> 0).getGenericReturnValue().<Integer>value();
-            int y = Utils.ifNotNull(fy).thenReturn(yStr -> parse(yStr, height)).otherwiseReturn(() -> 0).getGenericReturnValue().<Integer>value();
-            int cWidth = Utils.ifNotNull(fwidth).thenReturn(wStr -> parse(wStr, width)).otherwiseReturn(() -> 0).getGenericReturnValue().<Integer>value();
-            int cHeight = Utils.ifNotNull(fheight).thenReturn(hStr -> parse(hStr, height)).otherwiseReturn(() -> 0).getGenericReturnValue().<Integer>value();
+        return new VariablePosition(w, h, (width, height, wwidth, wheight) -> {
+            int x = Utils.ifNotNull(fx).thenReturn(xStr -> parse(xStr, width, wwidth, wheight)).otherwiseReturn(() -> 0).getGenericReturnValue().<Integer>value();
+            int y = Utils.ifNotNull(fy).thenReturn(yStr -> parse(yStr, height, wwidth, wheight)).otherwiseReturn(() -> 0).getGenericReturnValue().<Integer>value();
+            int cWidth = Utils.ifNotNull(fwidth).thenReturn(wStr -> parse(wStr, width, wwidth, wheight)).otherwiseReturn(() -> 0).getGenericReturnValue().<Integer>value();
+            int cHeight = Utils.ifNotNull(fheight).thenReturn(hStr -> parse(hStr, height, wwidth, wheight)).otherwiseReturn(() -> 0).getGenericReturnValue().<Integer>value();
             return new int[]{x, y, cWidth, cHeight};
-        });
+        }, ((fwidth != null && fwidth.endsWith("%")) || (fheight != null && fheight.endsWith("%"))));
     }
 
-    private static int parse(String value, int max) {
+    private static int parse(String value, int max, int wwidth, int wheight) {
         boolean invert = false;
         int result = 0;
 
@@ -98,6 +100,10 @@ public class VariablePosition {
             result = Integer.parseInt(value.replaceAll("px", ""));
         } else if (value.endsWith("%")) {
             result = (int) ((Float.parseFloat(value.replaceAll("%", "")) / 100f) * max);
+        } else if (value.endsWith("vw")) {
+            result = (int) ((Float.parseFloat(value.replaceAll("vw", "")) / 100f) * wwidth);
+        } else if (value.endsWith("vh")) {
+            result = (int) ((Float.parseFloat(value.replaceAll("vh", "")) / 100f) * wheight);
         } else if (value.endsWith("in")) {
             result = (int) (Toolkit.getDefaultToolkit().getScreenResolution() * (float) Integer.parseInt(value.replaceAll("in", "")));
         } else if (value.endsWith("mm")) {
@@ -115,5 +121,9 @@ public class VariablePosition {
         Toolkit.getDefaultToolkit().getScreenResolution();
 
         return result;
+    }
+
+    public boolean isSizeRelative() {
+        return sizeRelative;
     }
 }

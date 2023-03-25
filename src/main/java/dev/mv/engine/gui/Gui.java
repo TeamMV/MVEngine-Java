@@ -220,7 +220,7 @@ public class Gui implements Resource {
     }
 
     private void dragEnd(int x, int y, int btn) {
-        root.dragBegin(x, y, btn);
+        root.dragLeave(x, y, btn);
     }
 
     private void keyPress(int key) {

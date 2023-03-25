@@ -3,7 +3,9 @@ package dev.mv.engine.gui.components;
 import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.components.animations.ElementAnimation;
 import dev.mv.engine.gui.components.animations.ElementAnimator;
+import dev.mv.engine.gui.components.extras.IgnoreDraw;
 import dev.mv.engine.gui.components.extras.Text;
+import dev.mv.engine.gui.components.layouts.FramedLayout;
 import dev.mv.engine.gui.event.*;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.VariablePosition;
@@ -183,7 +185,15 @@ public abstract class Element {
 
     public void resize(int width, int height) {
         if (position != null) {
-            position.resize(width, height);
+            if(parent == null || parent instanceof IgnoreDraw) {
+                position.resize(width, height, width, height);
+            } else {
+                if(parent instanceof FramedLayout f) {
+                    position.resize(f.getElementWidth(), f.getElementHeight(), width, height);
+                } else {
+                    position.resize(parent.getWidth(), parent.getHeight(), width, height);
+                }
+            }
             setX(position.getX());
             setY(position.getY());
             setWidth(position.getWidth());
@@ -280,5 +290,9 @@ public abstract class Element {
 
     public void setGui(Gui gui) {
         this.gui = gui;
+    }
+
+    public boolean isSizeRelative() {
+        return position != null && position.isSizeRelative();
     }
 }

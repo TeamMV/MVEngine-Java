@@ -9,6 +9,7 @@ import dev.mv.engine.gui.components.Button;
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.FreeSlider;
 import dev.mv.engine.gui.components.extras.Text;
+import dev.mv.engine.gui.components.layouts.ChoiceGroup;
 import dev.mv.engine.gui.components.layouts.UpdateSection;
 import dev.mv.engine.gui.components.layouts.VerticalLayout;
 import dev.mv.engine.gui.event.ProgressListener;
@@ -44,6 +45,7 @@ public class Test implements ApplicationLoop {
     FreeSlider range;
     FreeSlider speed;
     FreeSlider hue;
+    ChoiceGroup shape;
 
     private Test() {}
 
@@ -91,6 +93,7 @@ public class Test implements ApplicationLoop {
         range = root.findElementById("range");
         speed = root.findElementById("speed");
         hue = root.findElementById("hue");
+        shape = root.findElementById("shape");
     }
 
     @Override
@@ -99,6 +102,11 @@ public class Test implements ApplicationLoop {
         particleSystem.setRange((int) range.getValue());
         particleSystem.setSpeed((int) speed.getValue());
         particleSystem.setColor(particleSystem.getColor().toRGB((int) hue.getValue(), 1, 1));
+        switch (shape.getCurrentChoice()) {
+            case 1: particleSystem.setShape(ParticleSystem.Shape.TRIANGLE); break;
+            case 2: particleSystem.setShape(ParticleSystem.Shape.SQUARE); break;
+            case 3: particleSystem.setShape(ParticleSystem.Shape.CIRCLE); break;
+        }
     }
 
     @Override

@@ -26,9 +26,9 @@ public abstract class FramedLayout extends AbstractLayout {
         super(window, position, parent);
     }
 
-    protected abstract int getElementWidth();
+    public abstract int getElementWidth();
 
-    protected abstract int getElementHeight();
+    public abstract int getElementHeight();
 
     public void setPadding(int left, int right, int top, int bottom) {
         paddingLeft = left;

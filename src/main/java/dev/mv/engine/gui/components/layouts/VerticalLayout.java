@@ -26,12 +26,13 @@ public class VerticalLayout extends FramedLayout {
     }
 
     @Override
-    protected int getElementWidth() {
-        return maxWidth;
+    public int getElementWidth() {
+        return initialState.width == 0 ? maxWidth : initialState.width;
     }
 
     @Override
-    protected int getElementHeight() {
+    public int getElementHeight() {
+        if(initialState.height != 0) return initialState.height;
         int res = 0;
         for (Element e : elements) {
             if (e instanceof IgnoreDraw ignoreDraw) {
@@ -58,6 +59,7 @@ public class VerticalLayout extends FramedLayout {
 
         if (currentAlign == Align.LEFT) {
             for (Element e : elements) {
+                maxWidth = Math.max(maxWidth, e.getWidth());
                 if (e instanceof IgnoreDraw ignoreDraw) {
                     for (Element element : ignoreDraw.toRender()) {
                         element.setX(xStart);

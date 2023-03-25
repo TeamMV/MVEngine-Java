@@ -26,7 +26,8 @@ public class HorizontalLayout extends FramedLayout {
     }
 
     @Override
-    protected int getElementWidth() {
+    public int getElementWidth() {
+        if(initialState.width != 0) return initialState.width;
         int res = 0;
         for (Element e : elements) {
             if (e instanceof IgnoreDraw ignoreDraw) {
@@ -41,8 +42,8 @@ public class HorizontalLayout extends FramedLayout {
     }
 
     @Override
-    protected int getElementHeight() {
-        return maxHeight;
+    public int getElementHeight() {
+        return initialState.height == 0 ? maxHeight : initialState.height;
     }
 
     public void alignContent(HorizontalLayout.Align align) {
@@ -52,12 +53,15 @@ public class HorizontalLayout extends FramedLayout {
     @Override
     public void draw(DrawContext2D draw) {
         drawFrame(draw);
+        if(id.equals("h"))
+        System.out.println(getWidth() + ":" + getHeight());
 
         int xStart = getElementX();
         int yStart = getElementY();
 
         if (currentAlign == HorizontalLayout.Align.TOP) {
             for (Element e : elements) {
+                maxHeight = Math.max(maxHeight, e.getHeight());
                 if (e instanceof IgnoreDraw ignoreDraw) {
                     for (Element element : ignoreDraw.toRender()) {
                         element.setX(xStart);

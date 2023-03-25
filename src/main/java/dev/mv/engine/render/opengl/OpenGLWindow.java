@@ -174,6 +174,7 @@ public class OpenGLWindow implements Window {
         double deltaU = 0, deltaF = 0;
         int frames = 0, ticks = 0;
         long timer = System.currentTimeMillis();
+        GuiManager.sendResizeEvent(width, height);
         while (!glfwWindowShouldClose(window)) {
             currentTime = System.nanoTime();
             deltaU += (currentTime - initialTime) / timeU;

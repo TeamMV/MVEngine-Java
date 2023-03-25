@@ -5,7 +5,6 @@ import dev.mv.engine.gui.components.extras.IgnoreDraw;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.utils.Utils;
-import org.jetbrains.annotations.Range;
 
 public class LayerSection extends AbstractLayout implements IgnoreDraw {
     protected int layerToRenderOn = 0;
@@ -50,7 +49,7 @@ public class LayerSection extends AbstractLayout implements IgnoreDraw {
         return layerToRenderOn;
     }
 
-    public void setLayerToRenderOn(@Range(from = 0, to = 10) int layerToRenderOn) {
+    public void setLayerToRenderOn(int layerToRenderOn) {
         this.layerToRenderOn = Utils.clamp(layerToRenderOn, 0, 10);
     }
 }
