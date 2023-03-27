@@ -80,7 +80,7 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
                 if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.voidRoundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRoundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius() + thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
@@ -97,7 +97,7 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
                 if (!enabled) {
                     draw.color(theme.getDisabledOutlineColor());
                 }
-                draw.voidTriangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidTriangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, theme.getEdgeRadius() + thickness, animationState.rotation, animationState.originX, animationState.originY);
                 draw.color(animationState.baseColor);
                 if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());

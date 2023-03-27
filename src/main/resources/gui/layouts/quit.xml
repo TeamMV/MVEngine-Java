@@ -3,7 +3,7 @@
     <script src="dev.mv.engine.test.Manager"/>
 
     <variables>
-        <var name="height">5%</var>
+        <var name="height">5vh</var>
     </variables>
 
     <elements>
@@ -11,8 +11,8 @@
             <verticalLayout spacing="10" align="CENTER" showFrame="true" padding="[5]">
                 <textLine height="$VAR(height)">Are you sure you want to quit?</textLine>
                 <horizontalLayout spacing="5" showFrame="false" align="CENTER">
-                    <button height="$VAR(height)" width="5%" id="yes">yes</button>
-                    <button height="$VAR(height)" width="5%" id="no">no</button>
+                    <button height="$VAR(height)" width="5vw" id="yes">yes</button>
+                    <button height="$VAR(height)" width="5vw" id="no">no</button>
                 </horizontalLayout>
             </verticalLayout>
         </aligner>

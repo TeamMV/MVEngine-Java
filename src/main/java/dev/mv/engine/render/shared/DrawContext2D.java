@@ -9,6 +9,7 @@ import dev.mv.engine.render.shared.font.Glyph;
 import dev.mv.engine.render.shared.texture.Animation;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.shared.texture.TextureRegion;
+import dev.mv.engine.resources.ResourceLoader;
 import dev.mv.utils.Utils;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -34,10 +35,6 @@ public class DrawContext2D {
         this.window = window;
         gradient = new Gradient();
         canvas = new Vector4f(0, 0, window.getWidth(), window.getHeight());
-        try {
-            font(new BitmapFont("/assets/mvengine/defaultfont.png", "/assets/mvengine/defaultfont.fnt"));
-        } catch (IOException ignore) {
-        }
     }
 
     public void color(int r, int g, int b, int a) {
@@ -187,10 +184,10 @@ public class DrawContext2D {
         rectangle(x + radius, y + height - thickness, width - 2 * radius, thickness, rotation, originX, originY);
         rectangle(x, y + radius, thickness, height - 2 * radius, rotation, originX, originY);
         rectangle(x + width - thickness, y + radius, thickness, height - 2 * radius);
-        voidArc(x + radius, y + radius, radius, thickness, 90, 180, precision, rotation, originX, originY);
-        voidArc(x + radius, y + height - radius, radius, thickness, 90, 90, precision, rotation, originX, originY);
-        voidArc(x + width - radius, y + radius, radius, thickness, 90, 270, precision, rotation, originX, originY);
-        voidArc(x + width - radius, y + height - radius, radius, thickness, 90, 0, precision, rotation, originX, originY);
+        voidArc(x + radius, y + radius, radius - thickness / 2, thickness, 90, 180, precision, rotation, originX, originY);
+        voidArc(x + radius, y + height - radius, radius - thickness / 2, thickness, 90, 90, precision, rotation, originX, originY);
+        voidArc(x + width - radius, y + radius, radius - thickness / 2, thickness, 90, 270, precision, rotation, originX, originY);
+        voidArc(x + width - radius, y + height - radius, radius - thickness / 2, thickness, 90, 0, precision, rotation, originX, originY);
     }
 
     public void voidTriangularRectangle(int x, int y, int width, int height, int thickness, int radius) {
@@ -206,10 +203,34 @@ public class DrawContext2D {
         rectangle(x + radius, y + height - thickness, width - 2 * radius, thickness, rotation, originX, originY);
         rectangle(x, y + radius, thickness, height - 2 * radius, rotation, originX, originY);
         rectangle(x + width - thickness, y + radius, thickness, height - 2 * radius, rotation, originX, originY);
-        line(x + radius, y, x, y + radius, thickness, rotation, originX, originY);
-        line(x, y + height - radius, x + radius, y + height, thickness, rotation, originX, originY);
-        line(x + width - radius, y + height, x + width, y + height - radius, thickness, rotation, originX, originY);
-        line(x + width, y + radius, x + width - radius, y, thickness, rotation, originX, originY);
+        float radRotation = (float) Math.toRadians(rotation);
+        window.getBatchController().addVertices(verts.set(
+            v1.put(x, y + height - radius, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v2.put(x + radius, y + height, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v3.put(x + radius, y + height - thickness, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v4.put(x + thickness, y + height - radius, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
+        ), useCamera);
+
+        window.getBatchController().addVertices(verts.set(
+            v1.put(x + width - radius, y + height - thickness, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v2.put(x + width - radius, y + height, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v3.put(x + width, y + height - radius, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v4.put(x + width - thickness, y + height - radius, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
+        ), useCamera);
+
+        window.getBatchController().addVertices(verts.set(
+            v1.put(x + width - radius, y, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v2.put(x + width - radius, y + thickness, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v3.put(x + width - thickness, y + radius, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v4.put(x + width, y + radius, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
+        ), useCamera);
+
+        window.getBatchController().addVertices(verts.set(
+            v1.put(x, y + radius, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v2.put(x + thickness, y + radius, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v3.put(x + radius, y + thickness, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+            v4.put(x + radius, y, 0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
+        ), useCamera);
     }
 
     public void circle(int x, int y, int radius, float precision) {
@@ -242,11 +263,7 @@ public class DrawContext2D {
     }
 
     public void voidCircle(int x, int y, int radius, int thickness, float precision, float rotation, int originX, int originY) {
-        double tau = Math.PI * 2.0;
-        double step = tau / precision;
-        for (double i = 0.0; i < tau; i += step) {
-            line((int) (x + (radius * Math.cos(i))), (int) (y + (radius * Math.sin(i))), (int) (x + (radius * Math.cos(i + step))), (int) (y + (radius * Math.sin(i + step))), thickness, rotation, originX, originY);
-        }
+        voidArc(x, y, radius, thickness, 360, 0, precision, rotation, originX, originY);
     }
 
     public void arc(int x, int y, int radius, int range, int start, float precision) {
@@ -280,12 +297,18 @@ public class DrawContext2D {
     }
 
     public void voidArc(int x, int y, int radius, int thickness, int range, int start, float precision, float rotation, int originX, int originY) {
-        int rRadius = radius - Math.floorDiv(thickness, 2);
+        int rRadius = radius - Math.ceilDiv(thickness, 2);
         double tau = Math.PI * 2.0;
         double rRange = Math.PI * 2.0 - Math.toRadians(range);
         double step = tau / precision;
+        float radRotation = (float) Math.toRadians(rotation);
         for (double i = Math.toRadians(start); i < tau - rRange + Math.toRadians(start); i += step) {
-            line((int) (x + (rRadius * Math.cos(i))), (int) (y + (rRadius * Math.sin(i))), (int) (x + (rRadius * Math.cos(i + step))), (int) (y + (rRadius * Math.sin(i + step))), thickness + 1, rotation, originX, originY);
+            window.getBatchController().addVertices(verts.set(
+                v1.put((float) (x + (rRadius * Math.cos(i))), (float) (y + (rRadius * Math.sin(i))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+                v2.put((float) (x + ((rRadius + thickness) * Math.cos(i))), (float) (y + ((rRadius + thickness) * Math.sin(i))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+                v3.put((float) (x + ((rRadius + thickness) * Math.cos(i + step))), (float) (y + ((rRadius + thickness) * Math.sin(i + step))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+                v4.put((float) (x + (rRadius * Math.cos(i + step))), (float) (y + (rRadius * Math.sin(i + step))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
+            ), useCamera);
         }
     }
 

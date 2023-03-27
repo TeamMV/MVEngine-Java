@@ -62,11 +62,11 @@ public class Test implements ApplicationLoop {
 
         try {
             ResourceLoader.markTheme("defaultTheme", "testTheme.xml");
-            ResourceLoader.markFont("defaultFont", "/assets/mvengine/defaultfont.png", "/assets/mvengine/defaultfont.fnt");
             ResourceLoader.markPage("main", "main.xml");
             ResourceLoader.markLayout("test", "testLayout.xml");
             ResourceLoader.markLayout("quit", "quit.xml");
             ResourceLoader.markLayout("particle", "particle.xml");
+            ResourceLoader.markFont("defaultFont", "/assets/mvengine/font/defaultfont.png", "/assets/mvengine/font/defaultfont.fnt");
             ResourceLoader.load(engine, new GuiConfig("/gui/guiConfig.xml"));
             Page main = R.pages.get("main");
             GuiRegistry registry = main.getRegistry();
@@ -77,7 +77,7 @@ public class Test implements ApplicationLoop {
                     put("myGui", new Pair<>(new LinearShiftTransition(0, 0), 0.5f));
                 }
             });
-            pager.open("particle");
+            pager.open("myGui");
             Theme theme = R.themes.get("defaultTheme");
             theme.setFont(R.fonts.get("defaultFont"));
             registry.applyTheme(theme);
@@ -112,9 +112,13 @@ public class Test implements ApplicationLoop {
 
     @Override
     public void draw(MVEngine engine, Window window) {
-        R.guis.get("default").renderGuis();
-        particleSystem.draw(ctx2D);
-        //ctx2D.rectangle(100, 100, 20, 50, 45);
+        //R.guis.get("default").renderGuis();
+        //particleSystem.draw(ctx2D);
+        //ctx2D.color(Color.RED);
+        //ctx2D.triangularRectangle(100, 100, 300, 600, 100);
+        ctx2D.color(255, 255, 255, 255);
+        //ctx2D.voidTriangularRectangle(100 - 3, 100 - 3, 300 + 6, 600 + 6, 3, 100 + 3);
+        ctx2D.voidCircle(300, 300, 200, 50, 50);
     }
 
     public String getGameId() {

@@ -49,7 +49,7 @@ public class Exceptions {
     }
 
     public static void send(Throwable throwable) {
-        Logger.error("Oops! It seems like there was an " + throwable.getClass().getCanonicalName() + "!");
+        Logger.error("Oops! It seems like there was an " + throwable.getClass().getCanonicalName() + " thrown by the program!");
         Logger.error(Utils.iter(throwable.getStackTrace()).map(StackTraceElement::toString).collect().unsafe().join((a, b) -> a + b, System.lineSeparator()));
         MVEngine.instance().getExceptionHandler().handle(throwable);
     }

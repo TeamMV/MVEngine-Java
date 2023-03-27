@@ -101,7 +101,7 @@ public abstract class FramedLayout extends AbstractLayout {
             if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(getOutlineColor());
-                draw.voidRoundedRectangle(getX(), getY(), getWidth(), getHeight(), thickness, theme.getEdgeRadius(), theme.getEdgeRadius());
+                draw.voidRoundedRectangle(getX(), getY(), getWidth(), getHeight(), thickness, theme.getEdgeRadius() + thickness, theme.getEdgeRadius());
                 draw.color(getBaseColor());
                 draw.roundedRectangle(getX() + thickness, getY() + thickness, getWidth() - thickness * 2, getHeight() - thickness * 2, theme.getEdgeRadius(), theme.getEdgeRadius());
             } else {
@@ -112,7 +112,7 @@ public abstract class FramedLayout extends AbstractLayout {
             if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
                 draw.color(getOutlineColor());
-                draw.voidTriangularRectangle(getX(), getY(), getWidth(), getHeight(), thickness, theme.getEdgeRadius());
+                draw.voidTriangularRectangle(getX(), getY(), getWidth(), getHeight(), thickness, theme.getEdgeRadius() + thickness);
                 draw.color(getBaseColor());
                 draw.triangularRectangle(getX() + thickness, getY() + thickness, getWidth() - thickness * 2, getHeight() - thickness * 2, theme.getEdgeRadius());
             } else {

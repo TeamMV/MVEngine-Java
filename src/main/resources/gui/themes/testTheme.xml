@@ -21,7 +21,7 @@
     </colors>
     <general>
         <edges>
-            <style>SQUARE</style>
+            <style>TRIANGLE</style>
             <radius>10</radius>
         </edges>
         <outline>
@@ -29,7 +29,7 @@
             <use>true</use>
         </outline>
         <guiAssets>
-            <path>/assets/mvengine/guiassets.png</path>
+            <path>/assets/mvengine/gui/guiassets.png</path>
             <icons>
                 <width>32</width>
                 <height>32</height>

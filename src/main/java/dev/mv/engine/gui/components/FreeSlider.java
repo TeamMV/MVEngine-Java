@@ -32,7 +32,7 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
             int thickness = theme.getOutlineThickness();
             draw.color(animationState.outlineColor);
             if(theme.hasOutline()) {
-                draw.voidRoundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, (int) (animationState.height * (1/4f)), animationState.height * (1/4f), animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRoundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, (int) (animationState.height * (1/4f) + thickness), animationState.height * (1/4f), animationState.rotation, animationState.originX, animationState.originY);
             }
             draw.color(animationState.baseColor);
             draw.roundedRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - thickness * 2, animationState.height - thickness * 2, (int) (animationState.height * (1/4f)), animationState.height * (1/4f), animationState.rotation, animationState.originX, animationState.originY);
@@ -49,7 +49,7 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
             int thickness = theme.getOutlineThickness();
             draw.color(animationState.outlineColor);
             if(theme.hasOutline()) {
-                draw.voidTriangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, (int) (animationState.height * (1/4f)), animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidTriangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, thickness, (int) (animationState.height * (1/4f) + thickness), animationState.rotation, animationState.originX, animationState.originY);
             }
             draw.color(animationState.baseColor);
             draw.triangularRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - thickness * 2, animationState.height - thickness * 2, (int) (animationState.height * (1/4f)), animationState.rotation, animationState.originX, animationState.originY);

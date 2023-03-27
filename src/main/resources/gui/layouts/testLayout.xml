@@ -3,7 +3,7 @@
     <script src="dev.mv.engine.test.Manager"/>
 
     <variables>
-        <var name="height">5%</var>
+        <var name="height">5vh</var>
     </variables>
 
     <references>
@@ -31,10 +31,6 @@
                 <ref name="defaultSeparator"/>
                 <input type="string" width="400" height="$VAR(height)" id="email">E-Mail address</input>
                 <input type="password" width="400" height="$VAR(height)">Password</input>
-                <collapseMenu width="$VAR(height)" height="$VAR(height)" title="Options">
-                    <ref name="collapseCheckbox" params="[checkbox]"/>
-                    <button width="60" height="$VAR(height)" id="button2" tags="[1,2,3]">click</button>
-                </collapseMenu>
                 <ref name="defaultSeparator"/>
                 <ref name="defaultSpace"/>
                 <horizontalLayout showFrame="true" spacing="5" padding="[5]">
