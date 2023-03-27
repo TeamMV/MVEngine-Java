@@ -2,6 +2,7 @@ package dev.mv.engine;
 
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.exceptions.handle.ExceptionHandler;
+import dev.mv.engine.game.Game;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.input.InputCollector;
 import dev.mv.engine.input.InputProcessor;
@@ -26,6 +27,7 @@ public class MVEngine implements AutoCloseable {
     private ApplicationConfig applicationConfig;
     private InputCollector inputCollector;
     private ExceptionHandler exceptionHandler;
+    private Game game;
 
     private MVEngine() {
         exceptionHandler = ExceptionHandler.Default.INSTANCE;
@@ -130,5 +132,13 @@ public class MVEngine implements AutoCloseable {
 
     public void setExceptionHandler(ExceptionHandler handler) {
         exceptionHandler = handler;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    public Game getGame() {
+        return game;
     }
 }

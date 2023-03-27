@@ -9,12 +9,6 @@ public interface ModManager {
 
     void registerListener(Object instance);
 
-    <T> Registry<T> getRegistry(String type);
-
-    <T> Registry<T> getRegistry(Class<T> clazz);
-
-    <T> Registry<T> getRegistry(RegistryType type);
-
     void dispatchEvent(Event event);
 
     Directory getGameDirectory();

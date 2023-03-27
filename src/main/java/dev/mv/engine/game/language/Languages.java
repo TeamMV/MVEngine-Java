@@ -1,10 +1,13 @@
 package dev.mv.engine.game.language;
 
+import dev.mv.engine.MVEngine;
 import dev.mv.utils.Utils;
 import dev.mv.utils.buffer.DynamicCharBuffer;
 import dev.mv.utils.collection.Vec;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,13 +16,16 @@ public class Languages {
     private static Map<String, Language> languages = new HashMap<>();
     private static Language currentLanguage;
 
-    public static void init() {
-        //TODO: scan languages and find default from settings
+    public static Vec<String> scanLanguages(String id) {
+        InputStream stream = Languages.class.getResourceAsStream("/assets/" + id + "/lang");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        return Utils.iter(reader.lines().toList()).filter(s -> s.matches("[a-zA-Z_]+.((json)|(lang))]")).map(s -> "/assets/" + id + "/lang/" + s).collect();
     }
 
     public static void init(Vec<String> foundLanguages, String defaultLanguage) {
-        foundLanguages.forEach(lang -> addLanguage(load("/assets/factoryisland/lang/" + lang + ".json")));
+        foundLanguages.forEach(lang -> addLanguage(load("/assets/" + MVEngine.instance().getGame().getGameId() + "/lang/" + lang + ".json")));
         currentLanguage = getLanguage(defaultLanguage);
+        if (currentLanguage == null && foundLanguages.len() > 0) currentLanguage = getLanguage(foundLanguages.unsafe().get(0));
     }
 
     public static Language getCurrentLanguage() {

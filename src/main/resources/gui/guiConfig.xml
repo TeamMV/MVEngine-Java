@@ -1,17 +1,17 @@
 <mvt:config xmlns:mvt="">
     <themePath>
         <relative>
-            \themes\
+            /themes/
         </relative>
     </themePath>
     <layoutPath>
         <relative>
-            \layouts\
+            /layouts/
         </relative>
     </layoutPath>
     <pagePath>
         <relative>
-            \pages\
+            /pages/
         </relative>
     </pagePath>
 </mvt:config>

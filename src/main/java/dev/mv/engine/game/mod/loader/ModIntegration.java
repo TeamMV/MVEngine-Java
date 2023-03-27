@@ -7,10 +7,12 @@ import java.io.InputStream;
 
 public class ModIntegration {
 
-    private static final Vec<Class<?>> classes = Utils.getAllClasses(i -> !Utils.containsAny(i, "dev.mv.engine",
+    private static final Vec<Class<?>> baseClasses = Utils.getAllClasses(i -> !Utils.containsAny(i, "dev.mv.engine",
         "dev.mv.utils", "org.lwjgl", "de.fabmax.physxjni", "physx.",
         "org.joml", "com.codedisaster.steamworks", "javax.annotation",
         "org.jetbrains.annotations", "org.intellij"));
+
+    private static final Vec<Class<?>> classes = baseClasses.clone();
 
     private static final Vec<String> assets = new Vec<>();
 
@@ -28,6 +30,10 @@ public class ModIntegration {
 
     public static Vec<Class<?>> getClasses() {
         return classes;
+    }
+
+    public static Vec<Class<?>> getBaseClasses() {
+        return baseClasses;
     }
 
     public static Vec<String> getAssets() {

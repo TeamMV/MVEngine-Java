@@ -1,11 +1,14 @@
 package dev.mv.engine.game.mod.loader;
 
+import dev.mv.engine.MVEngine;
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.files.Directory;
 import dev.mv.engine.game.event.*;
 import dev.mv.engine.game.language.Languages;
 import dev.mv.engine.game.mod.api.ModManager;
+import dev.mv.engine.game.registry.Registries;
 import dev.mv.engine.game.registry.Registry;
+import dev.mv.engine.game.registry.RegistryLoader;
 import dev.mv.engine.game.registry.RegistryType;
 import dev.mv.utils.Utils;
 import dev.mv.utils.collection.Vec;
@@ -55,6 +58,10 @@ public class Mod {
         } catch (NoSuchMethodException e) {
             Exceptions.send("MOD_INIT_ABSENT", id);
         }
+    }
+
+    public void initRegistries() {
+        Registries.getResourceTypes().forEach(clazz -> RegistryLoader.registerResources(classes, clazz, id, Registries.registry(clazz)));
     }
 
     public void initListeners() {
@@ -122,38 +129,18 @@ public class Mod {
         }
 
         @Override
-        public <T> Registry<T> getRegistry(String type) {
-            return getRegistry(RegistryType.getRegistryType(type));
-        }
-
-        @Override
-        public <T> Registry<T> getRegistry(Class<T> clazz) {
-            return getRegistry(RegistryType.getRegistryType(clazz));
-        }
-
-        @Override
-        public <T> Registry<T> getRegistry(RegistryType type) {
-            if (!registries.containsKey(type)) {
-                ModRegistry<T> registry = new ModRegistry<>(mod, type);
-                registries.put(type, registry);
-                return registry;
-            }
-            return (Registry<T>) registries.get(type);
-        }
-
-        @Override
         public void dispatchEvent(Event event) {
             Events.bus(Bus.MOD).dispatch(event);
         }
 
         @Override
         public Directory getGameDirectory() {
-            return ModFinder.gameDir;
+            return MVEngine.instance().getGame().getGameDirectory();
         }
 
         @Override
         public Directory getModConfigDirectory() {
-            return ModFinder.gameDir.getSubDirectory("config").getSubDirectory(id);
+            return MVEngine.instance().getGame().getGameDirectory().getSubDirectory("config").getSubDirectory(id);
         }
     }
 }

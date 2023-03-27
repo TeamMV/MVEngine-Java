@@ -81,6 +81,7 @@ public class ModLoader {
 
     private static void initMod(Mod mod) {
         mod.init();
+        mod.initRegistries();
         mod.initListeners();
         mod.initAssets();
     }

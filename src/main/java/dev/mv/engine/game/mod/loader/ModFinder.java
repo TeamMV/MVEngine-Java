@@ -1,5 +1,6 @@
 package dev.mv.engine.game.mod.loader;
 
+import dev.mv.engine.MVEngine;
 import dev.mv.engine.exceptions.DuplicateModIdException;
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.files.Directory;
@@ -21,16 +22,13 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ModFinder {
-
     private static final Vec<String> mods = new Vec<>();
     private static final Map<String, Vec<Class<?>>> specificModClasses = new HashMap<>();
     private static final Map<String, Vec<String>> specificModAssets = new HashMap<>();
     private static final Map<String, URL> modUrls = new HashMap<>();
     private static URLClassLoader modClassLoader = new URLClassLoader(new URL[]{}, ClassLoader.getSystemClassLoader());
-    static Directory gameDir = null;
 
-    public static void findMods(Directory gameDir, Directory modDir) {
-        ModFinder.gameDir = gameDir;
+    public static void findMods(Directory modDir) {
         File[] files = modDir.asFile().listFiles((dir, name) -> name.endsWith(".jar"));
         if (files == null || files.length == 0) return;
         Vec<File> jarFiles = new Vec<>();
@@ -122,8 +120,7 @@ public class ModFinder {
     }
 
     private static void checkId(String id) {
-        //TODO: Game ID?
-        if (id.equals("TemplateGame.ID")) {
+        if (id.equals(MVEngine.instance().getGame().getGameId())) {
             Exceptions.send("MOD_ID_GAME");
         }
         if (!id.matches("[a-zA-Z0-9_\\-]+")) {

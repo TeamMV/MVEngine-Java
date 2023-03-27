@@ -1,5 +1,6 @@
 package dev.mv.engine.game.registry;
 
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.utils.collection.Vec;
 
 import java.util.function.Supplier;
@@ -7,16 +8,19 @@ import java.util.function.Supplier;
 public class ResourceRegistry<T> implements Registry<T> {
 
     private final Vec<Registered<? extends T>> items = new Vec<>();
+    private final String resourceId;
 
-    ResourceRegistry(Class<T> parent) {}
+    ResourceRegistry(Class<T> parent, String resourceId) {
+        this.resourceId = resourceId;
+    }
 
     @Override
-    public <R extends T> RegisteredObject<R> register(String id, Class<R> clazz, Supplier<R> constructor) {
-        Registered<R> item = new Registered<>(id, clazz, constructor);
+    public <R extends T> RegisteredObject<R> register(String id, Class<R> clazz) {
+        Registered<R> item = new Registered<>(id, clazz);
         if (items.contains(item)) {
             throw new RuntimeException("Duplicate player ids: " + id);
         }
-        //Do all the loading needed, like textures/models for blocks, referencing the assets bytecode
+        //TODO: Do all the loading needed, like textures/models for blocks, referencing the assets bytecode
         items.push(item);
         return item;
     }
@@ -29,7 +33,6 @@ public class ResourceRegistry<T> implements Registry<T> {
                 .first()
                 .asNullHandler()
                 .thenReturn(Registered::newInstance)
-                .otherwiseReturn(null)
                 .getGenericReturnValue()
                 .value();
     }
@@ -42,31 +45,37 @@ public class ResourceRegistry<T> implements Registry<T> {
                 .first()
                 .asNullHandler()
                 .thenReturn(Registered::newInstance)
-                .otherwiseReturn(null)
                 .getGenericReturnValue()
                 .value();
     }
+
+
 
     private class Registered<R extends T> implements RegisteredObject<R> {
 
         private String id;
         private Class<R> clazz;
-        private Supplier<R> constructor;
 
-        private Registered(String id, Class<R> clazz, Supplier<R> constructor) {
+        private Registered(String id, Class<R> clazz) {
             this.id = id;
             this.clazz = clazz;
-            this.constructor = constructor;
         }
 
         public R newInstance() {
-            return constructor.get();
+            try {
+                return clazz.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                Exceptions.send("GAME_RESOURCE_CONSTRUCTOR", clazz.getName());
+                return null;
+            }
         }
 
+        @Override
         public Class<R> getType() {
             return clazz;
         }
 
+        @Override
         public String getId() {
             return id;
         }

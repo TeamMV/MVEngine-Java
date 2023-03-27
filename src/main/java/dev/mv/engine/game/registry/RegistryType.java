@@ -47,7 +47,7 @@ public class RegistryType {
 
     public static RegistryType getRegistryType(Class<?> clazz) {
         for (RegistryType registryType : types) {
-            if (registryType.getClazz().equals(clazz)) {
+            if (clazz.isAssignableFrom(registryType.getClazz())) {
                 return registryType;
             }
         }
