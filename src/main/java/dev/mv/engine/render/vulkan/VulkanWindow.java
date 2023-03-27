@@ -2,6 +2,7 @@ package dev.mv.engine.render.vulkan;
 
 import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.Camera;
@@ -74,7 +75,7 @@ public class VulkanWindow implements Window {
             try {
                 applicationLoop.start(engine, this);
             } catch (Exception e) {
-                MVEngine.Exceptions.__throw__(e);
+                Exceptions.send(e);
             }
         }
 

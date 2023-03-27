@@ -218,6 +218,34 @@ public class ConfigFile {
         }
     }
 
+    public boolean hasInt(String name) {
+        return integers.containsKey(name);
+    }
+
+    public boolean hasFloat(String name) {
+        return floats.containsKey(name);
+    }
+
+    public boolean hasLong(String name) {
+        return longs.containsKey(name);
+    }
+
+    public boolean hasDouble(String name) {
+        return doubles.containsKey(name);
+    }
+
+    public boolean hasBoolean(String name) {
+        return booleans.containsKey(name);
+    }
+
+    public boolean hasBytes(String name) {
+        return bytes.containsKey(name);
+    }
+
+    public boolean hasString(String name) {
+        return strings.containsKey(name);
+    }
+
     public byte[] getBytes(String name) {
         return bytes.get(name);
     }
@@ -248,5 +276,47 @@ public class ConfigFile {
 
     public void setBytes(String name, byte[] value) {
         bytes.put(name, value);
+    }
+
+    public void setIntIfAbsent(String name, int value) {
+        if (!integers.containsKey(name)) {
+            integers.put(name, value);
+        }
+    }
+
+    public void setFloatIfAbsent(String name, float value) {
+        if (!floats.containsKey(name)) {
+            floats.put(name, value);
+        }
+    }
+
+    public void setLongIfAbsent(String name, long value) {
+        if (!longs.containsKey(name)) {
+            longs.put(name, value);
+        }
+    }
+
+    public void setDoubleIfAbsent(String name, double value) {
+        if (!doubles.containsKey(name)) {
+            doubles.put(name, value);
+        }
+    }
+
+    public void setBooleanIfAbsent(String name, boolean value) {
+        if (!booleans.containsKey(name)) {
+            booleans.put(name, value);
+        }
+    }
+
+    public void setBytesIfAbsent(String name, byte[] value) {
+        if (!bytes.containsKey(name)) {
+            bytes.put(name, value);
+        }
+    }
+
+    public void setStringIfAbsent(String name, String value) {
+        if (!strings.containsKey(name)) {
+            strings.put(name, value);
+        }
     }
 }

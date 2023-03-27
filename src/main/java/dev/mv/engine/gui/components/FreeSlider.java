@@ -40,10 +40,10 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
 
             draw.color(animationState.outlineColor);
             if(theme.hasOutline()) {
-                draw.voidCircle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width - (animationState.height + 6)), animationState.posY + animationState.height / 2 - 3, animationState.height + 6, thickness, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidCircle(animationState.posX + Utils.getValue(Utils.getPercent(value - start, (int) (end - start)), animationState.width - (animationState.height + 6)), animationState.posY + animationState.height / 2 - 3, animationState.height + 6, thickness, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
             }
             draw.color(animationState.baseColor);
-            draw.circle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width - (animationState.height + 6)), animationState.posY + animationState.height / 2 - 3, animationState.height + 6 - thickness, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
+            draw.circle(animationState.posX + Utils.getValue(Utils.getPercent(value - start, (int) (end - start)), animationState.width - (animationState.height + 6)), animationState.posY + animationState.height / 2 - 3, animationState.height + 6 - thickness, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
         }
         if(theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
             int thickness = theme.getOutlineThickness();
@@ -57,10 +57,10 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
 
             draw.color(animationState.outlineColor);
             if(theme.hasOutline()) {
-                draw.voidRectangle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width - (animationState.height + 6)), animationState.posY - 3, animationState.height + 6, animationState.height + 6, thickness, animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRectangle(animationState.posX + Utils.getValue(Utils.getPercent(value - start, (int) (end - start)), animationState.width - (animationState.height + 6)), animationState.posY - 3, animationState.height + 6, animationState.height + 6, thickness, animationState.rotation, animationState.originX, animationState.originY);
             }
             draw.color(animationState.baseColor);
-            draw.rectangle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)) + thickness, animationState.width - (animationState.height + 6)), animationState.posY - 3 + thickness, animationState.height + 6 - thickness * 2, animationState.height + 6 - thickness * 2, animationState.rotation, animationState.originX, animationState.originY);
+            draw.rectangle(animationState.posX + Utils.getValue(Utils.getPercent(value - start, (int) (end - start)) + thickness, animationState.width - (animationState.height + 6)), animationState.posY - 3 + thickness, animationState.height + 6 - thickness * 2, animationState.height + 6 - thickness * 2, animationState.rotation, animationState.originX, animationState.originY);
         }
         if(theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
             int thickness = theme.getOutlineThickness();
@@ -74,10 +74,10 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
 
             draw.color(animationState.outlineColor);
             if(theme.hasOutline()) {
-                draw.voidRectangle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width - (animationState.height + 6)), animationState.posY - 3, animationState.height + 6, animationState.height + 6, thickness, animationState.rotation, animationState.originX, animationState.originY);
+                draw.voidRectangle(animationState.posX + Utils.getValue(Utils.getPercent(value - start, (int) (end - start)), animationState.width - (animationState.height + 6)), animationState.posY - 3, animationState.height + 6, animationState.height + 6, thickness, animationState.rotation, animationState.originX, animationState.originY);
             }
             draw.color(animationState.baseColor);
-            draw.rectangle(animationState.posX + Utils.getValue(Utils.getPercent(value, (int) (end - start)), animationState.width - (animationState.height + 6)) + thickness, animationState.posY - 3 + thickness, animationState.height + 6 - thickness * 2, animationState.height + 6 - thickness * 2, animationState.rotation, animationState.originX, animationState.originY);
+            draw.rectangle(animationState.posX + Utils.getValue(Utils.getPercent(value - start, (int) (end - start)), animationState.width - (animationState.height + 6)) + thickness, animationState.posY - 3 + thickness, animationState.height + 6 - thickness * 2, animationState.height + 6 - thickness * 2, animationState.rotation, animationState.originX, animationState.originY);
         }
     }
 
@@ -92,7 +92,7 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
     public void increment(float amount) {
         value = Utils.clamp(value + amount, start, end);
         progressListeners.forEach(l -> {
-            l.onIncrement(this, (int) value, (int) end, (int) Utils.getPercent(value, (int) (end - start)));
+            l.onIncrement(this, (int) value, (int) end, (int) Utils.getPercent(value - start, (int) (end - start)));
         });
     }
 
@@ -100,7 +100,7 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
     public void decrement(float amount) {
         value = Utils.clamp(value - amount, start, end);
         progressListeners.forEach(l -> {
-            l.onDecrement(this, (int) value, (int) end, (int) Utils.getPercent(value, (int) (end - start)));
+            l.onDecrement(this, (int) value, (int) end, (int) Utils.getPercent(value - start, (int) (end - start)));
         });
     }
 
@@ -155,7 +155,7 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
     public void drag(int x, int y, int btn) {
         if(btn == Input.BUTTON_LEFT) {
             if (isDrag) {
-                setValue(Utils.getValue(Utils.getPercent(x - getX(), getWidth()), (int) (end - start)));
+                setValue(Utils.getValue(Utils.getPercent(x - (getX() + (getHeight() + 6) / 2f) + (getWidth() / (end - start)) / 2f, getWidth() - (getHeight() + 6)), (int) (end - start)) + start);
             }
         }
     }

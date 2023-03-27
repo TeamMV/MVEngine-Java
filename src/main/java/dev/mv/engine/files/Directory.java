@@ -1,5 +1,6 @@
 package dev.mv.engine.files;
 
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.utils.Utils;
 
 import java.io.File;
@@ -36,8 +37,8 @@ public abstract class Directory {
         if (!file.exists()) {
             try {
                 file.createNewFile();
-            } catch (Exception e) {
-                return null;
+            } catch (IOException e) {
+                Exceptions.send(e);
             }
         }
         return file;

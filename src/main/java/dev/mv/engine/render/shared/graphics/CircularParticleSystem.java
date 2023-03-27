@@ -19,7 +19,7 @@ public class CircularParticleSystem extends ParticleSystem{
         new PromiseNull(resolverNull -> {
             particles.forEach(particle -> {
                 particle.setShape(shape);
-                particle.setSpeed((float) (Math.random() * 5 + 5) * speed);
+                particle.setSpeed(Utils.clamp(speed, 3, 10));
                 particle.setDirection((float) (Math.random() * range + direction));
                 particle.setScale((float) (Math.random() * 10 + 10));
                 particle.setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());

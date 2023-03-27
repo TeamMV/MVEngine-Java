@@ -2,6 +2,7 @@ package dev.mv.engine.render.opengl;
 
 import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.GuiManager;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.WindowCreateInfo;
@@ -12,7 +13,6 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.utils.RenderUtils;
-import dev.mv.utils.Utils;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -81,7 +81,7 @@ public class OpenGLWindow implements Window {
             try {
                 applicationLoop.start(engine, this);
             } catch (Exception e) {
-                MVEngine.Exceptions.__throw__(e);
+                Exceptions.send(e);
             }
         }
 
@@ -187,7 +187,7 @@ public class OpenGLWindow implements Window {
                     try {
                         applicationLoop.update(engine, this);
                     } catch (Exception e) {
-                        MVEngine.Exceptions.__throw__(e);
+                        Exceptions.send(e);
                     }
                 }
                 if (info.appendFpsToTitle) {
@@ -208,7 +208,7 @@ public class OpenGLWindow implements Window {
                     try {
                         applicationLoop.draw(engine, this);
                     } catch (Exception e) {
-                        MVEngine.Exceptions.__throw__(e);
+                        Exceptions.send(e);
                     }
                 }
 

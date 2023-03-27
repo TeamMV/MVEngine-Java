@@ -1,4 +1,4 @@
-package dev.mv.engine.gui.parsing;
+package dev.mv.engine.exceptions;
 
 public class InvalidUnitException extends Exception {
     public InvalidUnitException() {

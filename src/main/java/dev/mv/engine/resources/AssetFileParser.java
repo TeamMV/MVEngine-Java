@@ -1,7 +1,7 @@
 package dev.mv.engine.resources;
 
-import dev.mv.engine.MVEngine;
-import dev.mv.engine.gui.parsing.InvalidGuiFileException;
+import dev.mv.engine.exceptions.Exceptions;
+import dev.mv.engine.exceptions.InvalidGuiFileException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,7 +24,7 @@ public class AssetFileParser {
             document.getDocumentElement().normalize();
 
             if (!document.getDocumentElement().getTagName().equals("assets")) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("Root should be \"assets\""));
+                Exceptions.send(new InvalidGuiFileException("Root should be \"assets\""));
             }
 
             NodeList tags = document.getDocumentElement().getChildNodes();
@@ -131,7 +131,7 @@ public class AssetFileParser {
                 }
             }
         } catch (Exception e) {
-            MVEngine.Exceptions.__throw__(e);
+            Exceptions.send(e);
         }
     }
 }

@@ -1,6 +1,6 @@
 package dev.mv.engine.gui.functions;
 
-import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 
 import javax.naming.ServiceUnavailableException;
 import java.lang.reflect.Method;
@@ -19,7 +19,7 @@ public class GuiScript {
                 clazz = ClassLoader.getSystemClassLoader().loadClass(src);
                 instance = clazz.getDeclaredConstructor().newInstance();
             } else {
-                MVEngine.Exceptions.__throw__(new ServiceUnavailableException("The script language " + language + " is not supported for the guis yet!"));
+                Exceptions.send(new ServiceUnavailableException("The script language " + language + " is not supported for the guis yet!"));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

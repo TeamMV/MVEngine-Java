@@ -1,6 +1,7 @@
 package dev.mv.engine.gui.parsing;
 
-import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
+import dev.mv.engine.exceptions.InvalidGuiFileException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -12,8 +13,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GuiConfig {
     InputStream configFile;
@@ -27,8 +26,11 @@ public class GuiConfig {
         try {
             configFile = this.getClass().getResourceAsStream(configFilePath);
             parse(configFile);
+            layoutPath = toSystemPath(layoutPath);
+            themePath = toSystemPath(themePath);
+            pagePath = toSystemPath(pagePath);
         } catch (InvalidGuiFileException e) {
-            MVEngine.Exceptions.__throw__(e);
+            Exceptions.send(e);
         }
     }
 
@@ -40,10 +42,10 @@ public class GuiConfig {
             document.getDocumentElement().normalize();
 
             if (!document.getDocumentElement().getTagName().split(":")[0].equals("mvt")) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("Namespace should be \"mvt\""));
+                Exceptions.send(new InvalidGuiFileException("Namespace should be \"mvt\""));
             }
             if (!document.getDocumentElement().getTagName().split(":")[1].equals("config")) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("Root should be \"config\""));
+                Exceptions.send(new InvalidGuiFileException("Root should be \"config\""));
             }
 
             NodeList tags = document.getDocumentElement().getChildNodes();
@@ -131,6 +133,10 @@ public class GuiConfig {
 
     private String getFileParent() {
         return configFilePath.substring(0, configFilePath.lastIndexOf("/"));
+    }
+
+    private String toSystemPath(String path) {
+        return path.replaceAll("/|\\\\", File.separator);
     }
 
     public String getLayoutPath() {

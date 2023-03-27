@@ -1,6 +1,6 @@
 package dev.mv.engine.render.shared.font;
 
-import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.resources.Resource;
@@ -128,7 +128,7 @@ public class BitmapFont implements Resource {
         try {
             return chars.get(c + 0).getHeight();
         } catch (NullPointerException e) {
-            MVEngine.Exceptions.__throw__(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
+            Exceptions.send(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
             return -1;
         }
     }
@@ -137,7 +137,7 @@ public class BitmapFont implements Resource {
         try {
             return (int) (chars.get(c + 0).getWidth());
         } catch (NullPointerException e) {
-            MVEngine.Exceptions.__throw__(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
+            Exceptions.send(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
             return -1;
         }
     }
@@ -186,7 +186,7 @@ public class BitmapFont implements Resource {
         try {
             return chars.get(c + 0);
         } catch (NullPointerException e) {
-            MVEngine.Exceptions.__throw__(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
+            Exceptions.send(new IllegalArgumentException("Character '" + c + "' not supported by this font!"));
             return null;
         }
     }

@@ -1,6 +1,6 @@
 package dev.mv.engine.render.opengl.deferred;
 
-import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL14.GL_DEPTH_COMPONENT32;
@@ -45,7 +45,7 @@ public class GBuffer {
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            MVEngine.Exceptions.__throw__(new IllegalStateException("Uncompleted Framebuffer!"));
+            Exceptions.send(new IllegalStateException("Uncompleted Framebuffer!"));
         }
 
         attachments = new int[]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};

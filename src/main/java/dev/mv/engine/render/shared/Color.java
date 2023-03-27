@@ -1,10 +1,8 @@
 package dev.mv.engine.render.shared;
 
-import dev.mv.engine.MVEngine;
-import dev.mv.engine.gui.parsing.InvalidGuiFileException;
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.resources.Resource;
 import dev.mv.utils.ByteUtils;
-import jdk.jfr.Unsigned;
 
 public class Color implements Resource {
     public static Color WHITE = new Color(255, 255, 255, 255);
@@ -168,11 +166,11 @@ public class Color implements Resource {
         if (string.startsWith("#")) {
             string = string.replaceAll("#", "");
             if (!string.matches("-?[0-9a-fA-F]+")) {
-                MVEngine.Exceptions.__throw__(new IllegalStateException("Color parser: # colors must be hexadecimal characters!"));
+                Exceptions.send(new IllegalStateException("Color parser: # colors must be hexadecimal characters!"));
             }
             String[] colors = string.split("(?<=\\G.{2})");
             if (colors.length < 3 || colors.length > 4) {
-                MVEngine.Exceptions.__throw__(new IllegalStateException("Color parser: # colors must contain 6 or 8 characters!"));
+                Exceptions.send(new IllegalStateException("Color parser: # colors must contain 6 or 8 characters!"));
             }
             int r = Integer.parseInt(colors[0], 16);
             int g = Integer.parseInt(colors[1], 16);
@@ -185,11 +183,11 @@ public class Color implements Resource {
         } else if (string.startsWith("0x")) {
             string = string.replaceAll("0x", "");
             if (!string.matches("-?[0-9a-fA-F]+")) {
-                MVEngine.Exceptions.__throw__(new IllegalStateException("Color parser: 0x colors must be hexadecimal characters!"));
+                Exceptions.send(new IllegalStateException("Color parser: 0x colors must be hexadecimal characters!"));
             }
             String[] colors = string.split("(?<=\\G.{2})");
             if (colors.length < 3 || colors.length > 4) {
-                MVEngine.Exceptions.__throw__(new IllegalStateException("Color parser: 0x colors must contain 6 or 8 characters!"));
+                Exceptions.send(new IllegalStateException("Color parser: 0x colors must contain 6 or 8 characters!"));
             }
             int r = Integer.parseInt(colors[0], 16);
             int g = Integer.parseInt(colors[1], 16);
@@ -208,7 +206,7 @@ public class Color implements Resource {
             }
             String[] colors = string.replaceAll(" ", "").split(split);
             if (colors.length < 3 || colors.length > 4) {
-                MVEngine.Exceptions.__throw__(new IllegalStateException("Color parser: colors must contain 3 or 4 sets of numbers!"));
+                Exceptions.send(new IllegalStateException("Color parser: colors must contain 3 or 4 sets of numbers!"));
             }
             int r = Integer.parseInt(colors[0]);
             int g = Integer.parseInt(colors[1]);

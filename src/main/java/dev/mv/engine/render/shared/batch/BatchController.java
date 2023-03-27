@@ -1,6 +1,6 @@
 package dev.mv.engine.render.shared.batch;
 
-import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.shader.Shader;
@@ -20,7 +20,7 @@ public class BatchController {
 
     public BatchController(Window window, int batchLimit) {
         if (batchLimit < 14) {
-            MVEngine.Exceptions.__throw__(new IllegalArgumentException("Batch limit of " + batchLimit + " is too small, at least 14 is required!"));
+            Exceptions.send(new IllegalArgumentException("Batch limit of " + batchLimit + " is too small, at least 14 is required!"));
         }
 
         defaultShader = RenderBuilder.newShader(VERTEX_PATH, FRAGMENT_PATH);

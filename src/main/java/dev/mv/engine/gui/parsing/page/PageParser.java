@@ -1,6 +1,6 @@
 package dev.mv.engine.gui.parsing.page;
 
-import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.components.extras.ValueChange;
@@ -12,8 +12,7 @@ import dev.mv.engine.gui.input.Keyboard;
 import dev.mv.engine.gui.input.Scrollable;
 import dev.mv.engine.gui.pages.Page;
 import dev.mv.engine.gui.pages.Trigger;
-import dev.mv.engine.gui.parsing.GuiConfig;
-import dev.mv.engine.gui.parsing.InvalidGuiFileException;
+import dev.mv.engine.exceptions.InvalidGuiFileException;
 import dev.mv.engine.resources.R;
 import dev.mv.utils.Utils;
 import org.w3c.dom.Document;
@@ -26,7 +25,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.IntStream;
 
 public class PageParser {
     private GuiRegistry registry;
@@ -42,7 +40,7 @@ public class PageParser {
             document.getDocumentElement().normalize();
 
             if (!document.getDocumentElement().getTagName().equals("page")) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("Root should be \"page\""));
+                Exceptions.send(new InvalidGuiFileException("Root should be \"page\""));
             }
 
             Page page = new Page(document.getDocumentElement().getAttribute("name"));
@@ -64,7 +62,7 @@ public class PageParser {
 
             return page;
         } catch (Exception e) {
-            MVEngine.Exceptions.__throw__(e);
+            Exceptions.send(e);
 
             return null;
         }
@@ -222,7 +220,7 @@ public class PageParser {
     }
 
     private void throwUnsupportedEvent(String event, String elementId) {
-        MVEngine.Exceptions.__throw__(new UnsupportedEventException("There is no \"" + event + "\" on the element \"" + elementId + "\"!"));
+        Exceptions.send(new UnsupportedEventException("There is no \"" + event + "\" on the element \"" + elementId + "\"!"));
     }
 
     private static class EventListenerImpl {

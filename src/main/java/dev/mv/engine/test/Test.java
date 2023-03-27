@@ -2,6 +2,7 @@ package dev.mv.engine.test;
 
 import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.files.Directory;
 import dev.mv.engine.files.FileManager;
 import dev.mv.engine.gui.GuiRegistry;
@@ -116,7 +117,7 @@ public class Test implements ApplicationLoop {
         //ctx2D.rectangle(100, 100, 20, 50, 45);
     }
 
-    public Directory getGameDirectory() {
-        return gameDirectory;
+    public String getGameId() {
+        return "testGame";
     }
 }

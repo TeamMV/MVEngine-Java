@@ -1,6 +1,6 @@
 package dev.mv.engine.gui.components;
 
-import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.event.ClickListener;
 import dev.mv.engine.gui.functions.GuiMethod;
 import dev.mv.engine.gui.input.Clickable;
@@ -34,7 +34,7 @@ public abstract class AbstractClickable extends Element implements Clickable {
         try {
             clickMethod = gui.findMethod(clickMethodName, clickMethodParamTypes, this.id);
         } catch (NoSuchMethodException e) {
-            MVEngine.Exceptions.__throw__(e);
+            Exceptions.send(e);
         }
         clickListeners.add(new ClickListener() {
             @Override

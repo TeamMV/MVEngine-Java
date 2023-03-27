@@ -1,5 +1,8 @@
 package dev.mv.engine.files;
 
+import dev.mv.engine.exceptions.DirectoryCreationException;
+import dev.mv.engine.exceptions.Exceptions;
+
 import java.io.File;
 
 public class InnerDirectory extends Directory {
@@ -8,7 +11,9 @@ public class InnerDirectory extends Directory {
         super(name, folder);
         this.relativePath = relativePath;
         if (!folder.exists()) {
-            folder.mkdirs();
+            if (!folder.mkdirs()) {
+                Exceptions.send("DIRECTORY_CREATE", folder.getAbsolutePath());
+            }
         }
     }
 

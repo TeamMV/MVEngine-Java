@@ -1,6 +1,6 @@
 package dev.mv.engine.resources;
 
-import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.pages.Page;
@@ -23,7 +23,7 @@ public class R {
             try {
                 return map.get(id);
             } catch (Exception e) {
-                MVEngine.Exceptions.__throw__(new ResourceNotFoundException("There is no resource with resource-id of \"" + id + "\"!"));
+                Exceptions.send(new ResourceNotFoundException("There is no resource with resource-id of \"" + id + "\"!"));
                 return null;
             }
         }

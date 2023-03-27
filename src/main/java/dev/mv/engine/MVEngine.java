@@ -1,5 +1,7 @@
 package dev.mv.engine;
 
+import dev.mv.engine.exceptions.Exceptions;
+import dev.mv.engine.exceptions.handle.ExceptionHandler;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.input.InputCollector;
 import dev.mv.engine.input.InputProcessor;
@@ -23,8 +25,10 @@ public class MVEngine implements AutoCloseable {
     private ApplicationConfig.RenderingAPI renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
     private ApplicationConfig applicationConfig;
     private InputCollector inputCollector;
+    private ExceptionHandler exceptionHandler;
 
     private MVEngine() {
+        exceptionHandler = ExceptionHandler.Default.INSTANCE;
     }
 
     public static MVEngine instance() {
@@ -40,6 +44,7 @@ public class MVEngine implements AutoCloseable {
 
     public static MVEngine init(ApplicationConfig config) {
         instance = new MVEngine();
+        Exceptions.readExceptionINI(MVEngine.class.getResourceAsStream("/assets/mvengine/exceptions.ini"));
         Input.init();
         if (Physics.init()) {
             throw new RuntimeException("Could not initialise NVIDIA Physx!");
@@ -119,9 +124,11 @@ public class MVEngine implements AutoCloseable {
         return applicationConfig;
     }
 
-    public static class Exceptions {
-        public static void __throw__(Throwable throwable) {
-            throw new RuntimeException(throwable);
-        }
+    public ExceptionHandler getExceptionHandler() {
+        return exceptionHandler;
+    }
+
+    public void setExceptionHandler(ExceptionHandler handler) {
+        exceptionHandler = handler;
     }
 }

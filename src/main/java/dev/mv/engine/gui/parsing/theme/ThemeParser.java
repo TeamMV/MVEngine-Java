@@ -1,12 +1,10 @@
 package dev.mv.engine.gui.parsing.theme;
 
-import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.components.animations.ElementAnimation;
-import dev.mv.engine.gui.parsing.GuiConfig;
-import dev.mv.engine.gui.parsing.InvalidGuiFileException;
+import dev.mv.engine.exceptions.InvalidGuiFileException;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.Color;
-import dev.mv.engine.resources.ResourceLoader;
 import dev.mv.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -17,10 +15,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.function.IntUnaryOperator;
 import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
 
 public class ThemeParser {
 
@@ -37,7 +33,7 @@ public class ThemeParser {
             document.getDocumentElement().normalize();
 
             if (!document.getDocumentElement().getTagName().equals("theme")) {
-                MVEngine.Exceptions.__throw__(new InvalidGuiFileException("Root should be \"theme\""));
+                Exceptions.send(new InvalidGuiFileException("Root should be \"theme\""));
             }
 
             NodeList tags = document.getDocumentElement().getChildNodes();
@@ -57,7 +53,7 @@ public class ThemeParser {
                 }
             }
         } catch (Exception e) {
-            MVEngine.Exceptions.__throw__(e);
+            Exceptions.send(e);
         }
 
         return returnTheme;

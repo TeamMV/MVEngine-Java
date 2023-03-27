@@ -1,6 +1,6 @@
 package dev.mv.engine.render.opengl;
 
-import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.utils.RenderUtils;
@@ -28,7 +28,7 @@ public class OpenGLShader implements Shader {
         try {
             return new String(OpenGLShader.class.getResourceAsStream(fileStream).readAllBytes());
         } catch (IOException e) {
-            MVEngine.Exceptions.__throw__(e);
+            Exceptions.send(e);
         }
 
         return null;

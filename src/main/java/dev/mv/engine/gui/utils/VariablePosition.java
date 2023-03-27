@@ -1,7 +1,7 @@
 package dev.mv.engine.gui.utils;
 
-import dev.mv.engine.MVEngine;
-import dev.mv.engine.gui.parsing.InvalidUnitException;
+import dev.mv.engine.exceptions.Exceptions;
+import dev.mv.engine.exceptions.InvalidUnitException;
 import dev.mv.utils.Utils;
 
 import java.awt.*;
@@ -111,7 +111,7 @@ public class VariablePosition {
         } else if (value.endsWith("cm")) {
             result = (int) (Toolkit.getDefaultToolkit().getScreenResolution() * 2.54f * (float) Integer.parseInt(value.replaceAll("cm", "")));
         } else {
-            MVEngine.Exceptions.__throw__(new InvalidUnitException("Position numbers must either end with \"%\" or \"px\"!"));
+            Exceptions.send(new InvalidUnitException("Position numbers must either end with \"%\" or \"px\"!"));
         }
 
         if (invert) {
