@@ -4,10 +4,12 @@ import dev.mv.engine.ApplicationConfig;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.Window;
+import dev.mv.engine.render.utils.ClipBoardListener;
 import dev.mv.utils.misc.Version;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+        ClipBoardListener.init();
         ApplicationConfig config = new ApplicationConfig();
         config.setName("FactoryIsland").setVersion(Version.parse("v0.0.1")).setRenderingApi(ApplicationConfig.RenderingAPI.OPENGL);
         try (MVEngine engine = MVEngine.init(config)) {

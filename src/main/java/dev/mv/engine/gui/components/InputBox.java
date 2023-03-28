@@ -17,6 +17,7 @@ import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
+import dev.mv.engine.render.utils.ClipBoardListener;
 import dev.mv.utils.Utils;
 
 import java.awt.*;
@@ -227,14 +228,14 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     public void keyPress(int key) {
         if (selected) {
             if (Input.convertKey(key) == Input.KEY_V && Input.isControl() && Input.keys[Input.KEY_V] == Input.State.ONPRESSED) {
-                try {
-                    Clipboard board = Toolkit.getDefaultToolkit().getSystemClipboard();
-                    Object clipboard = board.getData(DataFlavor.stringFlavor);
-                    setText(getText() + clipboard);
-                } catch (UnsupportedFlavorException | IOException e) {
-                    Exceptions.send(e);
-                }
-                return;
+                Utils.async(() -> {
+                    try {
+                        setText(getText() + Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor));
+                    } catch (UnsupportedFlavorException | IOException e) {
+                        Exceptions.send(e);
+                    }
+                });
+                //setText(getText() + ClipBoardListener.getClipboardData());
             }
         }
     }
