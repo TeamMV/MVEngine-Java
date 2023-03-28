@@ -26,7 +26,7 @@ public class RegistryType {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof RegistryType other) {
-            return type.equals(other.type) && clazz.equals(other.clazz);
+            return type.equals(other.type);
         }
         return false;
     }
@@ -47,7 +47,7 @@ public class RegistryType {
 
     public static RegistryType getRegistryType(Class<?> clazz) {
         for (RegistryType registryType : types) {
-            if (clazz.isAssignableFrom(registryType.getClazz())) {
+            if (registryType.getClazz().isAssignableFrom(clazz)) {
                 return registryType;
             }
         }

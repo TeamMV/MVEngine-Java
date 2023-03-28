@@ -8,4 +8,6 @@ public interface RegisteredObject<R> {
 
     String getId();
 
+    RegistryType getRegistryType();
+
 }

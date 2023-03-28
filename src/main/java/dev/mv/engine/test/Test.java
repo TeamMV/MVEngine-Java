@@ -82,7 +82,7 @@ public class Test implements ApplicationLoop {
             theme.setFont(R.fonts.get("defaultFont"));
             registry.applyTheme(theme);
 
-            registry.findGui("myGui").getRoot().findElementsBySuperType(Text.class).forEach(t -> t.setUseChroma(true));
+            registry.findGui("myGui").getRoot().<Button>findElementById("chromaButton").setUseChroma(true);
 
             particleSystem = new CircularParticleSystem(300, 500, 100, ParticleSystem.Shape.SQUARE, 1, 360);
         } catch (IOException e) {
@@ -112,13 +112,14 @@ public class Test implements ApplicationLoop {
 
     @Override
     public void draw(MVEngine engine, Window window) {
-        //R.guis.get("default").renderGuis();
+        R.guis.get("default").renderGuis();
+        ctx2D.color(Color.WHITE);
         //particleSystem.draw(ctx2D);
         //ctx2D.color(Color.RED);
         //ctx2D.triangularRectangle(100, 100, 300, 600, 100);
-        ctx2D.color(255, 255, 255, 255);
+        //ctx2D.color(255, 255, 255, 255);
         //ctx2D.voidTriangularRectangle(100 - 3, 100 - 3, 300 + 6, 600 + 6, 3, 100 + 3);
-        ctx2D.voidCircle(300, 300, 200, 50, 50);
+        //ctx2D.voidCircle(300, 300, 200, 50, 50);
     }
 
     public String getGameId() {

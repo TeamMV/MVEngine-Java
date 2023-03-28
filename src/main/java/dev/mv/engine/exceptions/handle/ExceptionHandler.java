@@ -10,6 +10,9 @@ public interface ExceptionHandler {
 
         @Override
         public void handle(Throwable throwable) {
+            if (throwable instanceof RuntimeException e) {
+                throw e;
+            }
             throw new RuntimeException(throwable);
         }
     }

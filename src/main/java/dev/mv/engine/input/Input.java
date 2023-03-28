@@ -163,6 +163,10 @@ public class Input {
         return isKeyPressed(KEY_ALT_GR);
     }
 
+    public static boolean isModifier() {
+        return isControl() || isShift() || isAlt() || isAltGr();
+    }
+
     static void updateKey(int rawCode, InputCollector.KeyAction action) {
         try {
             if (action == InputCollector.KeyAction.TYPE) {

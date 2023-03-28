@@ -1,7 +1,8 @@
 package dev.mv.engine.gui.components;
 
-import dev.mv.engine.gui.components.animations.TextAnimation;
-import dev.mv.engine.gui.components.animations.TextAnimator;
+import dev.mv.engine.Loopable;
+import dev.mv.engine.MVEngine;
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.components.extras.Toggle;
 import dev.mv.engine.gui.event.ClickListener;
@@ -16,7 +17,13 @@ import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
+import dev.mv.utils.Utils;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -218,13 +225,24 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
 
     @Override
     public void keyPress(int key) {
-
+        if (selected) {
+            if (Input.convertKey(key) == Input.KEY_V && Input.isControl() && Input.keys[Input.KEY_V] == Input.State.ONPRESSED) {
+                try {
+                    Clipboard board = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    Object clipboard = board.getData(DataFlavor.stringFlavor);
+                    setText(getText() + clipboard);
+                } catch (UnsupportedFlavorException | IOException e) {
+                    Exceptions.send(e);
+                }
+                return;
+            }
+        }
     }
 
     @Override
     public void keyType(int key) {
         if (selected) {
-            if (Input.convertKey(key) == Input.KEY_BACKSPACE) {
+            if (Input.convertKey(key) == Input.KEY_DELETE || Input.convertKey(key) == Input.KEY_BACKSPACE) {
                 pop();
                 return;
             }
@@ -236,12 +254,6 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
 
             if (Input.convertKey(key) == Input.KEY_ARROW_RIGHT) {
                 moveCursor(1);
-                return;
-            }
-
-            if (Input.convertKey(key) == Input.KEY_DELETE || Input.convertKey(key) == Input.KEY_BACKSPACE) {
-                moveCursor(1);
-                pop(1);
                 return;
             }
 
@@ -283,7 +295,17 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
 
     @Override
     public void setText(String text) {
-        actualText = text;
+        clearText();
+        for (char c : text.toCharArray()) {
+            push(c);
+        }
+    }
+
+    public void clearText() {
+        actualText = "";
+        displayText = "";
+        textShift = 0;
+        cursorOffset = 0;
     }
 
     @Override
@@ -292,7 +314,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     }
 
     protected void moveCursor(int amount) {
-        cursorOffset += amount;
+         cursorOffset += amount;
 
         if (cursorOffset == 0) {
             return;
@@ -320,13 +342,13 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
         displayText = actualText.substring(textShift, textShift + font.possibleAmountOfChars(actualText.substring(textShift), getWidth() - textDistance() * 2, getHeight() - textDistance() * 2));
     }
 
-    private void push(String s) {
+    protected void push(String s) {
         for (char c : s.toCharArray()) {
             push(c);
         }
     }
 
-    private void push(char c) {
+    protected void push(char c) {
         if (displayText.length() >= limit) return;
         if (blacklist.contains(c)) return;
         if (!allowedList.isEmpty()) if (!allowedList.contains(c)) return;
@@ -334,7 +356,12 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
             StringBuilder sb = new StringBuilder(actualText);
             sb.insert(cursorOffset + textShift, c);
             actualText = sb.toString();
+            int len = displayText.length();
             shiftText(0);
+            if (displayText.length() <= len) {
+                cursorOffset -= len - displayText.length() + 1;
+                shiftText(len - displayText.length() + 1);
+            }
             moveCursor(1);
         }
     }
@@ -345,20 +372,34 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
         }
     }
 
-    private void pop() {
+    protected void pop() {
         if (actualText.length() > 0) {
             try {
                 StringBuilder sb = new StringBuilder(actualText);
                 sb.deleteCharAt(cursorOffset + textShift - 1);
                 actualText = sb.toString();
                 if (textShift > 0) {
+                    int len = displayText.length();
                     shiftText(-1);
+                    if (len > displayText.length()) {
+                        shiftText(1);
+                        cursorOffset--;
+                    }
+                    while (textShift > 0) {
+                        len = displayText.length();
+                        shiftText(-1);
+                        cursorOffset++;
+                        if (len >= displayText.length()) {
+                            shiftText(1);
+                            cursorOffset--;
+                            break;
+                        }
+                    }
                 } else {
                     shiftText(0);
                     moveCursor(-1);
                 }
-            } catch (IndexOutOfBoundsException e) {
-            }
+            } catch (IndexOutOfBoundsException ignored) {}
         }
     }
 }

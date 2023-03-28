@@ -11,6 +11,8 @@ import dev.mv.engine.render.shared.Window;
 
 public class PasswordInputBox extends InputBox {
     private boolean isHidden = false;
+    private boolean hiding = false;
+    private String realText = "";
     private ImageButton visibilityButton;
 
     public PasswordInputBox(Window window, Element parent, int width, int height) {
@@ -50,13 +52,42 @@ public class PasswordInputBox extends InputBox {
         });
     }
 
+    @Override
+    public void setText(String text) {
+        hiding = true;
+        realText = text;
+        if (isHidden) {
+            super.setText("*".repeat(text.length()));
+        }
+        else {
+            super.setText(text);
+        }
+        hiding = false;
+    }
+
+    private void setPrivateText(String text) {
+        hiding = true;
+        int oldCursor = cursorOffset;
+        int oldShift = textShift;
+        super.setText(text);
+        while (cursorOffset + textShift < oldCursor + oldShift) {
+            moveCursor(1);
+        }
+        while (cursorOffset + textShift > oldCursor + oldShift) {
+            moveCursor(-1);
+        }
+        hiding = false;
+    }
+
     public void show() {
         isHidden = false;
+        setPrivateText(realText);
         visibilityButton.setTexture(GuiAssets.EYE_CLOSED);
     }
 
     public void hide() {
         isHidden = true;
+        setPrivateText("*".repeat(realText.length()));
         visibilityButton.setTexture(GuiAssets.EYE_OPEN);
     }
 
@@ -185,22 +216,15 @@ public class PasswordInputBox extends InputBox {
         if (!enabled) {
             draw.color(theme.getDisabledTextColor());
         }
-        if (!isHidden) {
-            if (displayText.isEmpty() && !selected) {
-                draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height - textDistance() * 2)), font, animationState.rotation, animationState.originX, animationState.originY);
-            } else {
-                draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
-            }
+
+        if (displayText.isEmpty() && !selected) {
+            draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height - textDistance() * 2) ), font, animationState.rotation, animationState.originX, animationState.originY);
         } else {
-            draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, "*".repeat(displayText.length()), font, animationState.rotation, animationState.originX, animationState.originY);
+            draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
         }
 
         if (selected) {
-            if (!isHidden) {
-                draw.rectangle(animationState.posX + textDistance() + font.getWidth(displayText.substring(0, cursorOffset), getHeight() - textDistance() * 2), animationState.posY + textDistance(), 2, getHeight() - textDistance() * 2, animationState.rotation, animationState.originX, animationState.originY);
-            } else {
-                draw.rectangle(animationState.posX + textDistance() + font.getWidth("*".repeat(cursorOffset), getHeight() - textDistance() * 2), animationState.posY + textDistance(), 2, getHeight() - textDistance() * 2, animationState.rotation, animationState.originX, animationState.originY);
-            }
+            draw.rectangle(animationState.posX + textDistance() + font.getWidth(displayText.substring(0, cursorOffset), getHeight() - textDistance() * 2), animationState.posY + textDistance(), 2, getHeight() - textDistance() * 2, animationState.rotation, animationState.originX, animationState.originY);
         }
 
         visibilityButton.draw(draw);
@@ -248,6 +272,68 @@ public class PasswordInputBox extends InputBox {
         selected = true;
         if (!clickListeners.isEmpty()) {
             clickListeners.forEach(l -> l.onRelease(this, btn));
+        }
+    }
+
+    @Override
+    protected void push(char c) {
+        if (hiding) {
+            super.push(c);
+            return;
+        }
+        if (displayText.length() >= limit) return;
+        if (blacklist.contains(c)) return;
+        if (!allowedList.isEmpty()) if (!allowedList.contains(c)) return;
+        if (realText.length() + 1 <= limit) {
+            StringBuilder sb = new StringBuilder(realText);
+            sb.insert(cursorOffset + textShift, c);
+            realText = sb.toString();
+            actualText = isHidden ? "*".repeat(realText.length()) : realText;
+            int len = displayText.length();
+            shiftText(0);
+            if (displayText.length() <= len) {
+                cursorOffset -= len - displayText.length() + 1;
+                shiftText(len - displayText.length() + 1);
+            }
+            moveCursor(1);
+        }
+    }
+
+    @Override
+    protected void pop() {
+        if (hiding) {
+            super.pop();
+            return;
+        }
+        if (actualText.length() > 0) {
+            try {
+                StringBuilder sb = new StringBuilder(realText);
+                sb.deleteCharAt(cursorOffset + textShift - 1);
+                realText = sb.toString();
+                actualText = isHidden ? "*".repeat(realText.length()) : realText;
+                if (textShift > 0) {
+                    int len = displayText.length();
+                    shiftText(-1);
+                    if (len > displayText.length()) {
+                        shiftText(1);
+                        cursorOffset--;
+                    }
+                    while (textShift > 0) {
+                        len = displayText.length();
+                        shiftText(-1);
+                        cursorOffset++;
+                        if (len >= displayText.length()) {
+                            shiftText(1);
+                            cursorOffset--;
+                            break;
+                        }
+                    }
+                } else {
+                    shiftText(0);
+                    moveCursor(-1);
+                }
+            } catch (IndexOutOfBoundsException e) {
+            }
         }
     }
 

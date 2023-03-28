@@ -133,7 +133,7 @@ public class BitmapFont implements Resource {
         }
     }
 
-    public int getWidth(char c) {
+    private int getWidth(char c) {
         try {
             return (int) (chars.get(c + 0).getWidth());
         } catch (NullPointerException e) {
@@ -143,24 +143,25 @@ public class BitmapFont implements Resource {
     }
 
     public int getWidth(String s, int height) {
+        if (s.length() == 0) return 0;
         int result = 0;
         float multiplier = multiplier(height);
 
         for (char c : s.toCharArray()) {
-            result += (getWidth(c) + (getGlyph(c).getXAdvance() - getWidth(c))) * multiplier;
+            result += getGlyph(c).getXAdvance() * multiplier;
         }
-        result -= (getWidth('a') - getGlyph('a').getXAdvance()) * multiplier;
+        char last = s.charAt(s.length() - 1);
+        if (last != '\s') {
+            result -= (getGlyph(last).getXAdvance() - getWidth(last)) * multiplier;
+        }
 
         return result;
     }
 
     public int possibleAmountOfChars(String s, int limitWidth, int height) {
-        int totalWidth = 0;
-
-        for (int i = 0; i < s.length(); i++) {
-            totalWidth += getWidth(s.charAt(i) + "", height);
-            if (totalWidth > limitWidth) {
-                return i;
+        for (int i = 0; i <= s.length(); i++) {
+            if (limitWidth < getWidth(s.substring(s.length() - i), height)) {
+                return i - 1;
             }
         }
         return s.length();
@@ -199,6 +200,10 @@ public class BitmapFont implements Resource {
         }
 
         return glyphs;
+    }
+
+    public boolean contains(char c) {
+        return chars.containsKey(c + 0);
     }
 
     public Texture getBitmap() {

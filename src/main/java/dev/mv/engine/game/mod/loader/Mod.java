@@ -61,7 +61,7 @@ public class Mod {
     }
 
     public void initRegistries() {
-        Registries.getResourceTypes().forEach(clazz -> RegistryLoader.registerResources(classes, clazz, id, Registries.registry(clazz)));
+        Registries.getResourceTypes().forEach(clazz -> RegistryLoader.registerResources(classes, clazz, id));
     }
 
     public void initListeners() {

@@ -3,7 +3,7 @@
     <script src="dev.mv.engine.test.Manager"/>
 
     <variables>
-        <var name="height">5vh</var>
+        <var name="height">7.5vh</var>
     </variables>
 
     <references>

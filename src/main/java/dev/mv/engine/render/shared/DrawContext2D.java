@@ -458,7 +458,7 @@ public class DrawContext2D {
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
 
-            if (c <= 31) continue;
+            if (!font.contains(c)) continue;
 
             Glyph glyph = font.getGlyph(c);
 

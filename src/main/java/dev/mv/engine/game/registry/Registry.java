@@ -10,4 +10,8 @@ public interface Registry<T> {
 
     <R extends T> R newInstance(String id);
 
+    <R extends T> RegisteredObject<R> get(Class<R> clazz);
+
+    <R extends T> RegisteredObject<R> get(String id);
+
 }

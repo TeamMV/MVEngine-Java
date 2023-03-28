@@ -1,24 +1,23 @@
 package dev.mv.engine.game.registry;
 
 import dev.mv.engine.exceptions.Exceptions;
+import dev.mv.engine.resources.AssetBundle;
 import dev.mv.utils.collection.Vec;
-
-import java.util.function.Supplier;
 
 public class ResourceRegistry<T> implements Registry<T> {
 
-    private final Vec<Registered<? extends T>> items = new Vec<>();
-    private final String resourceId;
+    private final Vec<RegisteredResource<? extends T>> items = new Vec<>();
+    private final RegistryType type;
 
-    ResourceRegistry(Class<T> parent, String resourceId) {
-        this.resourceId = resourceId;
+    ResourceRegistry(RegistryType type) {
+        this.type = type;
     }
 
     @Override
     public <R extends T> RegisteredObject<R> register(String id, Class<R> clazz) {
-        Registered<R> item = new Registered<>(id, clazz);
+        RegisteredResource<R> item = new RegisteredResource<>(id, clazz);
         if (items.contains(item)) {
-            throw new RuntimeException("Duplicate player ids: " + id);
+            Exceptions.send("REGISTRY_DUPLICATE", item.id, type.getType());
         }
         //TODO: Do all the loading needed, like textures/models for blocks, referencing the assets bytecode
         items.push(item);
@@ -28,35 +27,80 @@ public class ResourceRegistry<T> implements Registry<T> {
     @Override
     public <R extends T> R newInstance(Class<R> clazz) {
         return items
-                .iter()
-                .filter(item -> item.clazz.equals(clazz))
-                .first()
-                .asNullHandler()
-                .thenReturn(Registered::newInstance)
-                .getGenericReturnValue()
-                .value();
+            .iter()
+            .filter(item -> item.clazz.equals(clazz))
+            .first()
+            .asNullHandler()
+            .thenReturn(RegisteredResource::newInstance)
+            .getGenericReturnValue()
+            .value();
     }
 
     @Override
     public <R extends T> R newInstance(String id) {
         return items
-                .iter()
-                .filter(item -> item.id.equals(id))
-                .first()
-                .asNullHandler()
-                .thenReturn(Registered::newInstance)
-                .getGenericReturnValue()
-                .value();
+            .iter()
+            .filter(item -> item.id.equals(id))
+            .first()
+            .asNullHandler()
+            .thenReturn(RegisteredResource::newInstance)
+            .getGenericReturnValue()
+            .value();
+    }
+
+    public <R extends T> RegisteredObject<R> get(Class<R> clazz) {
+        return items
+            .iter()
+            .filter(item -> item.clazz.equals(clazz))
+            .first()
+            .asNullHandler()
+            .thenReturn()
+            .getGenericReturnValue()
+            .value();
+    }
+
+    public <R extends T> RegisteredObject<R> get(String id) {
+        return items
+            .iter()
+            .filter(item -> item.id.equals(id))
+            .first()
+            .asNullHandler()
+            .thenReturn()
+            .getGenericReturnValue()
+            .value();
+    }
+
+    public <R extends T> AssetBundle getAssetBundle(Class<R> clazz) {
+        return items
+            .iter()
+            .filter(item -> item.clazz.equals(clazz))
+            .first()
+            .asNullHandler()
+            .thenReturn(RegisteredResource::getAssetBundle)
+            .getGenericReturnValue()
+            .value();
+    }
+
+    public AssetBundle getAssetBundle(String id) {
+        return items
+            .iter()
+            .filter(item -> item.id.equals(id))
+            .first()
+            .asNullHandler()
+            .thenReturn(RegisteredResource::getAssetBundle)
+            .getGenericReturnValue()
+            .value();
     }
 
 
 
-    private class Registered<R extends T> implements RegisteredObject<R> {
+    private class RegisteredResource<R extends T> implements RegisteredObject<R> {
 
         private String id;
         private Class<R> clazz;
+        private AssetBundle assetBundle;
 
-        private Registered(String id, Class<R> clazz) {
+        private RegisteredResource(String id, Class<R> clazz) {
             this.id = id;
             this.clazz = clazz;
         }
@@ -70,6 +114,10 @@ public class ResourceRegistry<T> implements Registry<T> {
             }
         }
 
+        public RegistryType getRegistryType() {
+            return type;
+        }
+
         @Override
         public Class<R> getType() {
             return clazz;
@@ -80,10 +128,14 @@ public class ResourceRegistry<T> implements Registry<T> {
             return id;
         }
 
+        public AssetBundle getAssetBundle() {
+            return assetBundle;
+        }
+
         @Override
         public boolean equals(Object other) {
             if (other instanceof RegisteredObject<?> r) {
-                return id.equals(r.getId()) && clazz.equals(r.getType());
+                return type.equals(r.getRegistryType()) && id.equals(r.getId()) && clazz.equals(r.getType());
             }
             return false;
         }

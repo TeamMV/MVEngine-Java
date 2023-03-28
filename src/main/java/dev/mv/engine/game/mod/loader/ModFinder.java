@@ -1,7 +1,6 @@
 package dev.mv.engine.game.mod.loader;
 
 import dev.mv.engine.MVEngine;
-import dev.mv.engine.exceptions.DuplicateModIdException;
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.files.Directory;
 import dev.mv.engine.game.mod.api.Mod;

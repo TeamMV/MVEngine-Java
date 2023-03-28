@@ -16,6 +16,11 @@ import dev.mv.engine.render.vulkan.VulkanWindow;
 import dev.mv.utils.misc.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
@@ -28,9 +33,11 @@ public class MVEngine implements AutoCloseable {
     private InputCollector inputCollector;
     private ExceptionHandler exceptionHandler;
     private Game game;
+    private List<Loopable> loopers;
 
     private MVEngine() {
         exceptionHandler = ExceptionHandler.Default.INSTANCE;
+        loopers = new ArrayList<>();
     }
 
     public static MVEngine instance() {
@@ -49,7 +56,7 @@ public class MVEngine implements AutoCloseable {
         Exceptions.readExceptionINI(MVEngine.class.getResourceAsStream("/assets/mvengine/exceptions.ini"));
         Input.init();
         if (Physics.init()) {
-            throw new RuntimeException("Could not initialise NVIDIA Physx!");
+            Exceptions.send(new RuntimeException("Could not initialize NVIDIA PhysX!"));
         }
 
         instance.applicationConfig = config;
@@ -59,7 +66,7 @@ public class MVEngine implements AutoCloseable {
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!glfwInit()) {
-            throw new RuntimeException("Could not initialise GLFW!");
+            Exceptions.send(new RuntimeException("Could not initialize GLFW!"));
         }
 
         if (config.getRenderingApi() == ApplicationConfig.RenderingAPI.VULKAN) {
@@ -140,5 +147,13 @@ public class MVEngine implements AutoCloseable {
 
     public Game getGame() {
         return game;
+    }
+
+    public void registerLooper(Loopable loopable) {
+        loopers.add(loopable);
+    }
+
+    public List<Loopable> getLoopers() {
+        return loopers;
     }
 }
