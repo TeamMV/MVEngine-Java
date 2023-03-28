@@ -1,6 +1,7 @@
 package dev.mv.engine.gui.functions;
 
 import dev.mv.engine.exceptions.Exceptions;
+import dev.mv.engine.game.mod.loader.ModIntegration;
 
 import javax.naming.ServiceUnavailableException;
 import java.lang.reflect.Method;
@@ -16,13 +17,13 @@ public class GuiScript {
         try {
             this.language = language;
             if (language == Language.JAVA) {
-                clazz = ClassLoader.getSystemClassLoader().loadClass(src);
+                clazz = ModIntegration.loadClass(src);
                 instance = clazz.getDeclaredConstructor().newInstance();
             } else {
                 Exceptions.send(new ServiceUnavailableException("The script language " + language + " is not supported for the guis yet!"));
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            Exceptions.send("GUI_SCRIPT_LOAD", src);
         }
     }
 
