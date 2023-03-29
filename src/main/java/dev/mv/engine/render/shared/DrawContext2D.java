@@ -1,5 +1,6 @@
 package dev.mv.engine.render.shared;
 
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.components.animations.TextAnimation;
 import dev.mv.engine.gui.components.animations.TextAnimator;
 import dev.mv.engine.render.shared.batch.BatchType;
@@ -54,10 +55,12 @@ public class DrawContext2D {
     }
 
     public void beginStrip() {
+        if (isStripped) Exceptions.send(new IllegalStateException("End a stripped drawing before starting a new one!"));
         isStripped = true;
     }
 
     public void endStrip() {
+        if (!isStripped) Exceptions.send(new IllegalStateException("Begin a stripped drawing before ending it!"));
         isStripped = false;
     }
 
