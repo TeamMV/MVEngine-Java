@@ -25,6 +25,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     private boolean collapsed = true;
     private LayerSection layerSection;
     private boolean chroma;
+    private ButtonSide side = ButtonSide.LEFT;
 
     private UpdateSection updateSection;
     private HorizontalLayout rootLayout;
@@ -50,12 +51,18 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
         prepareElements();
     }
 
+    public CollapseMenu(Window window, VariablePosition position, Element parent, ButtonSide side) {
+        super(window, position, parent);
+        this.side = side;
+        prepareElements();
+    }
+
     private void prepareElements() {
         layerSection = new LayerSection(window, null);
         layerSection.setLayerToRenderOn(1);
         updateSection = new UpdateSection(window, layerSection);
         rootLayout = new HorizontalLayout(window, this);
-        rootLayout.alignContent(HorizontalLayout.Align.TOP);
+        rootLayout.alignContent(HorizontalLayout.Align.BOTTOM);
         stackLayout = new VerticalLayout(window, rootLayout);
         stackLayout.setSpacing(5);
         stackLayout.alignContent(VerticalLayout.Align.LEFT);
@@ -82,8 +89,14 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
             }
         });
         collapseButtonText = new TextLine(window, headerLayout, initialState.height - textDistance() * 2);
-        headerLayout.addElement(collapseButton);
-        headerLayout.addElement(collapseButtonText);
+        if (side == ButtonSide.LEFT) {
+            headerLayout.addElement(collapseButton);
+            headerLayout.addElement(collapseButtonText);
+        }
+        else {
+            headerLayout.addElement(collapseButtonText);
+            headerLayout.addElement(collapseButton);
+        }
         headerLayout.alignContent(HorizontalLayout.Align.CENTER);
         headerLayout.setSpacing(5);
 
@@ -272,7 +285,9 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     @Override
     public int getHeight() {
         //for some weird reason, the root layout height works here even if it should'nt lol.
-        return rootLayout != null ? rootLayout.getHeight() : 0;
+        //maybe it doesn't...
+        //return rootLayout != null ? rootLayout.getHeight() : 0;
+        return headerLayout != null ? headerLayout.getHeight() : 0;
     }
 
     @Override
@@ -310,5 +325,10 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
         super.resize(width, height);
         headerLayout.resize(width, height);
         contentLayout.resize(width, height);
+    }
+
+    public enum ButtonSide {
+        LEFT,
+        RIGHT
     }
 }

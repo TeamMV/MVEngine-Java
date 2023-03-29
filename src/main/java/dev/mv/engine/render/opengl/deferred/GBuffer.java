@@ -2,9 +2,7 @@ package dev.mv.engine.render.opengl.deferred;
 
 import dev.mv.engine.exceptions.Exceptions;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL14.GL_DEPTH_COMPONENT32;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL46.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class GBuffer {

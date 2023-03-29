@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL30;
 import java.util.List;
 import java.util.Map;
 
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL46.*;
 
 public class OpenGLGeometryPass implements GeometryPass {
     private GBuffer gBuffer;
@@ -33,21 +33,21 @@ public class OpenGLGeometryPass implements GeometryPass {
     }
 
     private void bind(Model model) {
-        GL30.glBindVertexArray(model.getId());
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glEnableVertexAttribArray(1);
-        GL20.glEnableVertexAttribArray(2);
-        GL20.glEnableVertexAttribArray(3);
+        glBindVertexArray(model.getId());
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(3);
         Utils.ifNotNull(model.getTexture()).then(t -> t.bind(0));
     }
 
     private void unbind() {
-        GL30.glBindVertexArray(0);
-        GL20.glDisableVertexAttribArray(0);
-        GL20.glDisableVertexAttribArray(1);
-        GL20.glDisableVertexAttribArray(2);
-        GL20.glDisableVertexAttribArray(3);
-        GL11.glBindTexture(GL_TEXTURE_2D, 0);
+        glBindVertexArray(0);
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
+        glDisableVertexAttribArray(3);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     private void prepare(Entity entity) {

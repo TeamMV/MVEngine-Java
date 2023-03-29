@@ -11,6 +11,7 @@ import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.FreeSlider;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.components.layouts.ChoiceGroup;
+import dev.mv.engine.gui.components.layouts.CollapseMenu;
 import dev.mv.engine.gui.components.layouts.UpdateSection;
 import dev.mv.engine.gui.components.layouts.VerticalLayout;
 import dev.mv.engine.gui.event.ProgressListener;
@@ -95,6 +96,10 @@ public class Test implements ApplicationLoop {
         speed = root.findElementById("speed");
         hue = root.findElementById("hue");
         shape = root.findElementById("shape");
+
+        //R.pages.get("main").getRegistry().findGui("myGui").getRoot().<CollapseMenu>findElementById("collapse").enable();
+
+        System.out.println(R.pages.get("main").getRegistry().findGui("myGui"));
     }
 
     @Override

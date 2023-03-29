@@ -3,12 +3,10 @@ package dev.mv.engine.render.vulkan;
 import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.exceptions.Exceptions;
+import dev.mv.engine.input.GlfwClipboard;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.WindowCreateInfo;
-import dev.mv.engine.render.shared.Camera;
-import dev.mv.engine.render.shared.Render2D;
-import dev.mv.engine.render.shared.Render3D;
-import dev.mv.engine.render.shared.Window;
+import dev.mv.engine.render.shared.*;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.utils.RenderUtils;
@@ -321,6 +319,11 @@ public class VulkanWindow implements Window {
     }
 
     @Override
+    public RenderAdapter getAdapter() {
+        return null;
+    }
+
+    @Override
     public Render2D getRender2D() {
         return null;
     }
@@ -332,6 +335,11 @@ public class VulkanWindow implements Window {
 
     @Override
     public Camera getCamera() {
+        return null;
+    }
+
+    @Override
+    public GlfwClipboard getClipboard() {
         return null;
     }
 

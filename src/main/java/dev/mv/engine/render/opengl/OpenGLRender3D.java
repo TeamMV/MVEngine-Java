@@ -14,10 +14,7 @@ import dev.mv.engine.render.shared.shader.light.SpotLight;
 
 import java.util.*;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL46.*;
 
 public class OpenGLRender3D implements Render3D {
     private Window win;

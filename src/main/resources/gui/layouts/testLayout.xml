@@ -39,12 +39,18 @@
                     <ref name="checkbox" params="[check3]"/>
                     <ref name="checkbox" params="[check4]"/>
                 </horizontalLayout>
+                <collapseMenu height="$VAR(height)" id="collapse" title="Extra settings" buttonSide="RIGHT">
+                    <ref name="collapseCheckbox" params="[Hello]"/>
+                    <button width="100%" height="50">A button</button>
+                </collapseMenu>
                 <progressBar width="300" height="$VAR(height)" maxValue="100" currentValue="30" id="prgbar1"/>
-                <choiceGroup>
-                    <choice width="$VAR(height)" height="$VAR(height)">Choice1</choice>
-                    <choice width="$VAR(height)" height="$VAR(height)">Choice2</choice>
-                    <choice width="$VAR(height)" height="$VAR(height)">Choice3</choice>
-                </choiceGroup>
+                <verticalLayout align="CENTER">
+                    <choiceGroup>
+                        <choice width="$VAR(height)" height="$VAR(height)">Choice1</choice>
+                        <choice width="$VAR(height)" height="$VAR(height)">Choice2</choice>
+                        <choice width="$VAR(height)" height="$VAR(height)">Choice3</choice>
+                    </choiceGroup>
+                </verticalLayout>
             </verticalLayout>
         </aligner>
     </elements>

@@ -1,8 +1,5 @@
 package dev.mv.engine.gui.components;
 
-import dev.mv.engine.Loopable;
-import dev.mv.engine.MVEngine;
-import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.components.extras.Toggle;
 import dev.mv.engine.gui.event.ClickListener;
@@ -17,14 +14,8 @@ import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
-import dev.mv.engine.render.utils.ClipBoardListener;
 import dev.mv.utils.Utils;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -228,14 +219,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     public void keyPress(int key) {
         if (selected) {
             if (Input.convertKey(key) == Input.KEY_V && Input.isControl() && Input.keys[Input.KEY_V] == Input.State.ONPRESSED) {
-                Utils.async(() -> {
-                    try {
-                        setText(getText() + Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor));
-                    } catch (UnsupportedFlavorException | IOException e) {
-                        Exceptions.send(e);
-                    }
-                });
-                //setText(getText() + ClipBoardListener.getClipboardData());
+                setText(getText() + window.getClipboard().getContents());
             }
         }
     }

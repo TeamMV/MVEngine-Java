@@ -11,7 +11,6 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
-import org.lwjgl.opengl.GL30;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,9 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static dev.mv.utils.Utils.toPrimitive;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL46.*;
 
 public class OpenGLObjectLoader implements ObjectLoader {
     private static OpenGLObjectLoader instance = new OpenGLObjectLoader();
@@ -279,7 +276,7 @@ public class OpenGLObjectLoader implements ObjectLoader {
     }
 
     private void unbind() {
-        GL30.glBindVertexArray(0);
+        glBindVertexArray(0);
     }
 
     private void cleanup() {
@@ -287,10 +284,10 @@ public class OpenGLObjectLoader implements ObjectLoader {
             glDeleteVertexArrays(vao);
         }
         for (int vbo : vbos) {
-            GL30.glDeleteBuffers(vbo);
+            glDeleteBuffers(vbo);
         }
         for (int texture : textures) {
-            GL30.glDeleteTextures(texture);
+            glDeleteTextures(texture);
         }
     }
 }

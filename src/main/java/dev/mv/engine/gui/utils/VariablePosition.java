@@ -13,7 +13,7 @@ public class VariablePosition {
 
     public VariablePosition(int width, int height, PositionCalculator pos, boolean sizeRelative) {
         this.pos = pos;
-        resize(width, height, 0, 0);
+        resize(width, height, width, height);
         this.sizeRelative = sizeRelative;
     }
 

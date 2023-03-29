@@ -7,10 +7,7 @@ import dev.mv.engine.render.shared.batch.Batch;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.shared.texture.Texture;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL46.*;
 
 public class OpenGLRender2D implements Render2D {
     private Window window;
@@ -76,5 +73,10 @@ public class OpenGLRender2D implements Render2D {
                 texture.unbind();
             }
         }
+    }
+
+    @Override
+    public int genBuffers() {
+        return glGenBuffers();
     }
 }

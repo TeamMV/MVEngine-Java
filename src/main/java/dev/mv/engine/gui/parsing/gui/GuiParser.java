@@ -572,12 +572,13 @@ public class GuiParser {
     }
 
     private CollapseMenu parseCollapseMenu(Element tag) {
+        String side = getStringAttrib(tag.getAttribute("buttonSide"));
         CollapseMenu layout = new CollapseMenu(null,
             VariablePosition.getPosition(
                 getStringAttrib(tag.getAttribute("x")),
                 getStringAttrib(tag.getAttribute("y")),
                 getStringAttrib(tag.getAttribute("width")),
-                getStringAttrib(tag.getAttribute("height"))), null);
+                getStringAttrib(tag.getAttribute("height"))), null, side.equalsIgnoreCase("right") ? CollapseMenu.ButtonSide.RIGHT : CollapseMenu.ButtonSide.LEFT);
 
         layout.setText(getStringAttrib(tag.getAttribute("title")));
 

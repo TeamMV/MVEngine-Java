@@ -5,11 +5,7 @@ import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.deferred.LightingPass;
 import dev.mv.engine.render.shared.shader.Shader;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL46.*;
 
 public class OpenGLLightingPass implements LightingPass {
     private Shader shader;

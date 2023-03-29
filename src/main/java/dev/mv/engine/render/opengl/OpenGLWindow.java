@@ -5,12 +5,10 @@ import dev.mv.engine.Loopable;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.GuiManager;
+import dev.mv.engine.input.GlfwClipboard;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.WindowCreateInfo;
-import dev.mv.engine.render.shared.Camera;
-import dev.mv.engine.render.shared.Render2D;
-import dev.mv.engine.render.shared.Render3D;
-import dev.mv.engine.render.shared.Window;
+import dev.mv.engine.render.shared.*;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.utils.RenderUtils;
@@ -24,7 +22,7 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL46.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -40,6 +38,7 @@ public class OpenGLWindow implements Window {
     private long window;
     private long currentFrame = 0, currentTime = 0;
     private ApplicationLoop applicationLoop = null;
+    private RenderAdapter renderAdapter = null;
     private OpenGLRender2D render2D = null;
     private OpenGLRender3D render3D = null;
     private Matrix4f projectionMatrix = null;
@@ -49,6 +48,7 @@ public class OpenGLWindow implements Window {
     private MVEngine engine;
 
     private Camera camera;
+    private GlfwClipboard clipboard;
     private String fpsStringBefore = "";
 
     public OpenGLWindow(WindowCreateInfo info) {
@@ -69,9 +69,11 @@ public class OpenGLWindow implements Window {
         }
 
         updateProjection2D();
+        renderAdapter = m -> m;
         render2D = new OpenGLRender2D(this);
         render3D = new OpenGLRender3D(this);
         camera = new Camera();
+        clipboard = new GlfwClipboard(this);
         batchController3D = new BatchController3D(this, 1000);
         batchController3D.start();
         batchController = new BatchController(this, 1000);
@@ -379,6 +381,11 @@ public class OpenGLWindow implements Window {
     }
 
     @Override
+    public RenderAdapter getAdapter() {
+        return renderAdapter;
+    }
+
+    @Override
     public Render2D getRender2D() {
         return render2D;
     }
@@ -391,6 +398,11 @@ public class OpenGLWindow implements Window {
     @Override
     public Camera getCamera() {
         return camera;
+    }
+
+    @Override
+    public GlfwClipboard getClipboard() {
+        return clipboard;
     }
 
     @Override

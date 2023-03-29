@@ -1,6 +1,7 @@
 package dev.mv.engine.render.shared;
 
 import dev.mv.engine.ApplicationLoop;
+import dev.mv.engine.input.GlfwClipboard;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import org.joml.Matrix4f;
@@ -44,11 +45,15 @@ public interface Window {
 
     void setTitle(String title);
 
+    RenderAdapter getAdapter();
+
     Render2D getRender2D();
 
     Render3D getRender3D();
 
     Camera getCamera();
+
+    GlfwClipboard getClipboard();
 
     BatchController getBatchController();
 

@@ -1,18 +1,18 @@
 package dev.mv.engine.render.shared.batch;
 
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.shared.texture.Texture;
+import dev.mv.utils.Utils;
+import org.intellij.lang.annotations.MagicConstant;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
-import static org.lwjgl.opengl.GL15.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-
-public class Batch {
+public abstract class Batch {
     public static final int POSITION_SIZE = 3;
     public static final int ROTATION_SIZE = 1;
     public static final int ROTATION_ORIGIN_SIZE = 2;
@@ -39,28 +39,28 @@ public class Batch {
     public static final int USE_CAMERA_OFFSET_BYTES = USE_CAMERA_OFFSET * Float.BYTES;
     public static final int CANVAS_COORDS_OFFSET = USE_CAMERA_OFFSET + USE_CAMERA_SIZE;
     public static final int CANVAS_COORDS_OFFSET_BYTES = CANVAS_COORDS_OFFSET * Float.BYTES;
-    private int maxSize;
-    private float[] data;
-    private int[] indices;
-    private Texture[] textures;
-    private Window win;
-    private Shader shader;
-    private FloatBuffer vbo;
-    private int vbo_id;
-    private IntBuffer ibo;
-    private int ibo_id;
-    private int[] tex_ids;
+    protected int maxSize;
+    protected float[] data;
+    protected int[] indices;
+    protected Texture[] textures;
+    protected Window win;
+    protected Shader shader;
+    protected FloatBuffer vbo;
+    protected int vbo_id;
+    protected IntBuffer ibo;
+    protected int ibo_id;
+    protected int[] tex_ids;
     /**
      * The var vertCount is the offset pointer for the incoming data,
      * therefor no data gets overridden.
      * For clearing this var, use clearBatch().
      */
 
-    private int vertCount = 0;
-    private int objCount = 0;
-    private int nextFreeTexSlot = 0;
-    private boolean isFull = false;
-    private boolean isFullTex = false;
+    protected int vertCount = 0;
+    protected int objCount = 0;
+    protected int nextFreeTexSlot = 0;
+    protected boolean isFull = false;
+    protected boolean isFullTex = false;
 
     public Batch(int maxSize, Window win, Shader shader) {
         this.maxSize = maxSize;
@@ -74,10 +74,10 @@ public class Batch {
         indices = new int[maxSize * 6];
 
         vbo = BufferUtils.createFloatBuffer(VERTEX_SIZE_BYTES * maxSize);
-        vbo_id = glGenBuffers();
+        vbo_id = win.getRender2D().genBuffers();
 
         ibo = BufferUtils.createIntBuffer(maxSize * 6);
-        ibo_id = glGenBuffers();
+        ibo_id = win.getRender2D().genBuffers();
 
         textures = new Texture[17];
         tex_ids = new int[17];
@@ -134,21 +134,10 @@ public class Batch {
     }
 
     public void addVertices(VertexGroup vertData, boolean useCamera) {
+        if (vertData.length() != getVertexCount()) Exceptions.send("ILLEGAL_VERTEX_SIZE", vertData.length(), Utils.plural(vertData.length(), "vertex", "vertices"), getVertexCount(), Utils.plural(getVertexCount(), "vertex", "vertices"));
+        if (isFull(getVertexCount())) return;
 
-        if (isFull) return;
-
-        if (vertData.length() == 4) {
-            indices[objCount * 6 + 0] = 0 + objCount * 4;
-            indices[objCount * 6 + 1] = 1 + objCount * 4;
-            indices[objCount * 6 + 2] = 2 + objCount * 4;
-            indices[objCount * 6 + 3] = 0 + objCount * 4;
-            indices[objCount * 6 + 4] = 2 + objCount * 4;
-            indices[objCount * 6 + 5] = 3 + objCount * 4;
-        } else {
-            indices[objCount * 6 + 0] = 0 + objCount * 4;
-            indices[objCount * 6 + 1] = 1 + objCount * 4;
-            indices[objCount * 6 + 2] = 2 + objCount * 4;
-        }
+        genIndices();
 
         for (int i = 0; i < vertData.length(); i++) {
             addVertex(vertData.get(i).add(useCamera ? 1 : 0));
@@ -196,7 +185,7 @@ public class Batch {
     }
 
     public void render() {
-        win.getRender2D().retrieveVertexData(textures, tex_ids, indices, data, vbo_id, ibo_id, shader, GL_TRIANGLES);
+        win.getRender2D().retrieveVertexData(textures, tex_ids, indices, data, vbo_id, ibo_id, shader, win.getAdapter().adaptRenderMode(getRenderMode()));
 
         forceClearBatch();
     }
@@ -208,4 +197,11 @@ public class Batch {
     public void setShader(Shader shader) {
         this.shader = shader;
     }
+
+    public abstract int getRenderMode();
+
+    public abstract int getVertexCount();
+
+    protected abstract void genIndices();
+
 }
