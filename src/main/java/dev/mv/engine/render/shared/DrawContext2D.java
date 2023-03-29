@@ -11,6 +11,7 @@ import dev.mv.engine.render.shared.font.Glyph;
 import dev.mv.engine.render.shared.texture.Animation;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.shared.texture.TextureRegion;
+import dev.mv.engine.resources.R;
 import dev.mv.engine.resources.ResourceLoader;
 import dev.mv.utils.Utils;
 import org.joml.Vector2f;
@@ -571,4 +572,35 @@ public class DrawContext2D {
             ), useCamera, isStripped);
         }
     }
+
+    public void mqxf(int x, int y, int width, int height) {
+        color(0, 0, 0, 0);
+        image(x, y, width, height, R.textures.get("mqxf"));
+    }
+
+    public void mqxf(int x, int y, int width, int height, float rotation) {
+        color(0, 0, 0, 0);
+        image(x, y, width, height, R.textures.get("mqxf"), rotation);
+    }
+
+    public void mqxf(int x, int y, int width, int height, float rotation, int originX, int originY) {
+        color(0, 0, 0, 0);
+        image(x, y, width, height, R.textures.get("mqxf"), rotation, originX, originY);
+    }
+
+    public void mqxfMuscle(int x, int y, int width, int height) {
+        color(0, 0, 0, 0);
+        image(x, y, width, height, R.textures.get("mqxfMuscle"));
+    }
+
+    public void mqxfMuscle(int x, int y, int width, int height, float rotation) {
+        color(0, 0, 0, 0);
+        image(x, y, width, height, R.textures.get("mqxfMuscle"), rotation);
+    }
+
+    public void mqxfMuscle(int x, int y, int width, int height, float rotation, int originX, int originY) {
+        color(0, 0, 0, 0);
+        image(x, y, width, height, R.textures.get("mqxfMuscle"), rotation, originX, originY);
+    }
+
 }

@@ -13,6 +13,7 @@ import dev.mv.engine.render.opengl.OpenGLWindow;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.models.ObjectLoader;
 import dev.mv.engine.render.vulkan.VulkanWindow;
+import dev.mv.engine.resources.ResourceLoader;
 import dev.mv.utils.misc.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
@@ -74,6 +75,10 @@ public class MVEngine implements AutoCloseable {
         } else {
             instance.renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
         }
+
+        ResourceLoader.markTexture("mqxf", "/assets/mvengine/textures/mqxf.png");
+        ResourceLoader.markTexture("mqxfMuscle", "/assets/mvengine/textures/mqxf-muscle.png");
+
         return instance;
     }
 

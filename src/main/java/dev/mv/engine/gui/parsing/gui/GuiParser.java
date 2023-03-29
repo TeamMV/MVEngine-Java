@@ -364,8 +364,8 @@ public class GuiParser {
             getStringAttrib(tag.getAttribute("y")),
             getStringAttrib(tag.getAttribute("width")),
             getStringAttrib(tag.getAttribute("height"))), null);
-        if (tag.hasAttribute("texture")) {
-            imageButton.setTexture(R.textures.get(getStringAttrib(tag.getAttribute("texture"))));
+        if (tag.hasAttribute("resource")) {
+            imageButton.setTexture(R.textures.get(getStringAttrib(tag.getAttribute("resource"))));
         }
         return imageButton;
     }
