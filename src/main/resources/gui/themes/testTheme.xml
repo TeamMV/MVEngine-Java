@@ -21,7 +21,7 @@
     </colors>
     <general>
         <edges>
-            <style>SQUARE</style>
+            <style>ROUND</style>
             <radius>10</radius>
         </edges>
         <outline>

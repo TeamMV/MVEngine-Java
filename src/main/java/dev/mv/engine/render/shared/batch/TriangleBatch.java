@@ -23,8 +23,8 @@ public class TriangleBatch extends Batch {
 
     @Override
     protected void genIndices() {
-        indices[objCount * 6 + 0] = 0 + objCount * 3;
-        indices[objCount * 6 + 1] = 1 + objCount * 3;
-        indices[objCount * 6 + 2] = 2 + objCount * 3;
+        indices[objCount * 3 + 0] = 0 + objCount * 3;
+        indices[objCount * 3 + 1] = 1 + objCount * 3;
+        indices[objCount * 3 + 2] = 2 + objCount * 3;
     }
 }

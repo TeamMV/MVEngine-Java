@@ -24,7 +24,7 @@
     <elements>
         <aligner x="0" y="0" width="100%" height="100%" alignX="CENTER" alignY="CENTER" id="aligner">
             <verticalLayout x="200" y="100" spacing="5" showFrame="false" align="CENTER" id="main">
-                <imageButton width="120" height="$VAR(height)" id="quitButton" tags="[tag1,tag2,tag3]" resource="mqxf"/>
+                <imageButton width="120" height="$VAR(height)" id="quitButton" tags="[tag1,tag2,tag3]" src="mqxf"/>
                 <checkbox width="$VAR(height)" height="$VAR(height)">Toggle</checkbox>
                 <button width="100" height="$VAR(height)" id="chromaButton">click me!</button>
                 <ref name="defaultSpace"/>

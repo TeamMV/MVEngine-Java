@@ -1,5 +1,7 @@
 package dev.mv.engine.gui.components;
 
+import dev.mv.engine.Loopable;
+import dev.mv.engine.MVEngine;
 import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.gui.components.extras.Image;
 import dev.mv.engine.gui.components.extras.Toggle;
@@ -13,25 +15,31 @@ import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.shared.texture.TextureRegion;
+import dev.mv.engine.resources.R;
 
-public class ImageButton extends Element implements Toggle, Image, Clickable {
+public class ImageButton extends Element implements Toggle, Image, Clickable, Loopable {
     protected TextureRegion texture;
+    protected String textureResource;
     protected boolean enabled = true, useTextColor = false;
 
     public ImageButton(Window window, Element parent, int width, int height) {
         super(window, -1, -1, width, height, parent);
+        MVEngine.instance().registerLooper(this);
     }
 
     public ImageButton(Window window, int x, int y, Element parent, int width, int height) {
         super(window, x, y, width, height, parent);
+        MVEngine.instance().registerLooper(this);
     }
 
     public ImageButton(Window window, int x, int y, int width, int height) {
         super(window, x, y, width, height, null);
+        MVEngine.instance().registerLooper(this);
     }
 
     public ImageButton(Window window, VariablePosition position, Element parent) {
         super(window, position, parent);
+        MVEngine.instance().registerLooper(this);
     }
 
     @Override
@@ -213,5 +221,17 @@ public class ImageButton extends Element implements Toggle, Image, Clickable {
     @Override
     public void setTexture(TextureRegion textureRegion) {
         this.texture = textureRegion;
+    }
+
+    public void setTexture(String texture) {
+        textureResource = texture;
+        this.texture = R.textures.get(textureResource);
+    }
+
+    @Override
+    public void loop() {
+        if (textureResource != null) {
+            texture = R.textures.get(textureResource);
+        }
     }
 }

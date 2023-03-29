@@ -119,7 +119,7 @@ public class Test implements ApplicationLoop {
     public void draw(MVEngine engine, Window window) {
         R.guis.get("default").renderGuis();
         ctx2D.color(Color.WHITE);
-        //ctx2D.mqxfMuscle(200, 200, 400, 400);
+        //ctx2D.mqxf(200, 200, 400, 400);
         //particleSystem.draw(ctx2D);
         //ctx2D.color(Color.RED);
         //ctx2D.triangularRectangle(100, 100, 300, 600, 100);

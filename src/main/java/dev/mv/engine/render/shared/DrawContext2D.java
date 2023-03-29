@@ -65,6 +65,14 @@ public class DrawContext2D {
         isStripped = false;
     }
 
+    private int z() {
+        return Utils.currentId("z-index");
+    }
+
+    private void nextZ() {
+        Utils.nextId("z-index");
+    }
+
     public void color(Color color) {
         color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
     }
