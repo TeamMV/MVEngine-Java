@@ -1,8 +1,7 @@
 package dev.mv.engine.gui.components;
 
-import dev.mv.engine.Loopable;
+import dev.mv.engine.Looper;
 import dev.mv.engine.MVEngine;
-import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.gui.components.extras.Image;
 import dev.mv.engine.gui.components.extras.Toggle;
 import dev.mv.engine.gui.event.ClickListener;
@@ -17,7 +16,7 @@ import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.shared.texture.TextureRegion;
 import dev.mv.engine.resources.R;
 
-public class ImageButton extends Element implements Toggle, Image, Clickable, Loopable {
+public class ImageButton extends Element implements Toggle, Image, Clickable, Looper {
     protected TextureRegion texture;
     protected String textureResource;
     protected boolean enabled = true, useTextColor = false;

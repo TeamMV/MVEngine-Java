@@ -47,11 +47,30 @@ public class BatchController {
                 batches.insert(currentBatch, gen(strip));
                 //Backup solution, doesn't remake batches but might cause issues if it has to skip a lot of batches and then waste RAM
                 //nextBatch(strip);
+                //int i = findBatch(strip);
+                //Batch tmp = batches.get(currentBatch);
+                //batches.insert(currentBatch, batches.get(currentBatch + i));
+                //batches.insert(currentBatch + i, tmp);
             }
         } catch (IndexOutOfBoundsException e) {
             batches.push(gen(strip));
         }
     }
+
+    //private int findBatch(boolean strip) {
+    //    int i = 1;
+    //    while (true) {
+    //        try {
+    //            if (batches.get(currentBatch + i).isStrip() == strip) {
+    //                return i;
+    //            }
+    //        }  catch (IndexOutOfBoundsException e) {
+    //            batches.push(gen(strip));
+    //            return i;
+    //        }
+    //        i++;
+    //    }
+    //}
 
     private Batch gen(boolean strip) {
         return strip ? new ChainedBatch(maxBatchSize, win, defaultShader) : new RegularBatch(maxBatchSize, win, defaultShader);

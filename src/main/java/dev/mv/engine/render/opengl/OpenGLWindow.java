@@ -1,7 +1,7 @@
 package dev.mv.engine.render.opengl;
 
 import dev.mv.engine.ApplicationLoop;
-import dev.mv.engine.Loopable;
+import dev.mv.engine.Looper;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.GuiManager;
@@ -189,7 +189,7 @@ public class OpenGLWindow implements Window {
                 if (applicationLoop != null) {
                     try {
                         applicationLoop.update(engine, this);
-                        MVEngine.instance().getLoopers().forEach(Loopable::loop);
+                        MVEngine.instance().getLoopers().forEach(Looper::loop);
                     } catch (Exception e) {
                         Exceptions.send(e);
                     }

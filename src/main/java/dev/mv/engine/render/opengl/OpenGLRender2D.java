@@ -44,6 +44,7 @@ public class OpenGLRender2D implements Render2D {
 
         shader.uniform("uProjection", window.getProjectionMatrix2D());
         shader.uniform("uView", Transformations3D.getViewMatrix2D(window.getCamera()));
+        //shader.uniform("uCanvas", );
 
         glVertexAttribPointer(0, Batch.POSITION_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.POSITION_OFFSET_BYTES);
         glEnableVertexAttribArray(0);
@@ -57,9 +58,9 @@ public class OpenGLRender2D implements Render2D {
         glEnableVertexAttribArray(4);
         glVertexAttribPointer(5, Batch.TEX_ID_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.TEX_ID_OFFSET_BYTES);
         glEnableVertexAttribArray(5);
-        glVertexAttribPointer(6, Batch.USE_CAMERA_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.USE_CAMERA_OFFSET_BYTES);
+        glVertexAttribPointer(6, Batch.CANVAS_COORDS_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.CANVAS_COORDS_OFFSET_BYTES);
         glEnableVertexAttribArray(6);
-        glVertexAttribPointer(7, Batch.CANVAS_COORDS_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.CANVAS_COORDS_OFFSET_BYTES);
+        glVertexAttribPointer(7, Batch.USE_CAMERA_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.USE_CAMERA_OFFSET_BYTES);
         glEnableVertexAttribArray(7);
 
         glDrawElements(renderMode, indices.length, GL_UNSIGNED_INT, 0);

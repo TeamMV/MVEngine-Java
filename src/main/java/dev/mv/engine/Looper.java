@@ -1,5 +1,5 @@
 package dev.mv.engine;
 
-public interface Loopable {
+public interface Looper {
     void loop();
 }

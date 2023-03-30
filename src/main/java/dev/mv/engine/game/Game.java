@@ -9,6 +9,8 @@ import dev.mv.engine.game.language.Languages;
 import dev.mv.engine.game.mod.loader.ModFinder;
 import dev.mv.engine.game.mod.loader.ModLoader;
 import dev.mv.engine.game.registry.Registries;
+import dev.mv.engine.render.shared.Window;
+import dev.mv.utils.misc.Version;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class Game {
@@ -19,8 +21,6 @@ public abstract class Game {
     protected Game() {
         MVEngine.instance().setGame(this);
     }
-
-    public abstract @NotNull String getGameId();
 
     private void setupGameDir() {
         gameDirectory = FileManager.getDirectory(getGameId());
@@ -44,5 +44,26 @@ public abstract class Game {
     public Directory getGameDirectory() {
         return gameDirectory;
     }
+
+    @Override
+    public void start(MVEngine engine, Window window) {
+
+    }
+
+    @Override
+    public void update(MVEngine engine, Window window) {
+
+    }
+
+    @Override
+    public void draw(MVEngine engine, Window window) {
+
+    }
+
+    public abstract @NotNull String getGameId();
+
+    public abstract @NotNull Version getVersion();
+
+    public abstract @NotNull String getName();
 
 }

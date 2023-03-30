@@ -17,8 +17,6 @@ import dev.mv.engine.resources.ResourceLoader;
 import dev.mv.utils.misc.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +32,7 @@ public class MVEngine implements AutoCloseable {
     private InputCollector inputCollector;
     private ExceptionHandler exceptionHandler;
     private Game game;
-    private List<Loopable> loopers;
+    private List<Looper> loopers;
 
     private MVEngine() {
         exceptionHandler = ExceptionHandler.Default.INSTANCE;
@@ -154,11 +152,11 @@ public class MVEngine implements AutoCloseable {
         return game;
     }
 
-    public void registerLooper(Loopable loopable) {
+    public void registerLooper(Looper loopable) {
         loopers.add(loopable);
     }
 
-    public List<Loopable> getLoopers() {
+    public List<Looper> getLoopers() {
         return loopers;
     }
 }

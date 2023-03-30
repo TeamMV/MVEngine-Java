@@ -19,9 +19,9 @@ public abstract class Batch {
     public static final int COLOR_SIZE = 4;
     public static final int UV_SIZE = 2;
     public static final int TEX_ID_SIZE = 1;
-    public static final int USE_CAMERA_SIZE = 1;
     public static final int CANVAS_COORDS_SIZE = 4;
-    public static final int VERTEX_SIZE_FLOATS = POSITION_SIZE + ROTATION_SIZE + ROTATION_ORIGIN_SIZE + COLOR_SIZE + UV_SIZE + TEX_ID_SIZE + USE_CAMERA_SIZE + CANVAS_COORDS_SIZE;
+    public static final int USE_CAMERA_SIZE = 1;
+    public static final int VERTEX_SIZE_FLOATS = POSITION_SIZE + ROTATION_SIZE + ROTATION_ORIGIN_SIZE + COLOR_SIZE + UV_SIZE + TEX_ID_SIZE + CANVAS_COORDS_SIZE + USE_CAMERA_SIZE;
     public static final int VERTEX_SIZE_BYTES = VERTEX_SIZE_FLOATS * Float.BYTES;
     public static final int POSITION_OFFSET = 0;
     public static final int POSITION_OFFSET_BYTES = POSITION_OFFSET * Float.BYTES;
@@ -35,10 +35,11 @@ public abstract class Batch {
     public static final int UV_OFFSET_BYTES = UV_OFFSET * Float.BYTES;
     public static final int TEX_ID_OFFSET = UV_OFFSET + UV_SIZE;
     public static final int TEX_ID_OFFSET_BYTES = TEX_ID_OFFSET * Float.BYTES;
-    public static final int USE_CAMERA_OFFSET = TEX_ID_OFFSET + TEX_ID_SIZE;
-    public static final int USE_CAMERA_OFFSET_BYTES = USE_CAMERA_OFFSET * Float.BYTES;
-    public static final int CANVAS_COORDS_OFFSET = USE_CAMERA_OFFSET + USE_CAMERA_SIZE;
+    public static final int CANVAS_COORDS_OFFSET = TEX_ID_OFFSET + TEX_ID_SIZE;
     public static final int CANVAS_COORDS_OFFSET_BYTES = CANVAS_COORDS_OFFSET * Float.BYTES;
+    public static final int USE_CAMERA_OFFSET = CANVAS_COORDS_OFFSET + CANVAS_COORDS_SIZE;
+    public static final int USE_CAMERA_OFFSET_BYTES = USE_CAMERA_OFFSET * Float.BYTES;
+    // p p p r ro ro c c c c uv uv ti uc cc cc cc cc
     protected int maxSize;
     protected float[] data;
     protected int[] indices;

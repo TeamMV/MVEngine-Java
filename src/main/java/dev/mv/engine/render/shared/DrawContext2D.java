@@ -51,6 +51,13 @@ public class DrawContext2D {
         canvas.w = height;
     }
 
+    public void canvas() {
+        canvas.x = 0;
+        canvas.y = 0;
+        canvas.z = window.getWidth();
+        canvas.w = window.getHeight();
+    }
+
     public void beginStrip() {
         if (isStripped) Exceptions.send(new IllegalStateException("End a stripped drawing before starting a new one!"));
         isStripped = true;
