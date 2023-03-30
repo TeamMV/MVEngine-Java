@@ -134,10 +134,9 @@ public abstract class Batch {
     }
 
     public void addVertices(VertexGroup vertData, boolean useCamera) {
-        if (vertData.length() != getVertexCount()) Exceptions.send("ILLEGAL_VERTEX_SIZE", vertData.length(), Utils.plural(vertData.length(), "vertex", "vertices"), getVertexCount(), Utils.plural(getVertexCount(), "vertex", "vertices"));
-        if (isFull(getVertexCount())) return;
+        if (isFull(vertData.length())) return;
 
-        genIndices();
+        genIndices(vertData.length());
 
         for (int i = 0; i < vertData.length(); i++) {
             addVertex(vertData.get(i).add(useCamera ? 1 : 0));
@@ -200,8 +199,8 @@ public abstract class Batch {
 
     public abstract int getRenderMode();
 
-    public abstract int getVertexCount();
+    protected abstract void genIndices(int vertAmount);
 
-    protected abstract void genIndices();
+    public abstract boolean isStrip();
 
 }

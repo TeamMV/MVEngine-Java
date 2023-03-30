@@ -3,7 +3,6 @@ package dev.mv.engine.render.shared;
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.components.animations.TextAnimation;
 import dev.mv.engine.gui.components.animations.TextAnimator;
-import dev.mv.engine.render.shared.batch.BatchType;
 import dev.mv.engine.render.shared.batch.Vertex;
 import dev.mv.engine.render.shared.batch.VertexGroup;
 import dev.mv.engine.render.shared.font.BitmapFont;
@@ -12,12 +11,9 @@ import dev.mv.engine.render.shared.texture.Animation;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.shared.texture.TextureRegion;
 import dev.mv.engine.resources.R;
-import dev.mv.engine.resources.ResourceLoader;
 import dev.mv.utils.Utils;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
-
-import java.io.IOException;
 
 public class DrawContext2D {
 
@@ -63,14 +59,6 @@ public class DrawContext2D {
     public void endStrip() {
         if (!isStripped) Exceptions.send(new IllegalStateException("Begin a stripped drawing before ending it!"));
         isStripped = false;
-    }
-
-    private int z() {
-        return Utils.currentId("z-index");
-    }
-
-    private void nextZ() {
-        Utils.nextId("z-index");
     }
 
     public void color(Color color) {
@@ -380,7 +368,7 @@ public class DrawContext2D {
 
         float radRotation = (float) (rotation * (Math.PI / 180));
 
-        int texID = window.getBatchController().addTexture(texture, BatchType.from(4, isStripped));
+        int texID = window.getBatchController().addTexture(texture, isStripped);
 
         window.getBatchController().addVertices(verts.set(
             v1.put(ax, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -403,7 +391,7 @@ public class DrawContext2D {
 
         float radRotation = (float) (rotation * (Math.PI / 180));
 
-        int texID = window.getBatchController().addTexture(texture.getParentTexture(), BatchType.from(4, isStripped));
+        int texID = window.getBatchController().addTexture(texture.getParentTexture(), isStripped);
 
         window.getBatchController().addVertices(verts.set(
             v1.put(ax, ay2, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), ux0, uy0, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -418,7 +406,7 @@ public class DrawContext2D {
         float thetaSin = (float) (Math.sin(theta) * thickness);
         float thetaCos = (float) (Math.cos(theta) * thickness);
 
-        int texID = window.getBatchController().addTexture(texture, BatchType.from(4, isStripped));
+        int texID = window.getBatchController().addTexture(texture, isStripped);
 
         window.getBatchController().addVertices(verts.set(
             v1.put(x1 - thetaCos, y1 + thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, texID, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -438,7 +426,7 @@ public class DrawContext2D {
         float uy1 = texture.getUVCoordinates()[2];
         float uy0 = texture.getUVCoordinates()[3];
 
-        int texID = window.getBatchController().addTexture(texture.getParentTexture(), BatchType.from(4, isStripped));
+        int texID = window.getBatchController().addTexture(texture.getParentTexture(), isStripped);
 
         window.getBatchController().addVertices(verts.set(
             v1.put(x1 - thetaCos, y1 + thetaSin, 0.0f, 0.0f, 0.0f, 0.0f, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), ux0, uy0, texID, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -507,7 +495,7 @@ public class DrawContext2D {
             float uy1 = uvs[0].y;
             float uy0 = uvs[1].y;
 
-            int texID = window.getBatchController().addTexture(font.getBitmap(), BatchType.from(4, isStripped));
+            int texID = window.getBatchController().addTexture(font.getBitmap(), isStripped);
 
             window.getBatchController().addVertices(verts.set(
                 v1.put(ax, ay2, 0.0f, radRotation, originX, originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), ux0, uy0, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),
@@ -570,7 +558,7 @@ public class DrawContext2D {
             float uy1 = uvs[0].y;
             float uy0 = uvs[1].y;
 
-            int texID = window.getBatchController().addTexture(font.getBitmap(), BatchType.from(4, isStripped));
+            int texID = window.getBatchController().addTexture(font.getBitmap(), isStripped);
 
             window.getBatchController().addVertices(verts.set(
                 v1.put(ax, ay2, 0.0f, radRotation, originX, originY, state.color.r, state.color.g, state.color.b, state.color.a, ux0, uy0, (float) texID, canvas.x, canvas.y, canvas.z, canvas.w),

@@ -5,18 +5,18 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.shared.texture.Texture;
-
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import dev.mv.utils.collection.UnsafeVec;
+import dev.mv.utils.collection.Vec;
 
 public class BatchController {
-    protected final Map<BatchType, SpecificBatchController> batchTypes = new EnumMap<>(BatchType.class);
+
+    protected final UnsafeVec<Batch> batches = new Vec<Batch>().unsafe();
     private final String VERTEX_PATH = "/assets/mvengine/shaders/2d/default.vert";
     private final String FRAGMENT_PATH = "/assets/mvengine/shaders/2d/default.frag";
     protected Window win;
     protected int maxBatchSize;
     protected Shader defaultShader, prebuildDefaultShader;
+    protected int currentBatch;
 
     public BatchController(Window window, int batchLimit) {
         if (batchLimit < 14) {
@@ -31,15 +31,30 @@ public class BatchController {
 
         win = window;
         maxBatchSize = batchLimit;
+        currentBatch = 0;
     }
 
     public void start() {
-        batchTypes.put(BatchType.TRIANGLES, new SpecificBatchController<>(win, maxBatchSize, defaultShader, TriangleBatch::new));
-        batchTypes.put(BatchType.TRIANGLE_STRIP, new SpecificBatchController<>(win, maxBatchSize, defaultShader, ChainedTriangleBatch::new));
-        batchTypes.put(BatchType.QUADS, new SpecificBatchController<>(win, maxBatchSize, defaultShader, QuadBatch::new));
-        batchTypes.put(BatchType.QUAD_STRIP, new SpecificBatchController<>(win, maxBatchSize, defaultShader, ChainedQuadBatch::new));
+        batches.push(new RegularBatch(maxBatchSize, win, defaultShader));
+    }
 
-        batchTypes.forEach((s, b) -> b.start());
+    protected void nextBatch(boolean strip) {
+        currentBatch++;
+        try {
+            if (batches.get(currentBatch).isStrip() != strip) {
+                //TODO: check performance, might be slow if drastic changes between batch types...
+                //Might only be an issue when changing what is rendered though, not every frame
+                batches.insert(currentBatch, gen(strip));
+                //Backup solution, doesn't remake batches but might cause issues if it has to skip a lot of batches and then waste RAM
+                //nextBatch(strip);
+            }
+        } catch (IndexOutOfBoundsException e) {
+            batches.push(gen(strip));
+        }
+    }
+
+    private Batch gen(boolean strip) {
+        return strip ? new ChainedBatch(maxBatchSize, win, defaultShader) : new RegularBatch(maxBatchSize, win, defaultShader);
     }
 
     public void addVertices(VertexGroup vertexData, boolean useCamera) {
@@ -47,37 +62,86 @@ public class BatchController {
     }
 
     public void addVertices(VertexGroup vertexData, boolean useCamera, boolean strip) {
-        batchTypes.get(BatchType.from(vertexData.length(), strip)).addVertices(vertexData, useCamera);
+        if (batches.get(currentBatch).isStrip() != strip) {
+            nextBatch(strip);
+        }
+        if (batches.get(currentBatch).isFull(vertexData.length() * Batch.VERTEX_SIZE_FLOATS)) {
+            nextBatch(strip);
+        }
+
+        batches.get(currentBatch).addVertices(vertexData, useCamera);
     }
 
-    public int addTexture(Texture tex, BatchType type) {
-        return batchTypes.get(type).addTexture(tex);
+    public int addTexture(Texture tex) {
+        return addTexture(tex, false);
     }
 
-    public int addTexture(Texture tex, int vertices, BatchType type) {
-        return batchTypes.get(type).addTexture(tex, vertices);
+    public int addTexture(Texture tex, boolean strip) {
+        if (batches.get(currentBatch).isStrip() != strip) {
+            nextBatch(strip);
+        }
+        if (batches.get(currentBatch).isFullOfTextures() || batches.get(currentBatch).isFull(Batch.VERTEX_SIZE_FLOATS * 4)) {
+            nextBatch(strip);
+        }
+
+        int texID = batches.get(currentBatch).addTexture(tex);
+
+        if (texID == -1) {
+            nextBatch(strip);
+            texID = batches.get(currentBatch).addTexture(tex);
+        }
+
+        return texID;
     }
 
-    public int getTotalNumberOfBatches() {
-        AtomicInteger amount = new AtomicInteger(0);
-        batchTypes.forEach((s, b) -> amount.addAndGet(b.getNumberOfBatches()));
-        return amount.get();
+    public int addTexture(Texture tex, int vertices) {
+        return addTexture(tex, vertices, false);
     }
 
-    public int getNumberOfBatches(BatchType type) {
-        return batchTypes.get(type).getNumberOfBatches();
+    public int addTexture(Texture tex, int vertices, boolean strip) {
+        if (batches.get(currentBatch).isStrip() != strip) {
+            nextBatch(strip);
+        }
+        if (batches.get(currentBatch).isFullOfTextures() || batches.get(currentBatch).isFull(vertices)) {
+            nextBatch(strip);
+        }
+
+        int texID = batches.get(currentBatch).addTexture(tex);
+
+        if (texID == -1) {
+            nextBatch(strip);
+            texID = batches.get(currentBatch).addTexture(tex);
+        }
+
+        return texID;
+    }
+
+    public int getNumberOfBatches() {
+        return batches.size();
     }
 
     public void finish() {
-        batchTypes.forEach((s, b) -> b.finish());
+        for (int i = 0; i <= currentBatch; i++) {
+            batches.get(i).finish();
+        }
+        currentBatch = 0;
     }
 
     public void render() {
-        batchTypes.forEach((s, b) -> b.render());
+        defaultShader.use();
+        for (int i = 0; i <= currentBatch; i++) {
+            batches.get(i).render();
+        }
+        currentBatch = 0;
     }
 
     public void finishAndRender() {
-        batchTypes.forEach((s, b) -> b.finishAndRender());
+        defaultShader.use();
+        for (int i = 0; i <= currentBatch; i++) {
+            batches.get(i).finish();
+            batches.get(i).render();
+        }
+        currentBatch = 0;
     }
 
     public void rebuildShader() {
@@ -90,18 +154,18 @@ public class BatchController {
         defaultShader.make(win);
         prebuildDefaultShader = defaultShader;
         defaultShader.use();
-        batchTypes.forEach((s, b) -> b.setShader(defaultShader));
+        batches.forEach(batch -> batch.setShader(defaultShader));
     }
 
     public void rebuildShader(String vertexShader, String fragmentShader) {
         defaultShader = RenderBuilder.newShader(vertexShader, fragmentShader);
         defaultShader.make(win);
         defaultShader.use();
-        batchTypes.forEach((s, b) -> b.setShader(defaultShader));
+        batches.forEach(batch -> batch.setShader(defaultShader));
     }
 
     public void rebuildShader(Shader shader) {
         defaultShader = shader;
-        batchTypes.forEach((s, b) -> b.setShader(defaultShader));
+        batches.forEach(batch -> batch.setShader(defaultShader));
     }
 }
