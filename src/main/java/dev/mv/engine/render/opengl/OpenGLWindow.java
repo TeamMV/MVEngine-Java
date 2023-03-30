@@ -131,7 +131,7 @@ public class OpenGLWindow implements Window {
         }
 
         glfwMakeContextCurrent(window);
-        glfwSwapInterval(1);
+        glfwSwapInterval(info.vsync ? 1 : 0);
 
         GL.createCapabilities();
 
@@ -269,7 +269,13 @@ public class OpenGLWindow implements Window {
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
 
-        System.exit(0);
+        if(applicationLoop != null) {
+            try {
+                applicationLoop.exit(engine, this);
+            } catch (Exception e) {
+                Exceptions.send(e);
+            }
+        }
     }
 
     public void updateProjection2D() {
@@ -357,6 +363,17 @@ public class OpenGLWindow implements Window {
     public void setUPSCap(int cap) {
         info.maxUPS = cap;
         timeU = 1000000000f / info.maxUPS;
+    }
+
+    @Override
+    public boolean isVsync() {
+        return info.vsync;
+    }
+
+    @Override
+    public void setVsync(boolean vsync) {
+        info.vsync = vsync;
+        glfwSwapInterval(vsync ? 1 : 0);
     }
 
     @Override

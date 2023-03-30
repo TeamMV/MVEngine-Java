@@ -6,7 +6,9 @@ import dev.mv.engine.game.Game;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.input.InputCollector;
 import dev.mv.engine.input.InputProcessor;
-import dev.mv.engine.physics.Physics;
+import dev.mv.engine.physics.PhysX;
+import dev.mv.engine.physics.Physics2D;
+import dev.mv.engine.physics.Physics3D;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.opengl.OpenGLObjectLoader;
 import dev.mv.engine.render.opengl.OpenGLWindow;
@@ -33,6 +35,8 @@ public class MVEngine implements AutoCloseable {
     private ExceptionHandler exceptionHandler;
     private Game game;
     private List<Looper> loopers;
+    private Physics2D physics2D;
+    private Physics3D physics3D;
 
     private MVEngine() {
         exceptionHandler = ExceptionHandler.Default.INSTANCE;
@@ -54,8 +58,16 @@ public class MVEngine implements AutoCloseable {
         instance = new MVEngine();
         Exceptions.readExceptionINI(MVEngine.class.getResourceAsStream("/assets/mvengine/exceptions.ini"));
         Input.init();
-        if (Physics.init()) {
-            Exceptions.send(new RuntimeException("Could not initialize NVIDIA PhysX!"));
+        boolean _2d = config.getDimension() == ApplicationConfig.GameDimension.ONLY_2D || config.getDimension() == ApplicationConfig.GameDimension.COMBINED;
+        boolean _3d = config.getDimension() == ApplicationConfig.GameDimension.ONLY_3D || config.getDimension() == ApplicationConfig.GameDimension.COMBINED;
+        if (_2d) {
+            instance.physics2D = Physics2D.init();
+        }
+        if (_3d) {
+            instance.physics3D = Physics3D.init();
+            if (instance.physics3D == null) {
+                Exceptions.send(new RuntimeException("Could not initialize NVIDIA PhysX!"));
+            }
         }
 
         instance.applicationConfig = config;
@@ -127,7 +139,8 @@ public class MVEngine implements AutoCloseable {
 
     @Override
     public void close() {
-        Physics.terminate();
+        if (physics2D != null) physics2D.terminate();
+        if (physics3D != null) physics3D.terminate();
         glfwTerminate();
         instance = null;
     }
@@ -158,5 +171,13 @@ public class MVEngine implements AutoCloseable {
 
     public List<Looper> getLoopers() {
         return loopers;
+    }
+
+    public Physics2D getPhysics2D() {
+        return physics2D;
+    }
+
+    public Physics3D getPhysics3D() {
+        return physics3D;
     }
 }

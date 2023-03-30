@@ -29,6 +29,10 @@ public interface Window {
 
     void setUPSCap(int cap);
 
+    boolean isVsync();
+
+    void setVsync(boolean vsync);
+
     long getCurrentFrame();
 
     long getGlfwId();

@@ -13,7 +13,7 @@ import physx.vehicle2.PxVehicleTopLevelFunctions;
 
 import static physx.PxTopLevelFunctions.*;
 
-public class Physics {
+public class PhysX {
 
     public static final PxDefaultAllocator defaultAllocatorCallback;
     public static final PxFoundation foundation;
@@ -57,11 +57,11 @@ public class Physics {
         defaultCpuDispatcher = DefaultCpuDispatcherCreate(workers);
     }
 
-    public static boolean init() {
+    static boolean init() {
         return Utils.isAnyNull(foundation, physics, cooking, vehicleFrame, unitCylinderSweepMesh, defaultCpuDispatcher);
     }
 
-    public static void terminate() {
+    static void terminate() {
         physics.release();
         foundation.release();
     }

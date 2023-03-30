@@ -262,6 +262,16 @@ public class VulkanWindow implements Window {
     }
 
     @Override
+    public boolean isVsync() {
+        return false;
+    }
+
+    @Override
+    public void setVsync(boolean vsync) {
+
+    }
+
+    @Override
     public long getCurrentFrame() {
         return 0;
     }

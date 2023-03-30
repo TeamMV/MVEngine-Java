@@ -7,6 +7,7 @@ public class ApplicationConfig {
     private String name = "";
     private Version version = new Version(1);
     private RenderingAPI renderingApi = RenderingAPI.OPENGL;
+    private GameDimension dimension = GameDimension.COMBINED;
 
     public String getName() {
         return name;
@@ -35,8 +36,23 @@ public class ApplicationConfig {
         return this;
     }
 
+    public GameDimension getDimension() {
+        return dimension;
+    }
+
+    public ApplicationConfig setDimension(GameDimension dimension) {
+        this.dimension = dimension;
+        return this;
+    }
+
     public enum RenderingAPI {
         OPENGL,
         VULKAN
+    }
+
+    public enum GameDimension {
+        COMBINED,
+        ONLY_2D,
+        ONLY_3D
     }
 }

@@ -8,4 +8,6 @@ public interface ApplicationLoop {
     void update(MVEngine engine, Window window) throws Exception;
 
     void draw(MVEngine engine, Window window) throws Exception;
+
+    void exit(MVEngine engine, Window window) throws Exception;
 }

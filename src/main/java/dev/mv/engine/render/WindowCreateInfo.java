@@ -10,7 +10,7 @@ public class WindowCreateInfo {
     public WindowCreateInfo() {
     }
 
-    public class FPSAppendInfo {
+    public static class FPSAppendInfo {
         public String betweenTitleAndValue = " - ";
         public String afterValue = "fps";
     }
