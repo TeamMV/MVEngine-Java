@@ -13,7 +13,7 @@ public class UnixDirectory extends Directory {
 
     @Override
     protected File getFolder() {
-        File dir = new File(Utils.getPath(System.getProperty("user.home"), ".config/" + getName()));
+        File dir = new File(Utils.getPath(System.getProperty("user.home"), ".local/share/" + getName()));
         if (!dir.exists()) {
             dir.mkdirs();
         }
