@@ -112,7 +112,7 @@ public class OpenGLWindow implements Window {
 
         window = glfwCreateWindow(width, height, info.title, NULL, NULL);
         if (window == NULL) {
-            throw new RuntimeException("Failed to create the GLFW window");
+            Exceptions.send("GLFW_WINDOW_INIT");
         }
 
         try (MemoryStack stack = stackPush()) {

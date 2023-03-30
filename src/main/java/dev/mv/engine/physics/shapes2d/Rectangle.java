@@ -23,16 +23,15 @@ public class Rectangle extends Shape2D {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.rotation = rotation;
+        this.rotation = rotation % 360;
+        if (this.rotation < 0) this.rotation += 360;
         inverse = new Matrix2f();
         inverse.rotate(rotation);
     }
 
     @Override
     public boolean isCollidingWith(Shape2D shape) {
-        if (shape instanceof Rectangle rect) {
-
-        }
+        return physics.getCollider(this, shape).checkCollision(this, shape);
     }
 
     public int getX() {
@@ -72,7 +71,8 @@ public class Rectangle extends Shape2D {
     }
 
     public void setRotation(float rotation) {
-        this.rotation = rotation;
+        this.rotation = rotation % 360;
+        if (this.rotation < 0) this.rotation += 360;
         inverse.rotate(rotation);
     }
 }

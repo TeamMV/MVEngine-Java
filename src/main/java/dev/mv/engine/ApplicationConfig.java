@@ -8,6 +8,7 @@ public class ApplicationConfig {
     private Version version = new Version(1);
     private RenderingAPI renderingApi = RenderingAPI.OPENGL;
     private GameDimension dimension = GameDimension.COMBINED;
+    private int simultaneousAudioSources = 256;
 
     public String getName() {
         return name;
@@ -42,6 +43,15 @@ public class ApplicationConfig {
 
     public ApplicationConfig setDimension(GameDimension dimension) {
         this.dimension = dimension;
+        return this;
+    }
+
+    public int getSimultaneousAudioSources() {
+        return simultaneousAudioSources;
+    }
+
+    public ApplicationConfig setSimultaneousAudioSources(int simultaneousAudioSources) {
+        this.simultaneousAudioSources = simultaneousAudioSources;
         return this;
     }
 

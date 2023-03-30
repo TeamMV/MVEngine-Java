@@ -11,4 +11,8 @@ public abstract class Shape2D {
     }
 
     public abstract boolean isCollidingWith(Shape2D shape);
+
+    public boolean isSameType(Shape2D shape) {
+        return this.getClass().isAssignableFrom(shape.getClass()) || shape.getClass().isAssignableFrom(this.getClass());
+    }
 }

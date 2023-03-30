@@ -1,5 +1,6 @@
 package dev.mv.engine;
 
+import dev.mv.engine.audio.Audio;
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.exceptions.handle.ExceptionHandler;
 import dev.mv.engine.game.Game;
@@ -37,6 +38,7 @@ public class MVEngine implements AutoCloseable {
     private List<Looper> loopers;
     private Physics2D physics2D;
     private Physics3D physics3D;
+    private Audio audio;
 
     private MVEngine() {
         exceptionHandler = ExceptionHandler.Default.INSTANCE;
@@ -58,6 +60,7 @@ public class MVEngine implements AutoCloseable {
         instance = new MVEngine();
         Exceptions.readExceptionINI(MVEngine.class.getResourceAsStream("/assets/mvengine/exceptions.ini"));
         Input.init();
+        instance.audio = Audio.init(config.getSimultaneousAudioSources());
         boolean _2d = config.getDimension() == ApplicationConfig.GameDimension.ONLY_2D || config.getDimension() == ApplicationConfig.GameDimension.COMBINED;
         boolean _3d = config.getDimension() == ApplicationConfig.GameDimension.ONLY_3D || config.getDimension() == ApplicationConfig.GameDimension.COMBINED;
         if (_2d) {
@@ -66,7 +69,7 @@ public class MVEngine implements AutoCloseable {
         if (_3d) {
             instance.physics3D = Physics3D.init();
             if (instance.physics3D == null) {
-                Exceptions.send(new RuntimeException("Could not initialize NVIDIA PhysX!"));
+                Exceptions.send("PHYSX_INIT");
             }
         }
 
@@ -77,7 +80,7 @@ public class MVEngine implements AutoCloseable {
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!glfwInit()) {
-            Exceptions.send(new RuntimeException("Could not initialize GLFW!"));
+            Exceptions.send("GLFW_INIT");
         }
 
         if (config.getRenderingApi() == ApplicationConfig.RenderingAPI.VULKAN) {
@@ -139,6 +142,7 @@ public class MVEngine implements AutoCloseable {
 
     @Override
     public void close() {
+        audio.terminate();
         if (physics2D != null) physics2D.terminate();
         if (physics3D != null) physics3D.terminate();
         glfwTerminate();
@@ -180,4 +184,9 @@ public class MVEngine implements AutoCloseable {
     public Physics3D getPhysics3D() {
         return physics3D;
     }
+
+    public Audio getAudio() {
+        return audio;
+    }
+
 }
