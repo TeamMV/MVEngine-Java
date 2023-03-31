@@ -1,52 +1,35 @@
 package dev.mv.engine.audio;
 
-import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.resources.Resource;
-import org.lwjgl.stb.STBVorbis;
-import org.lwjgl.system.MemoryStack;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
+import java.nio.ByteBuffer;
 
 import static org.lwjgl.openal.AL11.*;
-import static org.lwjgl.system.libc.LibCStdlib.free;
 
-public class Sound implements Resource {
+public sealed class Sound implements Resource permits Music {
 
-    private Audio audio;
-    private int id, buffer;
-    private boolean loop;
-    private State state;
+    protected Audio audio;
+    int alID, id, buffer;
+    protected boolean loop;
+    protected State state;
+    protected float volume = 0.3f;
 
-    Sound(Audio audio, InputStream stream, boolean loop) throws IOException {
+    protected Sound(Audio audio, boolean loop) {
         this.audio = audio;
         this.loop = loop;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer channelsBuffer = stack.mallocInt(1);
-            IntBuffer sampleRateBuffer = stack.mallocInt(1);
+    }
 
-            ShortBuffer rawAudioBuffer = STBVorbis.stb_vorbis_decode_memory(stack.bytes(stream.readAllBytes()), channelsBuffer, sampleRateBuffer);
-            if (rawAudioBuffer == null) {
-                Exceptions.send("SOUND_INIT", "sound buffer was null");
-                return;
-            }
-
-            buffer = alGenBuffers();
-            alBufferData(buffer, channelsBuffer.get() == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, rawAudioBuffer, sampleRateBuffer.get());
-
-            id = audio.nextFreeSource();
-            alSourcei(id, AL_BUFFER, buffer);
-            alSourcei(id, AL_LOOPING, loop ? 0 : 1);
-            alSourcei(id, AL_POSITION, 0);
-            alSourcef(id, AL_GAIN, 0.3f);
-            free(rawAudioBuffer);
-        }
+    Sound(Audio audio, InputStream stream, boolean loop, SoundLoader loader) {
+        this.audio = audio;
+        this.loop = loop;
+        Raw loaded = loader.load(stream);
+        buffer = alGenBuffers();
+        alBufferData(buffer, loaded.channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, loaded.bytes, loaded.sampleRate);
     }
 
     public void terminate() {
-        audio.freeSource(id);
+        if (getState() != State.STOPPED) stop();
         alDeleteBuffers(buffer);
     }
 
@@ -55,29 +38,75 @@ public class Sound implements Resource {
         STOPPED(AL_STOPPED),
         PAUSED(AL_PAUSED);
 
-        State(int state) {
+        State(int state) {}
+
+        public static State valueOf(int val) {
+            return switch (val) {
+                case AL_PLAYING -> PLAYING;
+                case AL_STOPPED -> STOPPED;
+                case AL_PAUSED -> PAUSED;
+                default -> null;
+            };
         }
     }
 
-    public void play() {
+    public int play() {
+        alID = audio.nextFreeSource();
+        if (alID == -1) return -1;
+        alSourcei(alID, AL_BUFFER, buffer);
+        alSourcei(alID, AL_LOOPING, loop ? 0 : 1);
+        alSourcef(alID, AL_GAIN, volume);
+        getState();
         if (state != State.PLAYING) {
             state = State.PLAYING;
-            alSourcePlay(id);
+            alSourcePlay(alID);
         }
+        return audio.bind(this);
     }
 
     public void pause() {
+        if (alID == -1) return;
+        getState();
         if (state == State.PLAYING) {
             state = State.PAUSED;
-            alSourcePause(id);
+            alSourcePause(alID);
         }
     }
 
     public void stop() {
+        if (alID == -1) return;
+        getState();
         if (state != State.STOPPED) {
             state = State.STOPPED;
-            alSourceStop(id);
-            alSourcei(id, AL_POSITION, 0);
+            alSourceStop(alID);
+            alSourcei(alID, AL_BUFFER, 0);
+            audio.freeSource(alID);
+            alID = -1;
+            audio.unbind(id);
         }
     }
+
+    public State getState() {
+        if (alID == -1) return State.STOPPED;
+        state = State.valueOf(alGetSourcei(alID, AL_SOURCE_STATE));
+        return state;
+    }
+
+    public boolean isLooping() {
+        return loop;
+    }
+
+    public void setLooping(boolean loop) {
+        this.loop = loop;
+    }
+
+    public float getVolume() {
+        return volume;
+    }
+
+    public void setVolume(float volume) {
+        this.volume = volume;
+    }
+
+    record Raw(ByteBuffer bytes, int channels, int sampleRate) {}
 }

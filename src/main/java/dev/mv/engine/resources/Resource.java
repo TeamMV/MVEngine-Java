@@ -10,6 +10,7 @@ public interface Resource {
         GUI_REGISTRY,
         GUI_THEME,
         FONT,
+        SOUND,
         GUI_PAGE;
     }
 }

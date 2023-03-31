@@ -3,19 +3,13 @@ package dev.mv.engine.test;
 import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
 import dev.mv.engine.audio.Sound;
-import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.files.Directory;
 import dev.mv.engine.files.FileManager;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.components.Button;
-import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.FreeSlider;
-import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.components.layouts.ChoiceGroup;
-import dev.mv.engine.gui.components.layouts.CollapseMenu;
 import dev.mv.engine.gui.components.layouts.UpdateSection;
-import dev.mv.engine.gui.components.layouts.VerticalLayout;
-import dev.mv.engine.gui.event.ProgressListener;
 import dev.mv.engine.gui.pages.Page;
 import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.screens.Pager;
@@ -31,7 +25,6 @@ import dev.mv.utils.generic.pair.Pair;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.concurrent.CountDownLatch;
 
 public class Test implements ApplicationLoop {
 
@@ -61,7 +54,7 @@ public class Test implements ApplicationLoop {
         camera.setSpeed(0.2f);
         cameraController = new DefaultCameraController(camera);
         objectLoader = engine.getObjectLoader();
-        Sound sound = engine.getAudio().makeSound(getClass().getResourceAsStream("/assets/mvengine/sound/11.mp3"), true);
+        Sound sound = engine.getAudio().makeSound(getClass().getResourceAsStream("/assets/mvengine/sound/11.wav"), true);
         sound.play();
 
         try {
