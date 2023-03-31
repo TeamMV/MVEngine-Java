@@ -129,6 +129,11 @@ public class Test implements ApplicationLoop {
         //ctx2D.voidCircle(300, 300, 200, 50, 50);
     }
 
+    @Override
+    public void exit(MVEngine engine, Window window) {
+
+    }
+
     public String getGameId() {
         return "testGame";
     }

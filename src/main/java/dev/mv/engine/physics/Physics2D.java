@@ -2,7 +2,9 @@ package dev.mv.engine.physics;
 
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.physics.colliders.AABBCollider2D;
+import dev.mv.engine.physics.colliders.CircleCollider2D;
 import dev.mv.engine.physics.colliders.RectangleCollider2D;
+import dev.mv.engine.physics.shapes2d.Circle;
 import dev.mv.engine.physics.shapes2d.Rectangle;
 import dev.mv.engine.physics.shapes2d.Shape2D;
 
@@ -12,10 +14,12 @@ public class Physics2D {
 
     private final Collider2D aabb;
     private final Collider2D rect;
+    private final Collider2D circle;
 
     private Physics2D() {
         aabb = new AABBCollider2D(this);
         rect = new RectangleCollider2D(this);
+        circle = new CircleCollider2D(this);
     }
 
     public static Physics2D init() {
@@ -38,6 +42,12 @@ public class Physics2D {
                     return rect;
                 }
             }
+            if (a instanceof Circle) {
+                return circle;
+            }
+        }
+        if (a instanceof Circle || b instanceof Circle) {
+
         }
         return null;
     }

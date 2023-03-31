@@ -58,7 +58,7 @@ public class PhysX {
     }
 
     static boolean init() {
-        return Utils.isAnyNull(foundation, physics, cooking, vehicleFrame, unitCylinderSweepMesh, defaultCpuDispatcher);
+        return !Utils.isAnyNull(foundation, physics, cooking, vehicleFrame, unitCylinderSweepMesh, defaultCpuDispatcher);
     }
 
     static void terminate() {

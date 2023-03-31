@@ -57,6 +57,9 @@ public class MVEngine implements AutoCloseable {
     }
 
     public static MVEngine init(ApplicationConfig config) {
+        if (config == null) {
+            config = new ApplicationConfig();
+        }
         instance = new MVEngine();
         Exceptions.readExceptionINI(MVEngine.class.getResourceAsStream("/assets/mvengine/exceptions.ini"));
         Input.init();
@@ -74,9 +77,6 @@ public class MVEngine implements AutoCloseable {
         }
 
         instance.applicationConfig = config;
-        if (config == null) {
-            config = new ApplicationConfig();
-        }
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!glfwInit()) {

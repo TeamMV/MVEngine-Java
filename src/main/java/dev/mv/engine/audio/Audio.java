@@ -9,9 +9,7 @@ import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 import static org.lwjgl.openal.AL11.*;
 import static org.lwjgl.openal.ALC11.*;
