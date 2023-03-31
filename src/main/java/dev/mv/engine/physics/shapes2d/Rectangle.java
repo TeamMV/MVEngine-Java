@@ -1,23 +1,22 @@
 package dev.mv.engine.physics.shapes2d;
 
 import dev.mv.engine.MVEngine;
+import org.joml.Vector2i;
 
 public class Rectangle extends Shape2D {
-    private int width, height;
-    private float rotation;
+    protected int width, height;
 
     public Rectangle(int x, int y, int width, int height) {
-        super(MVEngine.instance().getPhysics2D(), x, y);
+        super(MVEngine.instance().getPhysics2D(), x, y, new Vector2i(x + width / 2, y + height / 2));
         this.width = width;
         this.height = height;
     }
 
     public Rectangle(int x, int y, int width, int height, float rotation) {
-        super(MVEngine.instance().getPhysics2D(),x, y);
+        super(MVEngine.instance().getPhysics2D(), x, y, new Vector2i(x + width / 2, y + height / 2));
         this.width = width;
         this.height = height;
-        this.rotation = rotation % 360;
-        if (this.rotation < 0) this.rotation += 360;
+        setRotation(rotation);
     }
 
     @Override
@@ -28,6 +27,11 @@ public class Rectangle extends Shape2D {
     @Override
     public boolean isSameType(Shape2D shape) {
         return shape instanceof Rectangle;
+    }
+
+    @Override
+    protected void recalculateVertices() {
+
     }
 
     public int getWidth() {
@@ -44,14 +48,5 @@ public class Rectangle extends Shape2D {
 
     public void setHeight(int height) {
         this.height = height;
-    }
-
-    public float getRotation() {
-        return rotation;
-    }
-
-    public void setRotation(float rotation) {
-        this.rotation = rotation % 360;
-        if (this.rotation < 0) this.rotation += 360;
     }
 }

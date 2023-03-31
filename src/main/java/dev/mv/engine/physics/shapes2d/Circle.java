@@ -8,7 +8,7 @@ public class Circle extends Oval {
     private int radius;
 
     public Circle(int x, int y, int radius) {
-        super(new Vector2i(x, y), radius / 2);
+        super(new Vector2i(x, y), radius);
         this.radius = radius;
     }
 
@@ -28,5 +28,25 @@ public class Circle extends Oval {
 
     public void setRadius(int radius) {
         this.radius = radius;
+        c = radius * 2;
+    }
+
+    @Override
+    public void setFocusA(Vector2i focA) {
+        this.focA = focA;
+        focB = focB;
+        setX(focA.x);
+        setY(focA.y);
+    }
+
+    @Override
+    public void setFocusB(Vector2i focB) {
+        setFocusA(focB);
+    }
+
+    @Override
+    public void setConstant(int c) {
+        radius = c / 2;
+        this.c = c;
     }
 }

@@ -259,13 +259,25 @@ public class DrawContext2D {
     }
 
     public void circle(int x, int y, int radius, float precision, float rotation, int originX, int originY) {
+        ellipse(x, y, radius, radius, precision, rotation, originX, originY);
+    }
+
+    public void ellipse(int x, int y, int radiusX, int radiusY, float precision) {
+        ellipse(x, y, radiusX, radiusY, precision, 0.0f);
+    }
+
+    public void ellipse(int x, int y, int radiusX, int radiusY, float precision, float rotation) {
+        ellipse(x, y, radiusX, radiusY, precision, rotation, x, y);
+    }
+
+    public void ellipse(int x, int y, int radiusX, int radiusY, float precision, float rotation, int originX, int originY) {
         double tau = Math.PI * 2.0;
         double step = tau / precision;
         float radRotation = (float) Math.toRadians(rotation);
         for (double i = 0.0; i < tau; i += step) {
             window.getBatchController().addVertices(verts.set(
-                v1.put((float) (x + (radius * Math.cos(i))), (float) (y + (radius * Math.sin(i))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
-                v2.put((float) (x + (radius * Math.cos(i + step))), (float) (y + (radius * Math.sin(i + step))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+                v1.put((float) (x + (radiusX * Math.cos(i))), (float) (y + (radiusY * Math.sin(i))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
+                v2.put((float) (x + (radiusX * Math.cos(i + step))), (float) (y + (radiusY * Math.sin(i + step))), 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w),
                 v3.put(x, y, 0.0f, radRotation, (float) originX, (float) originY, gradient.bottomLeft.getRed(), gradient.bottomLeft.getGreen(), gradient.bottomLeft.getBlue(), gradient.bottomLeft.getAlpha(), 0.0f, 0.0f, 0.0f, canvas.x, canvas.y, canvas.z, canvas.w)
             ), useCamera, isStripped);
         }

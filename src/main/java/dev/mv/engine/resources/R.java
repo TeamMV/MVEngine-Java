@@ -1,5 +1,6 @@
 package dev.mv.engine.resources;
 
+import dev.mv.engine.audio.Sound;
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.GuiRegistry;
@@ -45,6 +46,7 @@ public class R {
     public static Res<Theme> themes = new Res<>();
     public static Res<BitmapFont> fonts = new Res<>();
     public static Res<Page> pages = new Res<>();
+    public static Res<Sound> sounds = new Res<>();
 
     static {
         guis.register("default", new GuiRegistry());

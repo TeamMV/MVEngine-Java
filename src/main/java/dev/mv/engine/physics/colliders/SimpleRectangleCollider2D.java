@@ -5,12 +5,13 @@ import dev.mv.engine.physics.Collider2D;
 import dev.mv.engine.physics.Physics2D;
 import dev.mv.engine.physics.shapes2d.Rectangle;
 import dev.mv.engine.physics.shapes2d.Shape2D;
+import dev.mv.engine.physics.shapes2d.Square;
 
-public class AABBCollider2D implements Collider2D {
+public class SimpleRectangleCollider2D implements Collider2D {
 
-    private static final String name = AABBCollider2D.class.getSimpleName();
+    private static final String name = SimpleRectangleCollider2D.class.getSimpleName();
     private Physics2D physics2D;
-    public AABBCollider2D(Physics2D physics2D) {
+    public SimpleRectangleCollider2D(Physics2D physics2D) {
         this.physics2D = physics2D;
     }
 
@@ -39,7 +40,7 @@ public class AABBCollider2D implements Collider2D {
     }
 
     private boolean check00(Rectangle a, Rectangle b) {
-        return (a.getRotation() == 0 || a.getRotation() == 180) && (b.getRotation() == 0 || b.getRotation() == 180);
+        return (a instanceof Square || a.getRotation() == 0 || a.getRotation() == 180) && (b instanceof Square || b.getRotation() == 0 || b.getRotation() == 180);
     }
 
     private boolean check00C(Rectangle a, Rectangle b) {
@@ -47,7 +48,7 @@ public class AABBCollider2D implements Collider2D {
     }
 
     private boolean check090(Rectangle a, Rectangle b) {
-        return (a.getRotation() == 0 || a.getRotation() == 180) && (b.getRotation() == 90 || b.getRotation() == 270);
+        return (a instanceof Square || a.getRotation() == 0 || a.getRotation() == 180) && (b.getRotation() == 90 || b.getRotation() == 270);
     }
 
     private boolean check090C(Rectangle a, Rectangle b) {
@@ -55,7 +56,7 @@ public class AABBCollider2D implements Collider2D {
     }
 
     private boolean check900(Rectangle a, Rectangle b) {
-        return (a.getRotation() == 90 || a.getRotation() == 270) && (b.getRotation() == 0 || b.getRotation() == 180);
+        return (a.getRotation() == 90 || a.getRotation() == 270) && (b instanceof Square || b.getRotation() == 0 || b.getRotation() == 180);
     }
 
     private boolean check900C(Rectangle a, Rectangle b) {
@@ -79,8 +80,8 @@ public class AABBCollider2D implements Collider2D {
 
     private int[] transform(Rectangle r) {
         return new int[] {
-            r.getX() + r.getWidth() / 2 - r.getHeight() / 2,
-            r.getY() + r.getHeight() / 2 - r.getWidth() / 2,
+            r.getCenter().x - r.getHeight() / 2,
+            r.getCenter().y - r.getWidth() / 2,
             r.getHeight(),
             r.getWidth()
         };

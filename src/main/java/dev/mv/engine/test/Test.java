@@ -2,6 +2,7 @@ package dev.mv.engine.test;
 
 import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.audio.Sound;
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.files.Directory;
 import dev.mv.engine.files.FileManager;
@@ -60,6 +61,8 @@ public class Test implements ApplicationLoop {
         camera.setSpeed(0.2f);
         cameraController = new DefaultCameraController(camera);
         objectLoader = engine.getObjectLoader();
+        Sound sound = engine.getAudio().makeSound(getClass().getResourceAsStream("/assets/mvengine/sound/11.mp3"), true);
+        sound.play();
 
         try {
             ResourceLoader.markTheme("defaultTheme", "testTheme.xml");
