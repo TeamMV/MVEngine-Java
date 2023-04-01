@@ -72,7 +72,7 @@ public class ResourceLoader {
     }
 
     public static void markSound(String resourceId, String path) {
-        refs.push(new Pair<>(0, new ResourceReference(path), resourceId, Resource.Type.SOUND)));
+        refs.push(new Pair<>(0, new ResourceReference(path, resourceId, Resource.Type.SOUND)));
     }
 
     public static void markLayout(String resourceId, String path) {
@@ -110,7 +110,8 @@ public class ResourceLoader {
                         case TEXTURE_REGION ->  register(ref.getId(), R.textures.get(ref.getPath().split(":")[0]).getParentTexture().cutRegion(Integer.parseInt(ref.getPath().split(":")[1]), Integer.parseInt(ref.getPath().split(":")[2]), Integer.parseInt(ref.getPath().split(":")[3]), Integer.parseInt(ref.getPath().split(":")[4])));
                         case MESH ->            register(ref.getId(), engine.getObjectLoader().loadExternalModel(ref.getPath()));
                         case FONT ->            register(ref.getId(), new BitmapFont(ref.getPath().split(":")[0], ref.getPath().split(":")[1]));
-                        case SOUND ->           register(ref.getId(), engine.getAudio().makeSound(ResourceLoader.class.getResourceAsStream(ref.getPath())));
+                        case SOUND ->           register(ref.getId(), engine.getAudio().newSound(ref.getPath()));
+                        case MUSIC ->           register(ref.getId(), engine.getAudio().newMusic(ref.getPath()));
                         case GUI_LAYOUT ->      register(ref.getId(), guiParser.parse(ResourceLoader.class.getResourceAsStream(config.getLayoutPath() + ref.getPath())));
                         case GUI_THEME ->       register(ref.getId(), themeParser.parse(ResourceLoader.class.getResourceAsStream(config.getThemePath() + ref.getPath())));
                         case GUI_PAGE ->        register(ref.getId(), pageParser.parse(ResourceLoader.class.getResourceAsStream(config.getPagePath() + ref.getPath())));

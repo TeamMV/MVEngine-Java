@@ -236,11 +236,11 @@ public class Gui implements Resource {
     }
 
     private void scrollX(int amt) {
-        root.scrollX(amt);
+        root.distributeScrollX(amt);
     }
 
     private void scrollY(int amt) {
-        root.scrollY(amt);
+        root.distributeScrollY(amt);
     }
 
     @Override

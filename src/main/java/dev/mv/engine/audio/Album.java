@@ -1,24 +1,30 @@
 package dev.mv.engine.audio;
 
+import dev.mv.engine.resources.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Album {
-    private List<Music> pieces;
+public class Album implements Resource {
+    private List<String> songs;
 
     public Album() {
-        pieces = new ArrayList<>();
+        songs = new ArrayList<>();
     }
 
-    public void addMusic(Music music) {
-        pieces.add(music);
+    public Album(List<String> songs) {
+        this.songs = songs;
     }
 
-    public void remove(Music music) {
-        pieces.remove(music);
+    public void addMusic(String music) {
+        songs.add(music);
     }
 
-    private List<Music> getPieces() {
-        return pieces;
+    public void remove(String music) {
+        songs.remove(music);
+    }
+
+    public List<String> getSongs() {
+        return songs;
     }
 }

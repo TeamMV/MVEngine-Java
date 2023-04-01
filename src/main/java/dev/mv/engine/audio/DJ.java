@@ -1,74 +1,137 @@
 package dev.mv.engine.audio;
 
-import dev.mv.utils.Utils;
+import dev.mv.engine.resources.R;
+import dev.mv.utils.async.PromiseNull;
+import dev.mv.utils.collection.UnsafeVec;
+import dev.mv.utils.collection.Vec;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
+
+import static dev.mv.utils.Utils.*;
 
 public class DJ {
+    private Audio audio;
 
-    private Album playlist;
-    private volatile boolean interrupted = false;
+    volatile boolean forceStopped;
+    volatile Music playing;
+    volatile PromiseNull listener;
+    volatile UnsafeVec<String> queued = new Vec<String>().unsafe();
+    int songIndex = 0;
+    boolean loop, shuffle;
 
-    public DJ(Album playlist) {
-        this.playlist = playlist;
+    DJ(Audio audio) {
+        this.audio = audio;
     }
 
-    public Album getPlaylist() {
-        return playlist;
-    }
-
-    public void setPlaylist(Album playlist) {
-        this.playlist = playlist;
-        interrupted = true;
-    }
-
-    public void shuffle() {
-        Collections.shuffle(playlist.getPieces());
-    }
-
-    public void playAll() {
-        Utils.async(() -> {
-           for (Music music : playlist.getPieces()) {
-               music.play();
-               while (music.getState() != Sound.State.STOPPED) {
-                   Utils.await(Utils.sleep(1000));
-               }
-           }
-        });
-    }
-
-    public void interrupt() {
-        interrupted = true;
-    }
-
-    public void playInfiniteOrdered() {
-        Utils.async(() -> {
-            while(!interrupted) {
-                for (Music music : playlist.getPieces()) {
-                    music.play();
-                    while (music.getState() != Sound.State.STOPPED) {
-                        Utils.await(Utils.sleep(1000));
-                    }
-                }
+    public void play(String id) {
+        forceStopped = false;
+        if (id == null) return;
+        Music music = R.music.get(id);
+        if (playing != null) {
+            if (playing.getState() == Sound.State.PAUSED) {
+                resume();
+                return;
             }
-            interrupted = false;
+            playing.stop();
+            playing = null;
+        }
+        if (listener != null) {
+            await(listener);
+            listener = null;
+        }
+        playing = music;
+        music.play();
+        listen();
+    }
+
+    private void listen() {
+        listener = async(() -> {
+            while (playing != null && playing.getState() != Sound.State.STOPPED) {
+                idle(1000);
+            }
+            playing = null;
+            async(this::tryNext);
         });
     }
 
-    public void playInfiniteRandom() {
-        Utils.async(() -> {
-            while(!interrupted) {
-                for (Music music : playlist.getPieces()) {
-                    music.play();
-                    while (music.getState() != Sound.State.STOPPED) {
-                        Utils.await(Utils.sleep(1000));
-                    }
-                }
-                shuffle();
+    private void tryNext() {
+        if (forceStopped) return;
+        safeNext();
+    }
+
+    private void safeNext() {
+        if (queued.len() > songIndex) {
+            play(queued.get(songIndex++));
+        }
+        else if (loop) {
+            songIndex = 0;
+            if (shuffle) {
+                shuffleQueue();
             }
-            interrupted = false;
-        });
+            if (queued.len() > songIndex) {
+                play(queued.get(songIndex++));
+            }
+        }
+    }
+
+    public void pause() {
+        if (playing == null) return;
+        playing.pause();
+    }
+
+    public void resume() {
+        if (playing == null) return;
+        if (playing.getState() == Sound.State.PAUSED) {
+            playing.play();
+        }
+    }
+
+    public void stop() {
+        forceStopped = true;
+        if (playing == null) return;
+        playing.stop();
+        playing = null;
+        queued.clear();
+        loop = false;
+    }
+
+    public void skip() {
+        if (playing != null) {
+            playing.stop();
+            playing = null;
+            await(listener);
+        }
+        safeNext();
+    }
+
+    public void shuffleQueue() {
+        //TODO
+    }
+
+    public Album createAlbum(String... songs) {
+        return new Album(Arrays.asList(songs));
+    }
+
+    public void loop(String... songs) {
+        loop(createAlbum(songs));
+    }
+
+    public void loopShuffle(String... songs) {
+        loopShuffle(createAlbum(songs));
+    }
+
+    public void loop(Album album) {
+        stop();
+        songIndex = 0;
+        queued.clear();
+        queued.append(album.getSongs());
+        safeNext();
+        loop = true;
+        shuffle = false;
+    }
+
+    public void loopShuffle(Album album) {
+        loop(album);
+        shuffle = true;
     }
 }

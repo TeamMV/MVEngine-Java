@@ -6,7 +6,8 @@ import dev.mv.engine.gui.components.extras.Toggle;
 import dev.mv.engine.gui.input.Clickable;
 import dev.mv.engine.gui.input.Draggable;
 import dev.mv.engine.gui.input.Keyboard;
-import dev.mv.engine.gui.input.Scrollable;
+import dev.mv.engine.gui.input.ScrollInput;
+import dev.mv.engine.gui.utils.GuiUtils;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
@@ -187,37 +188,45 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
     }
 
     @Override
-    public void scrollX(int amount) {
+    public boolean distributeScrollX(int amount) {
         if (!enabled) {
+            boolean scrolled = false;
             for (Element element : allElementsDeep()) {
                 if (element instanceof UpdateSection updateSection) {
-                    updateSection.scrollX(amount);
+                    boolean tmp = updateSection.distributeScrollX(amount);
+                    if (!scrolled) scrolled = tmp;
                 }
             }
-            return;
+            return scrolled;
         }
         for (Element element : elements) {
-            if (element instanceof Scrollable scrollable) {
-                scrollable.scrollX(amount);
+            if (!GuiUtils.mouseInside(element)) continue;
+            if (element instanceof ScrollInput scrollInput) {
+                return scrollInput.distributeScrollX(amount);
             }
         }
+        return false;
     }
 
     @Override
-    public void scrollY(int amount) {
+    public boolean distributeScrollY(int amount) {
         if (!enabled) {
+            boolean scrolled = false;
             for (Element element : allElementsDeep()) {
                 if (element instanceof UpdateSection updateSection) {
-                    updateSection.scrollY(amount);
+                    boolean tmp = updateSection.distributeScrollY(amount);
+                    if (!scrolled) scrolled = tmp;
                 }
             }
-            return;
+            return scrolled;
         }
         for (Element element : elements) {
-            if (element instanceof Scrollable scrollable) {
-                scrollable.scrollY(amount);
+            if (!GuiUtils.mouseInside(element)) continue;
+            if (element instanceof ScrollInput scrollInput) {
+                return scrollInput.distributeScrollY(amount);
             }
         }
+        return false;
     }
 
     @Override

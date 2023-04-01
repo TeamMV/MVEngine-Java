@@ -4,11 +4,12 @@ import dev.mv.engine.gui.components.extras.IgnoreDraw;
 import dev.mv.engine.gui.input.Clickable;
 import dev.mv.engine.gui.input.Draggable;
 import dev.mv.engine.gui.input.Keyboard;
-import dev.mv.engine.gui.input.Scrollable;
+import dev.mv.engine.gui.input.ScrollInput;
+import dev.mv.engine.gui.utils.GuiUtils;
 import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.Window;
 
-public abstract class IgnoreInput extends Element implements Clickable, Draggable, Keyboard, Scrollable {
+public abstract class IgnoreInput extends Element implements Clickable, Draggable, Keyboard, ScrollInput {
     protected IgnoreInput(Window window, int x, int y, int width, int height, Element parent) {
         super(window, x, y, width, height, parent);
     }
@@ -148,34 +149,40 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
     }
 
     @Override
-    public void scrollX(int amount) {
+    public boolean distributeScrollX(int amount) {
         for (Element element : forInput()) {
-            if (element instanceof Scrollable scrollable) {
-                scrollable.scrollX(amount);
+            if (!GuiUtils.mouseInside(element)) continue;
+            if (element instanceof ScrollInput scrollInput) {
+                return scrollInput.distributeScrollX(amount);
             }
             if(element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Scrollable scrollable) {
-                        scrollable.scrollX(amount);
+                    if (!GuiUtils.mouseInside(e)) continue;
+                    if(e instanceof ScrollInput scrollInput) {
+                        return scrollInput.distributeScrollX(amount);
                     }
                 }
             }
         }
+        return false;
     }
 
     @Override
-    public void scrollY(int amount) {
+    public boolean distributeScrollY(int amount) {
         for (Element element : forInput()) {
-            if (element instanceof Scrollable scrollable) {
-                scrollable.scrollY(amount);
+            if (!GuiUtils.mouseInside(element)) continue;
+            if (element instanceof ScrollInput scrollInput) {
+                return scrollInput.distributeScrollY(amount);
             }
             if(element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Scrollable scrollable) {
-                        scrollable.scrollY(amount);
+                    if (!GuiUtils.mouseInside(e)) continue;
+                    if(e instanceof ScrollInput scrollInput) {
+                        return scrollInput.distributeScrollY(amount);
                     }
                 }
             }
         }
+        return false;
     }
 }

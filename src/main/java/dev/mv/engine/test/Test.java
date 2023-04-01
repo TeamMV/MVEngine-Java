@@ -2,6 +2,7 @@ package dev.mv.engine.test;
 
 import dev.mv.engine.ApplicationLoop;
 import dev.mv.engine.MVEngine;
+import dev.mv.engine.audio.Music;
 import dev.mv.engine.audio.Sound;
 import dev.mv.engine.files.Directory;
 import dev.mv.engine.files.FileManager;
@@ -54,8 +55,10 @@ public class Test implements ApplicationLoop {
         camera.setSpeed(0.2f);
         cameraController = new DefaultCameraController(camera);
         objectLoader = engine.getObjectLoader();
-        Sound sound = engine.getAudio().makeSound(getClass().getResourceAsStream("/assets/mvengine/sound/11.wav"), true);
-        sound.play();
+        Music music = engine.getAudio().newMusic("/assets/mvengine/sound/11.wav");
+        R.music.register("bestSong", music);
+
+        //engine.getAudio().getDJ().loop("bestSong");
 
         try {
             ResourceLoader.markTheme("defaultTheme", "testTheme.xml");
@@ -94,8 +97,6 @@ public class Test implements ApplicationLoop {
         shape = root.findElementById("shape");
 
         //R.pages.get("main").getRegistry().findGui("myGui").getRoot().<CollapseMenu>findElementById("collapse").enable();
-
-        System.out.println(R.pages.get("main").getRegistry().findGui("myGui"));
     }
 
     @Override
@@ -114,6 +115,7 @@ public class Test implements ApplicationLoop {
     @Override
     public void draw(MVEngine engine, Window window) {
         R.guis.get("default").renderGuis();
+        //ctx2D.inflatableGuy(200, 200, 400, 400);
         //ctx2D.color(Color.WHITE);
         //ctx2D.rectangle(300, 400, 200, 10);
         //ctx2D.mqxf(200, 200, 400, 400);

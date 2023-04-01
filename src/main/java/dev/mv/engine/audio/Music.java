@@ -1,7 +1,9 @@
 package dev.mv.engine.audio;
 
+import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.game.mod.loader.ModIntegration;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import static org.lwjgl.openal.AL11.*;
@@ -10,12 +12,10 @@ public final class Music extends Sound {
 
     private String path;
     private float nextOffset, startingOffset;
-    private SoundLoader loader;
 
-    Music(Audio audio, String path, boolean loop, SoundLoader loader) {
-        super(audio, loop);
+    Music(Audio audio, String path) {
+        super(audio, path, false);
         this.path = path;
-        this.loader = loader;
     }
 
     public void terminate() {
@@ -23,14 +23,11 @@ public final class Music extends Sound {
     }
 
     public int play() {
-        InputStream stream = ModIntegration.getResourceAsStream(path);
-        Raw loaded = loader.load(stream);
-        buffer = alGenBuffers();
-        alBufferData(buffer, loaded.channels() > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, loaded.bytes(), loaded.sampleRate());
+        load();
         alID = audio.nextFreeSource();
         if (alID == -1) return -1;
         alSourcei(alID, AL_BUFFER, buffer);
-        alSourcei(alID, AL_LOOPING, loop ? 0 : 1);
+        alSourcei(alID, AL_LOOPING, 0);
         alSourcef(alID, AL_GAIN, volume);
         if (startingOffset > 0 && nextOffset == 0) {
             alSourcef(alID, AL_SEC_OFFSET, startingOffset);
@@ -57,7 +54,7 @@ public final class Music extends Sound {
             audio.freeSource(alID);
             alID = -1;
             audio.unbind(id);
-            alDeleteBuffers(buffer);
+            unload();
         }
     }
 

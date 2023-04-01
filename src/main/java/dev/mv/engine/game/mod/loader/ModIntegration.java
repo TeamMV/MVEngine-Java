@@ -31,6 +31,8 @@ public class ModIntegration {
     }
 
     public static InputStream getResourceAsStream(String name) {
+        InputStream s = ModIntegration.class.getResourceAsStream(name);
+        if (s != null) return s;
         return ModFinder.getLoader().getResourceAsStream(name);
     }
 

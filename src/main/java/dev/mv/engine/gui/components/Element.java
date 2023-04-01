@@ -295,4 +295,32 @@ public abstract class Element {
     public boolean isSizeRelative() {
         return position != null && position.isSizeRelative();
     }
+
+    public int getDrawAreaX() {
+        if (parent == null) {
+            return 0;
+        }
+        return parent.getDrawAreaX();
+    }
+
+    public int getDrawAreaY() {
+        if (parent == null) {
+            return 0;
+        }
+        return parent.getDrawAreaY();
+    }
+
+    public int getDrawAreaWidth() {
+        if (parent == null) {
+            return window.getWidth();
+        }
+        return parent.getDrawAreaWidth();
+    }
+
+    public int getDrawAreaHeight() {
+        if (parent == null) {
+            return window.getHeight();
+        }
+        return parent.getDrawAreaHeight();
+    }
 }

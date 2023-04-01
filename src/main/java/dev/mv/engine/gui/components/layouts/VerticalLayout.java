@@ -8,7 +8,7 @@ import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
 public class VerticalLayout extends FramedLayout {
-    private Align currentAlign = Align.LEFT;
+    protected Align currentAlign = Align.LEFT;
 
     public VerticalLayout(Window window, Element parent) {
         super(window, parent);

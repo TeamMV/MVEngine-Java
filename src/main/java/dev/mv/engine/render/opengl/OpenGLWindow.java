@@ -9,16 +9,20 @@ import dev.mv.engine.input.GlfwClipboard;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.*;
+import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.utils.RenderUtils;
+import dev.mv.utils.collection.Vec;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
+import java.awt.*;
 import java.nio.IntBuffer;
+import java.util.function.Consumer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -50,6 +54,8 @@ public class OpenGLWindow implements Window {
     private Camera camera;
     private GlfwClipboard clipboard;
     private String fpsStringBefore = "";
+
+    private Vec<Consumer<Window>> resizeCallbacks = new Vec<>();
 
     public OpenGLWindow(WindowCreateInfo info) {
         this.info = info;
@@ -152,9 +158,15 @@ public class OpenGLWindow implements Window {
 
             glViewport(0, 0, w, h);
             updateProjection2D();
+            resizeCallbacks.forEach(c -> c.accept(this));
 
             GuiManager.sendResizeEvent(w, h);
         });
+    }
+
+    @Override
+    public void addResizeCallback(Consumer<Window> callback) {
+        resizeCallbacks.push(callback);
     }
 
     public void drawAndSwapBuffers() {

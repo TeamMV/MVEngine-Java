@@ -9,7 +9,7 @@ import dev.mv.engine.gui.functions.GuiMethod;
 import dev.mv.engine.gui.functions.GuiScript;
 import dev.mv.engine.gui.input.Clickable;
 import dev.mv.engine.gui.input.Keyboard;
-import dev.mv.engine.gui.input.Scrollable;
+import dev.mv.engine.gui.input.ScrollInput;
 import dev.mv.engine.gui.pages.Page;
 import dev.mv.engine.gui.pages.Trigger;
 import dev.mv.engine.exceptions.InvalidGuiFileException;
@@ -212,7 +212,7 @@ public class PageParser {
         EventListener listener = switch (event.toLowerCase()) {
             case "onclick":     if(target instanceof Clickable) yield new ClickListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
             case "onkey":       if(target instanceof Keyboard) yield new KeyListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
-            case "onscroll":    if(target instanceof Scrollable) yield new ScrollListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
+            case "onscroll":    if(target instanceof ScrollInput) yield new ScrollListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
             case "onprogress":  if(target instanceof ValueChange) yield new ProgressListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
             default: yield null;
         };

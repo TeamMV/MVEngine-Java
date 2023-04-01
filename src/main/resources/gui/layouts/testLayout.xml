@@ -23,7 +23,18 @@
 
     <elements>
         <aligner x="0" y="0" width="100%" height="100%" alignX="CENTER" alignY="CENTER" id="aligner">
-            <verticalLayout x="200" y="100" spacing="5" showFrame="false" align="CENTER" id="main">
+            <verticalOverflowLayout x="200" y="100" width="50vw" height="60vh" spacing="5" showFrame="true" padding="[5]" align="CENTER" id="main">
+                <verticalOverflowLayout x="200" y="100" width="30vw" height="30vh" spacing="5" showFrame="true" padding="[5]" align="CENTER" id="main">
+                    <imageButton width="120" height="$VAR(height)" id="quitButton" tags="[tag1,tag2,tag3]" src="mqxf"/>
+                    <checkbox width="$VAR(height)" height="$VAR(height)">Toggle</checkbox>
+                    <button width="100" height="$VAR(height)" id="chromaButton">click me!</button>
+                    <ref name="defaultSpace"/>
+                    <ref name="defaultSeparator"/>
+                    <input type="string" width="400" height="$VAR(height)" id="email">E-Mail address</input>
+                    <input type="password" width="400" height="$VAR(height)">Password</input>
+                    <ref name="defaultSeparator"/>
+                    <ref name="defaultSpace"/>
+                </verticalOverflowLayout>
                 <imageButton width="120" height="$VAR(height)" id="quitButton" tags="[tag1,tag2,tag3]" src="mqxf"/>
                 <checkbox width="$VAR(height)" height="$VAR(height)">Toggle</checkbox>
                 <button width="100" height="$VAR(height)" id="chromaButton">click me!</button>
@@ -51,7 +62,7 @@
                         <choice width="$VAR(height)" height="$VAR(height)">Choice3</choice>
                     </choiceGroup>
                 </verticalLayout>
-            </verticalLayout>
+            </verticalOverflowLayout>
         </aligner>
     </elements>
 </gui>

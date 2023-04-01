@@ -1,5 +1,7 @@
 package dev.mv.engine.gui.utils;
 
+import dev.mv.engine.gui.components.Element;
+import dev.mv.engine.gui.components.extras.IgnoreDraw;
 import dev.mv.engine.input.Input;
 
 public class GuiUtils {
@@ -17,5 +19,10 @@ public class GuiUtils {
         return (
             mx >= x && mx <= x + width &&
                 my >= y && my <= y + height);
+    }
+
+    public static boolean mouseInside(Element e) {
+        if(e instanceof IgnoreDraw) return true;
+        return mouseInside(e.getX(), e.getY(), e.getWidth(), e.getHeight());
     }
 }

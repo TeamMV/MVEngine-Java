@@ -11,6 +11,7 @@ public interface Resource {
         GUI_THEME,
         FONT,
         SOUND,
-        GUI_PAGE;
+        MUSIC,
+        GUI_PAGE
     }
 }

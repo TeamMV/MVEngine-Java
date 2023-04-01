@@ -3,10 +3,7 @@ package dev.mv.engine.gui.parsing.gui;
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.components.*;
-import dev.mv.engine.gui.components.layouts.ChoiceGroup;
-import dev.mv.engine.gui.components.layouts.CollapseMenu;
-import dev.mv.engine.gui.components.layouts.HorizontalLayout;
-import dev.mv.engine.gui.components.layouts.VerticalLayout;
+import dev.mv.engine.gui.components.layouts.*;
 import dev.mv.engine.gui.functions.GuiScript;
 import dev.mv.engine.gui.functions.Language;
 import dev.mv.engine.gui.input.Clickable;
@@ -225,6 +222,7 @@ public class GuiParser {
             case "separator" -> parseSeparator(elementTag);
             case "space" -> parseSpace(elementTag);
             case "verticalLayout" -> parseVerticalLayout(elementTag);
+            case "verticalOverflowLayout" -> parseVerticalOverflowLayout(elementTag);
             case "horizontalLayout" -> parseHorizontalLayout(elementTag);
             case "collapseMenu" -> parseCollapseMenu(elementTag);
             case "choiceGroup" -> parseChoiceGroup(elementTag);
@@ -469,6 +467,60 @@ public class GuiParser {
                 getStringAttrib(tag.getAttribute("y")),
                 getStringAttrib(tag.getAttribute("width")),
                 getStringAttrib(tag.getAttribute("height"))), null);
+
+        if (tag.hasAttribute("spacing")) {
+            layout.setSpacing(getIntAttrib(tag.getAttribute("spacing")));
+        }
+        if (tag.hasAttribute("align")) {
+            layout.alignContent(VerticalLayout.Align.valueOf(getStringAttrib(tag.getAttribute("align"))));
+        }
+        if (tag.hasAttribute("showFrame")) {
+            if (getBooleanAttrib(tag.getAttribute("showFrame"))) {
+                layout.showFrame();
+            }
+        }
+        if (tag.hasAttribute("padding")) {
+            String padding = getStringAttrib(tag.getAttribute("padding"));
+            if (padding.startsWith("[") && padding.endsWith("]")) {
+                int[] values = Arrays.stream(padding.replace("[", "").replace("]", "").split(",")).mapToInt(this::getIntAttrib).toArray();
+                if (values.length == 1) {
+                    values = new int[]{values[0], values[0], values[0], values[0]};
+                }
+                if (values.length == 2) {
+                    int h = values[0];
+                    int v = values[1];
+                    values = new int[4];
+                    values[0] = h;
+                    values[1] = h;
+                    values[2] = v;
+                    values[3] = v;
+                }
+                layout.setPadding(values[0], values[1], values[2], values[3]);
+            } else {
+                int padd = Integer.parseInt(padding);
+                layout.setPadding(padd, padd, padd, padd);
+            }
+        }
+
+        if (tag.hasChildNodes()) {
+            NodeList nodeList = tag.getChildNodes();
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node element = nodeList.item(i);
+                if (element.getNodeType() == Node.ELEMENT_NODE) {
+                    layout.addElement(parseElement((Element) element));
+                }
+            }
+        }
+
+        return layout;
+    }
+
+    private VerticalOverflowLayout parseVerticalOverflowLayout(Element tag) {
+        VerticalOverflowLayout layout = new VerticalOverflowLayout(null, VariablePosition.getPosition(
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
 
         if (tag.hasAttribute("spacing")) {
             layout.setSpacing(getIntAttrib(tag.getAttribute("spacing")));

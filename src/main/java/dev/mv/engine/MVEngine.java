@@ -7,7 +7,6 @@ import dev.mv.engine.game.Game;
 import dev.mv.engine.input.Input;
 import dev.mv.engine.input.InputCollector;
 import dev.mv.engine.input.InputProcessor;
-import dev.mv.engine.physics.PhysX;
 import dev.mv.engine.physics.Physics2D;
 import dev.mv.engine.physics.Physics3D;
 import dev.mv.engine.render.WindowCreateInfo;
@@ -20,6 +19,7 @@ import dev.mv.engine.resources.ResourceLoader;
 import dev.mv.utils.misc.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +27,9 @@ import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
 public class MVEngine implements AutoCloseable {
-    private static MVEngine instance;
+
+    private static volatile MVEngine instance;
+
     public String VERSION_STR = "v0.1.0";
     public Version VERSION = Version.parse(VERSION_STR);
     private ApplicationConfig.RenderingAPI renderingApi = ApplicationConfig.RenderingAPI.OPENGL;
@@ -46,17 +48,27 @@ public class MVEngine implements AutoCloseable {
     }
 
     public static MVEngine instance() {
-        if (instance == null) {
-            throw new IllegalStateException("MVEngine not initialised");
+        MVEngine result = instance;
+        if (result != null) {
+            return result;
         }
-        return instance;
+        synchronized(MVEngine.class) {
+            if (instance == null) {
+                throw new IllegalStateException("MVEngine not initialised");
+            }
+            return instance;
+        }
     }
 
-    public static MVEngine init() {
+    public static synchronized MVEngine init() {
         return init(new ApplicationConfig());
     }
 
-    public static MVEngine init(ApplicationConfig config) {
+    public static synchronized MVEngine init(ApplicationConfig config) {
+        if (instance != null) {
+            throw new IllegalStateException("MVEngine already initialised");
+        }
+
         if (config == null) {
             config = new ApplicationConfig();
         }
@@ -91,6 +103,7 @@ public class MVEngine implements AutoCloseable {
 
         ResourceLoader.markTexture("mqxf", "/assets/mvengine/textures/mqxf.png");
         ResourceLoader.markTexture("mqxfMuscle", "/assets/mvengine/textures/mqxf-muscle.png");
+        ResourceLoader.markTexture("inflatableGuy", "/assets/mvengine/textures/inflatableGuy.png");
 
         return instance;
     }
@@ -141,7 +154,7 @@ public class MVEngine implements AutoCloseable {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         audio.terminate();
         if (physics2D != null) physics2D.terminate();
         if (physics3D != null) physics3D.terminate();

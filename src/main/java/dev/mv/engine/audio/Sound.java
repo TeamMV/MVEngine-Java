@@ -1,36 +1,52 @@
 package dev.mv.engine.audio;
 
-import dev.mv.engine.resources.Resource;
+import dev.mv.engine.exceptions.Exceptions;
+import dev.mv.engine.game.mod.loader.ModIntegration;
+import dev.mv.engine.resources.HeavyResource;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.openal.AL11.*;
 
-public sealed class Sound implements Resource permits Music {
+public sealed class Sound implements HeavyResource permits Music {
 
     protected Audio audio;
     int alID, id, buffer;
     protected boolean loop;
     protected State state;
     protected float volume = 0.3f;
+    protected String path;
+    protected boolean loaded;
 
-    protected Sound(Audio audio, boolean loop) {
+    Sound(Audio audio, String path, boolean loop) {
         this.audio = audio;
         this.loop = loop;
+        this.path = path;
     }
 
-    Sound(Audio audio, InputStream stream, boolean loop, SoundLoader loader) {
-        this.audio = audio;
-        this.loop = loop;
-        Raw loaded = loader.load(stream);
+    @Override
+    public void load() {
+        if (loaded) return;
         buffer = alGenBuffers();
-        alBufferData(buffer, loaded.channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, loaded.bytes, loaded.sampleRate);
+        try (InputStream stream = ModIntegration.getResourceAsStream(path)) {
+            SoundFormat format = audio.getFormat(stream);
+            Raw data = format.load(stream, path);
+            alBufferData(buffer, data.channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, data.bytes, data.sampleRate);
+            loaded = true;
+        } catch (IOException e) {
+            alDeleteBuffers(buffer);
+            Exceptions.send(e);
+        }
     }
 
-    public void terminate() {
+    @Override
+    public void unload() {
         if (getState() != State.STOPPED) stop();
         alDeleteBuffers(buffer);
+        loaded = false;
     }
 
     public enum State {
@@ -51,6 +67,7 @@ public sealed class Sound implements Resource permits Music {
     }
 
     public int play() {
+        checkLoad();
         alID = audio.nextFreeSource();
         if (alID == -1) return -1;
         alSourcei(alID, AL_BUFFER, buffer);
@@ -90,6 +107,10 @@ public sealed class Sound implements Resource permits Music {
         if (alID == -1) return State.STOPPED;
         state = State.valueOf(alGetSourcei(alID, AL_SOURCE_STATE));
         return state;
+    }
+
+    private void checkLoad() {
+        if (!loaded) Exceptions.send(new IllegalStateException("Sound not loaded"));
     }
 
     public boolean isLooping() {

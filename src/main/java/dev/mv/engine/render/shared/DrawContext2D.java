@@ -35,6 +35,7 @@ public class DrawContext2D {
         this.window = window;
         gradient = new Gradient();
         canvas = new Vector4f(0, 0, window.getWidth(), window.getHeight());
+        window.addResizeCallback(w -> canvas());
     }
 
     public void color(int r, int g, int b, int a) {
@@ -601,6 +602,28 @@ public class DrawContext2D {
     public void mqxf(int x, int y, int width, int height, float rotation, int originX, int originY) {
         color(0, 0, 0, 0);
         image(x, y, width, height, R.textures.get("mqxf"), rotation, originX, originY);
+    }
+
+    /**
+     * Some fun is always allowed ;D
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     */
+    public void inflatableGuy(int x, int y, int width, int height) {
+        color(0, 0, 0, 0);
+        image(x, y, width, height, R.textures.get("inflatableGuy"));
+    }
+
+    public void inflatableGuy(int x, int y, int width, int height, float rotation) {
+        color(0, 0, 0, 0);
+        image(x, y, width, height, R.textures.get("inflatableGuy"), rotation);
+    }
+
+    public void inflatableGuy(int x, int y, int width, int height, float rotation, int originX, int originY) {
+        color(0, 0, 0, 0);
+        image(x, y, width, height, R.textures.get("inflatableGuy"), rotation, originX, originY);
     }
 
     public void mqxfMuscle(int x, int y, int width, int height) {

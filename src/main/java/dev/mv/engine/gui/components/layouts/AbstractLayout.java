@@ -5,11 +5,9 @@ import dev.mv.engine.gui.components.AbstractClickable;
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.extras.IgnoreDraw;
 import dev.mv.engine.gui.event.EventListener;
-import dev.mv.engine.gui.input.Clickable;
-import dev.mv.engine.gui.input.Draggable;
-import dev.mv.engine.gui.input.Keyboard;
-import dev.mv.engine.gui.input.Scrollable;
+import dev.mv.engine.gui.input.*;
 import dev.mv.engine.gui.theme.Theme;
+import dev.mv.engine.gui.utils.GuiUtils;
 import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.Window;
 
@@ -17,7 +15,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public abstract class AbstractLayout extends Element implements Clickable, Draggable, Keyboard, Scrollable, Iterable<Element> {
+public abstract class AbstractLayout extends Element implements Clickable, Draggable, Keyboard, ScrollInput, Iterable<Element> {
     protected List<Element> elements;
     protected int maxWidth, maxHeight;
     protected int spacing = 0;
@@ -286,35 +284,49 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
     }
 
     @Override
-    public void scrollX(int amount) {
+    public boolean distributeScrollX(int amount) {
         for (Element element : this) {
+            if(!GuiUtils.mouseInside(element)) continue;
+            if (element instanceof ScrollInput scrollInput) {
+                return scrollInput.distributeScrollX(amount);
+            }
             if (element instanceof Scrollable scrollable) {
                 scrollable.scrollX(amount);
+                return true;
             }
             if(element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Scrollable scrollable) {
-                        scrollable.scrollX(amount);
+                    if(e instanceof ScrollInput scrollInput) {
+                        if(!GuiUtils.mouseInside(e)) continue;
+                        return scrollInput.distributeScrollX(amount);
                     }
                 }
             }
         }
+        return false;
     }
 
     @Override
-    public void scrollY(int amount) {
+    public boolean distributeScrollY(int amount) {
         for (Element element : this) {
+            if (!GuiUtils.mouseInside(element)) continue;
+            if (element instanceof ScrollInput scrollInput) {
+                return scrollInput.distributeScrollY(amount);
+            }
             if (element instanceof Scrollable scrollable) {
                 scrollable.scrollY(amount);
+                return true;
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Scrollable scrollable) {
-                        scrollable.scrollY(amount);
+                    if (e instanceof ScrollInput scrollInput) {
+                        if (!GuiUtils.mouseInside(e)) continue;
+                        return scrollInput.distributeScrollY(amount);
                     }
                 }
             }
         }
+        return false;
     }
 
     @Override
