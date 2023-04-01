@@ -35,15 +35,6 @@
                     <ref name="defaultSeparator"/>
                     <ref name="defaultSpace"/>
                 </verticalOverflowLayout>
-                <imageButton width="120" height="$VAR(height)" id="quitButton" tags="[tag1,tag2,tag3]" src="mqxf"/>
-                <checkbox width="$VAR(height)" height="$VAR(height)">Toggle</checkbox>
-                <button width="100" height="$VAR(height)" id="chromaButton">click me!</button>
-                <ref name="defaultSpace"/>
-                <ref name="defaultSeparator"/>
-                <input type="string" width="400" height="$VAR(height)" id="email">E-Mail address</input>
-                <input type="password" width="400" height="$VAR(height)">Password</input>
-                <ref name="defaultSeparator"/>
-                <ref name="defaultSpace"/>
                 <horizontalLayout showFrame="true" spacing="5" padding="[5]">
                     <ref name="checkbox" params="[check1]"/>
                     <ref name="checkbox" params="[check2]"/>

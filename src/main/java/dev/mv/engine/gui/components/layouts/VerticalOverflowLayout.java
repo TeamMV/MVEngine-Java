@@ -83,13 +83,17 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
     @Override
     public void draw(DrawContext2D draw) {
         if (parent != null) {
-            draw.canvas(parent.getDrawAreaX(), parent.getDrawAreaY(), parent.getDrawAreaWidth(), parent.getDrawAreaHeight());
+            int drawX1 = Math.max(parent.getDrawAreaX1(), getX());
+            int drawY1 =  Math.max(parent.getDrawAreaY1(), getY());
+            int drawX2 = Math.min(parent.getDrawAreaX2(), getX() + getWidth());
+            int drawY2 =  Math.min(parent.getDrawAreaY2(), getY() + getHeight());
+            draw.canvas(drawX1, drawY1, drawX2 - drawX1, drawY2 - drawY1);
         }
         else {
             draw.canvas();
         }
         drawFrame(draw);
-        draw.canvas(getDrawAreaX(), getDrawAreaY(), getDrawAreaWidth(), getDrawAreaHeight());
+        draw.canvas(getDrawAreaX1(), getDrawAreaY1(), getDrawAreaX2() - getDrawAreaX1(), getDrawAreaY2() - getDrawAreaY1());
 
         int yStart = getElementY() + getHeight();
         int xStart = getElementX();
@@ -232,37 +236,34 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
     public void scrollY(int amount) {}
 
     @Override
-    public int getDrawAreaX() {
+    public int getDrawAreaX1() {
         if (parent == null) {
             return getX() + getPaddingLeft();
         }
-        return Math.max(parent.getDrawAreaX(), getX() + getPaddingLeft());
+        return Math.max(parent.getDrawAreaX1(), getX() + getPaddingLeft());
     }
 
     @Override
-    public int getDrawAreaY() {
+    public int getDrawAreaY1() {
         if (parent == null) {
             return getY() + getPaddingBottom();
         }
-        return Math.max(parent.getDrawAreaY(), getY() + getPaddingBottom());
+        return Math.max(parent.getDrawAreaY1(), getY() + getPaddingBottom());
     }
 
     @Override
-    public int getDrawAreaWidth() {
+    public int getDrawAreaX2() {
         if (parent == null) {
-            return getWidth() - getPaddingLeft() - getPaddingRight();
+            return getX() + getWidth() - getPaddingRight();
         }
-        int parentX2 = parent.getDrawAreaWidth() + parent.getDrawAreaX();
-        int x2 = getX() + getWidth() - getPaddingRight();
-        return parentX2 < x2 ? parent.getDrawAreaWidth() : getWidth() - getPaddingRight() - getPaddingLeft();
-        //return Math.min(parent.getDrawAreaWidth() + parent.getDrawAreaX(), getX() + getWidth() - getPaddingRight());
+        return Math.min(parent.getDrawAreaX2(), getX() + getWidth() - getPaddingRight());
     }
 
     @Override
-    public int getDrawAreaHeight() {
+    public int getDrawAreaY2() {
         if (parent == null) {
-            return getHeight() - getPaddingBottom() - getPaddingTop();
+            return getY() + getHeight() - getPaddingTop();
         }
-        return Math.min(parent.getDrawAreaHeight() + parent.getDrawAreaY(), getY() + getHeight() - getPaddingTop());
+        return Math.min(parent.getDrawAreaY2(), getY() + getHeight() - getPaddingTop());
     }
 }

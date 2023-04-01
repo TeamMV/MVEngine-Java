@@ -296,31 +296,31 @@ public abstract class Element {
         return position != null && position.isSizeRelative();
     }
 
-    public int getDrawAreaX() {
+    public int getDrawAreaX1() {
         if (parent == null) {
             return 0;
         }
-        return parent.getDrawAreaX();
+        return parent.getDrawAreaX1();
     }
 
-    public int getDrawAreaY() {
+    public int getDrawAreaY1() {
         if (parent == null) {
             return 0;
         }
-        return parent.getDrawAreaY();
+        return parent.getDrawAreaY1();
     }
 
-    public int getDrawAreaWidth() {
+    public int getDrawAreaX2() {
         if (parent == null) {
             return window.getWidth();
         }
-        return parent.getDrawAreaWidth();
+        return parent.getDrawAreaX2();
     }
 
-    public int getDrawAreaHeight() {
+    public int getDrawAreaY2() {
         if (parent == null) {
             return window.getHeight();
         }
-        return parent.getDrawAreaHeight();
+        return parent.getDrawAreaY2();
     }
 }
