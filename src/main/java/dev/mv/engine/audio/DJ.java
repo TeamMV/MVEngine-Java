@@ -7,38 +7,19 @@ import java.util.Collections;
 import java.util.List;
 
 public class DJ {
-    public static class Playlist {
-        private List<Music> pieces;
-        
-        public Playlist() {
-            pieces = new ArrayList<>();
-        }
 
-        public void addMusic(Music music) {
-            pieces.add(music);
-        }
-
-        public void remove(Music music) {
-            pieces.remove(music);
-        }
-
-        private List<Music> getPieces() {
-            return pieces;
-        }
-    }
-
-    private Playlist playlist;
+    private Album playlist;
     private volatile boolean interrupted = false;
 
-    public DJ(Playlist playlist) {
+    public DJ(Album playlist) {
         this.playlist = playlist;
     }
 
-    public Playlist getPlaylist() {
+    public Album getPlaylist() {
         return playlist;
     }
 
-    public void setPlaylist(Playlist playlist) {
+    public void setPlaylist(Album playlist) {
         this.playlist = playlist;
         interrupted = true;
     }

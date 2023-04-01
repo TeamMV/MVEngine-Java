@@ -25,6 +25,7 @@ public class Audio {
     private Sound[] bound;
     private String deviceName;
     private ALCapabilities capabilities;
+    private MusicPlayer musicPlayer;
 
     private Audio(int simultaneousSources) {
         deviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
@@ -48,6 +49,7 @@ public class Audio {
         }
         freeSources = Arrays.copyOf(sources, sources.length);
         bound = new Sound[simultaneousSources];
+        musicPlayer = new MusicPlayer(this);
 
         FloatBuffer orientation = BufferUtils.createFloatBuffer(6)
             .put(new float[] {0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f});
@@ -100,6 +102,10 @@ public class Audio {
 
     public int getSimultaneousSources() {
         return sources.length;
+    }
+
+    public MusicPlayer getMusicPlayer() {
+        return musicPlayer;
     }
 
     public static Audio init(int simultaneousSources) {
