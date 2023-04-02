@@ -23,8 +23,10 @@
 
     <elements>
         <aligner x="0" y="0" width="100%" height="100%" alignX="CENTER" alignY="CENTER" id="aligner">
-            <verticalOverflowLayout x="200" y="100" width="50vw" height="60vh" spacing="5" showFrame="true" padding="[5]" align="CENTER" id="main">
-                <verticalOverflowLayout x="200" y="100" width="30vw" height="30vh" spacing="5" showFrame="true" padding="[5]" align="CENTER" id="main">
+            <verticalOverflowLayout x="200" y="100" width="50vw" height="60vh" spacing="5" showFrame="true"
+                                    padding="[5]" align="CENTER" id="main">
+                <verticalOverflowLayout x="200" y="100" width="30vw" height="30vh" spacing="5" showFrame="true"
+                                        padding="[5]" align="CENTER" id="main">
                     <imageButton width="120" height="$VAR(height)" id="quitButton" tags="[tag1,tag2,tag3]" src="mqxf"/>
                     <checkbox width="$VAR(height)" height="$VAR(height)">Toggle</checkbox>
                     <button width="100" height="$VAR(height)" id="chromaButton">click me!</button>

@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 public @interface Listen {
 
     boolean receiveCancelled() default false;
+
     Priority priority() default Priority.NORMAL;
 
 }

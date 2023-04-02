@@ -14,7 +14,6 @@ import dev.mv.engine.input.Input;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.font.BitmapFont;
-import dev.mv.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -299,7 +298,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     }
 
     protected void moveCursor(int amount) {
-         cursorOffset += amount;
+        cursorOffset += amount;
 
         if (cursorOffset == 0) {
             return;
@@ -384,7 +383,8 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
                     shiftText(0);
                     moveCursor(-1);
                 }
-            } catch (IndexOutOfBoundsException ignored) {}
+            } catch (IndexOutOfBoundsException ignored) {
+            }
         }
     }
 }

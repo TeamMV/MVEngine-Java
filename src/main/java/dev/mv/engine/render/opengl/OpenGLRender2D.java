@@ -7,8 +7,6 @@ import dev.mv.engine.render.shared.batch.Batch;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.shared.texture.Texture;
 
-import java.util.Arrays;
-
 import static org.lwjgl.opengl.GL46.*;
 
 public class OpenGLRender2D implements Render2D {

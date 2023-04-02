@@ -1,7 +1,6 @@
 package dev.mv.engine.audio;
 
 import dev.mv.engine.exceptions.Exceptions;
-
 import dev.mv.engine.exceptions.IllegalAudioFormatException;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
@@ -20,21 +19,21 @@ import static org.lwjgl.openal.ALC11.*;
 
 public class Audio {
 
-    private static final byte[] FORM = new byte[] {0x46, 0x4F, 0x52, 0x4D};
-    private static final byte[] AIFF = new byte[] {0x41, 0x49, 0x46, 0x46};
+    private static final byte[] FORM = new byte[]{0x46, 0x4F, 0x52, 0x4D};
+    private static final byte[] AIFF = new byte[]{0x41, 0x49, 0x46, 0x46};
 
-    private static final byte[] RIFF = new byte[] {0x52, 0x49, 0x46, 0x46};
-    private static final byte[] WAVE = new byte[] {0x57, 0x41, 0x56, 0x45};
-    private static final byte[] AVI_ = new byte[] {0x41, 0x56, 0x49, 0x20};
+    private static final byte[] RIFF = new byte[]{0x52, 0x49, 0x46, 0x46};
+    private static final byte[] WAVE = new byte[]{0x57, 0x41, 0x56, 0x45};
+    private static final byte[] AVI_ = new byte[]{0x41, 0x56, 0x49, 0x20};
 
-    private static final byte[] OGGS = new byte[] {0x4F, 0x67, 0x67, 0x53};
+    private static final byte[] OGGS = new byte[]{0x4F, 0x67, 0x67, 0x53};
 
-    private static final byte[] AU = new byte[] {0x2E, 0x73, 0x6E, 0x64};
+    private static final byte[] AU = new byte[]{0x2E, 0x73, 0x6E, 0x64};
 
-    private static final byte[][] MP3_2 = new byte[][] {new byte[]{(byte) 0xFF, (byte) 0xFB}, new byte[]{(byte) 0xFF, (byte) 0xF3}, new byte[] {(byte) 0xFF, (byte) 0xF2}};
-    private static final byte[] MP3_3 = new byte[] {0x49, 0x44, 0x33};
+    private static final byte[][] MP3_2 = new byte[][]{new byte[]{(byte) 0xFF, (byte) 0xFB}, new byte[]{(byte) 0xFF, (byte) 0xF3}, new byte[]{(byte) 0xFF, (byte) 0xF2}};
+    private static final byte[] MP3_3 = new byte[]{0x49, 0x44, 0x33};
 
-    private static final byte[][] AAC = new byte[][] {new byte[]{(byte) 0xFF, (byte) 0xF1}, new byte[]{(byte) 0xFF, (byte) 0xF1}};
+    private static final byte[][] AAC = new byte[][]{new byte[]{(byte) 0xFF, (byte) 0xF1}, new byte[]{(byte) 0xFF, (byte) 0xF1}};
 
     private static volatile Audio instance;
 
@@ -75,15 +74,21 @@ public class Audio {
         DJ = new DJ(this);
 
         FloatBuffer orientation = BufferUtils.createFloatBuffer(6)
-            .put(new float[] {0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f});
-        ((Buffer)orientation).flip();
+            .put(new float[]{0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f});
+        ((Buffer) orientation).flip();
         alListenerfv(AL_ORIENTATION, orientation);
-        FloatBuffer velocity = BufferUtils.createFloatBuffer(3).put(new float[] {0.0f, 0.0f, 0.0f});
-        ((Buffer)velocity).flip();
+        FloatBuffer velocity = BufferUtils.createFloatBuffer(3).put(new float[]{0.0f, 0.0f, 0.0f});
+        ((Buffer) velocity).flip();
         alListenerfv(AL_VELOCITY, velocity);
-        FloatBuffer position = BufferUtils.createFloatBuffer(3).put(new float[] {0.0f, 0.0f, 0.0f});
-        ((Buffer)position).flip();
+        FloatBuffer position = BufferUtils.createFloatBuffer(3).put(new float[]{0.0f, 0.0f, 0.0f});
+        ((Buffer) position).flip();
         alListenerfv(AL_POSITION, position);
+    }
+
+    public static synchronized Audio init(int simultaneousSources) {
+        if (instance != null) Exceptions.send(new IllegalStateException("Audio already initialized"));
+        instance = new Audio(simultaneousSources);
+        return instance;
     }
 
     SoundFormat getFormat(InputStream stream) {
@@ -94,22 +99,19 @@ public class Audio {
             byte[] four = Arrays.copyOf(magic, 4);
             if (Arrays.equals(four, RIFF)) {
                 byte[] cont = Arrays.copyOfRange(magic, 8, 12);
-                if(Arrays.equals(cont, WAVE)) return wav;
-                if(Arrays.equals(cont, AVI_)) {
+                if (Arrays.equals(cont, WAVE)) return wav;
+                if (Arrays.equals(cont, AVI_)) {
                     Exceptions.send(new IllegalAudioFormatException("AVI is not supported yet!"));
                     return null;
                 }
                 Exceptions.send(new IllegalAudioFormatException("Unknown audio format!"));
-            }
-            else if (Arrays.equals(four, FORM)) {
+            } else if (Arrays.equals(four, FORM)) {
                 byte[] cont = Arrays.copyOfRange(magic, 8, 12);
-                if(Arrays.equals(cont, AIFF)) return wav;
+                if (Arrays.equals(cont, AIFF)) return wav;
                 Exceptions.send(new IllegalAudioFormatException("Unknown audio format!"));
-            }
-            else if (Arrays.equals(four, OGGS)) {
+            } else if (Arrays.equals(four, OGGS)) {
                 return ogg;
-            }
-            else if (Arrays.equals(four, AU)) {
+            } else if (Arrays.equals(four, AU)) {
                 return wav;
             }
 
@@ -190,12 +192,6 @@ public class Audio {
 
     public DJ getDJ() {
         return DJ;
-    }
-
-    public static synchronized Audio init(int simultaneousSources) {
-        if (instance!= null) Exceptions.send(new IllegalStateException("Audio already initialized"));
-        instance = new Audio(simultaneousSources);
-        return instance;
     }
 
     public synchronized void terminate() {

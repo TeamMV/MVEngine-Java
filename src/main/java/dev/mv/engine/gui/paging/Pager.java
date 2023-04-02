@@ -37,10 +37,10 @@ public class Pager {
         for (Gui gui : registry) {
             Transition transition = null;
             Pair<Transition, Float> transitionPair = transitions.get(gui.getName());
-            if(transitionPair != null) {
+            if (transitionPair != null) {
                 transition = transitionPair.a;
             }
-            if(transition == null) return;
+            if (transition == null) return;
             for (Element element : gui.elements()) {
                 Window window = element.getWindow();
                 for (int i = 0; i < FRAMES; i++) {
@@ -87,7 +87,7 @@ public class Pager {
 
             Transition transitionTo = transitionToPair.a;
 
-            if(transitionTo == null) {
+            if (transitionTo == null) {
                 R.guis.get("default").toRenderList().add(gui);
                 return;
             }
@@ -186,7 +186,7 @@ public class Pager {
         });
     }
 
-    public void onlyOpen(String name)  {
+    public void onlyOpen(String name) {
         open.keySet().forEach(this::close);
         open(name);
     }

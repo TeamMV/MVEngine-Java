@@ -25,8 +25,7 @@ public class ChainedBatch extends RegularBatch {
             indices[objCount * 6 + 3] = 0 + objCount * 4;
             indices[objCount * 6 + 4] = 2 + objCount * 4;
             indices[objCount * 6 + 5] = 3 + objCount * 4;
-        }
-        else {
+        } else {
             indices[objCount * 6 + 0] = 0 + objCount * 4;
             indices[objCount * 6 + 1] = 1 + objCount * 4;
             indices[objCount * 6 + 2] = 2 + objCount * 4;

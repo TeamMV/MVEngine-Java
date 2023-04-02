@@ -1,11 +1,7 @@
 package dev.mv.engine.render.shared;
 
-import dev.mv.engine.ApplicationConfig;
-import dev.mv.engine.game.objects.SceneNode;
 import org.joml.Math;
 import org.joml.Vector3f;
-
-import static dev.mv.engine.ApplicationConfig.GameDimension.ONLY_3D;
 
 public class Camera {
     private Vector3f location;

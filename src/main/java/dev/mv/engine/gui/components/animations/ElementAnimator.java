@@ -8,8 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ElementAnimator {
 
-    private boolean shouldAnimate;
     private final AtomicInteger currentFrame = new AtomicInteger();
+    private boolean shouldAnimate;
     private boolean shouldAnimateBack;
     private ElementAnimation.AnimationState state;
     private ElementAnimation animation;

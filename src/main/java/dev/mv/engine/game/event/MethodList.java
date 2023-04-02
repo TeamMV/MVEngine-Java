@@ -10,7 +10,8 @@ public class MethodList {
 
     private Map<Priority, LinkedMethod[]> methods = new HashMap<>();
 
-    MethodList() {}
+    MethodList() {
+    }
 
     public void add(LinkedMethod method, Priority priority) {
         LinkedMethod[] m = methods.get(priority);
@@ -27,7 +28,7 @@ public class MethodList {
 
     @NotNull
     public LinkedMethod[] getMethods(Priority priority) {
-        LinkedMethod[] m =  methods.get(priority);
+        LinkedMethod[] m = methods.get(priority);
         return m == null ? new LinkedMethod[0] : m;
     }
 

@@ -5,5 +5,4 @@ import dev.mv.engine.resources.Resource;
 public class Animation implements Resource {
 
 
-
 }

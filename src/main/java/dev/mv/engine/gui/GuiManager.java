@@ -2,11 +2,7 @@ package dev.mv.engine.gui;
 
 import dev.mv.engine.input.Input;
 import dev.mv.engine.input.InputCollector;
-import dev.mv.engine.render.shared.texture.TextureRegion;
 import dev.mv.utils.Utils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static dev.mv.engine.input.Input.*;
 
@@ -15,6 +11,7 @@ import static dev.mv.engine.input.Input.*;
 //its good like this
 public class GuiManager {
     private static GuiRegistry GUIS = null;
+
     private GuiManager() {
     }
 

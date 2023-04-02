@@ -44,15 +44,12 @@ public class Physics2D {
             if (a instanceof Rectangle) {
                 if (a.getRotation() % 90 == 0 && a.getRotation() % 90 == 0) {
                     return aabb;
-                }
-                else {
+                } else {
                     return rect;
                 }
-            }
-            else if (a instanceof Circle) {
+            } else if (a instanceof Circle) {
                 return simpleCircle;
-            }
-            else if (a instanceof Oval) {
+            } else if (a instanceof Oval) {
                 return simpleOval;
             }
         }

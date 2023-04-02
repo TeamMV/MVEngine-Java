@@ -66,8 +66,8 @@ public class ApplicationConfig {
         ONLY_3D;
 
         public boolean isValid() {
-            if(this == COMBINED) return true;
-            if(MVEngine.instance().getApplicationConfig().getDimension() == COMBINED) return true;
+            if (this == COMBINED) return true;
+            if (MVEngine.instance().getApplicationConfig().getDimension() == COMBINED) return true;
             return this == MVEngine.instance().getApplicationConfig().getDimension();
         }
 

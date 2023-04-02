@@ -1,7 +1,5 @@
 package dev.mv.engine.render.shared;
 
-import java.util.Arrays;
-
 public class NormalizedColor {
 
     float r, g, b, a;
@@ -44,25 +42,25 @@ public class NormalizedColor {
     public void setAlpha(float a) {
         this.a = a;
     }
-    
+
     public NormalizedColor copy() {
         return new NormalizedColor(r, g, b, a);
     }
-    
+
     public NormalizedColor set(float r, float g, float b, float a) {
-        if(r <= 1f)
+        if (r <= 1f)
             this.r = r;
         else
             this.r = r / 255f;
-        if(g <= 1f)
+        if (g <= 1f)
             this.g = g;
         else
             this.g = g / 255f;
-        if(b <= 1f)
+        if (b <= 1f)
             this.b = b;
         else
             this.b = b / 255f;
-        if(a <= 1f)
+        if (a <= 1f)
             this.a = a;
         else
             this.a = a / 255f;

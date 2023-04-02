@@ -30,16 +30,16 @@ public class DrawContext2D {
     private Window window;
     private boolean isStripped;
 
-    public Window getWindow() {
-        return window;
-    }
-
     public DrawContext2D(Window window) {
         this.window = window;
         gradient = new Gradient();
         canvas = new Vector4f();
         canvas();
         window.addResizeCallback(w -> canvas());
+    }
+
+    public Window getWindow() {
+        return window;
     }
 
     public void color(int r, int g, int b, int a) {
@@ -639,6 +639,7 @@ public class DrawContext2D {
 
     /**
      * Some fun is always allowed ;D
+     *
      * @param x
      * @param y
      * @param width

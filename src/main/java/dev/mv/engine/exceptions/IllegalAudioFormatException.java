@@ -1,6 +1,6 @@
 package dev.mv.engine.exceptions;
 
-public class IllegalAudioFormatException extends Exception{
+public class IllegalAudioFormatException extends Exception {
     public IllegalAudioFormatException() {
     }
 

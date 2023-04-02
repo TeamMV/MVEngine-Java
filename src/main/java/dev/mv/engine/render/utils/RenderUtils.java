@@ -1,9 +1,5 @@
 package dev.mv.engine.render.utils;
 
-import dev.mv.engine.render.shared.Color;
-import dev.mv.engine.resources.AssetFileParser;
-import dev.mv.engine.resources.ResourceLoader;
-import dev.mv.utils.Utils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -17,9 +13,6 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.lwjgl.system.MemoryStack.stackGet;
 

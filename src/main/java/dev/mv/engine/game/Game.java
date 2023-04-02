@@ -9,7 +9,6 @@ import dev.mv.engine.game.language.Languages;
 import dev.mv.engine.game.mod.loader.ModFinder;
 import dev.mv.engine.game.mod.loader.ModLoader;
 import dev.mv.engine.game.registry.Registries;
-import dev.mv.engine.render.shared.Window;
 import dev.mv.utils.misc.Version;
 import org.jetbrains.annotations.NotNull;
 

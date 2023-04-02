@@ -38,7 +38,7 @@ public class BasicLanguage implements Language {
 
     @Override
     public Map<String, String> toMap() {
-        return (Map<String, String>)((HashMap<String, String>) map).clone();
+        return (Map<String, String>) ((HashMap<String, String>) map).clone();
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.Objects;
 
 import static org.lwjgl.stb.STBVorbis.stb_vorbis_decode_memory;
 
-public class Ogg implements SoundFormat{
+public class Ogg implements SoundFormat {
     @Override
     public Sound.Raw load(InputStream stream, String name) {
         try (MemoryStack stack = MemoryStack.stackPush()) {

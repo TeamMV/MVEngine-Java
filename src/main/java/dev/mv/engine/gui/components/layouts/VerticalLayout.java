@@ -3,7 +3,6 @@ package dev.mv.engine.gui.components.layouts;
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.extras.IgnoreDraw;
 import dev.mv.engine.gui.utils.VariablePosition;
-import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 
@@ -33,7 +32,7 @@ public class VerticalLayout extends FramedLayout {
 
     @Override
     public int getElementHeight() {
-        if(initialState.height > 0) return initialState.height;
+        if (initialState.height > 0) return initialState.height;
         int res = 0;
         for (Element e : elements) {
             if (e instanceof IgnoreDraw ignoreDraw) {

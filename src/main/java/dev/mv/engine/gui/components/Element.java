@@ -6,14 +6,12 @@ import dev.mv.engine.gui.components.animations.ElementAnimator;
 import dev.mv.engine.gui.components.extras.IgnoreDraw;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.components.layouts.FramedLayout;
-import dev.mv.engine.gui.components.layouts.VerticalOverflowLayout;
 import dev.mv.engine.gui.event.*;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
-import dev.mv.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -187,10 +185,10 @@ public abstract class Element {
 
     public void resize(int width, int height) {
         if (position != null) {
-            if(parent == null || parent instanceof IgnoreDraw) {
+            if (parent == null || parent instanceof IgnoreDraw) {
                 position.resize(width, height, width, height);
             } else {
-                if(parent instanceof FramedLayout f) {
+                if (parent instanceof FramedLayout f) {
                     position.resize(f.getElementWidth(), f.getElementHeight(), width, height);
                 } else {
                     position.resize(parent.getWidth(), parent.getHeight(), width, height);
@@ -301,8 +299,7 @@ public abstract class Element {
     protected void resetCanvas(DrawContext2D draw) {
         if (parent == null) {
             draw.canvas();
-        }
-        else {
+        } else {
             draw.canvas(parent.getDrawAreaX1(), parent.getDrawAreaY1(), parent.getDrawAreaX2() - parent.getDrawAreaX1(), parent.getDrawAreaY2() - parent.getDrawAreaY1(), theme);
             draw.unstyleFullCanvas();
         }

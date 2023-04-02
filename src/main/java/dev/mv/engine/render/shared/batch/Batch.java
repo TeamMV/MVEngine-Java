@@ -1,11 +1,8 @@
 package dev.mv.engine.render.shared.batch;
 
-import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.shared.texture.Texture;
-import dev.mv.utils.Utils;
-import org.intellij.lang.annotations.MagicConstant;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;

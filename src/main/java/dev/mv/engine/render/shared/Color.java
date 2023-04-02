@@ -38,6 +38,63 @@ public class Color implements Resource {
         this.a = col[3];
     }
 
+    public static Color parse(String string) {
+        if (string.startsWith("#")) {
+            string = string.replaceAll("#", "");
+            if (!string.matches("-?[0-9a-fA-F]+")) {
+                Exceptions.send(new IllegalStateException("Color parser: # colors must be hexadecimal characters!"));
+            }
+            String[] colors = string.split("(?<=\\G.{2})");
+            if (colors.length < 3 || colors.length > 4) {
+                Exceptions.send(new IllegalStateException("Color parser: # colors must contain 6 or 8 characters!"));
+            }
+            int r = Integer.parseInt(colors[0], 16);
+            int g = Integer.parseInt(colors[1], 16);
+            int b = Integer.parseInt(colors[2], 16);
+            int a = 255;
+            if (colors.length == 4) {
+                a = Integer.parseInt(colors[3], 16);
+            }
+            return new Color(r, g, b, a);
+        } else if (string.startsWith("0x")) {
+            string = string.replaceAll("0x", "");
+            if (!string.matches("-?[0-9a-fA-F]+")) {
+                Exceptions.send(new IllegalStateException("Color parser: 0x colors must be hexadecimal characters!"));
+            }
+            String[] colors = string.split("(?<=\\G.{2})");
+            if (colors.length < 3 || colors.length > 4) {
+                Exceptions.send(new IllegalStateException("Color parser: 0x colors must contain 6 or 8 characters!"));
+            }
+            int r = Integer.parseInt(colors[0], 16);
+            int g = Integer.parseInt(colors[1], 16);
+            int b = Integer.parseInt(colors[2], 16);
+            int a = 255;
+            if (colors.length == 4) {
+                a = Integer.parseInt(colors[3], 16);
+            }
+            return new Color(r, g, b, a);
+        } else {
+            String split = ",";
+            if (string.contains(" ") && string.contains(",")) {
+                string = string.replaceAll(" ", "");
+            } else if (string.contains(" ")) {
+                split = " ";
+            }
+            String[] colors = string.replaceAll(" ", "").split(split);
+            if (colors.length < 3 || colors.length > 4) {
+                Exceptions.send(new IllegalStateException("Color parser: colors must contain 3 or 4 sets of numbers!"));
+            }
+            int r = Integer.parseInt(colors[0]);
+            int g = Integer.parseInt(colors[1]);
+            int b = Integer.parseInt(colors[2]);
+            int a = 255;
+            if (colors.length == 4) {
+                a = Integer.parseInt(colors[3]);
+            }
+            return new Color(r, g, b, a);
+        }
+    }
+
     public Color set(byte r, byte g, byte b, byte a) {
         this.r = r;
         this.g = g;
@@ -160,62 +217,5 @@ public class Color implements Resource {
 
     public int toInt() {
         return ByteUtils.intFromBytes(r, g, b, a);
-    }
-
-    public static Color parse(String string) {
-        if (string.startsWith("#")) {
-            string = string.replaceAll("#", "");
-            if (!string.matches("-?[0-9a-fA-F]+")) {
-                Exceptions.send(new IllegalStateException("Color parser: # colors must be hexadecimal characters!"));
-            }
-            String[] colors = string.split("(?<=\\G.{2})");
-            if (colors.length < 3 || colors.length > 4) {
-                Exceptions.send(new IllegalStateException("Color parser: # colors must contain 6 or 8 characters!"));
-            }
-            int r = Integer.parseInt(colors[0], 16);
-            int g = Integer.parseInt(colors[1], 16);
-            int b = Integer.parseInt(colors[2], 16);
-            int a = 255;
-            if (colors.length == 4) {
-                a = Integer.parseInt(colors[3], 16);
-            }
-            return new Color(r, g, b, a);
-        } else if (string.startsWith("0x")) {
-            string = string.replaceAll("0x", "");
-            if (!string.matches("-?[0-9a-fA-F]+")) {
-                Exceptions.send(new IllegalStateException("Color parser: 0x colors must be hexadecimal characters!"));
-            }
-            String[] colors = string.split("(?<=\\G.{2})");
-            if (colors.length < 3 || colors.length > 4) {
-                Exceptions.send(new IllegalStateException("Color parser: 0x colors must contain 6 or 8 characters!"));
-            }
-            int r = Integer.parseInt(colors[0], 16);
-            int g = Integer.parseInt(colors[1], 16);
-            int b = Integer.parseInt(colors[2], 16);
-            int a = 255;
-            if (colors.length == 4) {
-                a = Integer.parseInt(colors[3], 16);
-            }
-            return new Color(r, g, b, a);
-        } else {
-            String split = ",";
-            if (string.contains(" ") && string.contains(",")) {
-                string = string.replaceAll(" ", "");
-            } else if (string.contains(" ")) {
-                split = " ";
-            }
-            String[] colors = string.replaceAll(" ", "").split(split);
-            if (colors.length < 3 || colors.length > 4) {
-                Exceptions.send(new IllegalStateException("Color parser: colors must contain 3 or 4 sets of numbers!"));
-            }
-            int r = Integer.parseInt(colors[0]);
-            int g = Integer.parseInt(colors[1]);
-            int b = Integer.parseInt(colors[2]);
-            int a = 255;
-            if (colors.length == 4) {
-                a = Integer.parseInt(colors[3]);
-            }
-            return new Color(r, g, b, a);
-        }
     }
 }

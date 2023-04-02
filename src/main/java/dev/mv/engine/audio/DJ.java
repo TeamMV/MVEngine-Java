@@ -10,14 +10,13 @@ import java.util.Arrays;
 import static dev.mv.utils.Utils.*;
 
 public class DJ {
-    private Audio audio;
-
     volatile boolean forceStopped;
     volatile Music playing;
     volatile PromiseNull listener;
     volatile UnsafeVec<String> queued = new Vec<String>().unsafe();
     int songIndex = 0;
     boolean loop, shuffle;
+    private Audio audio;
 
     DJ(Audio audio) {
         this.audio = audio;
@@ -62,8 +61,7 @@ public class DJ {
     private void safeNext() {
         if (queued.len() > songIndex) {
             play(queued.get(songIndex++));
-        }
-        else if (loop) {
+        } else if (loop) {
             songIndex = 0;
             if (shuffle) {
                 shuffleQueue();

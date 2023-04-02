@@ -22,7 +22,7 @@ public class GuiUtils {
     public static boolean mouseNotInside(int x, int y, int width, int height, Theme.EdgeStyle style, int radius) {
         return !mouseInside(x, y, width, height, style, radius);
     }
-    
+
     public static boolean mouseInside(int x, int y, int width, int height, Theme.EdgeStyle style, int radius) {
         if (mouseNotInside(x, y, width, height)) return false;
         if (style == Theme.EdgeStyle.SQUARE) return true;
@@ -41,8 +41,7 @@ public class GuiUtils {
             if (mx - (x + width - radius) > my - y) {
                 return false;
             }
-        }
-        else if (style == Theme.EdgeStyle.ROUND) {
+        } else if (style == Theme.EdgeStyle.ROUND) {
             if (mx < x + radius && my > y + height - radius && Utils.square((x + radius) - mx) + Utils.square(my - (y + height - radius)) > Utils.square(radius)) {
                 return false;
             }
@@ -68,22 +67,22 @@ public class GuiUtils {
     }
 
     public static boolean mouseNotInside(Element e) {
-        if(e instanceof IgnoreDraw) return false;
+        if (e instanceof IgnoreDraw) return false;
         return !mouseInside(e.getX(), e.getY(), e.getWidth(), e.getHeight());
     }
 
     public static boolean mouseInside(Element e) {
-        if(e instanceof IgnoreDraw) return true;
+        if (e instanceof IgnoreDraw) return true;
         return mouseInside(e.getX(), e.getY(), e.getWidth(), e.getHeight());
     }
 
     public static boolean mouseNotInsideThemed(Element e) {
-        if(e instanceof IgnoreDraw) return false;
+        if (e instanceof IgnoreDraw) return false;
         return !mouseInside(e.getX(), e.getY(), e.getWidth(), e.getHeight(), e.getTheme().getEdgeStyle(), e.getTheme().getEdgeRadius());
     }
 
     public static boolean mouseInsideThemed(Element e) {
-        if(e instanceof IgnoreDraw) return true;
+        if (e instanceof IgnoreDraw) return true;
         return mouseInside(e.getX(), e.getY(), e.getWidth(), e.getHeight(), e.getTheme().getEdgeStyle(), e.getTheme().getEdgeRadius());
     }
 }

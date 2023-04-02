@@ -1,6 +1,6 @@
 package dev.mv.engine.resources;
 
-public class ResourceNotFoundException extends Exception{
+public class ResourceNotFoundException extends Exception {
     public ResourceNotFoundException() {
         super();
     }

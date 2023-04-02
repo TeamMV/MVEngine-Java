@@ -82,8 +82,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
         if (side == ButtonSide.LEFT) {
             headerLayout.addElement(collapseButton);
             headerLayout.addElement(collapseButtonText);
-        }
-        else {
+        } else {
             headerLayout.addElement(collapseButtonText);
             headerLayout.addElement(collapseButton);
         }
@@ -148,7 +147,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
         updateSection.setX(getX());
         updateSection.setY(getY());
         updateSection.draw(draw);
-        if(!collapsed) {
+        if (!collapsed) {
             contentLayout.setX(getX());
             contentLayout.setY(getY() - contentLayout.getHeight());
             contentLayout.draw(draw);
@@ -252,13 +251,13 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     }
 
     @Override
-    public int getY() {
-        return headerLayout != null ? headerLayout.getY() : 0;
+    public void setX(int x) {
+        headerLayout.setX(x);
     }
 
     @Override
-    public void setX(int x) {
-        headerLayout.setX(x);
+    public int getY() {
+        return headerLayout != null ? headerLayout.getY() : 0;
     }
 
     @Override

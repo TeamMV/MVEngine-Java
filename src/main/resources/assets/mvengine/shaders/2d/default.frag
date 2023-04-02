@@ -5,8 +5,8 @@ precision highp float;
 in vec4 fColor;
 in vec2 fTexCoords;
 in float fTexID;
-in vec4 fCanvasCoords; //(x, y, width, height)
-in vec2 fCanvasData; //([0 = sq, 1 = tri, 2 = circ], radius)
+in vec4 fCanvasCoords;//(x, y, width, height)
+in vec2 fCanvasData;//([0 = sq, 1 = tri, 2 = circ], radius)
 in vec2 fRes;
 
 out vec4 outColor;

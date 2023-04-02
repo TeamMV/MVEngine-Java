@@ -17,12 +17,12 @@ public class PasswordInputBox extends InputBox {
 
     public PasswordInputBox(Window window, Element parent, int width, int height) {
         super(window, parent, width - height - 5, height);
-        prepareButton(window,  -1, -1, width, height);
+        prepareButton(window, -1, -1, width, height);
     }
 
     public PasswordInputBox(Window window, Element parent, int x, int y, int width, int height) {
         super(window, x, y, parent, width - height - 5, height);
-        prepareButton(window,  x, y, width, height);
+        prepareButton(window, x, y, width, height);
     }
 
     public PasswordInputBox(Window window, int x, int y, int width, int height) {
@@ -58,8 +58,7 @@ public class PasswordInputBox extends InputBox {
         realText = text;
         if (isHidden) {
             super.setText("*".repeat(text.length()));
-        }
-        else {
+        } else {
             super.setText(text);
         }
         hiding = false;
@@ -218,7 +217,7 @@ public class PasswordInputBox extends InputBox {
         }
 
         if (displayText.isEmpty() && !selected) {
-            draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height - textDistance() * 2) ), font, animationState.rotation, animationState.originX, animationState.originY);
+            draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, placeholderText.substring(0, font.possibleAmountOfChars(placeholderText, animationState.width - textDistance() * 2, animationState.height - textDistance() * 2)), font, animationState.rotation, animationState.originX, animationState.originY);
         } else {
             draw.text(chroma, animationState.posX + textDistance(), animationState.posY + textDistance(), animationState.height - textDistance() * 2, displayText, font, animationState.rotation, animationState.originX, animationState.originY);
         }

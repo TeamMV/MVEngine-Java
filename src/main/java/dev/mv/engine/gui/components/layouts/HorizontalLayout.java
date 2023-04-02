@@ -27,7 +27,7 @@ public class HorizontalLayout extends FramedLayout {
 
     @Override
     public int getElementWidth() {
-        if(initialState.width > 0) return initialState.width;
+        if (initialState.width > 0) return initialState.width;
         int res = 0;
         for (Element e : elements) {
             if (e instanceof IgnoreDraw ignoreDraw) {

@@ -17,10 +17,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class R {
-    public static class Res<T extends Resource>{
+    public static Res<TextureRegion> textures = new Res<>();
+    public static Res<Color> colors = new Res<>();
+    public static Res<Model> models = new Res<>();
+    public static Res<Gui> layouts = new Res<>();
+    public static Res<GuiRegistry> guis = new Res<>();
+    public static Res<Theme> themes = new Res<>();
+    public static Res<BitmapFont> fonts = new Res<>();
+    public static Res<Page> pages = new Res<>();
+    public static Res<Sound> sounds = new Res<>();
+    public static Res<Music> music = new Res<>();
+    private static boolean isReady = false;
+
+    static {
+        guis.register("default", new GuiRegistry());
+    }
+
+    public static boolean isReady() {
+        return isReady;
+    }
+
+    static void setIsReady(boolean isReady) {
+        R.isReady = isReady;
+    }
+
+    public static class Res<T extends Resource> {
         private Map<String, T> map = new HashMap<>();
 
-        Res() {}
+        Res() {
+        }
 
         public T get(String id) {
             try {
@@ -42,30 +67,5 @@ public class R {
         public void register(String id, T res) {
             map.put(id, res);
         }
-    }
-
-    public static Res<TextureRegion> textures = new Res<>();
-    public static Res<Color> colors = new Res<>();
-    public static Res<Model> models = new Res<>();
-    public static Res<Gui> layouts = new Res<>();
-    public static Res<GuiRegistry> guis = new Res<>();
-    public static Res<Theme> themes = new Res<>();
-    public static Res<BitmapFont> fonts = new Res<>();
-    public static Res<Page> pages = new Res<>();
-    public static Res<Sound> sounds = new Res<>();
-    public static Res<Music> music = new Res<>();
-
-    static {
-        guis.register("default", new GuiRegistry());
-    }
-
-    private static boolean isReady = false;
-
-    public static boolean isReady() {
-        return isReady;
-    }
-
-    static void setIsReady(boolean isReady) {
-        R.isReady = isReady;
     }
 }

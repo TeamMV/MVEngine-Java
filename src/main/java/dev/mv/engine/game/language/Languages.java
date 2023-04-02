@@ -25,7 +25,8 @@ public class Languages {
     public static void init(Vec<String> foundLanguages, String defaultLanguage) {
         foundLanguages.forEach(lang -> addLanguage(load("/assets/" + MVEngine.instance().getGame().getGameId() + "/lang/" + lang + ".json")));
         currentLanguage = getLanguage(defaultLanguage);
-        if (currentLanguage == null && foundLanguages.len() > 0) currentLanguage = getLanguage(foundLanguages.unsafe().get(0));
+        if (currentLanguage == null && foundLanguages.len() > 0)
+            currentLanguage = getLanguage(foundLanguages.unsafe().get(0));
     }
 
     public static Language getCurrentLanguage() {
@@ -40,8 +41,7 @@ public class Languages {
         if (language == null) return;
         if (languages.containsKey(language.getCode())) {
             languages.get(language.getCode()).inject(language);
-        }
-        else {
+        } else {
             languages.put(language.getCode(), language);
         }
     }
@@ -84,27 +84,22 @@ public class Languages {
                         if (buffer.peek() == ',') {
                             buffer.pop();
                         }
-                    }
-                    else if (buffer.peek() == '{') {
+                    } else if (buffer.peek() == '{') {
                         if (key.equals("language")) {
                             parseInfo(buffer, info);
-                        }
-                        else {
+                        } else {
                             parse(buffer, path + key + ".", info);
                         }
                         if (buffer.peek() == ',') {
                             buffer.pop();
                         }
-                    }
-                    else {
+                    } else {
                         throw new RuntimeException("Malformed JSON!");
                     }
-                }
-                else {
+                } else {
                     throw new RuntimeException("Malformed JSON!");
                 }
-            }
-            else {
+            } else {
                 throw new RuntimeException("Malformed JSON!");
             }
         }
@@ -126,34 +121,29 @@ public class Languages {
                         if (buffer.peek() == ',') {
                             buffer.pop();
                         }
-                    }
-                    else if (buffer.peek() == '{') {
+                    } else if (buffer.peek() == '{') {
                         parse(buffer, "language." + key + ".", info);
                         if (buffer.peek() == ',') {
                             buffer.pop();
                         }
-                    }
-                    else {
+                    } else {
                         int len = 0;
                         while (!Utils.isAnyOf(buffer.peek(len + 1)[len], ',', '}')) len++;
                         String str = new String(buffer.pop(len));
                         boolean b = str.equals("true") || str.equals("1") || str.equals("1b");
                         if (key.equals("leftToRight")) {
                             info.leftToRight = b;
-                        }
-                        else if (key.equals("rightToLeft")) {
-                            info.leftToRight =!b;
+                        } else if (key.equals("rightToLeft")) {
+                            info.leftToRight = !b;
                         }
                         if (buffer.peek() == ',') {
                             buffer.pop();
                         }
                     }
-                }
-                else {
+                } else {
                     throw new RuntimeException("Malformed JSON!");
                 }
-            }
-            else {
+            } else {
                 throw new RuntimeException("Malformed JSON!");
             }
         }

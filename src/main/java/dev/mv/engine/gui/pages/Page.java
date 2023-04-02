@@ -32,14 +32,14 @@ public class Page implements Resource {
     public void setRegistry(GuiRegistry registry) {
         this.registry = registry;
         registry.applyPager(pager);
-        if(drawContext2D != null) {
+        if (drawContext2D != null) {
             registry.applyRenderer(drawContext2D);
         }
     }
 
     public void applyRenderer(DrawContext2D drawContext2D) {
         this.drawContext2D = drawContext2D;
-        if(registry != null) {
+        if (registry != null) {
             registry.applyRenderer(drawContext2D);
         }
     }

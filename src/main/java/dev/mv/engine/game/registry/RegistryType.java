@@ -15,27 +15,6 @@ public class RegistryType {
         this.clazz = clazz;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public Class<?> getClazz() {
-        return clazz;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof RegistryType other) {
-            return type.equals(other.type);
-        }
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return "Registry type: {id: \"" + type + "\", class: " + clazz + "}";
-    }
-
     public static RegistryType getRegistryType(String type) {
         for (RegistryType registryType : types) {
             if (registryType.getType().equals(type)) {
@@ -61,5 +40,26 @@ public class RegistryType {
         RegistryType registryType = new RegistryType(type, clazz);
         types.push(registryType);
         return registryType;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Class<?> getClazz() {
+        return clazz;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof RegistryType other) {
+            return type.equals(other.type);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "Registry type: {id: \"" + type + "\", class: " + clazz + "}";
     }
 }

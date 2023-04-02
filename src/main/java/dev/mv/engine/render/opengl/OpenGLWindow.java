@@ -7,11 +7,8 @@ import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.GuiManager;
 import dev.mv.engine.input.GlfwClipboard;
 import dev.mv.engine.input.Input;
-import dev.mv.engine.physics.shapes2d.Circle;
-import dev.mv.engine.physics.shapes2d.Shape2D;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.*;
-import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import dev.mv.engine.render.utils.RenderUtils;
@@ -22,7 +19,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
-import java.awt.*;
 import java.nio.IntBuffer;
 import java.util.function.Consumer;
 
@@ -283,7 +279,7 @@ public class OpenGLWindow implements Window {
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
 
-        if(applicationLoop != null) {
+        if (applicationLoop != null) {
             try {
                 applicationLoop.exit(engine, this);
             } catch (Exception e) {

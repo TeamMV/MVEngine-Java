@@ -120,6 +120,6 @@ public class Choice extends Checkbox {
         super.setTheme(theme);
         dot = GuiAssets.DOT;
         useTextColor = theme.isShouldChoiceUseTextColor();
-        if(checked) texture = dot;
+        if (checked) texture = dot;
     }
 }

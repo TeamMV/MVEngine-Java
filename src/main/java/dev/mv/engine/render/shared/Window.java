@@ -6,7 +6,6 @@ import dev.mv.engine.render.shared.batch.BatchController;
 import dev.mv.engine.render.shared.batch.BatchController3D;
 import org.joml.Matrix4f;
 
-import java.awt.*;
 import java.util.function.Consumer;
 
 public interface Window {

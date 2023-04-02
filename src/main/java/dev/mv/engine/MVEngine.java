@@ -19,7 +19,6 @@ import dev.mv.engine.resources.ResourceLoader;
 import dev.mv.utils.misc.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +51,7 @@ public class MVEngine implements AutoCloseable {
         if (result != null) {
             return result;
         }
-        synchronized(MVEngine.class) {
+        synchronized (MVEngine.class) {
             if (instance == null) {
                 throw new IllegalStateException("MVEngine not initialised");
             }
@@ -174,12 +173,12 @@ public class MVEngine implements AutoCloseable {
         exceptionHandler = handler;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
     public Game getGame() {
         return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     public void registerLooper(Looper loopable) {

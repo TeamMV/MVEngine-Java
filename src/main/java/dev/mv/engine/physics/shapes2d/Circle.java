@@ -1,6 +1,5 @@
 package dev.mv.engine.physics.shapes2d;
 
-import dev.mv.engine.MVEngine;
 import org.joml.Vector2f;
 
 public class Circle extends Oval {
@@ -77,5 +76,6 @@ public class Circle extends Oval {
     }
 
     @Override
-    public void setRotation(float rotation) {}
+    public void setRotation(float rotation) {
+    }
 }

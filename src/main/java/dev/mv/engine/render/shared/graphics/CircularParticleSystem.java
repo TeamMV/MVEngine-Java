@@ -5,7 +5,7 @@ import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.utils.Utils;
 import dev.mv.utils.async.PromiseNull;
 
-public class CircularParticleSystem extends ParticleSystem{
+public class CircularParticleSystem extends ParticleSystem {
     private int direction;
     private int range;
     private Color color = Color.RED;
@@ -36,7 +36,7 @@ public class CircularParticleSystem extends ParticleSystem{
     private void generateParticles() {
         particles.forEach(particle -> {
             particle.update();
-            if(particle.isDone()) {
+            if (particle.isDone()) {
                 particle.setShape(shape);
                 particle.setSpeed((float) (Math.random() * 3 + 2)); //TODO: include speed var
                 particle.setDirection((float) (Math.random() * range + direction));

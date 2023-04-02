@@ -4,7 +4,6 @@ import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.game.mod.loader.ModIntegration;
 import dev.mv.engine.resources.HeavyResource;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -14,12 +13,12 @@ import static org.lwjgl.openal.AL11.*;
 public sealed class Sound implements HeavyResource permits Music {
 
     protected Audio audio;
-    int alID, id, buffer;
     protected boolean loop;
     protected State state;
     protected float volume = 0.3f;
     protected String path;
     protected boolean loaded;
+    int alID, id, buffer;
 
     Sound(Audio audio, String path, boolean loop) {
         this.audio = audio;
@@ -47,23 +46,6 @@ public sealed class Sound implements HeavyResource permits Music {
         if (getState() != State.STOPPED) stop();
         alDeleteBuffers(buffer);
         loaded = false;
-    }
-
-    public enum State {
-        PLAYING(AL_PLAYING),
-        STOPPED(AL_STOPPED),
-        PAUSED(AL_PAUSED);
-
-        State(int state) {}
-
-        public static State valueOf(int val) {
-            return switch (val) {
-                case AL_PLAYING -> PLAYING;
-                case AL_STOPPED -> STOPPED;
-                case AL_PAUSED -> PAUSED;
-                default -> null;
-            };
-        }
     }
 
     public int play() {
@@ -129,5 +111,24 @@ public sealed class Sound implements HeavyResource permits Music {
         this.volume = volume;
     }
 
-    record Raw(ByteBuffer bytes, int channels, int sampleRate) {}
+    public enum State {
+        PLAYING(AL_PLAYING),
+        STOPPED(AL_STOPPED),
+        PAUSED(AL_PAUSED);
+
+        State(int state) {
+        }
+
+        public static State valueOf(int val) {
+            return switch (val) {
+                case AL_PLAYING -> PLAYING;
+                case AL_STOPPED -> STOPPED;
+                case AL_PAUSED -> PAUSED;
+                default -> null;
+            };
+        }
+    }
+
+    record Raw(ByteBuffer bytes, int channels, int sampleRate) {
+    }
 }

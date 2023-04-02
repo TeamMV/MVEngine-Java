@@ -1,6 +1,7 @@
 package dev.mv.engine.gui.parsing.page;
 
 import dev.mv.engine.exceptions.Exceptions;
+import dev.mv.engine.exceptions.InvalidGuiFileException;
 import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.components.extras.ValueChange;
@@ -12,7 +13,6 @@ import dev.mv.engine.gui.input.Keyboard;
 import dev.mv.engine.gui.input.ScrollInput;
 import dev.mv.engine.gui.pages.Page;
 import dev.mv.engine.gui.pages.Trigger;
-import dev.mv.engine.exceptions.InvalidGuiFileException;
 import dev.mv.engine.resources.R;
 import dev.mv.utils.Utils;
 import org.w3c.dom.Document;
@@ -73,8 +73,8 @@ public class PageParser {
         NodeList nodeList = tag.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
-            if(node.getNodeType() == Node.ELEMENT_NODE) {
-                if(node.getNodeName().equals("layout")) {
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                if (node.getNodeName().equals("layout")) {
                     Element element = (Element) node;
                     ret.addGui(R.guis.get("default").findGui(element.getAttribute("name")));
                 }
@@ -88,8 +88,8 @@ public class PageParser {
         NodeList nodeList = tag.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
-            if(node.getNodeType() == Node.ELEMENT_NODE) {
-                if(node.getNodeName().equals("trigger")) {
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                if (node.getNodeName().equals("trigger")) {
                     Element element = (Element) node;
                     Trigger trigger = parseTrigger(element, current);
                     current.addTrigger(trigger);
@@ -101,34 +101,34 @@ public class PageParser {
     private Trigger parseTrigger(Element tag, Page current) {
         Trigger trigger = new Trigger();
         trigger.setName(tag.getAttribute("name"));
-        if(tag.hasAttribute("listen")) {
+        if (tag.hasAttribute("listen")) {
             parseEventQuery(tag.getAttribute("listen"), trigger);
         }
 
-        if(tag.hasChildNodes()) {
+        if (tag.hasChildNodes()) {
             NodeList nodeList = tag.getChildNodes();
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
-                if(node.getNodeType() == Node.ELEMENT_NODE) {
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
-                    if(element.getNodeName().equals("redirect")) {
+                    if (element.getNodeName().equals("redirect")) {
                         trigger.setAction(() -> current.getPager().onlyOpen(element.getAttribute("name")));
                     }
-                    if(element.getNodeName().equals("close")) {
+                    if (element.getNodeName().equals("close")) {
                         trigger.setAction(() -> current.getPager().close(element.getAttribute("name")));
                     }
-                    if(element.getNodeName().equals("swap")) {
+                    if (element.getNodeName().equals("swap")) {
                         trigger.setAction(() -> current.getPager().swap(element.getAttribute("from"), element.getAttribute("to")));
                     }
-                    if(element.getNodeName().equals("open")) {
-                        if(!element.hasChildNodes()) {
+                    if (element.getNodeName().equals("open")) {
+                        if (!element.hasChildNodes()) {
                             trigger.setAction(() -> current.getPager().open(element.getAttribute("name")));
                         } else {
                             NodeList nodeList1 = element.getChildNodes();
                             for (int j = 0; j < nodeList1.getLength(); j++) {
                                 Node node1 = nodeList1.item(j);
-                                if(node1.getNodeType() == Node.ELEMENT_NODE) {
-                                    if(node1.getNodeName().equals("focus")) {
+                                if (node1.getNodeType() == Node.ELEMENT_NODE) {
+                                    if (node1.getNodeName().equals("focus")) {
                                         Element focus = (Element) node1;
                                         Trigger leaveTrigger = new Trigger();
                                         parseEventQuery(focus.getAttribute("leave"), leaveTrigger);
@@ -151,7 +151,7 @@ public class PageParser {
                             }
                         }
                     }
-                    if(element.getNodeName().equals("call")) {
+                    if (element.getNodeName().equals("call")) {
                         String handler = element.getAttribute("handler");
                         String gui = handler.split("\\.")[0];
                         String method = handler.split("\\.")[1];
@@ -173,7 +173,7 @@ public class PageParser {
                                 if (paramTypes[j] == String.class) {
                                     params[j] = raws[j].substring(1, raws[j].length() - 1);
                                 } else if (paramTypes[j] == int.class) {
-                                   params[j] = Integer.parseInt(raws[j]);
+                                    params[j] = Integer.parseInt(raws[j]);
                                 } else if (paramTypes[j] == long.class) {
                                     params[j] = Long.parseLong(raws[j].replaceAll("L", ""));
                                 } else if (paramTypes[j] == float.class) {
@@ -210,11 +210,24 @@ public class PageParser {
         String specs = query.substring(query.lastIndexOf('[') + 1, query.lastIndexOf(']'));
         dev.mv.engine.gui.components.Element target = registry.findGui(layoutName).getRoot().findElementById(elementId);
         EventListener listener = switch (event.toLowerCase()) {
-            case "onclick":     if(target instanceof Clickable) yield new ClickListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
-            case "onkey":       if(target instanceof Keyboard) yield new KeyListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
-            case "onscroll":    if(target instanceof ScrollInput) yield new ScrollListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
-            case "onprogress":  if(target instanceof ValueChange) yield new ProgressListenerImpl(trigger, specs); else throwUnsupportedEvent(event, elementId); yield null;
-            default: yield null;
+            case "onclick":
+                if (target instanceof Clickable) yield new ClickListenerImpl(trigger, specs);
+                else throwUnsupportedEvent(event, elementId);
+                yield null;
+            case "onkey":
+                if (target instanceof Keyboard) yield new KeyListenerImpl(trigger, specs);
+                else throwUnsupportedEvent(event, elementId);
+                yield null;
+            case "onscroll":
+                if (target instanceof ScrollInput) yield new ScrollListenerImpl(trigger, specs);
+                else throwUnsupportedEvent(event, elementId);
+                yield null;
+            case "onprogress":
+                if (target instanceof ValueChange) yield new ProgressListenerImpl(trigger, specs);
+                else throwUnsupportedEvent(event, elementId);
+                yield null;
+            default:
+                yield null;
         };
         target.attachListener(listener);
     }
@@ -241,12 +254,12 @@ public class PageParser {
 
         @Override
         public void onCLick(dev.mv.engine.gui.components.Element element, int button) {
-            if(specs.equals("click")) trigger.trigger();
+            if (specs.equals("click")) trigger.trigger();
         }
 
         @Override
         public void onRelease(dev.mv.engine.gui.components.Element element, int button) {
-            if(specs.equals("release")) trigger.trigger();
+            if (specs.equals("release")) trigger.trigger();
         }
     }
 
@@ -258,17 +271,17 @@ public class PageParser {
 
         @Override
         public void onPress(dev.mv.engine.gui.components.Element element, int keyCode, char keyChar) {
-            if(specs.equals("press")) trigger.trigger();
+            if (specs.equals("press")) trigger.trigger();
         }
 
         @Override
         public void onType(dev.mv.engine.gui.components.Element element, int keyCode, char keyChar) {
-            if(specs.equals("type")) trigger.trigger();
+            if (specs.equals("type")) trigger.trigger();
         }
 
         @Override
         public void onRelease(dev.mv.engine.gui.components.Element element, int keyCode, char keyChar) {
-            if(specs.equals("release")) trigger.trigger();
+            if (specs.equals("release")) trigger.trigger();
         }
     }
 
@@ -280,12 +293,12 @@ public class PageParser {
 
         @Override
         public void onIncrement(dev.mv.engine.gui.components.Element e, int currentValue, int totalValue, int percentage) {
-            if(specs.equals("increment")) trigger.trigger();
+            if (specs.equals("increment")) trigger.trigger();
         }
 
         @Override
         public void onDecrement(dev.mv.engine.gui.components.Element e, int currentValue, int totalValue, int percentage) {
-            if(specs.equals("decrement")) trigger.trigger();
+            if (specs.equals("decrement")) trigger.trigger();
         }
     }
 
@@ -297,12 +310,12 @@ public class PageParser {
 
         @Override
         public void onScrollX(dev.mv.engine.gui.components.Element element, int amount) {
-            if(specs.equals("x")) trigger.trigger();
+            if (specs.equals("x")) trigger.trigger();
         }
 
         @Override
         public void onScrollY(dev.mv.engine.gui.components.Element element, int amount) {
-            if(specs.equals("y")) trigger.trigger();
+            if (specs.equals("y")) trigger.trigger();
         }
     }
 }

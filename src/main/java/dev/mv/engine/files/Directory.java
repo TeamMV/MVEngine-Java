@@ -81,7 +81,7 @@ public abstract class Directory {
     public String getName() {
         return name;
     }
-    
+
     public String getRelativePath() {
         return relativePath;
     }

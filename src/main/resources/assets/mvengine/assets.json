@@ -3,18 +3,14 @@
     "item": {
       "itemId": {
         "texture": {
-
         },
         "animation": {
-
         },
         "sound": {
-
         }
       },
       "itemId2": {
         "model": {
-
         }
       }
     },

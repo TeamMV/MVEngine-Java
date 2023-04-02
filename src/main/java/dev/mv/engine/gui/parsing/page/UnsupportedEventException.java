@@ -1,6 +1,6 @@
 package dev.mv.engine.gui.parsing.page;
 
-public class UnsupportedEventException extends Exception{
+public class UnsupportedEventException extends Exception {
     public UnsupportedEventException() {
         super();
     }

@@ -1,6 +1,6 @@
 package dev.mv.engine.exceptions;
 
-public class ResourceInitializationException extends Exception{
+public class ResourceInitializationException extends Exception {
     public ResourceInitializationException() {
     }
 

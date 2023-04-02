@@ -11,22 +11,22 @@ public class Events {
 
     public static void init() {
         Utils.getAllClasses(i -> !Utils.containsAny(i, "dev.mv.engine",
-            "dev.mv.utils", "org.lwjgl", "de.fabmax.physxjni", "physx.",
-            "org.joml", "com.codedisaster.steamworks", "javax.annotation",
-            "org.jetbrains.annotations", "org.intellij"))
+                "dev.mv.utils", "org.lwjgl", "de.fabmax.physxjni", "physx.",
+                "org.joml", "com.codedisaster.steamworks", "javax.annotation",
+                "org.jetbrains.annotations", "org.intellij"))
             .iter().forEach(clazz -> {
-            if (clazz.isAnnotationPresent(EventBusListener.class)) {
-                EventBusListener listener = clazz.getAnnotation(EventBusListener.class);
-                if (listener.type() == ListenerType.STATIC) {
-                    try {
-                        Object instance = clazz.getConstructor().newInstance();
-                        bus(listener.bus()).register(instance);
-                    } catch (Exception ignore) {
-                        Exceptions.send("STATIC_LISTENER_INIT", clazz.getName());
+                if (clazz.isAnnotationPresent(EventBusListener.class)) {
+                    EventBusListener listener = clazz.getAnnotation(EventBusListener.class);
+                    if (listener.type() == ListenerType.STATIC) {
+                        try {
+                            Object instance = clazz.getConstructor().newInstance();
+                            bus(listener.bus()).register(instance);
+                        } catch (Exception ignore) {
+                            Exceptions.send("STATIC_LISTENER_INIT", clazz.getName());
+                        }
                     }
                 }
-            }
-        });
+            });
     }
 
     public static void register(Object instance) {

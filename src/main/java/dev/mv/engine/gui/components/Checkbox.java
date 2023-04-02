@@ -1,7 +1,5 @@
 package dev.mv.engine.gui.components;
 
-import dev.mv.engine.gui.components.animations.TextAnimation;
-import dev.mv.engine.gui.components.animations.TextAnimator;
 import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.event.ClickListener;

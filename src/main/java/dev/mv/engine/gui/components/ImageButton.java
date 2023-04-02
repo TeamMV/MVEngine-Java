@@ -119,7 +119,7 @@ public class ImageButton extends Element implements Toggle, Image, Clickable, Lo
                 draw.color(animationState.textColor);
             }
         }
-        if(texture != null) {
+        if (texture != null) {
             int thickness = Utils.intIf(theme.hasOutline(), theme.getOutlineThickness(), 0);
             draw.canvas(getDrawAreaX1(), getDrawAreaY1(), getDrawAreaX2() - getDrawAreaX1(), getDrawAreaY2() - getDrawAreaY1(), theme);
             draw.image(animationState.posX + thickness, animationState.posY + thickness, animationState.width - thickness * 2, animationState.height - thickness * 2, texture, animationState.rotation, animationState.originX, animationState.originY);

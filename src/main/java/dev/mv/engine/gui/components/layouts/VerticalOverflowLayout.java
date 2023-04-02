@@ -172,36 +172,24 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
         draw.canvas(getDrawAreaX1(), getDrawAreaY1(), getDrawAreaX2() - getDrawAreaX1(), getDrawAreaY2() - getDrawAreaY1(), theme.getEdgeRadius(), theme.getEdgeStyle());
     }
 
-    public enum ScrollStyle {
-        X,
-        Y,
-        BOTH,
-        NONE;
-
-        public boolean canScrollX() {
-            return this == X || this == BOTH;
-        }
-
-        public boolean canScrollY() {
-            return this == Y || this == BOTH;
-        }
-    }
-
     @Override
     public void click(int x, int y, int btn) {
-        if (GuiUtils.mouseNotInside(getX() + getPaddingLeft(), getY() + getPaddingBottom(), getWidth() - getPaddingLeft() - getPaddingRight(), getHeight() - getPaddingBottom() - getPaddingTop(), theme)) return;
+        if (GuiUtils.mouseNotInside(getX() + getPaddingLeft(), getY() + getPaddingBottom(), getWidth() - getPaddingLeft() - getPaddingRight(), getHeight() - getPaddingBottom() - getPaddingTop(), theme))
+            return;
         super.click(x, y, btn);
     }
 
     @Override
     public void clickRelease(int x, int y, int btn) {
-        if (GuiUtils.mouseNotInside(getX() + getPaddingLeft(), getY() + getPaddingBottom(), getWidth() - getPaddingLeft() - getPaddingRight(), getHeight() - getPaddingBottom() - getPaddingTop(), theme)) return;
+        if (GuiUtils.mouseNotInside(getX() + getPaddingLeft(), getY() + getPaddingBottom(), getWidth() - getPaddingLeft() - getPaddingRight(), getHeight() - getPaddingBottom() - getPaddingTop(), theme))
+            return;
         super.clickRelease(x, y, btn);
     }
 
     @Override
     public void dragBegin(int x, int y, int btn) {
-        if (GuiUtils.mouseNotInside(getX() + getPaddingLeft(), getY() + getPaddingBottom(), getWidth() - getPaddingLeft() - getPaddingRight(), getHeight() - getPaddingBottom() - getPaddingTop(), theme)) return;
+        if (GuiUtils.mouseNotInside(getX() + getPaddingLeft(), getY() + getPaddingBottom(), getWidth() - getPaddingLeft() - getPaddingRight(), getHeight() - getPaddingBottom() - getPaddingTop(), theme))
+            return;
         super.dragBegin(x, y, btn);
     }
 
@@ -221,8 +209,8 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
 
     @Override
     public boolean distributeScrollX(int amount) {
-        if(super.distributeScrollX(amount)) return true;
-        if(scrollStyle.canScrollX()) {
+        if (super.distributeScrollX(amount)) return true;
+        if (scrollStyle.canScrollX()) {
             scrollX -= amount * 40;
             elements.forEach(e -> e.setX(e.getX() + scrollX));
         }
@@ -232,12 +220,13 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
     @Override
     public boolean distributeScrollY(int amount) {
         if (super.distributeScrollY(amount)) return true;
-        if(scrollStyle.canScrollY()) {
+        if (scrollStyle.canScrollY()) {
             if (amount < 0 && !canScrollUp()) return true;
             if (amount > 0 && !canScrollDown()) return true;
             scrollY -= amount * 40;
             if (scrollY < 0) scrollY = 0;
-            if (scrollY + (getHeight() - getPaddingTop() - getPaddingBottom()) > getElementHeight()) scrollY = getElementHeight() - (getHeight() - getPaddingTop() - getPaddingBottom());
+            if (scrollY + (getHeight() - getPaddingTop() - getPaddingBottom()) > getElementHeight())
+                scrollY = getElementHeight() - (getHeight() - getPaddingTop() - getPaddingBottom());
             elements.forEach(e -> e.setY(e.getY() + scrollY));
         }
         return true;
@@ -260,10 +249,12 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
     }
 
     @Override
-    public void scrollX(int amount) {}
+    public void scrollX(int amount) {
+    }
 
     @Override
-    public void scrollY(int amount) {}
+    public void scrollY(int amount) {
+    }
 
     @Override
     public int getDrawAreaX1() {
@@ -296,5 +287,20 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
             return getY() + getHeight() - getPaddingTop();
         }
         return Math.min(parent.getDrawAreaY2(), getY() + getHeight() - getPaddingTop());
+    }
+
+    public enum ScrollStyle {
+        X,
+        Y,
+        BOTH,
+        NONE;
+
+        public boolean canScrollX() {
+            return this == X || this == BOTH;
+        }
+
+        public boolean canScrollY() {
+            return this == Y || this == BOTH;
+        }
     }
 }

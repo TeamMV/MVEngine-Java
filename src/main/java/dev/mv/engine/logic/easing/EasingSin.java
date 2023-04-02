@@ -1,6 +1,6 @@
 package dev.mv.engine.logic.easing;
 
-public class EasingSin extends Easing{
+public class EasingSin extends Easing {
     public EasingSin(float start, float end, float from, float to) {
         super(start, end, from, to);
     }

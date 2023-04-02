@@ -5,9 +5,9 @@ import java.lang.reflect.Method;
 
 public class LinkedMethod {
 
+    final boolean receiveCancelled;
     private Object instance;
     private Method method;
-    final boolean receiveCancelled;
 
     LinkedMethod(Object instance, Method method, boolean receiveCancelled) {
         this.instance = instance;

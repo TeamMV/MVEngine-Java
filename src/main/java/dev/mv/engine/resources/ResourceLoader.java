@@ -20,36 +20,10 @@ import dev.mv.utils.collection.Vec;
 import dev.mv.utils.generic.pair.Pair;
 
 import java.io.IOException;
-import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ResourceLoader {
-    private static class ResourceReference {
-        private String path;
-        private String id;
-        private Resource.Type type;
-
-        public ResourceReference(String path, String id, Resource.Type type) {
-            this.path = path;
-            this.id = id;
-            this.type = type;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public Resource.Type getType() {
-            return type;
-        }
-    }
-
     private static Vec<Pair<Integer, ResourceReference>> refs = new Vec<Pair<Integer, ResourceReference>>();
-
 
     public static void markColor(String resourceId, String colorString) {
         refs.push(new Pair<>(0, new ResourceReference(colorString, resourceId, Resource.Type.COLOR)));
@@ -88,7 +62,8 @@ public class ResourceLoader {
     }
 
     public static void load(MVEngine engine, GuiConfig config) throws IOException {
-        load(engine, config, (t, c, p) -> {});
+        load(engine, config, (t, c, p) -> {
+        });
     }
 
     public static void load(MVEngine engine, GuiConfig config, ProgressAction progressAction) throws IOException {
@@ -102,19 +77,25 @@ public class ResourceLoader {
         final AtomicInteger priority = new AtomicInteger(0);
         while (!refs.isEmpty()) {
             refs = refs.iter().unsafe().tryFilter(pair -> {
-                if(pair.a == priority.get()) {
+                if (pair.a == priority.get()) {
                     ResourceReference ref = pair.b;
                     switch (ref.getType()) {
-                        case COLOR ->           register(ref.getId(), Color.parse(ref.getPath()));
-                        case TEXTURE ->         register(ref.getId(), RenderBuilder.newTexture(ref.getPath()).convertToRegion());
-                        case TEXTURE_REGION ->  register(ref.getId(), R.textures.get(ref.getPath().split(":")[0]).getParentTexture().cutRegion(Integer.parseInt(ref.getPath().split(":")[1]), Integer.parseInt(ref.getPath().split(":")[2]), Integer.parseInt(ref.getPath().split(":")[3]), Integer.parseInt(ref.getPath().split(":")[4])));
-                        case MESH ->            register(ref.getId(), engine.getObjectLoader().loadExternalModel(ref.getPath()));
-                        case FONT ->            register(ref.getId(), new BitmapFont(ref.getPath().split(":")[0], ref.getPath().split(":")[1]));
-                        case SOUND ->           register(ref.getId(), engine.getAudio().newSound(ref.getPath()));
-                        case MUSIC ->           register(ref.getId(), engine.getAudio().newMusic(ref.getPath()));
-                        case GUI_LAYOUT ->      register(ref.getId(), guiParser.parse(ResourceLoader.class.getResourceAsStream(config.getLayoutPath() + ref.getPath())));
-                        case GUI_THEME ->       register(ref.getId(), themeParser.parse(ResourceLoader.class.getResourceAsStream(config.getThemePath() + ref.getPath())));
-                        case GUI_PAGE ->        register(ref.getId(), pageParser.parse(ResourceLoader.class.getResourceAsStream(config.getPagePath() + ref.getPath())));
+                        case COLOR -> register(ref.getId(), Color.parse(ref.getPath()));
+                        case TEXTURE ->
+                            register(ref.getId(), RenderBuilder.newTexture(ref.getPath()).convertToRegion());
+                        case TEXTURE_REGION ->
+                            register(ref.getId(), R.textures.get(ref.getPath().split(":")[0]).getParentTexture().cutRegion(Integer.parseInt(ref.getPath().split(":")[1]), Integer.parseInt(ref.getPath().split(":")[2]), Integer.parseInt(ref.getPath().split(":")[3]), Integer.parseInt(ref.getPath().split(":")[4])));
+                        case MESH -> register(ref.getId(), engine.getObjectLoader().loadExternalModel(ref.getPath()));
+                        case FONT ->
+                            register(ref.getId(), new BitmapFont(ref.getPath().split(":")[0], ref.getPath().split(":")[1]));
+                        case SOUND -> register(ref.getId(), engine.getAudio().newSound(ref.getPath()));
+                        case MUSIC -> register(ref.getId(), engine.getAudio().newMusic(ref.getPath()));
+                        case GUI_LAYOUT ->
+                            register(ref.getId(), guiParser.parse(ResourceLoader.class.getResourceAsStream(config.getLayoutPath() + ref.getPath())));
+                        case GUI_THEME ->
+                            register(ref.getId(), themeParser.parse(ResourceLoader.class.getResourceAsStream(config.getThemePath() + ref.getPath())));
+                        case GUI_PAGE ->
+                            register(ref.getId(), pageParser.parse(ResourceLoader.class.getResourceAsStream(config.getPagePath() + ref.getPath())));
                     }
                     Utils.ifNotNull(progressAction).then(p -> p.update(totalRefs, current[0], (int) Utils.getPercent(current[0]++, totalRefs)));
                     return false;
@@ -131,13 +112,37 @@ public class ResourceLoader {
     }
 
     private static void register(String id, Resource resource) {
-        if(resource instanceof TextureRegion t)     R.textures.register(id, t);
-        if(resource instanceof Color t)             R.colors.register(id, t);
-        if(resource instanceof Model t)             R.models.register(id, t);
-        if(resource instanceof Theme t)             R.themes.register(id, t);
-        if(resource instanceof Gui t)               R.layouts.register(id, t);
-        if(resource instanceof GuiRegistry t)       R.guis.register(id, t);
-        if(resource instanceof BitmapFont t)        R.fonts.register(id, t);
-        if(resource instanceof Page t)              R.pages.register(id, t);
+        if (resource instanceof TextureRegion t) R.textures.register(id, t);
+        if (resource instanceof Color t) R.colors.register(id, t);
+        if (resource instanceof Model t) R.models.register(id, t);
+        if (resource instanceof Theme t) R.themes.register(id, t);
+        if (resource instanceof Gui t) R.layouts.register(id, t);
+        if (resource instanceof GuiRegistry t) R.guis.register(id, t);
+        if (resource instanceof BitmapFont t) R.fonts.register(id, t);
+        if (resource instanceof Page t) R.pages.register(id, t);
+    }
+
+    private static class ResourceReference {
+        private String path;
+        private String id;
+        private Resource.Type type;
+
+        public ResourceReference(String path, String id, Resource.Type type) {
+            this.path = path;
+            this.id = id;
+            this.type = type;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public Resource.Type getType() {
+            return type;
+        }
     }
 }

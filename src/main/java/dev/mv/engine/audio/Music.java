@@ -1,11 +1,5 @@
 package dev.mv.engine.audio;
 
-import dev.mv.engine.exceptions.Exceptions;
-import dev.mv.engine.game.mod.loader.ModIntegration;
-
-import java.io.IOException;
-import java.io.InputStream;
-
 import static org.lwjgl.openal.AL11.*;
 
 public final class Music extends Sound {
@@ -31,8 +25,7 @@ public final class Music extends Sound {
         alSourcef(alID, AL_GAIN, volume);
         if (startingOffset > 0 && nextOffset == 0) {
             alSourcef(alID, AL_SEC_OFFSET, startingOffset);
-        }
-        else if (nextOffset > 0) {
+        } else if (nextOffset > 0) {
             alSourcef(alID, AL_SEC_OFFSET, nextOffset);
             nextOffset = 0;
         }
@@ -63,7 +56,7 @@ public final class Music extends Sound {
     }
 
     public void setOffset(float seconds) {
-        if (alID == -1)  {
+        if (alID == -1) {
             nextOffset = seconds;
             return;
         }

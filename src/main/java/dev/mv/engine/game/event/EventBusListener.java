@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 public @interface EventBusListener {
 
     Bus[] bus() default Bus.MOD;
+
     ListenerType type() default ListenerType.STATIC;
 
 }

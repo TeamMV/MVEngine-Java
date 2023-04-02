@@ -9,7 +9,6 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLE_STRIP;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 
 public class Batch3D {

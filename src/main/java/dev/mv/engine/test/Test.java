@@ -11,9 +11,9 @@ import dev.mv.engine.gui.components.FreeSlider;
 import dev.mv.engine.gui.components.layouts.ChoiceGroup;
 import dev.mv.engine.gui.components.layouts.UpdateSection;
 import dev.mv.engine.gui.pages.Page;
-import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.paging.Pager;
 import dev.mv.engine.gui.paging.transitions.LinearShiftTransition;
+import dev.mv.engine.gui.parsing.GuiConfig;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.*;
 import dev.mv.engine.render.shared.graphics.CircularParticleSystem;
@@ -29,7 +29,11 @@ import java.util.HashMap;
 public class Test implements ApplicationLoop {
 
     public static final Test INSTANCE = new Test();
-
+    FreeSlider dir;
+    FreeSlider range;
+    FreeSlider speed;
+    FreeSlider hue;
+    ChoiceGroup shape;
     private DrawContext2D ctx2D;
     private DrawContext3D ctx3D;
     private Camera camera;
@@ -37,13 +41,9 @@ public class Test implements ApplicationLoop {
     private ObjectLoader objectLoader;
     private Directory gameDirectory;
     private CircularParticleSystem particleSystem;
-    FreeSlider dir;
-    FreeSlider range;
-    FreeSlider speed;
-    FreeSlider hue;
-    ChoiceGroup shape;
 
-    private Test() {}
+    private Test() {
+    }
 
     @Override
     public void start(MVEngine engine, Window window) {
@@ -71,7 +71,7 @@ public class Test implements ApplicationLoop {
             GuiRegistry registry = main.getRegistry();
             registry.applyRenderer(ctx2D);
             Pager pager = main.getPager();
-            pager.map(new HashMap<>(){
+            pager.map(new HashMap<>() {
                 {
                     put("myGui", new Pair<>(new LinearShiftTransition(0, 0), 0.5f));
                 }
@@ -105,9 +105,15 @@ public class Test implements ApplicationLoop {
         particleSystem.setSpeed((int) speed.getValue());
         particleSystem.setColor(particleSystem.getColor().toRGB((int) hue.getValue(), 1, 1));
         switch (shape.getCurrentChoice()) {
-            case 1: particleSystem.setShape(ParticleSystem.Shape.TRIANGLE); break;
-            case 2: particleSystem.setShape(ParticleSystem.Shape.SQUARE); break;
-            case 3: particleSystem.setShape(ParticleSystem.Shape.CIRCLE); break;
+            case 1:
+                particleSystem.setShape(ParticleSystem.Shape.TRIANGLE);
+                break;
+            case 2:
+                particleSystem.setShape(ParticleSystem.Shape.SQUARE);
+                break;
+            case 3:
+                particleSystem.setShape(ParticleSystem.Shape.CIRCLE);
+                break;
         }
     }
 

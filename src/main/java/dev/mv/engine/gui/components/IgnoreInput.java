@@ -26,9 +26,9 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
             if (element instanceof Clickable clickable) {
                 clickable.click(x, y, btn);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Clickable clickable) {
+                    if (e instanceof Clickable clickable) {
                         clickable.click(x, y, btn);
                     }
                 }
@@ -42,9 +42,9 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
             if (element instanceof Clickable clickable) {
                 clickable.clickRelease(x, y, btn);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Clickable clickable) {
+                    if (e instanceof Clickable clickable) {
                         clickable.clickRelease(x, y, btn);
                     }
                 }
@@ -58,9 +58,9 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
             if (element instanceof Draggable draggable) {
                 draggable.dragBegin(x, y, btn);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Draggable draggable) {
+                    if (e instanceof Draggable draggable) {
                         draggable.dragBegin(x, y, btn);
                     }
                 }
@@ -74,9 +74,9 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
             if (element instanceof Draggable draggable) {
                 draggable.drag(x, y, btn);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Draggable draggable) {
+                    if (e instanceof Draggable draggable) {
                         draggable.drag(x, y, btn);
                     }
                 }
@@ -90,9 +90,9 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
             if (element instanceof Draggable draggable) {
                 draggable.dragLeave(x, y, btn);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Draggable draggable) {
+                    if (e instanceof Draggable draggable) {
                         draggable.dragLeave(x, y, btn);
                     }
                 }
@@ -106,9 +106,9 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
             if (element instanceof Keyboard keyboard) {
                 keyboard.keyPress(key);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Keyboard keyboard) {
+                    if (e instanceof Keyboard keyboard) {
                         keyboard.keyPress(key);
                     }
                 }
@@ -122,9 +122,9 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
             if (element instanceof Keyboard keyboard) {
                 keyboard.keyType(key);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Keyboard keyboard) {
+                    if (e instanceof Keyboard keyboard) {
                         keyboard.keyType(key);
                     }
                 }
@@ -138,9 +138,9 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
             if (element instanceof Keyboard keyboard) {
                 keyboard.keyRelease(key);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Keyboard keyboard) {
+                    if (e instanceof Keyboard keyboard) {
                         keyboard.keyRelease(key);
                     }
                 }
@@ -155,10 +155,10 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
             if (element instanceof ScrollInput scrollInput) {
                 return scrollInput.distributeScrollX(amount);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
                     if (!GuiUtils.mouseInsideThemed(e)) continue;
-                    if(e instanceof ScrollInput scrollInput) {
+                    if (e instanceof ScrollInput scrollInput) {
                         return scrollInput.distributeScrollX(amount);
                     }
                 }
@@ -174,10 +174,10 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
             if (element instanceof ScrollInput scrollInput) {
                 return scrollInput.distributeScrollY(amount);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
                     if (!GuiUtils.mouseInsideThemed(e)) continue;
-                    if(e instanceof ScrollInput scrollInput) {
+                    if (e instanceof ScrollInput scrollInput) {
                         return scrollInput.distributeScrollY(amount);
                     }
                 }

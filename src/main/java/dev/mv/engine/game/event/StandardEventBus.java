@@ -25,11 +25,11 @@ public class StandardEventBus implements EventBus {
                             if (!cancellable.isCancelled()) {
                                 method.invoke(event);
                             }
-                        }
-                        else {
+                        } else {
                             method.invoke(event);
                         }
-                    } catch (Exception ignore) {}
+                    } catch (Exception ignore) {
+                    }
                 }
             }
         }

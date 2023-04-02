@@ -2,8 +2,6 @@ package dev.mv.engine.gui.pages;
 
 import dev.mv.engine.gui.components.Element;
 
-import java.util.concurrent.Future;
-
 public class Trigger {
     private String name;
     private Element listen;
@@ -39,7 +37,7 @@ public class Trigger {
     }
 
     public void trigger() {
-        if(action != null) action.run();
+        if (action != null) action.run();
     }
 
     public Runnable getAction() {

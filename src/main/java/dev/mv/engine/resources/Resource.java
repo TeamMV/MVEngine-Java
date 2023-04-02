@@ -1,7 +1,7 @@
 package dev.mv.engine.resources;
 
 public interface Resource {
-    enum Type{
+    enum Type {
         COLOR,
         TEXTURE,
         TEXTURE_REGION,

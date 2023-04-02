@@ -7,6 +7,7 @@ import dev.mv.utils.Utils;
 import java.awt.*;
 
 public class VariablePosition {
+    private static int w = 800, h = 600;
     private int x, y, width, height;
     private boolean sizeRelative;
     private PositionCalculator pos;
@@ -19,7 +20,7 @@ public class VariablePosition {
 
     public static VariablePosition fromScreenPosition(int x, int y, int width, int height, int sWidth, int sHeight, boolean sizeRelative) {
         return new VariablePosition(sWidth, sHeight, (w, h, sw, sh) ->
-            new int[] {
+            new int[]{
                 (int) (((float) x / (float) sWidth) * w),
                 (int) (((float) y / (float) sHeight) * h),
                 (int) (((float) width / (float) sWidth) * w),
@@ -27,48 +28,6 @@ public class VariablePosition {
             }, sizeRelative
         );
     }
-
-    public void resize(int width, int height, int windowWidth, int windowHeight) {
-        int[] size = pos.resize(width, height, windowWidth, windowHeight);
-        x = size[0];
-        y = size[1];
-        this.width = size[2];
-        this.height = size[3];
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    private static int w = 800, h = 600;
 
     public static void setup(int width, int height) {
         w = width;
@@ -121,6 +80,46 @@ public class VariablePosition {
         Toolkit.getDefaultToolkit().getScreenResolution();
 
         return result;
+    }
+
+    public void resize(int width, int height, int windowWidth, int windowHeight) {
+        int[] size = pos.resize(width, height, windowWidth, windowHeight);
+        x = size[0];
+        y = size[1];
+        this.width = size[2];
+        this.height = size[3];
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     public boolean isSizeRelative() {

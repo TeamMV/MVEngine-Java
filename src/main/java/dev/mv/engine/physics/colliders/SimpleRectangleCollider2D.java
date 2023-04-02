@@ -11,6 +11,7 @@ public class SimpleRectangleCollider2D implements Collider2D {
 
     private static final String name = SimpleRectangleCollider2D.class.getSimpleName();
     private Physics2D physics2D;
+
     public SimpleRectangleCollider2D(Physics2D physics2D) {
         this.physics2D = physics2D;
     }
@@ -79,7 +80,7 @@ public class SimpleRectangleCollider2D implements Collider2D {
     }
 
     private float[] transform(Rectangle r) {
-        return new float[] {
+        return new float[]{
             r.getCenterX() - r.getHeight() / 2,
             r.getCenterY() - r.getWidth() / 2,
             r.getHeight(),
@@ -88,7 +89,7 @@ public class SimpleRectangleCollider2D implements Collider2D {
     }
 
     private float[] wrap(Rectangle r) {
-        return new float[] {
+        return new float[]{
             r.getX(),
             r.getY(),
             r.getWidth(),

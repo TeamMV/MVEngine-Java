@@ -4,10 +4,10 @@ import dev.mv.engine.physics.Physics2D;
 import org.joml.Vector2f;
 
 public abstract class Shape2D {
+    protected final BoundingBox2D boundingBox = new BoundingBox2D();
     protected float x, y;
     protected float rotation;
     protected Vector2f center;
-    protected final BoundingBox2D boundingBox = new BoundingBox2D();
     protected Physics2D physics;
 
     protected Shape2D(Physics2D physics, Vector2f center) {
@@ -32,8 +32,11 @@ public abstract class Shape2D {
     }
 
     public abstract boolean isCollidingWith(Shape2D shape);
+
     public abstract boolean equalsType(Shape2D shape);
+
     public abstract void scale(float factor);
+
     public abstract void updateBoundingBox();
 
     public void moveX(float amount) {
@@ -97,7 +100,8 @@ public abstract class Shape2D {
 
         float x, y, w, h;
 
-        private BoundingBox2D() {}
+        private BoundingBox2D() {
+        }
 
         public boolean isColliding(BoundingBox2D b) {
             return x < b.x + b.w &&

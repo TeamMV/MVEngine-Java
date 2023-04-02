@@ -93,7 +93,6 @@ public class ResourceRegistry<T> implements Registry<T> {
     }
 
 
-
     private class RegisteredResource<R extends T> implements RegisteredObject<R> {
 
         private String id;

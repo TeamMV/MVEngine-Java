@@ -6,7 +6,8 @@ public interface ExceptionHandler {
     final class Default implements ExceptionHandler {
         public static final Default INSTANCE = new Default();
 
-        private Default() {}
+        private Default() {
+        }
 
         @Override
         public void handle(Throwable throwable) {

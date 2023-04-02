@@ -34,7 +34,8 @@ public class ModFinder {
         for (File file : files) {
             try (JarFile jar = new JarFile(file)) {
                 jarFiles.push(file);
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+            }
         }
         try {
             URL[] urls = jarFiles.iter().map(f -> {
@@ -54,7 +55,8 @@ public class ModFinder {
             for (File file : jarFiles) {
                 modUrls.put(load(file), file.toURI().toURL());
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
     }
 
     private static String load(File file) {
@@ -80,8 +82,7 @@ public class ModFinder {
                         }
                         checkId(id);
                     }
-                }
-                else if (entry.getName().startsWith("assets/")) {
+                } else if (entry.getName().startsWith("assets/")) {
                     assets.push(entry.getName());
                 }
             }
@@ -142,6 +143,7 @@ public class ModFinder {
     static URL getModUrl(String mod) {
         return modUrls.get(mod);
     }
+
     static URLClassLoader getLoader() {
         return modClassLoader;
     }

@@ -3,10 +3,8 @@ package dev.mv.engine.gui.components;
 import dev.mv.engine.gui.components.layouts.AbstractLayout;
 import dev.mv.engine.gui.event.EventListener;
 import dev.mv.engine.gui.utils.VariablePosition;
-import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
-import dev.mv.utils.Utils;
 
 public class Aligner extends AbstractLayout {
     private AlignX alignX = AlignX.CENTER;
@@ -22,28 +20,28 @@ public class Aligner extends AbstractLayout {
 
     @Override
     public void draw(DrawContext2D draw) {
-        if(elements.isEmpty()) return;
-        if(alignX == AlignX.LEFT) {
+        if (elements.isEmpty()) return;
+        if (alignX == AlignX.LEFT) {
             elements.get(0).setX(getX());
         }
 
-        if(alignX == AlignX.CENTER) {
+        if (alignX == AlignX.CENTER) {
             elements.get(0).setX(getX() + (getWidth() / 2 - elements.get(0).getWidth() / 2));
         }
 
-        if(alignX == AlignX.RIGHT) {
+        if (alignX == AlignX.RIGHT) {
             elements.get(0).setX(getX() + getWidth() - elements.get(0).getWidth());
         }
 
-        if(alignY == AlignY.TOP) {
+        if (alignY == AlignY.TOP) {
             elements.get(0).setY(getY() + getHeight() - elements.get(0).getHeight());
         }
 
-        if(alignY == AlignY.CENTER) {
+        if (alignY == AlignY.CENTER) {
             elements.get(0).setY(getY() + getHeight() / 2 - elements.get(0).getHeight() / 2);
         }
 
-        if(alignY == AlignY.BOTTOM) {
+        if (alignY == AlignY.BOTTOM) {
             elements.get(0).setY(getY());
         }
 

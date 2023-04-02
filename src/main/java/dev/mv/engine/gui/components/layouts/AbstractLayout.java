@@ -58,7 +58,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         maxHeight = 0;
         maxWidth = 0;
         for (Element e : elements) {
-            if(e.isSizeRelative()) continue;
+            if (e.isSizeRelative()) continue;
             maxWidth = Math.max(maxWidth, e.getWidth());
             maxHeight = Math.max(maxHeight, e.getHeight());
         }
@@ -165,9 +165,9 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
             if (element instanceof Clickable clickable) {
                 clickable.click(x, y, btn);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Clickable clickable) {
+                    if (e instanceof Clickable clickable) {
                         clickable.click(x, y, btn);
                     }
                 }
@@ -181,9 +181,9 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
             if (element instanceof Clickable clickable) {
                 clickable.clickRelease(x, y, btn);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Clickable clickable) {
+                    if (e instanceof Clickable clickable) {
                         clickable.clickRelease(x, y, btn);
                     }
                 }
@@ -197,9 +197,9 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
             if (element instanceof Draggable draggable) {
                 draggable.dragBegin(x, y, btn);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Draggable draggable) {
+                    if (e instanceof Draggable draggable) {
                         draggable.dragBegin(x, y, btn);
                     }
                 }
@@ -213,9 +213,9 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
             if (element instanceof Draggable draggable) {
                 draggable.drag(x, y, btn);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Draggable draggable) {
+                    if (e instanceof Draggable draggable) {
                         draggable.drag(x, y, btn);
                     }
                 }
@@ -229,9 +229,9 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
             if (element instanceof Draggable draggable) {
                 draggable.dragLeave(x, y, btn);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Draggable draggable) {
+                    if (e instanceof Draggable draggable) {
                         draggable.dragLeave(x, y, btn);
                     }
                 }
@@ -245,9 +245,9 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
             if (element instanceof Keyboard keyboard) {
                 keyboard.keyPress(key);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Keyboard keyboard) {
+                    if (e instanceof Keyboard keyboard) {
                         keyboard.keyPress(key);
                     }
                 }
@@ -261,9 +261,9 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
             if (element instanceof Keyboard keyboard) {
                 keyboard.keyType(key);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Keyboard keyboard) {
+                    if (e instanceof Keyboard keyboard) {
                         keyboard.keyType(key);
                     }
                 }
@@ -277,9 +277,9 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
             if (element instanceof Keyboard keyboard) {
                 keyboard.keyRelease(key);
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof Keyboard keyboard) {
+                    if (e instanceof Keyboard keyboard) {
                         keyboard.keyRelease(key);
                     }
                 }
@@ -290,7 +290,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
     @Override
     public boolean distributeScrollX(int amount) {
         for (Element element : this) {
-            if(!GuiUtils.mouseInsideThemed(element)) continue;
+            if (!GuiUtils.mouseInsideThemed(element)) continue;
             if (element instanceof ScrollInput scrollInput) {
                 return scrollInput.distributeScrollX(amount);
             }
@@ -298,10 +298,10 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
                 scrollable.scrollX(amount);
                 return true;
             }
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if(e instanceof ScrollInput scrollInput) {
-                        if(!GuiUtils.mouseInsideThemed(e)) continue;
+                    if (e instanceof ScrollInput scrollInput) {
+                        if (!GuiUtils.mouseInsideThemed(e)) continue;
                         return scrollInput.distributeScrollX(amount);
                     }
                 }
@@ -339,7 +339,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
         this.theme = theme;
         for (Element element : this) {
             element.setTheme(theme);
-            if(element instanceof IgnoreDraw ig) {
+            if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
                     e.setTheme(theme);
                 }

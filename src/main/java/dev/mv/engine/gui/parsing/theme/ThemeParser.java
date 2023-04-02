@@ -1,8 +1,8 @@
 package dev.mv.engine.gui.parsing.theme;
 
 import dev.mv.engine.exceptions.Exceptions;
-import dev.mv.engine.gui.components.animations.ElementAnimation;
 import dev.mv.engine.exceptions.InvalidGuiFileException;
+import dev.mv.engine.gui.components.animations.ElementAnimation;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.Color;
 import dev.mv.utils.Utils;

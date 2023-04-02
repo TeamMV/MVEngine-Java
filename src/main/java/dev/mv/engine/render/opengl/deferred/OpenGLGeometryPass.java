@@ -8,9 +8,6 @@ import dev.mv.engine.render.shared.models.Entity;
 import dev.mv.engine.render.shared.models.Model;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.utils.Utils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 
 import java.util.List;
 import java.util.Map;

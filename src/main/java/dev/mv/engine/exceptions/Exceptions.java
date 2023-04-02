@@ -21,8 +21,8 @@ public class Exceptions {
         Properties properties = new Properties();
         attempt(() -> properties.load(stream));
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-            if (((String)entry.getKey()).matches("\\[.*\\]")) continue;
-            if (((String)entry.getKey()).startsWith("#")) continue;
+            if (((String) entry.getKey()).matches("\\[.*\\]")) continue;
+            if (((String) entry.getKey()).startsWith("#")) continue;
             parse((String) entry.getKey(), (String) entry.getValue());
         }
     }
@@ -64,8 +64,7 @@ public class Exceptions {
         LinkedException linkedException = messages.get(id);
         if (linkedException != null) {
             send(linkedException.create(args));
-        }
-        else {
+        } else {
             send(new RuntimeException("Unknown exception id!"));
         }
     }
@@ -95,7 +94,8 @@ public class Exceptions {
         public Throwable create(Object... args) {
             try {
                 return clazz.getConstructor(String.class).newInstance(String.format(message, args));
-            } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+            } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
+                     NoSuchMethodException e) {
                 return new RuntimeException(String.format(message, args));
             }
         }

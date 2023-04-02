@@ -1,13 +1,13 @@
 package dev.mv.engine.gui.parsing.gui;
 
 import dev.mv.engine.exceptions.Exceptions;
+import dev.mv.engine.exceptions.InvalidGuiFileException;
 import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.components.*;
 import dev.mv.engine.gui.components.layouts.*;
 import dev.mv.engine.gui.functions.GuiScript;
 import dev.mv.engine.gui.functions.Language;
 import dev.mv.engine.gui.input.Clickable;
-import dev.mv.engine.exceptions.InvalidGuiFileException;
 import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.resources.R;
 import org.w3c.dom.Document;
@@ -189,8 +189,7 @@ public class GuiParser {
                     method.params[i] = Double.parseDouble(param);
                 }
             }
-        }
-        else {
+        } else {
             method.types = new Class<?>[0];
             method.params = new Object[0];
         }
@@ -463,10 +462,10 @@ public class GuiParser {
     //layouts
     private VerticalLayout parseVerticalLayout(Element tag) {
         VerticalLayout layout = new VerticalLayout(null, VariablePosition.getPosition(
-                getStringAttrib(tag.getAttribute("x")),
-                getStringAttrib(tag.getAttribute("y")),
-                getStringAttrib(tag.getAttribute("width")),
-                getStringAttrib(tag.getAttribute("height"))), null);
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
 
         if (tag.hasAttribute("spacing")) {
             layout.setSpacing(getIntAttrib(tag.getAttribute("spacing")));
@@ -571,10 +570,10 @@ public class GuiParser {
 
     private HorizontalLayout parseHorizontalLayout(Element tag) {
         HorizontalLayout layout = new HorizontalLayout(null, VariablePosition.getPosition(
-                getStringAttrib(tag.getAttribute("x")),
-                getStringAttrib(tag.getAttribute("y")),
-                getStringAttrib(tag.getAttribute("width")),
-                getStringAttrib(tag.getAttribute("height"))), null);
+            getStringAttrib(tag.getAttribute("x")),
+            getStringAttrib(tag.getAttribute("y")),
+            getStringAttrib(tag.getAttribute("width")),
+            getStringAttrib(tag.getAttribute("height"))), null);
 
         if (tag.hasAttribute("spacing")) {
             layout.setSpacing(getIntAttrib(tag.getAttribute("spacing")));
@@ -672,7 +671,7 @@ public class GuiParser {
             }
         }
 
-        if(tag.hasAttribute("default")) {
+        if (tag.hasAttribute("default")) {
             int index = getIntAttrib(tag.getAttribute("default"));
             choiceGroup.setCurrentChoice(index);
         }
@@ -714,7 +713,7 @@ public class GuiParser {
             getStringAttrib(tag.getAttribute("width")),
             getStringAttrib(tag.getAttribute("height"))), null);
 
-        if(tag.hasAttribute("texture")) {
+        if (tag.hasAttribute("texture")) {
             picture.setTexture(R.textures.get(getStringAttrib(tag.getAttribute("texture"))));
         }
 
@@ -722,7 +721,7 @@ public class GuiParser {
     }
 
     private dev.mv.engine.gui.components.Element parseSlider(Element tag) {
-        if(tag.getAttribute("style").equals("free")) return parseFreeSlider(tag);
+        if (tag.getAttribute("style").equals("free")) return parseFreeSlider(tag);
         return null;
     }
 
@@ -733,8 +732,8 @@ public class GuiParser {
             getStringAttrib(tag.getAttribute("width")),
             getStringAttrib(tag.getAttribute("height"))), null);
 
-        if(tag.hasAttribute("start")) slider.setStart(getFloatAttrib(tag.getAttribute("start")));
-        if(tag.hasAttribute("end")) slider.setEnd(getFloatAttrib(tag.getAttribute("end")));
+        if (tag.hasAttribute("start")) slider.setStart(getFloatAttrib(tag.getAttribute("start")));
+        if (tag.hasAttribute("end")) slider.setEnd(getFloatAttrib(tag.getAttribute("end")));
 
         return slider;
     }
