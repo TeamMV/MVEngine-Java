@@ -21,8 +21,8 @@
     </colors>
     <general>
         <edges>
-            <style>ROUND</style>
-            <radius>20</radius>
+            <style>TRIANGLE</style>
+            <radius>10</radius>
         </edges>
         <outline>
             <thickness>2</thickness>

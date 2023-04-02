@@ -245,7 +245,7 @@ public class PasswordInputBox extends InputBox {
     public void click(int x, int y, int btn) {
         if (!enabled) return;
         visibilityButton.click(x, y, btn);
-        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height))
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height, theme))
             return;
         else {
             selected = false;
@@ -266,7 +266,7 @@ public class PasswordInputBox extends InputBox {
         selected = false;
         visibilityButton.clickRelease(x, y, btn);
         animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
-        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) {
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height, theme)) {
             return;
         }
         selected = true;

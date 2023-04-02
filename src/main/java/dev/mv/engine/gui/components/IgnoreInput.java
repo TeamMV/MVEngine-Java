@@ -151,13 +151,13 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
     @Override
     public boolean distributeScrollX(int amount) {
         for (Element element : forInput()) {
-            if (!GuiUtils.mouseInside(element)) continue;
+            if (!GuiUtils.mouseInsideThemed(element)) continue;
             if (element instanceof ScrollInput scrollInput) {
                 return scrollInput.distributeScrollX(amount);
             }
             if(element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if (!GuiUtils.mouseInside(e)) continue;
+                    if (!GuiUtils.mouseInsideThemed(e)) continue;
                     if(e instanceof ScrollInput scrollInput) {
                         return scrollInput.distributeScrollX(amount);
                     }
@@ -170,13 +170,13 @@ public abstract class IgnoreInput extends Element implements Clickable, Draggabl
     @Override
     public boolean distributeScrollY(int amount) {
         for (Element element : forInput()) {
-            if (!GuiUtils.mouseInside(element)) continue;
+            if (!GuiUtils.mouseInsideThemed(element)) continue;
             if (element instanceof ScrollInput scrollInput) {
                 return scrollInput.distributeScrollY(amount);
             }
             if(element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
-                    if (!GuiUtils.mouseInside(e)) continue;
+                    if (!GuiUtils.mouseInsideThemed(e)) continue;
                     if(e instanceof ScrollInput scrollInput) {
                         return scrollInput.distributeScrollY(amount);
                     }

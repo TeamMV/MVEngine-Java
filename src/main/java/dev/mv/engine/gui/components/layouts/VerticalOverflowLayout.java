@@ -216,7 +216,7 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
 
     @Override
     public void click(int x, int y, int btn) {
-        if (GuiUtils.mouseNotInside(getX() + getPaddingLeft(), getY() + getPaddingBottom(), getWidth() - getPaddingLeft() - getPaddingRight(), getHeight() - getPaddingBottom() - getPaddingTop())) return;
+        if (GuiUtils.mouseNotInside(getX() + getPaddingLeft(), getY() + getPaddingBottom(), getWidth() - getPaddingLeft() - getPaddingRight(), getHeight() - getPaddingBottom() - getPaddingTop(), theme)) return;
         unreleased[btn] = true;
         super.click(x, y, btn);
     }
@@ -230,7 +230,7 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
 
     @Override
     public void dragBegin(int x, int y, int btn) {
-        if (GuiUtils.mouseNotInside(getX() + getPaddingLeft(), getY() + getPaddingBottom(), getWidth() - getPaddingLeft() - getPaddingRight(), getHeight() - getPaddingBottom() - getPaddingTop())) return;
+        if (GuiUtils.mouseNotInside(getX() + getPaddingLeft(), getY() + getPaddingBottom(), getWidth() - getPaddingLeft() - getPaddingRight(), getHeight() - getPaddingBottom() - getPaddingTop(), theme)) return;
         super.dragBegin(x, y, btn);
     }
 

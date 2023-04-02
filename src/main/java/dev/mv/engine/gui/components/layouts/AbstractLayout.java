@@ -290,7 +290,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
     @Override
     public boolean distributeScrollX(int amount) {
         for (Element element : this) {
-            if(!GuiUtils.mouseInside(element)) continue;
+            if(!GuiUtils.mouseInsideThemed(element)) continue;
             if (element instanceof ScrollInput scrollInput) {
                 return scrollInput.distributeScrollX(amount);
             }
@@ -301,7 +301,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
             if(element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
                     if(e instanceof ScrollInput scrollInput) {
-                        if(!GuiUtils.mouseInside(e)) continue;
+                        if(!GuiUtils.mouseInsideThemed(e)) continue;
                         return scrollInput.distributeScrollX(amount);
                     }
                 }
@@ -313,7 +313,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
     @Override
     public boolean distributeScrollY(int amount) {
         for (Element element : this) {
-            if (!GuiUtils.mouseInside(element)) continue;
+            if (!GuiUtils.mouseInsideThemed(element)) continue;
             if (element instanceof ScrollInput scrollInput) {
                 return scrollInput.distributeScrollY(amount);
             }
@@ -324,7 +324,7 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
             if (element instanceof IgnoreDraw ig) {
                 for (Element e : ig.toRender()) {
                     if (e instanceof ScrollInput scrollInput) {
-                        if (!GuiUtils.mouseInside(e)) continue;
+                        if (!GuiUtils.mouseInsideThemed(e)) continue;
                         return scrollInput.distributeScrollY(amount);
                     }
                 }

@@ -59,7 +59,7 @@ public class Choice extends Checkbox {
     public void click(int x, int y, int btn) {
         if (btn == Input.BUTTON_LEFT)
             if (!enabled) return;
-        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height))
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height, theme))
             return;
         animator.animate(theme.getAnimationInTime(), theme.getAnimationFrames());
         if (!clickListeners.isEmpty()) {
@@ -71,7 +71,7 @@ public class Choice extends Checkbox {
     public void clickRelease(int x, int y, int btn) {
         if (!enabled) return;
         animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
-        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height))
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height, theme))
             return;
         check();
         if (!clickListeners.isEmpty()) {

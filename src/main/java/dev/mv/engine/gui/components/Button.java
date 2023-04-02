@@ -152,7 +152,7 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
     @Override
     public void click(int x, int y, int btn) {
         if (!enabled) return;
-        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height))
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height, theme))
             return;
         animator.animate(theme.getAnimationInTime(), theme.getAnimationFrames());
         if (!clickListeners.isEmpty()) {
@@ -164,7 +164,7 @@ public class Button extends AbstractClickable implements Text, Toggle, Clickable
     public void clickRelease(int x, int y, int btn) {
         if (!enabled) return;
         animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
-        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height))
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height, theme))
             return;
         if (!clickListeners.isEmpty()) {
             clickListeners.forEach(l -> l.onRelease(this, btn));

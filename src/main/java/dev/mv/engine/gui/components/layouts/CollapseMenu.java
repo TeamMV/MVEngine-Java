@@ -246,7 +246,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     @Override
     public void click(int x, int y, int btn) {
         super.click(x, y, btn);
-        if (GuiUtils.mouseNotInside(rootLayout.getX(), rootLayout.getY(), rootLayout.getWidth(), rootLayout.getHeight())) {
+        if (GuiUtils.mouseNotInside(rootLayout)) {
             collapse();
         }
     }

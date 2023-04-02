@@ -24,7 +24,7 @@ void main() {
         discard;
     }
     else if (type != 0 && r > 0) {
-        if (fCanvasData[0] == 1) {
+        if (type == 1) {
             if (gl_FragCoord.x - fCanvasCoords.x < gl_FragCoord.y - (fCanvasCoords.y + fCanvasCoords.w - r)) {
                 discard;
             }

@@ -186,7 +186,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
     @Override
     public void click(int x, int y, int btn) {
         if (!enabled) return;
-        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height))
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height, theme))
             return;
         else {
             selected = false;
@@ -206,7 +206,7 @@ public class InputBox extends Element implements Toggle, Text, Clickable, Keyboa
         if (!enabled) return;
         selected = false;
         animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
-        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height)) {
+        if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height, theme)) {
             return;
         }
         selected = true;

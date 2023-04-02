@@ -145,7 +145,7 @@ public class FreeSlider extends Element implements ValueChange, Draggable {
     @Override
     public void dragBegin(int x, int y, int btn) {
         if(btn == Input.BUTTON_LEFT) {
-            if(GuiUtils.mouseInside(getX(), getY() - 3, getWidth(), getHeight() + 6)) {
+            if (GuiUtils.mouseInside(getX(), getY() - 3, getWidth(), getHeight() + 6, theme)) {
                 isDrag = true;
             }
         }

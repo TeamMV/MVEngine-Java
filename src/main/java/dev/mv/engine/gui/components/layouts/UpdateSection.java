@@ -200,7 +200,7 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
             return scrolled;
         }
         for (Element element : elements) {
-            if (!GuiUtils.mouseInside(element)) continue;
+            if (!GuiUtils.mouseInsideThemed(element)) continue;
             if (element instanceof ScrollInput scrollInput) {
                 return scrollInput.distributeScrollX(amount);
             }
@@ -221,7 +221,7 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
             return scrolled;
         }
         for (Element element : elements) {
-            if (!GuiUtils.mouseInside(element)) continue;
+            if (!GuiUtils.mouseInsideThemed(element)) continue;
             if (element instanceof ScrollInput scrollInput) {
                 return scrollInput.distributeScrollY(amount);
             }
