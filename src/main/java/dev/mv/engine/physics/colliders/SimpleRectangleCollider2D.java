@@ -71,24 +71,24 @@ public class SimpleRectangleCollider2D implements Collider2D {
         return check(transform(a), transform(b));
     }
 
-    private boolean check(int ax, int ay, int aw, int ah, int bx, int by, int bw, int bh) {
+    private boolean check(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh) {
         return ax < bx + bw &&
             ax + aw > bx &&
             ay < by + bh &&
             ay + ah > by;
     }
 
-    private int[] transform(Rectangle r) {
-        return new int[] {
-            r.getCenter().x - r.getHeight() / 2,
-            r.getCenter().y - r.getWidth() / 2,
+    private float[] transform(Rectangle r) {
+        return new float[] {
+            r.getCenterX() - r.getHeight() / 2,
+            r.getCenterY() - r.getWidth() / 2,
             r.getHeight(),
             r.getWidth()
         };
     }
 
-    private int[] wrap(Rectangle r) {
-        return new int[] {
+    private float[] wrap(Rectangle r) {
+        return new float[] {
             r.getX(),
             r.getY(),
             r.getWidth(),
@@ -96,7 +96,7 @@ public class SimpleRectangleCollider2D implements Collider2D {
         };
     }
 
-    private boolean check(int[] a, int[] b) {
+    private boolean check(float[] a, float[] b) {
         return a[0] < b[0] + b[2] &&
             a[0] + a[2] > b[0] &&
             a[1] < b[1] + b[3] &&

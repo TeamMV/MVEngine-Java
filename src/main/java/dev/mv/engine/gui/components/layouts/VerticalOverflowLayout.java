@@ -2,12 +2,9 @@ package dev.mv.engine.gui.components.layouts;
 
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.extras.IgnoreDraw;
-import dev.mv.engine.gui.input.ScrollInput;
 import dev.mv.engine.gui.input.Scrollable;
 import dev.mv.engine.gui.utils.GuiUtils;
 import dev.mv.engine.gui.utils.VariablePosition;
-import dev.mv.engine.input.Input;
-import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.utils.Utils;
@@ -120,7 +117,6 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
                         element.draw(draw);
                         yStart -= element.getHeight();
                         yStart -= spacing;
-                        setupCanvas(draw);
                     }
                     continue;
                 }
@@ -129,7 +125,6 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
                 e.draw(draw);
                 yStart -= e.getHeight();
                 yStart -= spacing;
-                setupCanvas(draw);
             }
         } else if (currentAlign == Align.CENTER) {
             for (Element e : elements) {
@@ -140,7 +135,6 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
                         element.draw(draw);
                         yStart -= element.getHeight();
                         yStart -= spacing;
-                        setupCanvas(draw);
                     }
                     continue;
                 }
@@ -149,7 +143,6 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
                 e.draw(draw);
                 yStart -= e.getHeight();
                 yStart -= spacing;
-                setupCanvas(draw);
             }
         } else if (currentAlign == Align.RIGHT) {
             for (Element e : elements) {
@@ -160,7 +153,6 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
                         element.draw(draw);
                         yStart -= element.getHeight();
                         yStart -= spacing;
-                        setupCanvas(draw);
                     }
                     continue;
                 }
@@ -169,7 +161,6 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
                 e.draw(draw);
                 yStart -= e.getHeight();
                 yStart -= spacing;
-                setupCanvas(draw);
             }
         }
 
@@ -179,24 +170,6 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
 
     private void setupCanvas(DrawContext2D draw) {
         draw.canvas(getDrawAreaX1(), getDrawAreaY1(), getDrawAreaX2() - getDrawAreaX1(), getDrawAreaY2() - getDrawAreaY1(), theme.getEdgeRadius(), theme.getEdgeStyle());
-    }
-
-    private void resetCanvas(DrawContext2D draw) {
-        if (parent != null) {
-            int drawX1 = parent.getDrawAreaX1();
-            int drawY1 =  parent.getDrawAreaY1();
-            int drawX2 = parent.getDrawAreaX2();
-            int drawY2 =  parent.getDrawAreaY2();
-            if (drawX1 == 0 && drawY1 == 0 && drawX2 == window.getWidth() && drawY2 == window.getHeight()) {
-                draw.canvas(drawX1, drawY1, drawX2 - drawX1, drawY2 - drawY1);
-            }
-            else {
-                draw.canvas(drawX1, drawY1, drawX2 - drawX1, drawY2 - drawY1, theme.getEdgeRadius(), theme.getEdgeStyle());
-            }
-        }
-        else {
-            draw.canvas();
-        }
     }
 
     public enum ScrollStyle {
@@ -217,14 +190,12 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
     @Override
     public void click(int x, int y, int btn) {
         if (GuiUtils.mouseNotInside(getX() + getPaddingLeft(), getY() + getPaddingBottom(), getWidth() - getPaddingLeft() - getPaddingRight(), getHeight() - getPaddingBottom() - getPaddingTop(), theme)) return;
-        unreleased[btn] = true;
         super.click(x, y, btn);
     }
 
     @Override
     public void clickRelease(int x, int y, int btn) {
-        if (!unreleased[btn]) return;
-        unreleased[btn] = false;
+        if (GuiUtils.mouseNotInside(getX() + getPaddingLeft(), getY() + getPaddingBottom(), getWidth() - getPaddingLeft() - getPaddingRight(), getHeight() - getPaddingBottom() - getPaddingTop(), theme)) return;
         super.clickRelease(x, y, btn);
     }
 

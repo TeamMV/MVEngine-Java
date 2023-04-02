@@ -3,8 +3,6 @@ package dev.mv.engine.gui.components.layouts;
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.ImageButton;
 import dev.mv.engine.gui.components.TextLine;
-import dev.mv.engine.gui.components.animations.TextAnimation;
-import dev.mv.engine.gui.components.animations.TextAnimator;
 import dev.mv.engine.gui.components.assets.GuiAssets;
 import dev.mv.engine.gui.components.extras.Text;
 import dev.mv.engine.gui.components.extras.Toggle;
@@ -21,6 +19,7 @@ import dev.mv.engine.render.shared.font.BitmapFont;
 
 import java.util.function.Predicate;
 
+@Deprecated(since = "never cuz never working ;-;", forRemoval = false)
 public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     private boolean collapsed = true;
     private LayerSection layerSection;
@@ -28,8 +27,6 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     private ButtonSide side = ButtonSide.LEFT;
 
     private UpdateSection updateSection;
-    private HorizontalLayout rootLayout;
-    private VerticalLayout stackLayout;
     private HorizontalLayout headerLayout;
     private VerticalLayout contentLayout;
 
@@ -58,20 +55,14 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     }
 
     private void prepareElements() {
-        layerSection = new LayerSection(window, null);
+        updateSection = new UpdateSection(window, this);
+        layerSection = new LayerSection(window, updateSection);
         layerSection.setLayerToRenderOn(1);
-        updateSection = new UpdateSection(window, layerSection);
-        rootLayout = new HorizontalLayout(window, this);
-        rootLayout.alignContent(HorizontalLayout.Align.BOTTOM);
-        stackLayout = new VerticalLayout(window, rootLayout);
-        stackLayout.setSpacing(5);
-        stackLayout.alignContent(VerticalLayout.Align.LEFT);
-        headerLayout = new HorizontalLayout(window, stackLayout);
+        headerLayout = new HorizontalLayout(window, layerSection);
         headerLayout.setPadding(5, 5, 5, 5);
         headerLayout.showFrame();
-        contentLayout = new VerticalLayout(window, stackLayout);
+        contentLayout = new VerticalLayout(window, updateSection);
         contentLayout.setSpacing(5);
-        stackLayout.addElement(headerLayout);
 
         collapseButton = new ImageButton(window, headerLayout, initialState.height, initialState.height);
         collapseButton.attachListener(new ClickListener() {
@@ -84,7 +75,6 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
             public void onRelease(Element element, int button) {
                 if (button == Input.BUTTON_LEFT) {
                     toggleCollapseState();
-                    collapseButton.setTexture(isCollapsed() ? GuiAssets.ARROW_DOWN : GuiAssets.ARROW_UP);
                 }
             }
         });
@@ -104,10 +94,11 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
         contentLayout.setSpacing(5);
         contentLayout.showFrame();
 
-        layerSection.addElement(updateSection);
-        updateSection.addElement(rootLayout);
-        rootLayout.addElement(stackLayout);
-        super.addElement(layerSection);
+        updateSection.addElement(layerSection);
+        layerSection.addElement(headerLayout);
+        super.addElement(updateSection);
+
+        System.out.println(this);
     }
 
     protected int textDistance() {
@@ -154,7 +145,14 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
 
     @Override
     public void draw(DrawContext2D draw) {
-        layerSection.draw(draw);
+        updateSection.setX(getX());
+        updateSection.setY(getY());
+        updateSection.draw(draw);
+        if(!collapsed) {
+            contentLayout.setX(getX());
+            contentLayout.setY(getY() - contentLayout.getHeight());
+            contentLayout.draw(draw);
+        }
     }
 
     @Override
@@ -205,7 +203,6 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
 
     public void collapse() {
         collapsed = true;
-        stackLayout.removeElement(contentLayout);
         collapseButton.setTexture(GuiAssets.ARROW_DOWN);
         gui.enableAllUpdates();
         layerSection.dismiss();
@@ -213,7 +210,6 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
 
     public void inflate() {
         collapsed = false;
-        stackLayout.addElement(contentLayout);
         collapseButton.setTexture(GuiAssets.ARROW_UP);
         gui.disableAllUpdates();
         updateSection.enable();
@@ -221,8 +217,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     }
 
     public void toggleCollapseState() {
-        collapsed = !collapsed;
-        if (collapsed) collapse();
+        if (!collapsed) collapse();
         else inflate();
     }
 
@@ -234,7 +229,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     public void setTheme(Theme theme) {
         super.setTheme(theme);
         collapseButton.setTexture(isCollapsed() ? GuiAssets.ARROW_DOWN : GuiAssets.ARROW_UP);
-        rootLayout.setTheme(theme);
+        layerSection.setTheme(theme);
         contentLayout.setTheme(theme);
     }
 
@@ -246,7 +241,7 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     @Override
     public void click(int x, int y, int btn) {
         super.click(x, y, btn);
-        if (GuiUtils.mouseNotInside(rootLayout)) {
+        if (GuiUtils.mouseNotInsideThemed(collapseButton)) {
             collapse();
         }
     }
@@ -257,18 +252,18 @@ public class CollapseMenu extends AbstractLayout implements Toggle, Text {
     }
 
     @Override
-    public void setX(int x) {
-        rootLayout.setX(x);
-    }
-
-    @Override
     public int getY() {
         return headerLayout != null ? headerLayout.getY() : 0;
     }
 
     @Override
+    public void setX(int x) {
+        headerLayout.setX(x);
+    }
+
+    @Override
     public void setY(int y) {
-        rootLayout.setY(y);
+        headerLayout.setY(y);
     }
 
     @Override

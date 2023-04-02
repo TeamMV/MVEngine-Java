@@ -1,14 +1,14 @@
 package dev.mv.engine.physics.shapes2d;
 
 import dev.mv.engine.MVEngine;
-import org.joml.Vector2i;
+import org.joml.Vector2f;
 
 public class Circle extends Oval {
 
-    private int radius;
+    private float radius;
 
-    public Circle(int x, int y, int radius) {
-        super(new Vector2i(x, y), radius);
+    public Circle(float x, float y, float radius) {
+        super(new Vector2f(x, y), radius);
         this.radius = radius;
     }
 
@@ -18,35 +18,64 @@ public class Circle extends Oval {
     }
 
     @Override
-    public boolean isSameType(Shape2D shape) {
+    public boolean equalsType(Shape2D shape) {
         return shape instanceof Circle;
     }
 
-    public int getRadius() {
-        return radius;
-    }
-
-    public void setRadius(int radius) {
-        this.radius = radius;
-        c = radius * 2;
+    @Override
+    public void updateBoundingBox() {
+        boundingBox.x = center.x - radius;
+        boundingBox.y = center.y - radius;
+        boundingBox.w = center.x + radius;
+        boundingBox.h = center.y + radius;
     }
 
     @Override
-    public void setFocusA(Vector2i focA) {
+    public void scale(float factor) {
+        radius *= factor;
+        a = radius;
+        b = radius;
+        c = radius * 2;
+        rVec.x = radius;
+        updateBoundingBox();
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    public void setRadius(float radius) {
+        this.radius = radius;
+        a = radius;
+        b = radius;
+        rVec.x = radius;
+        c = radius * 2;
+        updateBoundingBox();
+    }
+
+    @Override
+    public void setFocusA(Vector2f focA) {
         this.focA = focA;
-        focB = focB;
+        focB = focA;
         setX(focA.x);
         setY(focA.y);
     }
 
     @Override
-    public void setFocusB(Vector2i focB) {
+    public void setFocusB(Vector2f focB) {
         setFocusA(focB);
     }
 
     @Override
-    public void setConstant(int c) {
-        radius = c / 2;
-        this.c = c;
+    public void setConstant(float c) {
+        setRadius(c / 2);
     }
+
+    @Override
+    public float getRotation() {
+        return 0;
+    }
+
+    @Override
+    public void setRotation(float rotation) {}
 }

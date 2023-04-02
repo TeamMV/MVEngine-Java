@@ -13,7 +13,6 @@ import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.shared.texture.TextureRegion;
 import dev.mv.engine.resources.R;
 import dev.mv.utils.Utils;
-import org.joml.Matrix3x2f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -59,6 +58,15 @@ public class DrawContext2D {
         edgeRadius = 0;
     }
 
+    public void canvas(int x, int y, int width, int height, Theme theme) {
+        canvas.x = x;
+        canvas.y = y;
+        canvas.z = width;
+        canvas.w = height;
+        edgeStyle = theme.getEdgeStyle().toInt();
+        edgeRadius = theme.getEdgeRadius();
+    }
+
     public void canvas(int x, int y, int width, int height, int radius, Theme.EdgeStyle type) {
         canvas.x = x;
         canvas.y = y;
@@ -75,6 +83,13 @@ public class DrawContext2D {
         canvas.w = window.getHeight();
         edgeStyle = 0;
         edgeRadius = 0;
+    }
+
+    public void unstyleFullCanvas() {
+        if (canvas.x == 0 && canvas.y == 0 && canvas.z == window.getWidth() && canvas.w == window.getHeight()) {
+            edgeStyle = 0;
+            edgeRadius = 0;
+        }
     }
 
     public void beginStrip() {

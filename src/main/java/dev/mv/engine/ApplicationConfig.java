@@ -63,6 +63,17 @@ public class ApplicationConfig {
     public enum GameDimension {
         COMBINED,
         ONLY_2D,
-        ONLY_3D
+        ONLY_3D;
+
+        public boolean isValid() {
+            if(this == COMBINED) return true;
+            if(MVEngine.instance().getApplicationConfig().getDimension() == COMBINED) return true;
+            return this == MVEngine.instance().getApplicationConfig().getDimension();
+        }
+
+        public boolean isCompatible(GameDimension other) {
+            if (this == COMBINED || other == COMBINED) return true;
+            return this == other;
+        }
     }
 }

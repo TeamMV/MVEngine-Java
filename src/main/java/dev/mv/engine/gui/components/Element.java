@@ -298,6 +298,16 @@ public abstract class Element {
         return position != null && position.isSizeRelative();
     }
 
+    protected void resetCanvas(DrawContext2D draw) {
+        if (parent == null) {
+            draw.canvas();
+        }
+        else {
+            draw.canvas(parent.getDrawAreaX1(), parent.getDrawAreaY1(), parent.getDrawAreaX2() - parent.getDrawAreaX1(), parent.getDrawAreaY2() - parent.getDrawAreaY1(), theme);
+            draw.unstyleFullCanvas();
+        }
+    }
+
     public int getDrawAreaX1() {
         if (parent == null) {
             return 0;

@@ -7,6 +7,8 @@ import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.gui.GuiManager;
 import dev.mv.engine.input.GlfwClipboard;
 import dev.mv.engine.input.Input;
+import dev.mv.engine.physics.shapes2d.Circle;
+import dev.mv.engine.physics.shapes2d.Shape2D;
 import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.*;
 import dev.mv.engine.render.shared.Window;

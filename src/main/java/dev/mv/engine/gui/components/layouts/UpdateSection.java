@@ -71,7 +71,7 @@ public class UpdateSection extends AbstractLayout implements Toggle, IgnoreDraw 
     @Override
     public void clickRelease(int x, int y, int btn) {
         if (!enabled) {
-            for (Element element : allElementsDeep()) {
+            for (Element element : elements) {
                 if (element instanceof UpdateSection updateSection) {
                     updateSection.clickRelease(x, y, btn);
                 }

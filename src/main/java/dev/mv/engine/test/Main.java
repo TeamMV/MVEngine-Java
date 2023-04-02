@@ -6,6 +6,8 @@ import dev.mv.engine.render.WindowCreateInfo;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.utils.misc.Version;
 
+import java.io.Serializable;
+
 public class Main {
     public static void main(String[] args) throws Exception {
         ApplicationConfig config = new ApplicationConfig();

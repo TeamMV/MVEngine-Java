@@ -17,26 +17,26 @@ public class PasswordInputBox extends InputBox {
 
     public PasswordInputBox(Window window, Element parent, int width, int height) {
         super(window, parent, width - height - 5, height);
-        prepareButton(window, parent, -1, -1, width, height);
+        prepareButton(window,  -1, -1, width, height);
     }
 
     public PasswordInputBox(Window window, Element parent, int x, int y, int width, int height) {
         super(window, x, y, parent, width - height - 5, height);
-        prepareButton(window, parent, x, y, width, height);
+        prepareButton(window,  x, y, width, height);
     }
 
     public PasswordInputBox(Window window, int x, int y, int width, int height) {
         super(window, x, y, width - height - 5, height);
-        prepareButton(window, null, x, y, width, height);
+        prepareButton(window, x, y, width, height);
     }
 
     public PasswordInputBox(Window window, VariablePosition position, Element parent) {
         super(window, position, parent);
-        prepareButton(window, null, position.getX(), position.getY(), position.getWidth(), position.getHeight());
+        prepareButton(window, position.getX(), position.getY(), position.getWidth(), position.getHeight());
     }
 
-    private void prepareButton(Window window, Element parent, int x, int y, int width, int height) {
-        visibilityButton = new ImageButton(window, x + width - height, y, parent, height, height);
+    private void prepareButton(Window window, int x, int y, int width, int height) {
+        visibilityButton = new ImageButton(window, x + width - height, y, this, height, height);
         visibilityButton.attachListener(new ClickListener() {
             @Override
             public void onCLick(Element element, int button) {

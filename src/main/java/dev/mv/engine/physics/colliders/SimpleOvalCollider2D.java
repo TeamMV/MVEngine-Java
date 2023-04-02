@@ -12,7 +12,7 @@ public class SimpleOvalCollider2D implements Collider2D {
     private static final String name = SimpleOvalCollider2D.class.getSimpleName();
 
     private Physics2D physics;
-    private float[] innerPolygonCoef, outerPolygonCoef;
+    private final float[] innerPolygonCoef, outerPolygonCoef;
     private final int maxIterations = 10;
 
     public SimpleOvalCollider2D(Physics2D physics) {
@@ -61,7 +61,7 @@ public class SimpleOvalCollider2D implements Collider2D {
             }
             return collide(a.getX(), a.getY(), aRa, aRb, b.getX(), b.getY(), bRa, bRb);
         }
-        return collide(a.getX(), a.getY(), a.getRadiusVec().x, a.getRadiusVec().y, a.getRadiusRatio(), b.getX(), b.getY(), b.getRadiusVec().x, b.getRadiusVec().y, b.getRadiusRatio());
+        return collide(a.getX(), a.getY(), a.getRadiusVecX(), a.getRadiusVecY(), a.getRadiusRatio(), b.getX(), b.getY(), b.getRadiusVecX(), b.getRadiusVecY(), b.getRadiusRatio());
     }
 
     private boolean checkOvalCircle(Oval a, Circle b) {

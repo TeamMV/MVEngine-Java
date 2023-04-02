@@ -1,0 +1,24 @@
+.outer {
+    x = 200;
+    y = 100;
+    width = 50vw;
+    height = 60vh;
+    spacing = 5;
+    showFrame = true;
+    padding = [5];
+    align = CENTER;
+}
+
+#quitButton {
+    minWidth = 100;
+    minHeight = 50;
+    ratio = 1:1;
+}
+
+#chromaButton {
+    textChroma = true;
+}
+
+"defaultSeparator" {
+    width = 100;
+}

@@ -72,19 +72,23 @@ public class Pager {
 
     public void open(String name) {
         open.put(name, registry.findGui(name));
-        R.guis.get("default").findGui(name).enableAllUpdates();
+        Gui gui = registry.findGui(name);
+        System.out.println(gui);
+        gui.enableAllUpdates();
+
+        gui.resize(gui.getRoot().getWindow().getWidth(), gui.getRoot().getWindow().getHeight());
 
         new PromiseNull((resolverNull, rejector) -> {
             Pair<Transition, Float> transitionToPair = transitions.get(name);
             if (transitionToPair == null) {
-                R.guis.get("default").toRenderList().add(registry.findGui(name));
+                R.guis.get("default").toRenderList().add(gui);
                 return;
             }
 
             Transition transitionTo = transitionToPair.a;
 
             if(transitionTo == null) {
-                R.guis.get("default").toRenderList().add(registry.findGui(name));
+                R.guis.get("default").toRenderList().add(gui);
                 return;
             }
 

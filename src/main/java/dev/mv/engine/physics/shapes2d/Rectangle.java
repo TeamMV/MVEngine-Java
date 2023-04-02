@@ -1,22 +1,24 @@
 package dev.mv.engine.physics.shapes2d;
 
 import dev.mv.engine.MVEngine;
-import org.joml.Vector2i;
+import org.joml.Vector2f;
 
 public class Rectangle extends Shape2D {
-    protected int width, height;
+    protected float width, height;
 
-    public Rectangle(int x, int y, int width, int height) {
-        super(MVEngine.instance().getPhysics2D(), x, y, new Vector2i(x + width / 2, y + height / 2));
+    public Rectangle(float x, float y, float width, float height) {
+        super(MVEngine.instance().getPhysics2D(), x, y, new Vector2f(x + width / 2, y + height / 2));
         this.width = width;
         this.height = height;
+        updateBoundingBox();
     }
 
-    public Rectangle(int x, int y, int width, int height, float rotation) {
-        super(MVEngine.instance().getPhysics2D(), x, y, new Vector2i(x + width / 2, y + height / 2));
+    public Rectangle(float x, float y, float width, float height, float rotation) {
+        super(MVEngine.instance().getPhysics2D(), x, y, new Vector2f(x + width / 2, y + height / 2));
         this.width = width;
         this.height = height;
         setRotation(rotation);
+        updateBoundingBox();
     }
 
     @Override
@@ -25,28 +27,43 @@ public class Rectangle extends Shape2D {
     }
 
     @Override
-    public boolean isSameType(Shape2D shape) {
+    public boolean equalsType(Shape2D shape) {
         return shape instanceof Rectangle;
     }
 
     @Override
-    protected void recalculateVertices() {
-
+    public void updateBoundingBox() {
+        float size = Math.max(width, height) / 2;
+        boundingBox.x = center.x - size;
+        boundingBox.y = center.y - size;
+        boundingBox.w = center.x + size;
+        boundingBox.h = center.y + size;
     }
 
-    public int getWidth() {
+    @Override
+    public void scale(float factor) {
+        width *= factor;
+        height *= factor;
+        x = center.x - width / 2;
+        y = center.y - height / 2;
+        updateBoundingBox();
+    }
+
+    public float getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(float width) {
         this.width = width;
+        updateBoundingBox();
     }
 
-    public int getHeight() {
+    public float getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(float height) {
         this.height = height;
+        updateBoundingBox();
     }
 }

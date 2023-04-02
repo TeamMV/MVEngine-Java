@@ -21,7 +21,7 @@ public class SimpleCircleCollider2D implements Collider2D {
         checkType(a, b);
         float xDist = a.getX() - b.getX();
         float yDist = a.getY() - b.getY();
-        return Math.sqrt(Utils.square(xDist) + Utils.square(yDist)) <= ((Circle) a).getRadius() + ((Circle) b).getRadius();
+        return Utils.square(xDist) + Utils.square(yDist) <= Utils.square(((Circle) a).getRadius() + ((Circle) b).getRadius());
     }
 
     private void checkType(Shape2D a, Shape2D b) {

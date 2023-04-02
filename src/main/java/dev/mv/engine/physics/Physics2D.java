@@ -40,7 +40,7 @@ public class Physics2D {
     }
 
     public Collider2D getCollider(Shape2D a, Shape2D b) {
-        if (a.isSameType(b)) {
+        if (a.equalsType(b)) {
             if (a instanceof Rectangle) {
                 if (a.getRotation() % 90 == 0 && a.getRotation() % 90 == 0) {
                     return aabb;

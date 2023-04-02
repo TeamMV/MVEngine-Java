@@ -15,6 +15,7 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.texture.Texture;
 import dev.mv.engine.render.shared.texture.TextureRegion;
 import dev.mv.engine.resources.R;
+import dev.mv.utils.Utils;
 
 public class ImageButton extends Element implements Toggle, Image, Clickable, Looper {
     protected TextureRegion texture;
@@ -58,26 +59,16 @@ public class ImageButton extends Element implements Toggle, Image, Clickable, Lo
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.roundedRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
-                draw.color(0, 0, 0, 0);
-                if (useTextColor) {
-                    draw.color(animationState.textColor);
-                }
-                if (texture != null) {
-                    draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
-                }
             } else {
                 draw.color(animationState.baseColor);
                 if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.roundedRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
-                draw.color(0, 0, 0, 0);
-                if (useTextColor) {
-                    draw.color(animationState.textColor);
-                }
-                if (texture != null) {
-                    draw.image(animationState.posX, animationState.posY, animationState.width, animationState.height, texture, animationState.rotation, animationState.originX, animationState.originY);
-                }
+            }
+            draw.color(0, 0, 0, 0);
+            if (useTextColor) {
+                draw.color(animationState.textColor);
             }
         } else if (theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
             if (theme.hasOutline()) {
@@ -92,26 +83,16 @@ public class ImageButton extends Element implements Toggle, Image, Clickable, Lo
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.triangularRectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
-                draw.color(0, 0, 0, 0);
-                if (useTextColor) {
-                    draw.color(animationState.textColor);
-                }
-                if (texture != null) {
-                    draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
-                }
             } else {
                 draw.color(animationState.baseColor);
                 if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.triangularRectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, theme.getEdgeRadius(), animationState.rotation, animationState.originX, animationState.originY);
-                draw.color(0, 0, 0, 0);
-                if (useTextColor) {
-                    draw.color(animationState.textColor);
-                }
-                if (texture != null) {
-                    draw.image(animationState.posX, animationState.posY, animationState.width, animationState.height, texture, animationState.rotation, animationState.originX, animationState.originY);
-                }
+            }
+            draw.color(0, 0, 0, 0);
+            if (useTextColor) {
+                draw.color(animationState.textColor);
             }
         } else if (theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
             if (theme.hasOutline()) {
@@ -126,27 +107,23 @@ public class ImageButton extends Element implements Toggle, Image, Clickable, Lo
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.rectangle(animationState.posX + thickness, animationState.posY + thickness, animationState.width - 2 * thickness, animationState.height - 2 * thickness, animationState.rotation, animationState.originX, animationState.originY);
-                draw.color(0, 0, 0, 0);
-                if (useTextColor) {
-                    draw.color(animationState.textColor);
-                }
-                if (texture != null) {
-                    draw.image(animationState.posX + theme.getEdgeRadius(), animationState.posY + theme.getEdgeRadius(), animationState.width - 2 * theme.getEdgeRadius(), animationState.height - 2 * theme.getEdgeRadius(), texture, animationState.rotation, animationState.originX, animationState.originY);
-                }
             } else {
                 draw.color(animationState.baseColor);
                 if (!enabled) {
                     draw.color(theme.getDisabledBaseColor());
                 }
                 draw.rectangle(animationState.posX, animationState.posY, animationState.width, animationState.height, animationState.rotation, animationState.originX, animationState.originY);
-                draw.color(0, 0, 0, 0);
-                if (useTextColor) {
-                    draw.color(animationState.textColor);
-                }
-                if (texture != null) {
-                    draw.image(animationState.posX, animationState.posY, animationState.width, animationState.height, texture, animationState.rotation, animationState.originX, animationState.originY);
-                }
             }
+            draw.color(0, 0, 0, 0);
+            if (useTextColor) {
+                draw.color(animationState.textColor);
+            }
+        }
+        if(texture != null) {
+            int thickness = Utils.intIf(theme.hasOutline(), theme.getOutlineThickness(), 0);
+            draw.canvas(getDrawAreaX1(), getDrawAreaY1(), getDrawAreaX2() - getDrawAreaX1(), getDrawAreaY2() - getDrawAreaY1(), theme);
+            draw.image(animationState.posX + thickness, animationState.posY + thickness, animationState.width - thickness * 2, animationState.height - thickness * 2, texture, animationState.rotation, animationState.originX, animationState.originY);
+            resetCanvas(draw);
         }
     }
 
@@ -174,6 +151,7 @@ public class ImageButton extends Element implements Toggle, Image, Clickable, Lo
         animator.animateBack(theme.getAnimationOutTime(), theme.getAnimationFrames());
         if (GuiUtils.mouseNotInside(initialState.posX, initialState.posY, initialState.width, initialState.height, theme))
             return;
+
         if (!clickListeners.isEmpty()) {
             clickListeners.forEach(l -> l.onRelease(this, btn));
         }
@@ -232,5 +210,41 @@ public class ImageButton extends Element implements Toggle, Image, Clickable, Lo
         if (textureResource != null) {
             texture = R.textures.get(textureResource);
         }
+    }
+
+    @Override
+    public int getDrawAreaX1() {
+        int thickness = theme.hasOutline() ? theme.getOutlineThickness() : 0;
+        if (parent == null) {
+            return getX() + thickness;
+        }
+        return Math.max(parent.getDrawAreaX1(), getX() + thickness);
+    }
+
+    @Override
+    public int getDrawAreaY1() {
+        int thickness = theme.hasOutline() ? theme.getOutlineThickness() : 0;
+        if (parent == null) {
+            return getY() + thickness;
+        }
+        return Math.max(parent.getDrawAreaY1(), getY() + thickness);
+    }
+
+    @Override
+    public int getDrawAreaX2() {
+        int thickness = theme.hasOutline() ? theme.getOutlineThickness() : 0;
+        if (parent == null) {
+            return getX() + getWidth() - thickness;
+        }
+        return Math.min(parent.getDrawAreaX2(), getX() + getWidth() - thickness);
+    }
+
+    @Override
+    public int getDrawAreaY2() {
+        int thickness = theme.hasOutline() ? theme.getOutlineThickness() : 0;
+        if (parent == null) {
+            return getY() + getHeight() - thickness;
+        }
+        return Math.min(parent.getDrawAreaY2(), getY() + getHeight() - thickness);
     }
 }
