@@ -1,4 +1,4 @@
-package dev.mv.engine.gui.screens.transitions;
+package dev.mv.engine.gui.paging.transitions;
 
 public class LinearShiftTransition extends Transition {
     public LinearShiftTransition(int dx, int dy) {

@@ -1,4 +1,4 @@
-package dev.mv.engine.gui.screens.transitions;
+package dev.mv.engine.gui.paging.transitions;
 
 public class ExponentialShiftTransition extends Transition {
     public ExponentialShiftTransition(int dx, int dy) {

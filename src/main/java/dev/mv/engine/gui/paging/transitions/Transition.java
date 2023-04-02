@@ -1,4 +1,4 @@
-package dev.mv.engine.gui.screens.transitions;
+package dev.mv.engine.gui.paging.transitions;
 
 public class Transition {
     protected int xChange, yChange, scaleChange, rotationChange, alphaChange;

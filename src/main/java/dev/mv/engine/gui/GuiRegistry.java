@@ -1,6 +1,6 @@
 package dev.mv.engine.gui;
 
-import dev.mv.engine.gui.screens.Pager;
+import dev.mv.engine.gui.paging.Pager;
 import dev.mv.engine.gui.theme.Theme;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.resources.Resource;

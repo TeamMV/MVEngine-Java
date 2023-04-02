@@ -7,6 +7,8 @@ import dev.mv.engine.render.shared.batch.Batch;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.shared.texture.Texture;
 
+import java.util.Arrays;
+
 import static org.lwjgl.opengl.GL46.*;
 
 public class OpenGLRender2D implements Render2D {
@@ -46,6 +48,8 @@ public class OpenGLRender2D implements Render2D {
         shader.uniform("uView", Transformations3D.getViewMatrix2D(window.getCamera()));
         //shader.uniform("uCanvas", );
 
+        //System.out.println(Arrays.toString(vertices));
+
         glVertexAttribPointer(0, Batch.POSITION_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.POSITION_OFFSET_BYTES);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(1, Batch.ROTATION_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.ROTATION_OFFSET_BYTES);
@@ -60,8 +64,10 @@ public class OpenGLRender2D implements Render2D {
         glEnableVertexAttribArray(5);
         glVertexAttribPointer(6, Batch.CANVAS_COORDS_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.CANVAS_COORDS_OFFSET_BYTES);
         glEnableVertexAttribArray(6);
-        glVertexAttribPointer(7, Batch.USE_CAMERA_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.USE_CAMERA_OFFSET_BYTES);
+        glVertexAttribPointer(7, Batch.CANVAS_DATA_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.CANVAS_DATA_OFFSET_BYTES);
         glEnableVertexAttribArray(7);
+        glVertexAttribPointer(8, Batch.USE_CAMERA_SIZE, GL_FLOAT, false, Batch.VERTEX_SIZE_BYTES, Batch.USE_CAMERA_OFFSET_BYTES);
+        glEnableVertexAttribArray(8);
 
         glDrawElements(renderMode, indices.length, GL_UNSIGNED_INT, 0);
 

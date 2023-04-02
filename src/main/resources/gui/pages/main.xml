@@ -12,7 +12,7 @@
             </open>
         </trigger>
         <trigger name="quitGame" listen="quit.yes@onclick[release]">
-            <call handler="myGui.exit(1)"/>
+            <call handler="myGui.exit(0)"/>
         </trigger>
         <trigger name="cancelQuit" listen="quit.no@onclick[release]">
             <call handler="myGui.open()"/>

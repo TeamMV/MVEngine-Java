@@ -186,7 +186,7 @@ public class Gui implements Resource {
     }
 
     public void resize(int width, int height) {
-        for (Element e : elementsDeep()) {
+        for (Element e : elements()) {
             e.resize(width, height);
         }
     }

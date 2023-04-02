@@ -7,6 +7,7 @@ import dev.mv.engine.gui.input.Scrollable;
 import dev.mv.engine.gui.utils.GuiUtils;
 import dev.mv.engine.gui.utils.VariablePosition;
 import dev.mv.engine.input.Input;
+import dev.mv.engine.render.shared.Color;
 import dev.mv.engine.render.shared.DrawContext2D;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.utils.Utils;
@@ -81,21 +82,32 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
     }
 
     @Override
-    public void draw(DrawContext2D draw) {
-        if (parent != null) {
-            int drawX1 = Math.max(parent.getDrawAreaX1(), getX());
-            int drawY1 =  Math.max(parent.getDrawAreaY1(), getY());
-            int drawX2 = Math.min(parent.getDrawAreaX2(), getX() + getWidth());
-            int drawY2 =  Math.min(parent.getDrawAreaY2(), getY() + getHeight());
-            draw.canvas(drawX1, drawY1, drawX2 - drawX1, drawY2 - drawY1);
-        }
-        else {
-            draw.canvas();
-        }
-        drawFrame(draw);
-        draw.canvas(getDrawAreaX1(), getDrawAreaY1(), getDrawAreaX2() - getDrawAreaX1(), getDrawAreaY2() - getDrawAreaY1());
+    public int getElementWidth() {
+        return maxWidth;
+    }
 
-        int yStart = getElementY() + getHeight();
+    @Override
+    public int getElementHeight() {
+        int res = 0;
+        for (Element e : elements) {
+            if (e instanceof IgnoreDraw ignoreDraw) {
+                for (Element element : ignoreDraw.toRender()) {
+                    res += element.getHeight() + spacing;
+                }
+                continue;
+            }
+            res += e.getHeight() + spacing;
+        }
+        return res;
+    }
+
+    @Override
+    public void draw(DrawContext2D draw) {
+        resetCanvas(draw);
+        drawBackground(draw);
+        setupCanvas(draw);
+
+        int yStart = getElementY() + getHeight() - getPaddingBottom() - getPaddingTop();
         int xStart = getElementX();
 
         if (currentAlign == Align.LEFT) {
@@ -108,6 +120,7 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
                         element.draw(draw);
                         yStart -= element.getHeight();
                         yStart -= spacing;
+                        setupCanvas(draw);
                     }
                     continue;
                 }
@@ -116,48 +129,74 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
                 e.draw(draw);
                 yStart -= e.getHeight();
                 yStart -= spacing;
+                setupCanvas(draw);
             }
         } else if (currentAlign == Align.CENTER) {
             for (Element e : elements) {
                 if (e instanceof IgnoreDraw ignoreDraw) {
                     for (Element element : ignoreDraw.toRender()) {
-                        element.setX(xStart + ((maxWidth / 2) - (element.getWidth() / 2)));
+                        element.setX(xStart + ((getWidth() / 2) - (element.getWidth() / 2)));
                         element.setY(yStart - element.getHeight());
                         element.draw(draw);
                         yStart -= element.getHeight();
                         yStart -= spacing;
+                        setupCanvas(draw);
                     }
                     continue;
                 }
-                e.setX(xStart + ((maxWidth / 2) - (e.getWidth() / 2)));
+                e.setX(xStart + ((getWidth() / 2) - (e.getWidth() / 2)));
                 e.setY(yStart - e.getHeight());
                 e.draw(draw);
                 yStart -= e.getHeight();
                 yStart -= spacing;
+                setupCanvas(draw);
             }
         } else if (currentAlign == Align.RIGHT) {
             for (Element e : elements) {
                 if (e instanceof IgnoreDraw ignoreDraw) {
                     for (Element element : ignoreDraw.toRender()) {
-                        element.setX(xStart + (maxWidth - element.getWidth()));
+                        element.setX(xStart + (getWidth() - element.getWidth()));
                         element.setY(yStart - element.getHeight());
                         element.draw(draw);
                         yStart -= element.getHeight();
                         yStart -= spacing;
+                        setupCanvas(draw);
                     }
                     continue;
                 }
-                e.setX(xStart + (maxWidth - e.getWidth()));
+                e.setX(xStart + (getWidth() - e.getWidth()));
                 e.setY(yStart - e.getHeight());
                 e.draw(draw);
                 yStart -= e.getHeight();
                 yStart -= spacing;
+                setupCanvas(draw);
             }
         }
+
+        resetCanvas(draw);
+        drawFrame(draw);
     }
 
-    private boolean inside(Element e) {
-        return e.getX() + e.getWidth() > getX() && e.getX() < getX() + getWidth() && e.getY() + e.getHeight() > getY() && e.getY() < getY() + getHeight();
+    private void setupCanvas(DrawContext2D draw) {
+        draw.canvas(getDrawAreaX1(), getDrawAreaY1(), getDrawAreaX2() - getDrawAreaX1(), getDrawAreaY2() - getDrawAreaY1(), theme.getEdgeRadius(), theme.getEdgeStyle());
+    }
+
+    private void resetCanvas(DrawContext2D draw) {
+        if (parent != null) {
+            int drawX1 = parent.getDrawAreaX1();
+            int drawY1 =  parent.getDrawAreaY1();
+            int drawX2 = parent.getDrawAreaX2();
+            int drawY2 =  parent.getDrawAreaY2();
+            if (drawX1 == 0 && drawY1 == 0 && drawX2 == window.getWidth() && drawY2 == window.getHeight()) {
+                draw.canvas(drawX1, drawY1, drawX2 - drawX1, drawY2 - drawY1);
+            }
+            else {
+                draw.canvas(drawX1, drawY1, drawX2 - drawX1, drawY2 - drawY1, theme.getEdgeRadius(), theme.getEdgeStyle());
+            }
+        }
+        else {
+            draw.canvas();
+        }
     }
 
     public enum ScrollStyle {
@@ -213,7 +252,7 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
     public boolean distributeScrollX(int amount) {
         if(super.distributeScrollX(amount)) return true;
         if(scrollStyle.canScrollX()) {
-            scrollX -= amount * 20;
+            scrollX -= amount * 40;
             elements.forEach(e -> e.setX(e.getX() + scrollX));
         }
         return true;
@@ -222,11 +261,31 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
     @Override
     public boolean distributeScrollY(int amount) {
         if (super.distributeScrollY(amount)) return true;
-        if(scrollStyle.canScrollY() && Input.mouse[Input.MOUSE_SCROLL_Y] != 0f) {
-            scrollY -= Input.mouse[Input.MOUSE_SCROLL_Y] * 20;
+        if(scrollStyle.canScrollY()) {
+            if (amount < 0 && !canScrollUp()) return true;
+            if (amount > 0 && !canScrollDown()) return true;
+            scrollY -= amount * 40;
+            if (scrollY < 0) scrollY = 0;
+            if (scrollY + (getHeight() - getPaddingTop() - getPaddingBottom()) > getElementHeight()) scrollY = getElementHeight() - (getHeight() - getPaddingTop() - getPaddingBottom());
             elements.forEach(e -> e.setY(e.getY() + scrollY));
         }
         return true;
+    }
+
+    public boolean canScrollUp() {
+        return getElementHeight() - (getHeight() - getPaddingTop() - getPaddingBottom()) - scrollY > 0;
+    }
+
+    public boolean canScrollDown() {
+        return scrollY > 0;
+    }
+
+    public boolean canScrollLeft() {
+        return getElementWidth() - (getWidth() - getPaddingLeft() - getPaddingRight()) - scrollX > 0;
+    }
+
+    public boolean canScrollRight() {
+        return scrollX > 0;
     }
 
     @Override
@@ -238,6 +297,7 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
     @Override
     public int getDrawAreaX1() {
         if (parent == null) {
+            System.out.println(getX());
             return getX() + getPaddingLeft();
         }
         return Math.max(parent.getDrawAreaX1(), getX() + getPaddingLeft());

@@ -1,18 +1,15 @@
-package dev.mv.engine.gui.screens;
+package dev.mv.engine.gui.paging;
 
 import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.GuiRegistry;
 import dev.mv.engine.gui.components.Element;
-import dev.mv.engine.gui.components.layouts.AbstractLayout;
-import dev.mv.engine.gui.screens.transitions.Transition;
+import dev.mv.engine.gui.paging.transitions.Transition;
 import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.resources.R;
 import dev.mv.utils.async.PromiseNull;
 import dev.mv.utils.generic.pair.Pair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Pager {

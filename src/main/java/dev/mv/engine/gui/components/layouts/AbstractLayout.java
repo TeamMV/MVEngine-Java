@@ -2,6 +2,7 @@ package dev.mv.engine.gui.components.layouts;
 
 import dev.mv.engine.gui.Gui;
 import dev.mv.engine.gui.components.AbstractClickable;
+import dev.mv.engine.gui.components.Aligner;
 import dev.mv.engine.gui.components.Element;
 import dev.mv.engine.gui.components.extras.IgnoreDraw;
 import dev.mv.engine.gui.event.EventListener;
@@ -65,6 +66,9 @@ public abstract class AbstractLayout extends Element implements Clickable, Dragg
 
     @Override
     public void resize(int width, int height) {
+        if (this.getClass().equals(Aligner.class)) {
+            //System.out.println();
+        }
         super.resize(width, height);
         for (Element e : elements) {
             e.resize(width, height);

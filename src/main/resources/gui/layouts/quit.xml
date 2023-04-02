@@ -7,7 +7,7 @@
     </variables>
 
     <elements>
-        <aligner x="0" y="0" width="100%" height="100%" alignX="CENTER" alignY="CENTER">
+        <aligner x="0" y="0" width="100vw" height="100vh" alignX="CENTER" alignY="CENTER">
             <verticalLayout spacing="10" align="CENTER" showFrame="true" padding="[5]">
                 <textLine height="$VAR(height)">Are you sure you want to quit?</textLine>
                 <horizontalLayout spacing="5" showFrame="false" align="CENTER">

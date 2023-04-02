@@ -52,9 +52,8 @@ public class HorizontalLayout extends FramedLayout {
 
     @Override
     public void draw(DrawContext2D draw) {
+        drawBackground(draw);
         drawFrame(draw);
-        if(id.equals("h"))
-        System.out.println(getWidth() + ":" + getHeight());
 
         int xStart = getElementX();
         int yStart = getElementY();

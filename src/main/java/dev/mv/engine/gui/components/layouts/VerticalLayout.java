@@ -53,6 +53,7 @@ public class VerticalLayout extends FramedLayout {
 
     @Override
     public void draw(DrawContext2D draw) {
+        drawBackground(draw);
         drawFrame(draw);
 
         int yStart = getElementY() + getElementHeight();
@@ -81,7 +82,7 @@ public class VerticalLayout extends FramedLayout {
             for (Element e : elements) {
                 if (e instanceof IgnoreDraw ignoreDraw) {
                     for (Element element : ignoreDraw.toRender()) {
-                        element.setX(xStart + ((maxWidth / 2) - (element.getWidth() / 2)));
+                        element.setX(xStart + ((getWidth() / 2) - (element.getWidth() / 2)));
                         element.setY(yStart - element.getHeight());
                         element.draw(draw);
                         yStart -= element.getHeight();
@@ -89,7 +90,7 @@ public class VerticalLayout extends FramedLayout {
                     }
                     continue;
                 }
-                e.setX(xStart + ((maxWidth / 2) - (e.getWidth() / 2)));
+                e.setX(xStart + ((getWidth() / 2) - (e.getWidth() / 2)));
                 e.setY(yStart - e.getHeight());
                 e.draw(draw);
                 yStart -= e.getHeight();
@@ -107,7 +108,7 @@ public class VerticalLayout extends FramedLayout {
                     }
                     continue;
                 }
-                e.setX(xStart + (maxWidth - e.getWidth()));
+                e.setX(xStart + (getWidth() - e.getWidth()));
                 e.setY(yStart - e.getHeight());
                 e.draw(draw);
                 yStart -= e.getHeight();

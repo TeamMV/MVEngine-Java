@@ -35,6 +35,7 @@
                     <ref name="defaultSeparator"/>
                     <ref name="defaultSpace"/>
                 </verticalOverflowLayout>
+                <ref name="defaultSpace"/>
                 <horizontalLayout showFrame="true" spacing="5" padding="[5]">
                     <ref name="checkbox" params="[check1]"/>
                     <ref name="checkbox" params="[check2]"/>

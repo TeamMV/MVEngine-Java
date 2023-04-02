@@ -96,12 +96,27 @@ public abstract class FramedLayout extends AbstractLayout {
     }
 
     protected void drawFrame(DrawContext2D draw) {
+        if (!showFrame || !theme.hasOutline()) return;
+        if (theme.getEdgeStyle() == Theme.EdgeStyle.ROUND) {
+            int thickness = theme.getOutlineThickness();
+            draw.color(getOutlineColor());
+            draw.voidRoundedRectangle(getX(), getY(), getWidth(), getHeight(), thickness, theme.getEdgeRadius() + thickness, theme.getEdgeRadius());
+        } else if (theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
+            int thickness = theme.getOutlineThickness();
+            draw.color(getOutlineColor());
+            draw.voidTriangularRectangle(getX(), getY(), getWidth(), getHeight(), thickness, theme.getEdgeRadius() + thickness);
+        } else if (theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
+            int thickness = theme.getOutlineThickness();
+            draw.color(getOutlineColor());
+            draw.voidRectangle(getX(), getY(), getWidth(), getHeight(), thickness);
+        }
+    }
+
+    protected void drawBackground(DrawContext2D draw) {
         if (!showFrame) return;
         if (theme.getEdgeStyle() == Theme.EdgeStyle.ROUND) {
             if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
-                draw.color(getOutlineColor());
-                draw.voidRoundedRectangle(getX(), getY(), getWidth(), getHeight(), thickness, theme.getEdgeRadius() + thickness, theme.getEdgeRadius());
                 draw.color(getBaseColor());
                 draw.roundedRectangle(getX() + thickness, getY() + thickness, getWidth() - thickness * 2, getHeight() - thickness * 2, theme.getEdgeRadius(), theme.getEdgeRadius());
             } else {
@@ -111,8 +126,6 @@ public abstract class FramedLayout extends AbstractLayout {
         } else if (theme.getEdgeStyle() == Theme.EdgeStyle.TRIANGLE) {
             if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
-                draw.color(getOutlineColor());
-                draw.voidTriangularRectangle(getX(), getY(), getWidth(), getHeight(), thickness, theme.getEdgeRadius() + thickness);
                 draw.color(getBaseColor());
                 draw.triangularRectangle(getX() + thickness, getY() + thickness, getWidth() - thickness * 2, getHeight() - thickness * 2, theme.getEdgeRadius());
             } else {
@@ -122,8 +135,6 @@ public abstract class FramedLayout extends AbstractLayout {
         } else if (theme.getEdgeStyle() == Theme.EdgeStyle.SQUARE) {
             if (theme.hasOutline()) {
                 int thickness = theme.getOutlineThickness();
-                draw.color(getOutlineColor());
-                draw.voidRectangle(getX(), getY(), getWidth(), getHeight(), thickness);
                 draw.color(getBaseColor());
                 draw.rectangle(getX() + thickness, getY() + thickness, getWidth() - thickness * 2, getHeight() - thickness * 2);
             } else {

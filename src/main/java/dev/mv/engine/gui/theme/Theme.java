@@ -276,11 +276,19 @@ public class Theme implements Resource {
     }
 
     public enum EdgeStyle {
-        ROUND("round"),
-        TRIANGLE("triangle"),
-        SQUARE("square");
+        ROUND("round", 2),
+        TRIANGLE("triangle", 1),
+        SQUARE("square", 0);
 
-        EdgeStyle(String s) {
+        int i;
+
+        EdgeStyle(String s, int i) {
+            this.i = i;
         }
+
+        public int toInt() {
+            return i;
+        }
+
     }
 }

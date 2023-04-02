@@ -22,7 +22,7 @@
     <general>
         <edges>
             <style>ROUND</style>
-            <radius>10</radius>
+            <radius>20</radius>
         </edges>
         <outline>
             <thickness>2</thickness>
