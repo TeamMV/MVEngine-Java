@@ -25,7 +25,7 @@ public class Circle extends Oval {
     public void updateBoundingBox() {
         boundingBox.x = center.x - radius;
         boundingBox.y = center.y - radius;
-        boundingBox.s = c;
+        boundingBox.s = radius + radius;
     }
 
     @Override
@@ -33,7 +33,6 @@ public class Circle extends Oval {
         radius *= factor;
         a = radius;
         b = radius;
-        c = radius * 2;
         rVec.x = radius;
         updateBoundingBox();
     }
@@ -47,26 +46,7 @@ public class Circle extends Oval {
         a = radius;
         b = radius;
         rVec.x = radius;
-        c = radius * 2;
         updateBoundingBox();
-    }
-
-    @Override
-    public void setFocusA(Vector2f focA) {
-        this.focA = focA;
-        focB = focA;
-        setX(focA.x);
-        setY(focA.y);
-    }
-
-    @Override
-    public void setFocusB(Vector2f focB) {
-        setFocusA(focB);
-    }
-
-    @Override
-    public void setConstant(float c) {
-        setRadius(c / 2);
     }
 
     @Override
@@ -75,6 +55,5 @@ public class Circle extends Oval {
     }
 
     @Override
-    public void setRotation(float rotation) {
-    }
+    public void setRotation(float rotation) {}
 }

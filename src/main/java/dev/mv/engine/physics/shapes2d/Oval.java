@@ -6,16 +6,14 @@ import org.joml.Vector2f;
 
 public class Oval extends Shape2D {
 
-    protected Vector2f focA, focB;
-    protected float a, b, c;
+    protected float a, b;
     protected Vector2f rVec;
     protected float rRatio;
 
     Oval(Vector2f centre, float rad) {
         super(MVEngine.instance().getPhysics2D(), centre);
-        this.focA = centre;
-        this.focB = centre;
-        this.c = rad * 2;
+        x = centre.x;
+        y = centre.y;
         a = rad;
         b = rad;
         rVec = new Vector2f(rad, 0);
@@ -24,19 +22,39 @@ public class Oval extends Shape2D {
 
     public Oval(Vector2f focA, Vector2f focB, float c) {
         super(MVEngine.instance().getPhysics2D(), (focA.x + focB.x) / 2, (focA.y + focB.y) / 2);
-        this.focA = focA;
-        this.focB = focB;
-        this.c = c;
-        calculate();
+        x = center.x;
+        y = center.y;
+        calculate(focA, focB, c);
     }
 
-    private void calculate() {
+    public Oval(float x, float y, float radA, float radB) {
+        super(MVEngine.instance().getPhysics2D(), x, y);
+        this.x = x;
+        this.y = y;
+        a = radA;
+        b = radB;
+        rVec = new Vector2f(radA, 0);
+        rRatio = b / a;
+    }
+
+    public Oval(float x, float y, float radA, float radB, float rotation) {
+        super(MVEngine.instance().getPhysics2D(), x, y);
+        this.x = x;
+        this.y = y;
+        a = radA;
+        b = radB;
+        super.setRotation(rotation);
+        rVec = new Vector2f((float) (a * Math.cos(this.rotation)), (float) (a * Math.sin(this.rotation)));
+        rRatio = b / a;
+    }
+
+    private void calculate(Vector2f focA, Vector2f focB, float c) {
         float distX = focA.x - center.x;
         float distY = focA.y - center.y;
         float dist = Utils.square(distX) + Utils.square(distY);
         a = c / 2;
         b = (float) Math.sqrt(Utils.square(a) - dist);
-        setRotation((float) Math.toDegrees(Math.atan((double) distY / distX)));
+        super.setRotation((float) Math.toDegrees(Math.atan((double) distY / distX)));
         rVec = new Vector2f((float) (a * Math.cos(rotation)), (float) (a * Math.sin(rotation)));
         rRatio = b / a;
     }
@@ -64,37 +82,6 @@ public class Oval extends Shape2D {
         a *= factor;
         b *= factor;
         rVec.mul(factor);
-        updateBoundingBox();
-    }
-
-
-    public Vector2f getFocusA() {
-        return focA;
-    }
-
-    public void setFocusA(Vector2f focA) {
-        this.focA = focA;
-        calculate();
-        updateBoundingBox();
-    }
-
-    public Vector2f getFocusB() {
-        return focB;
-    }
-
-    public void setFocusB(Vector2f focB) {
-        this.focB = focB;
-        calculate();
-        updateBoundingBox();
-    }
-
-    public float getConstant() {
-        return c;
-    }
-
-    public void setConstant(float c) {
-        this.c = c;
-        calculate();
         updateBoundingBox();
     }
 
