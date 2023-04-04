@@ -31,8 +31,6 @@ public class Circle extends Oval {
     @Override
     public void scale(float factor) {
         radius *= factor;
-        a = radius;
-        b = radius;
         rVec.x = radius;
         updateBoundingBox();
     }
@@ -43,10 +41,45 @@ public class Circle extends Oval {
 
     public void setRadius(float radius) {
         this.radius = radius;
-        a = radius;
-        b = radius;
         rVec.x = radius;
         updateBoundingBox();
+    }
+
+    @Override
+    public float getRadiusA() {
+        return radius;
+    }
+
+    @Override
+    public void setRadiusA(float a) {
+        this.radius = a;
+        updateBoundingBox();
+    }
+
+    @Override
+    public float getRadiusB() {
+        return radius;
+    }
+
+    @Override
+    public void setRadiusB(float b) {
+        this.radius = b;
+        updateBoundingBox();
+    }
+
+    @Override
+    public float getRadiusVecX() {
+        return radius;
+    }
+
+    @Override
+    public float getRadiusVecY() {
+        return 0;
+    }
+
+    @Override
+    public float getRadiusRatio() {
+        return 1;
     }
 
     @Override
@@ -56,4 +89,5 @@ public class Circle extends Oval {
 
     @Override
     public void setRotation(float rotation) {}
+
 }

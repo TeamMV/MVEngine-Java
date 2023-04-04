@@ -89,8 +89,21 @@ public class Oval extends Shape2D {
         return a;
     }
 
+    public void setRadiusA(float a) {
+        this.a = a;
+        rVec = new Vector2f((float) (a * Math.cos(this.rotation)), (float) (a * Math.sin(this.rotation)));
+        rRatio = b / a;
+        updateBoundingBox();
+    }
+
     public float getRadiusB() {
         return b;
+    }
+
+    public void setRadiusB(float b) {
+        this.b = b;
+        rRatio = b / a;
+        updateBoundingBox();
     }
 
     public float getRadiusVecX() {
