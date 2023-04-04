@@ -76,7 +76,7 @@ public class ResourceLoader {
 
         final AtomicInteger priority = new AtomicInteger(0);
         while (!refs.isEmpty()) {
-            refs = refs.iter().unsafe().tryFilter(pair -> {
+            refs = refs.fastIter().unsafe().tryFilter(pair -> {
                 if (pair.a == priority.get()) {
                     ResourceReference ref = pair.b;
                     switch (ref.getType()) {

@@ -41,7 +41,7 @@ public class Mod {
         this.mainClass = mainClass;
         this.instance = instance;
         this.classes = classes;
-        this.assets = assets.iter().filter(s -> s.startsWith("assets/" + this.id + "/")).collect();
+        this.assets = assets.fastIter().filter(s -> s.startsWith("assets/" + this.id + "/")).collect();
         this.url = url;
         loader = new URLClassLoader(new URL[]{url}, ClassLoader.getSystemClassLoader());
         manager = new Manager(this);

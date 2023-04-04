@@ -26,7 +26,7 @@ public class Languages {
         foundLanguages.forEach(lang -> addLanguage(load("/assets/" + MVEngine.instance().getGame().getGameId() + "/lang/" + lang + ".json")));
         currentLanguage = getLanguage(defaultLanguage);
         if (currentLanguage == null && foundLanguages.len() > 0)
-            currentLanguage = getLanguage(foundLanguages.unsafe().get(0));
+            currentLanguage = getLanguage(foundLanguages.get(0));
     }
 
     public static Language getCurrentLanguage() {

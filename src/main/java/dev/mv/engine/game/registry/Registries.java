@@ -17,7 +17,7 @@ public class Registries {
     private static Vec<Class<?>> resourceTypes = new Vec<>();
 
     public static void init() {
-        resourceTypes = ModIntegration.getClasses().iter().filter(Registries::isGameResourceType).collect();
+        resourceTypes = ModIntegration.getClasses().fastIter().filter(Registries::isGameResourceType).collect();
         RegistryLoader.createResourceRegistries(resourceTypes);
         resourceTypes.forEach(clazz -> RegistryLoader.registerResources(ModIntegration.getBaseClasses(), clazz, MVEngine.instance().getGame().getGameId()));
     }

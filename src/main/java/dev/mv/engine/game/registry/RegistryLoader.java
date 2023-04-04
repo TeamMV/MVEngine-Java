@@ -20,7 +20,7 @@ public class RegistryLoader {
     }
 
     public static <T> void registerResources(Vec<Class<?>> classes, Class<T> baseClass, String originId, Registry<T> registry) {
-        classes.iter().filter(Registries::isGameResource).filter(baseClass::isAssignableFrom).forEach((Class<?> clazz) -> {
+        classes.fastIter().filter(Registries::isGameResource).filter(baseClass::isAssignableFrom).forEach((Class<?> clazz) -> {
             GameResource resource = clazz.getAnnotation(GameResource.class);
             String id = resource.value();
             registry.register(originId + ":" + id, (Class<? extends T>) clazz);

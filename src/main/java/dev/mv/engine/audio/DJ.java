@@ -2,7 +2,6 @@ package dev.mv.engine.audio;
 
 import dev.mv.engine.resources.R;
 import dev.mv.utils.async.PromiseNull;
-import dev.mv.utils.collection.UnsafeVec;
 import dev.mv.utils.collection.Vec;
 
 import java.util.Arrays;
@@ -13,10 +12,10 @@ public class DJ {
     volatile boolean forceStopped;
     volatile Music playing;
     volatile PromiseNull listener;
-    volatile UnsafeVec<String> queued = new Vec<String>().unsafe();
+    volatile Vec<String> queued = new Vec<>();
     int songIndex = 0;
     boolean loop, shuffle;
-    private Audio audio;
+    private final Audio audio;
 
     DJ(Audio audio) {
         this.audio = audio;

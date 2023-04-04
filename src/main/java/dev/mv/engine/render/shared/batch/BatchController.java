@@ -5,12 +5,11 @@ import dev.mv.engine.render.shared.Window;
 import dev.mv.engine.render.shared.create.RenderBuilder;
 import dev.mv.engine.render.shared.shader.Shader;
 import dev.mv.engine.render.shared.texture.Texture;
-import dev.mv.utils.collection.UnsafeVec;
 import dev.mv.utils.collection.Vec;
 
 public class BatchController {
 
-    protected final UnsafeVec<Batch> batches = new Vec<Batch>().unsafe();
+    protected final Vec<Batch> batches = new Vec<>();
     private final String VERTEX_PATH = "/assets/mvengine/shaders/2d/default.vert";
     private final String FRAGMENT_PATH = "/assets/mvengine/shaders/2d/default.frag";
     protected Window win;

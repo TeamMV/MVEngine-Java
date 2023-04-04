@@ -38,7 +38,7 @@ public class ModFinder {
             }
         }
         try {
-            URL[] urls = jarFiles.iter().map(f -> {
+            URL[] urls = jarFiles.fastIter().map(f -> {
                 try {
                     return f.toURI().toURL();
                 } catch (MalformedURLException e) {

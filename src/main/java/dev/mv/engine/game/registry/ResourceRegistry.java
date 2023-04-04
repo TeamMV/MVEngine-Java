@@ -2,7 +2,10 @@ package dev.mv.engine.game.registry;
 
 import dev.mv.engine.exceptions.Exceptions;
 import dev.mv.engine.resources.AssetBundle;
+import dev.mv.utils.Utils;
 import dev.mv.utils.collection.Vec;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class ResourceRegistry<T> implements Registry<T> {
 
@@ -26,11 +29,10 @@ public class ResourceRegistry<T> implements Registry<T> {
 
     @Override
     public <R extends T> R newInstance(Class<R> clazz) {
-        return items
-            .iter()
+        return Utils.ifNotNull(items
+            .fastIter()
             .filter(item -> item.clazz.equals(clazz))
-            .first()
-            .asNullHandler()
+            .first())
             .thenReturn(RegisteredResource::newInstance)
             .getGenericReturnValue()
             .value();
@@ -38,55 +40,50 @@ public class ResourceRegistry<T> implements Registry<T> {
 
     @Override
     public <R extends T> R newInstance(String id) {
-        return items
-            .iter()
-            .filter(item -> item.id.equals(id))
-            .first()
-            .asNullHandler()
+        return Utils.ifNotNull(items
+                .fastIter()
+                .filter(item -> item.id.equals(id))
+                .first())
             .thenReturn(RegisteredResource::newInstance)
             .getGenericReturnValue()
             .value();
     }
 
     public <R extends T> RegisteredObject<R> get(Class<R> clazz) {
-        return items
-            .iter()
-            .filter(item -> item.clazz.equals(clazz))
-            .first()
-            .asNullHandler()
+        return Utils.ifNotNull(items
+                .fastIter()
+                .filter(item -> item.clazz.equals(clazz))
+                .first())
             .thenReturn()
             .getGenericReturnValue()
             .value();
     }
 
     public <R extends T> RegisteredObject<R> get(String id) {
-        return items
-            .iter()
-            .filter(item -> item.id.equals(id))
-            .first()
-            .asNullHandler()
+        return Utils.ifNotNull(items
+                .fastIter()
+                .filter(item -> item.id.equals(id))
+                .first())
             .thenReturn()
             .getGenericReturnValue()
             .value();
     }
 
     public <R extends T> AssetBundle getAssetBundle(Class<R> clazz) {
-        return items
-            .iter()
-            .filter(item -> item.clazz.equals(clazz))
-            .first()
-            .asNullHandler()
+        return Utils.ifNotNull(items
+                .fastIter()
+                .filter(item -> item.clazz.equals(clazz))
+                .first())
             .thenReturn(RegisteredResource::getAssetBundle)
             .getGenericReturnValue()
             .value();
     }
 
     public AssetBundle getAssetBundle(String id) {
-        return items
-            .iter()
-            .filter(item -> item.id.equals(id))
-            .first()
-            .asNullHandler()
+        return Utils.ifNotNull(items
+                .fastIter()
+                .filter(item -> item.id.equals(id))
+                .first())
             .thenReturn(RegisteredResource::getAssetBundle)
             .getGenericReturnValue()
             .value();
@@ -106,8 +103,8 @@ public class ResourceRegistry<T> implements Registry<T> {
 
         public R newInstance() {
             try {
-                return clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                return clazz.getConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 Exceptions.send("GAME_RESOURCE_CONSTRUCTOR", clazz.getName());
                 return null;
             }

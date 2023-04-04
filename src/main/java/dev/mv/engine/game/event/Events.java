@@ -14,7 +14,7 @@ public class Events {
                 "dev.mv.utils", "org.lwjgl", "de.fabmax.physxjni", "physx.",
                 "org.joml", "com.codedisaster.steamworks", "javax.annotation",
                 "org.jetbrains.annotations", "org.intellij"))
-            .iter().forEach(clazz -> {
+            .fastIter().forEach(clazz -> {
                 if (clazz.isAnnotationPresent(EventBusListener.class)) {
                     EventBusListener listener = clazz.getAnnotation(EventBusListener.class);
                     if (listener.type() == ListenerType.STATIC) {
