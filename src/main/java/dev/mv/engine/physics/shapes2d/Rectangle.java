@@ -36,8 +36,7 @@ public class Rectangle extends Shape2D {
         float size = Math.max(width, height) / 2;
         boundingBox.x = center.x - size;
         boundingBox.y = center.y - size;
-        boundingBox.w = center.x + size;
-        boundingBox.h = center.y + size;
+        boundingBox.s = size + size;
     }
 
     @Override

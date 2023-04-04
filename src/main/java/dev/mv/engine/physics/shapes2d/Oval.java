@@ -56,8 +56,7 @@ public class Oval extends Shape2D {
         float size = Math.max(a, b);
         boundingBox.x = center.x - size;
         boundingBox.y = center.y - size;
-        boundingBox.w = center.x + size;
-        boundingBox.h = center.y + size;
+        boundingBox.s = size + size;
     }
 
     @Override

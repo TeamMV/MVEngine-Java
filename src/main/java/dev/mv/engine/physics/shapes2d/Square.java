@@ -29,8 +29,7 @@ public class Square extends Rectangle {
     public void updateBoundingBox() {
         boundingBox.x = center.x - width;
         boundingBox.y = center.y - width;
-        boundingBox.w = center.x + width;
-        boundingBox.h = center.y + width;
+        boundingBox.s = width + width;
     }
 
     @Override

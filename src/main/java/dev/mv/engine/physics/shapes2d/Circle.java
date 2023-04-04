@@ -25,8 +25,7 @@ public class Circle extends Oval {
     public void updateBoundingBox() {
         boundingBox.x = center.x - radius;
         boundingBox.y = center.y - radius;
-        boundingBox.w = center.x + radius;
-        boundingBox.h = center.y + radius;
+        boundingBox.s = c;
     }
 
     @Override

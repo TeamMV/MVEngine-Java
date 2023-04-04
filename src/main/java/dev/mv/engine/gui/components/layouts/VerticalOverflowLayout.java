@@ -211,7 +211,12 @@ public class VerticalOverflowLayout extends VerticalLayout implements Scrollable
     public boolean distributeScrollX(int amount) {
         if (super.distributeScrollX(amount)) return true;
         if (scrollStyle.canScrollX()) {
-            scrollX -= amount * 40;
+            //if (amount < 0 && !canScrollLeft()) return true;
+            //if (amount > 0 && !canScrollRight()) return true;
+            scrollX += amount * 40;
+            //if (scrollX < 0) scrollX = 0;
+            //if (scrollX + (getWidth() - getPaddingRight() - getPaddingLeft()) > getElementWidth())
+            //    scrollX = getElementWidth() - (getWidth() - getPaddingRight() - getPaddingLeft());
             elements.forEach(e -> e.setX(e.getX() + scrollX));
         }
         return true;

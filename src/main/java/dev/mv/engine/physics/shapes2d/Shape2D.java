@@ -37,6 +37,10 @@ public abstract class Shape2D {
 
     public abstract void scale(float factor);
 
+    /**
+     * Update the bounding box (protected variable), using a really fast mathematical approximation
+     * for a rectangle, which fully encloses the shape, regardless of rotation.
+     */
     public abstract void updateBoundingBox();
 
     public void moveX(float amount) {
@@ -92,22 +96,27 @@ public abstract class Shape2D {
         if (this.rotation < 0) this.rotation += 360;
     }
 
+    /**
+     * Get a really fast mathematical approximation of a rectangle,
+     * which will fully enclose the shape, regardless of rotation.
+     * @return the bounding box.
+     */
     public BoundingBox2D getBoundingBox() {
         return boundingBox;
     }
 
     public static class BoundingBox2D {
 
-        float x, y, w, h;
+        float x, y, s;
 
         private BoundingBox2D() {
         }
 
         public boolean isColliding(BoundingBox2D b) {
-            return x < b.x + b.w &&
-                x + w > b.x &&
-                y < b.y + b.h &&
-                y + h > b.y;
+            return x < b.x + b.s &&
+                x + s > b.x &&
+                y < b.y + b.s &&
+                y + s> b.y;
         }
     }
 }

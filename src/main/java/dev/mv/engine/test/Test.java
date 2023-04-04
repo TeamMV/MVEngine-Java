@@ -57,7 +57,7 @@ public class Test implements ApplicationLoop {
         Music music = engine.getAudio().newMusic("/assets/mvengine/sound/11.wav");
         R.music.register("bestSong", music);
 
-        //engine.getAudio().getDJ().loop("bestSong");
+        engine.getAudio().getDJ().loop("bestSong");
 
         try {
             ResourceLoader.markTheme("defaultTheme", "testTheme.xml");
@@ -105,15 +105,9 @@ public class Test implements ApplicationLoop {
         particleSystem.setSpeed((int) speed.getValue());
         particleSystem.setColor(particleSystem.getColor().toRGB((int) hue.getValue(), 1, 1));
         switch (shape.getCurrentChoice()) {
-            case 1:
-                particleSystem.setShape(ParticleSystem.Shape.TRIANGLE);
-                break;
-            case 2:
-                particleSystem.setShape(ParticleSystem.Shape.SQUARE);
-                break;
-            case 3:
-                particleSystem.setShape(ParticleSystem.Shape.CIRCLE);
-                break;
+            case 1 -> particleSystem.setShape(ParticleSystem.Shape.TRIANGLE);
+            case 2 -> particleSystem.setShape(ParticleSystem.Shape.SQUARE);
+            case 3 -> particleSystem.setShape(ParticleSystem.Shape.CIRCLE);
         }
     }
 
@@ -136,9 +130,5 @@ public class Test implements ApplicationLoop {
     @Override
     public void exit(MVEngine engine, Window window) {
 
-    }
-
-    public String getGameId() {
-        return "testGame";
     }
 }
