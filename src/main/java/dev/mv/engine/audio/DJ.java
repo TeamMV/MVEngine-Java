@@ -102,7 +102,7 @@ public class DJ {
     }
 
     public void shuffleQueue() {
-        //TODO
+        queued.shuffle();
     }
 
     public Album createAlbum(String... songs) {

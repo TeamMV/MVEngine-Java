@@ -19,7 +19,7 @@ public class Languages {
     public static Vec<String> scanLanguages(String id) {
         InputStream stream = Languages.class.getResourceAsStream("/assets/" + id + "/lang");
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        return Utils.iter(reader.lines().toList()).filter(s -> s.matches("[a-zA-Z_]+.((json)|(lang))]")).map(s -> "/assets/" + id + "/lang/" + s).collect();
+        return Utils.fastIter(reader.lines().toList()).filter(s -> s.matches("[a-zA-Z_]+.((json)|(lang))]")).map(s -> "/assets/" + id + "/lang/" + s).collect();
     }
 
     public static void init(Vec<String> foundLanguages, String defaultLanguage) {

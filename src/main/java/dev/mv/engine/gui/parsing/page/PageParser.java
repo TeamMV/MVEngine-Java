@@ -156,7 +156,7 @@ public class PageParser {
                         String gui = handler.split("\\.")[0];
                         String method = handler.split("\\.")[1];
                         GuiScript[] scripts = registry.findGui(gui).getScripts();
-                        String[] raws = Utils.iter(method.substring(method.indexOf('(') + 1, method.indexOf(')')).split(",")).filter(s -> !s.isBlank()).toArray();
+                        String[] raws = Utils.fastIter(method.substring(method.indexOf('(') + 1, method.indexOf(')')).split(",")).filter(s -> !s.isBlank()).toArray();
                         Class<?>[] paramTypes = new Class<?>[raws.length];
                         for (int j = 0; j < raws.length; j++) {
                             paramTypes[j] = inferType(raws[j]);

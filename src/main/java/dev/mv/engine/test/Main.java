@@ -14,21 +14,19 @@ import java.util.Arrays;
 public class Main {
     public static void main(String[] args) throws Exception {
         Directory directory = FileManager.getDirectory("MVEngine");
-        ConfigFile config = directory.getConfigFile("config.mvc");
-        //config.setString("hello", "world");
-        //config.setBoolean("modded", true);
-        //config.setInt("version", Version.parse("v1.0.0").toVulkanVersion());
-        //config.setFloat("pi", 3.14159f);
-        //config.setBytes("bytes", new byte[]{1, 2, 3, 4, 5});
-        //config.save();
-
-        System.out.println(config.getString("hello"));
-        System.out.println(config.getBoolean("modded"));
-        System.out.println(config.getInt("version"));
-        System.out.println(config.getFloat("pi"));
-        System.out.println(Arrays.toString(config.getBytes("bytes")));
-
-        config.save();
+        ConfigFile configFile = directory.getConfigFile("config.mvc");
+        //configFile.setString("hello", "world");
+        //configFile.setBoolean("modded", true);
+        //configFile.setInt("version", Version.parse("v1.0.0").toVulkanVersion());
+        //configFile.setFloat("pi", 3.14159f);
+        //configFile.setBytes("bytes", new byte[]{1, 2, 3, 4, 5});
+        //configFile.save();
+        System.out.println(configFile.getString("hello"));
+        System.out.println(configFile.getBoolean("modded"));
+        System.out.println(Version.parse(configFile.getInt("version")));
+        System.out.println(configFile.getFloat("pi"));
+        System.out.println(Arrays.toString(configFile.getBytes("bytes")));
+        configFile.save();
 
         ApplicationConfig config = new ApplicationConfig();
         config.setName("FactoryIsland").setVersion(Version.parse("v0.0.1")).setRenderingApi(ApplicationConfig.RenderingAPI.OPENGL);

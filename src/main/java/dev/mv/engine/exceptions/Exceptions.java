@@ -50,8 +50,8 @@ public class Exceptions {
 
     public static void send(Throwable throwable) {
         String name = throwable.getClass().getCanonicalName();
-        Logger.error("Oops! It seems like there was a" + addN(name) + name + " thrown by the program!");
-        Logger.error(Utils.iter(throwable.getStackTrace()).map(StackTraceElement::toString).collect().join((a, b) -> a + b, System.lineSeparator()));
+        Logger.error("Oops! It seems like there was a" + addN(name) + " " + name + " thrown by the program!");
+        Logger.error(Utils.fastIter(throwable.getStackTrace()).map(StackTraceElement::toString).collect().join((a, b) -> a + b, System.lineSeparator()));
         MVEngine.instance().getExceptionHandler().handle(throwable);
     }
 

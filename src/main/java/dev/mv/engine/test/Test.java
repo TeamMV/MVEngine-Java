@@ -57,7 +57,7 @@ public class Test implements ApplicationLoop {
         Music music = engine.getAudio().newMusic("/assets/mvengine/sound/11.wav");
         R.music.register("bestSong", music);
 
-        engine.getAudio().getDJ().loop("bestSong");
+        //engine.getAudio().getDJ().loop("bestSong");
 
         try {
             ResourceLoader.markTheme("defaultTheme", "testTheme.xml");
